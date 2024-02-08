@@ -14,3 +14,6 @@
 .cxx
 local.properties
 .idea
+/app/libs/*.aar
+/app/libs/*.jar
+/app/libs/.idea
