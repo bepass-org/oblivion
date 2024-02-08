@@ -51,6 +51,5 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.hluhovskyi.camerabutton:camerabutton:2.0.1'
-    implementation 'com.airbnb.android:lottie:4.2.2'
+    implementation 'com.github.zcweng:switch-button:0.0.3@aar'
 }

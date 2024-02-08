@@ -1,19 +1,13 @@
 package org.bepass.oblivion;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.airbnb.lottie.LottieAnimationView;
-import com.airbnb.lottie.LottieProperty;
-import com.airbnb.lottie.model.KeyPath;
-import com.hluhovskyi.camerabutton.CameraButton;
+import com.suke.widget.SwitchButton;
 import com.yoosef.oblivion.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,8 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Views
     ImageView infoIcon, bugIcon, settingsIcon;
-    CameraButton switchButton;
-    LottieAnimationView switchAnimation;
+    SwitchButton switchButton;
     TextView stateText;
 
     FileManager fileManager;
@@ -38,44 +31,39 @@ public class MainActivity extends AppCompatActivity {
 
         init();
         firstValueInit();
-
-        switchButton.setOnStateChangeListener(state -> {
-            if (state == CameraButton.State.START_EXPANDING || state == CameraButton.State.START_COLLAPSING) {
+        switchButton.setOnCheckedChangeListener((view, isChecked) -> {
+            if (isChecked) {
+                // Switch is now ON
                 if (connectionState == 1) {
                     // From NoAction to Connecting
-                    stateText.setText("در حال اتصال");
-                    changeLottieAnimationColorFilterTo(0);
-                    switchAnimation.playAnimation();
+                    stateText.setText("در حال اتصال...");
                     connectionState = 2;
-                    
 
                     // TODO handle connecting Logic here and On Connected, Call connected() method
-
-                } else if (connectionState == 2) {
-                    // From Connecting to Disconnecting
-                    stateText.setText("متصل نیستید");
-                    changeLottieAnimationColorFilterTo(Color.WHITE);
-                    connectionState = 1;
-
-                    // TODO handle DisConnecting Logic here
 
                 } else if (connectionState == 3) {
                     // From Connected to Disconnecting
                     stateText.setText("متصل نیستید");
-                    changeLottieAnimationColorFilterTo(Color.WHITE);
+                    connectionState = 1;
+
+                    // TODO handle DisConnecting Logic here
+                }
+            } else {
+                // Switch is now OFF
+                if (connectionState == 2) {
+                    // From Connecting to Disconnecting
+                    stateText.setText("متصل نیستید");
                     connectionState = 1;
 
                     // TODO handle DisConnecting Logic here
                 }
             }
         });
-
-
     }
 
     private void connected() {
         stateText.setText("اتصال برقرار شد");
-        switchButton.cancel();
+        switchButton.setActivated(true);
         connectionState = 3;
     }
 
@@ -99,23 +87,10 @@ public class MainActivity extends AppCompatActivity {
         settingsIcon = findViewById(R.id.setting_icon);
 
         switchButton = findViewById(R.id.switch_button);
-        switchAnimation = findViewById(R.id.animation);
         stateText = findViewById(R.id.state_text);
 
         infoIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, InfoActivity.class)));
         bugIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, BugActivity.class)));
         settingsIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, SettingsActivity.class)));
     }
-
-    private void changeLottieAnimationColorFilterTo(int color) {
-        switchAnimation.setFrame(1);
-        switchAnimation.cancelAnimation();
-
-        switchAnimation.addValueCallback(
-                new KeyPath("**"),
-                LottieProperty.COLOR_FILTER,
-                frameInfo -> (color == 0) ? null : new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_ATOP)
-        );
-    }
-
 }
