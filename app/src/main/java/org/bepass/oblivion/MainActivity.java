@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             pushNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
         }
-        fileManager = new FileManager(getApplicationContext());
+        fileManager = FileManager.getInstance(getApplicationContext());
 
         infoIcon = findViewById(R.id.info_icon);
         bugIcon = findViewById(R.id.bug_icon);

@@ -1,8 +1,11 @@
 package tun2socks
 
 import (
+	"bufio"
 	"context"
 	"flag"
+	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/signal"
@@ -11,6 +14,7 @@ import (
 	"syscall"
 
 	"github.com/bepass-org/wireguard-go/app"
+	L "github.com/xjasonlyu/tun2socks/v2/log"
 	"tun2socks/gvisor"
 )
 
@@ -24,15 +28,40 @@ var (
 	psiphonEnabled *bool
 	gool           *bool
 	scan           *bool
+	logMessages    []string
+	mu             sync.Mutex
+	wg             sync.WaitGroup
+	cancelFunc     context.CancelFunc
 )
 
-// Cancel function to stop the server.
-var cancelFunc context.CancelFunc
+type logWriter struct{}
 
-// A WaitGroup for the main goroutine to wait for the shutdown to complete.
-var wg sync.WaitGroup
+func (writer logWriter) Write(bytes []byte) (int, error) {
+	mu.Lock()
+	defer mu.Unlock()
+	logMessages = append(logMessages, string(bytes))
+	return len(bytes), nil
+}
 
 func RunWarp(argStr, fd, path string) {
+	logger := logWriter{}
+	log.SetOutput(logger)
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+	os.Stderr = w
+
+	L.SetLevel(L.DebugLevel)
+	L.SetOutput(logger)
+
+	go func(reader io.Reader) {
+		scanner := bufio.NewScanner(reader)
+		for scanner.Scan() {
+			logger.Write([]byte(scanner.Text()))
+		}
+		if err := scanner.Err(); err != nil {
+			fmt.Fprintln(os.Stderr, "There was an error with the scanner", err)
+		}
+	}(r)
 	if err := os.Chdir(path); err != nil {
 		log.Fatal("Error changing to 'main' directory:", err)
 	}
@@ -112,4 +141,15 @@ func Shutdown() {
 	if cancelFunc != nil {
 		cancelFunc()
 	}
+}
+
+func GetLogMessages() string {
+	mu.Lock()
+	defer mu.Unlock()
+	if len(logMessages) == 0 {
+		return ""
+	}
+	logs := logMessages
+	logMessages = []string{}
+	return strings.Join(logs, "\n")
 }

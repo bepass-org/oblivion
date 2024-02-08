@@ -2,6 +2,7 @@ package gvisor
 
 import (
 	"errors"
+	"log"
 	"net"
 	"os/exec"
 	"strings"
@@ -17,7 +18,6 @@ import (
 	"github.com/xjasonlyu/tun2socks/v2/core/option"
 	"github.com/xjasonlyu/tun2socks/v2/dialer"
 	"github.com/xjasonlyu/tun2socks/v2/engine/mirror"
-	"github.com/xjasonlyu/tun2socks/v2/log"
 	"github.com/xjasonlyu/tun2socks/v2/proxy"
 	"github.com/xjasonlyu/tun2socks/v2/restapi"
 	"github.com/xjasonlyu/tun2socks/v2/tunnel"
@@ -118,12 +118,6 @@ func execCommand(cmd string) error {
 }
 
 func general(k *Key) error {
-	level, err := log.ParseLevel(k.LogLevel)
-	if err != nil {
-		return err
-	}
-	log.SetLevel(level)
-
 	if k.Interface != "" {
 		iface, err := net.InterfaceByName(k.Interface)
 		if err != nil {
@@ -131,12 +125,12 @@ func general(k *Key) error {
 		}
 		dialer.DefaultInterfaceName.Store(iface.Name)
 		dialer.DefaultInterfaceIndex.Store(int32(iface.Index))
-		log.Infof("[DIALER] bind to interface: %s", k.Interface)
+		log.Printf("[DIALER] bind to interface: %s", k.Interface)
 	}
 
 	if k.Mark != 0 {
 		dialer.DefaultRoutingMark.Store(int32(k.Mark))
-		log.Infof("[DIALER] set fwmark: %#x", k.Mark)
+		log.Printf("[DIALER] set fwmark: %#x", k.Mark)
 	}
 
 	if k.UDPTimeout > 0 {
@@ -169,10 +163,10 @@ func restAPI(k *Key) error {
 
 		go func() {
 			if err := restapi.Start(host, token); err != nil {
-				log.Warnf("[RESTAPI] failed to start: %v", err)
+				log.Printf("[Warning] [RESTAPI] failed to start: %v", err)
 			}
 		}()
-		log.Infof("[RESTAPI] serve at: %s", u)
+		log.Printf("[RESTAPI] serve at: %s", u)
 	}
 	return nil
 }
@@ -187,7 +181,7 @@ func netstack(k *Key) (err error) {
 
 	if k.TUNPreUp != "" {
 		if preUpErr := execCommand(k.TUNPreUp); preUpErr != nil {
-			log.Warnf("[TUN] failed to pre-execute: %s: %v", k.TUNPreUp, preUpErr)
+			log.Printf("[Warning] [TUN] failed to pre-execute: %s: %v", k.TUNPreUp, preUpErr)
 		}
 	}
 
@@ -196,7 +190,7 @@ func netstack(k *Key) (err error) {
 			return
 		}
 		if postUpErr := execCommand(k.TUNPostUp); postUpErr != nil {
-			log.Warnf("[TUN] failed to post-execute: %s: %v", k.TUNPostUp, postUpErr)
+			log.Printf("[Warning] [TUN] failed to post-execute: %s: %v", k.TUNPostUp, postUpErr)
 		}
 	}()
 
@@ -238,7 +232,7 @@ func netstack(k *Key) (err error) {
 		return
 	}
 
-	log.Infof(
+	log.Printf(
 		"[STACK] %s://%s <-> %s://%s",
 		_defaultDevice.Type(), _defaultDevice.Name(),
 		_defaultProxy.Proto(), _defaultProxy.Addr(),
