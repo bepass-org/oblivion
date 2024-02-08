@@ -2,99 +2,83 @@ package org.bepass.oblivion;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 public class FileManager {
-    SharedPreferences sharedPreferences;
-    SharedPreferences sharedPreferencesAppender;
+    private static FileManager instance;
+    private SharedPreferences sharedPreferences;
 
-    public FileManager(Context context) {
+    public static String currentLog;
+
+    // Private constructor for singleton pattern
+    private FileManager(Context context) {
         sharedPreferences = context.getSharedPreferences("UserData", Context.MODE_PRIVATE);
-        sharedPreferencesAppender = context.getSharedPreferences("UserData", Context.MODE_PRIVATE);
     }
 
+    // Public method to get the singleton instance
+    public static synchronized FileManager getInstance(Context context) {
+        if (instance == null) {
+            instance = new FileManager(context.getApplicationContext());
+        }
+        return instance;
+    }
+
+    // Methods to set various types of data
     public void set(String name, String value) {
-        this.sharedPreferences.
-                edit()
-                .putString(name, value)
-                .apply();
+        sharedPreferences.edit().putString(name, value).apply();
     }
 
     public void set(String name, boolean value) {
-        this.sharedPreferences
-                .edit()
-                .putBoolean(name, value)
-                .apply();
+        sharedPreferences.edit().putBoolean(name, value).apply();
     }
 
     public void set(String name, int value) {
-        this.sharedPreferences
-                .edit()
-                .putInt(name, value)
-                .apply();
+        sharedPreferences.edit().putInt(name, value).apply();
     }
 
     public void set(String name, float value) {
-        this.sharedPreferences
-                .edit()
-                .putFloat(name, value)
-                .apply();
-    }
-
-    public void set(String name, double value) {
-        this.sharedPreferences
-                .edit()
-                .putLong(name, Double.doubleToRawLongBits(value))
-                .apply();
+        sharedPreferences.edit().putFloat(name, value).apply();
     }
 
     public void set(String name, long value) {
-        this.sharedPreferences
-                .edit()
-                .putLong(name, value)
-                .apply();
+        sharedPreferences.edit().putLong(name, value).apply();
     }
 
-    public double getDouble(String name) {
-        return Double.longBitsToDouble(this.sharedPreferences.getLong(name, 0));
+    public void setDouble(String name, double value) {
+        sharedPreferences.edit().putLong(name, Double.doubleToRawLongBits(value)).apply();
+    }
+
+    // Methods to get various types of data
+    public String getString(String name) {
+        return sharedPreferences.getString(name, "");
+    }
+
+    public boolean getBoolean(String name) {
+        return sharedPreferences.getBoolean(name, false);
+    }
+
+    public int getInt(String name) {
+        return sharedPreferences.getInt(name, 0);
+    }
+
+    public float getFloat(String name) {
+        return sharedPreferences.getFloat(name, 0f);
     }
 
     public long getLong(String name) {
-        return this.sharedPreferences.getLong(name, 0L);
+        return sharedPreferences.getLong(name, 0L);
     }
 
-    public String getString(String name) {
-        return this.sharedPreferences.getString(name, "");
+    public double getDouble(String name) {
+        return Double.longBitsToDouble(sharedPreferences.getLong(name, 0));
     }
 
-    public Integer getInt(String name) {
-        return this.sharedPreferences.getInt(name, 0);
-    }
-
-    public Boolean getBoolean(String name) {
-        return this.sharedPreferences.getBoolean(name, false);
-    }
-
-    public Float getFloat(String name) {
-        return this.sharedPreferences.getFloat(name, 0f);
-    }
-
+    // Methods for handling logs
     public void resetLog() {
-        this.sharedPreferences
-                .edit()
-                .putString("APP_LOG", "")
-                .apply();
+        sharedPreferences.edit().putString("APP_LOG", "").apply();
     }
 
     public void addLog(String log) {
-        this.sharedPreferencesAppender
-                .edit()
-                .putString("APP_LOG", log)
-                .apply();
+        sharedPreferences.edit().putString("APP_LOG", log).apply();
     }
-
-    public String getLog() {
-        return getString("APP_LOG");
-    }
-
-
 }

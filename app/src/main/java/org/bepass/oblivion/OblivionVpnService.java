@@ -3,10 +3,12 @@ package org.bepass.oblivion;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.VpnService;
 import android.os.Build;
+import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
@@ -15,6 +17,8 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import tun2socks.Tun2socks;
+
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class OblivionVpnService extends VpnService {
@@ -23,10 +27,33 @@ public class OblivionVpnService extends VpnService {
     public static final String FLAG_VPN_STOP = "com.example.chepass.STOP";
     private static final String PRIVATE_VLAN4_CLIENT = "172.19.0.1";
     private static final String PRIVATE_VLAN6_CLIENT = "fdfe:dcba:9876::1";
-
     private Notification notification;
     private ParcelFileDescriptor mInterface;
     private Thread vpnThread;
+
+    private final Handler handler = new Handler();
+    private final Runnable logRunnable = new Runnable() {
+        @Override
+        public void run() {
+            String logMessages = Tun2socks.getLogMessages();
+            if (!logMessages.isEmpty()) {
+                try (FileOutputStream fos = getApplicationContext().openFileOutput("logs.txt", Context.MODE_APPEND)) {
+                    fos.write((logMessages).getBytes());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            handler.postDelayed(this, 2000); // Poll every second
+        }
+    };
+
+    private void clearLogFile() {
+        try (FileOutputStream fos = getApplicationContext().openFileOutput("logs.txt", Context.MODE_PRIVATE)) {
+            fos.write("".getBytes()); // Overwrite with empty content
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -41,9 +68,16 @@ public class OblivionVpnService extends VpnService {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        handler.post(logRunnable);
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         stopVpn();
+        handler.removeCallbacks(logRunnable);
     }
 
     @Override
@@ -53,6 +87,8 @@ public class OblivionVpnService extends VpnService {
     }
 
     private void runVpn() {
+        Log.i(TAG, "Clearing Logs");
+        clearLogFile();
         Log.i(TAG, "Create Notification");
         createNotification();
         startForeground(1, notification);

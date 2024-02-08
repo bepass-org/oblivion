@@ -84,7 +84,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void init() {
 
-        fileManager = new FileManager(this);
+        fileManager = FileManager.getInstance(getApplicationContext());
 
         endpointLayout = findViewById(R.id.endpoint_layout);
         portLayout = findViewById(R.id.port_layout);
