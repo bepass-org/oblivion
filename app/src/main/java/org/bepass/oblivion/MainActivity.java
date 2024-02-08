@@ -1,16 +1,22 @@
 package org.bepass.oblivion;
 
+import android.Manifest;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.suke.widget.SwitchButton;
 import org.bepass.oblivion.R;
 
 public class MainActivity extends AppCompatActivity {
+    private ActivityResultLauncher<String> pushNotificationPermissionLauncher;
 
     // 1 Wait For Connect
     // 2 Connecting
@@ -79,7 +85,24 @@ public class MainActivity extends AppCompatActivity {
         fileManager.set("isFirstValueInit", true);
     }
 
+    private void initPermissionLauncher() {
+        pushNotificationPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        Toast.makeText(this, "Permission granted", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
+                    }
+                }
+        );
+    }
+
     private void init() {
+        initPermissionLauncher();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            pushNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+        }
         fileManager = new FileManager(getApplicationContext());
 
         infoIcon = findViewById(R.id.info_icon);
