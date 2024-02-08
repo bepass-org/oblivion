@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.yoosef.oblivion'
+    namespace 'org.bepass.oblivion'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.yoosef.oblivion"
+        applicationId "org.bepass.oblivion"
         minSdk 23
         targetSdk 34
         versionCode 1

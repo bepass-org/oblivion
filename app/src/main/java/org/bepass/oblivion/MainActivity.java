@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.suke.widget.SwitchButton;
-import com.yoosef.oblivion.R;
+import org.bepass.oblivion.R;
 
 public class MainActivity extends AppCompatActivity {
 

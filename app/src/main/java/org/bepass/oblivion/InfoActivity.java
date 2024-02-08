@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.yoosef.oblivion.R;
+import org.bepass.oblivion.R;
 
 public class InfoActivity extends AppCompatActivity {
 
