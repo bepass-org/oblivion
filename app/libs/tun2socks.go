@@ -33,6 +33,9 @@ var cancelFunc context.CancelFunc
 var wg sync.WaitGroup
 
 func RunWarp(argStr, fd, path string) {
+	if err := os.Chdir(path); err != nil {
+		log.Fatal("Error changing to 'main' directory:", err)
+	}
 	// Parse command-line arguments.
 	args := strings.Split(argStr, " ")
 	fs := flag.NewFlagSet("tun2socks", flag.ExitOnError)
