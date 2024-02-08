@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.VpnService;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
@@ -114,31 +115,30 @@ public class OblivionVpnService extends VpnService {
 
     private void configure() {
         VpnService.Builder builder = new VpnService.Builder();
-        builder.setSession("chepass")
-                .setMtu(1500)
-                .addAddress(PRIVATE_VLAN4_CLIENT, 30)
-                .addAddress(PRIVATE_VLAN6_CLIENT, 126)
-                .addDnsServer("8.8.8.8")
-                .addDnsServer("8.8.4.4")
-                .addDnsServer("1.1.1.1")
-                .addDnsServer("1.0.0.1")
-                .addDnsServer("2001:4860:4860::8888")
-                .addDnsServer("2001:4860:4860::8844")
-                .addDisallowedApplication(getPackageName())
-                .addRoute("0.0.0.0", 0)
-                .addRoute("::", 0);
+        try {
+            builder.setSession("chepass")
+                    .setMtu(1500)
+                    .addAddress(PRIVATE_VLAN4_CLIENT, 30)
+                    .addAddress(PRIVATE_VLAN6_CLIENT, 126)
+                    .addDnsServer("8.8.8.8")
+                    .addDnsServer("8.8.4.4")
+                    .addDnsServer("1.1.1.1")
+                    .addDnsServer("1.0.0.1")
+                    .addDnsServer("2001:4860:4860::8888")
+                    .addDnsServer("2001:4860:4860::8844")
+                    .addDisallowedApplication(getPackageName())
+                    .addRoute("0.0.0.0", 0)
+                    .addRoute("::", 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         mInterface = builder.establish();
         Log.i(TAG, "Interface created");
-        vpnThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Tun2socks.runWarp(
-                        "-gool",
-                        Integer.toString(mInterface.getFd()),
-                        getApplicationContext().getFilesDir().getAbsolutePath()
-                );
-            }
-        });
+        vpnThread = new Thread(() -> Tun2socks.runWarp(
+                "-gool",
+                Integer.toString(mInterface.getFd()),
+                getApplicationContext().getFilesDir().getAbsolutePath()
+        ));
         vpnThread.start();
     }
 }
