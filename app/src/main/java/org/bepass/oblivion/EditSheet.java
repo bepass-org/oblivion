@@ -6,7 +6,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.yoosef.oblivion.R;
+import org.bepass.oblivion.R;
 
 public class EditSheet {
 

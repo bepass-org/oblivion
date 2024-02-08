@@ -1,4 +1,3 @@
-
 package org.bepass.oblivion;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,7 +6,7 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.yoosef.oblivion.R;
+import org.bepass.oblivion.R;
 
 import java.util.Timer;
 import java.util.TimerTask;

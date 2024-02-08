@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.yoosef.oblivion.R;
+import org.bepass.oblivion.R;
 
 public class SettingsActivity extends AppCompatActivity {
 
