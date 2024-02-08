@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_gradient"
+    tools:context="org.bepass.oblivion.MainActivity">
+
+    <RelativeLayout
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/info_icon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_info"
+            app:tint="#000000" />
+
+        <ImageView
+            android:id="@+id/bug_icon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:layout_toStartOf="@id/setting_icon"
+            android:src="@drawable/ic_bug"
+            app:tint="#000000" />
+
+        <ImageView
+            android:id="@+id/setting_icon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_settings"
+            app:tint="#000000" />
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_bar">
+
+
+    </LinearLayout>
+
+    <com.hluhovskyi.camerabutton.CameraButton
+        android:id="@+id/switch_button"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        app:cb_collapse_action="click"
+        app:cb_icons="@null"
+        app:cb_main_circle_color="#FF9800"
+        app:cb_main_circle_color_pressed="#FF9800"
+        app:cb_main_circle_radius="70dp"
+        app:cb_main_circle_radius_expanded="0dp"
+        app:cb_mode="video"
+        app:cb_stroke_color_pressed="#FF9800"
+        app:cb_stroke_width="20dp"
+        app:cb_video_duration="15000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.632" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animation"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="center"
+        app:layout_constraintBottom_toBottomOf="@id/switch_button"
+        app:layout_constraintEnd_toEndOf="@id/switch_button"
+        app:layout_constraintStart_toStartOf="@id/switch_button"
+        app:layout_constraintTop_toTopOf="@id/switch_button"
+        app:lottie_autoPlay="true"
+        app:lottie_colorFilter="@color/white"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/loading2"
+        app:lottie_repeatMode="reverse"
+        app:lottie_speed="1" />
+
+
+    <TextView
+        android:id="@+id/state_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="72dp"
+        android:fontFamily="@font/shabnammedium"
+        android:text="متصل نیستید"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/switch_button" />
+
+    <TextView
+        android:id="@+id/app_name_1"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:fontFamily="@font/shabnambold"
+        android:text="OBLIVION"
+        android:textColor="@color/black"
+        android:textSize="48sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.248" />
+
+    <TextView
+        android:id="@+id/app_name_2"
+        android:layout_width="212dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/shabnammedium"
+        android:text="بر پایه وارپ"
+        android:textColor="#E4AB53"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/app_name_1" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
