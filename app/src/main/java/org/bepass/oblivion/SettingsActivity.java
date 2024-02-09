@@ -3,6 +3,7 @@ package org.bepass.oblivion;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -15,10 +16,19 @@ public class SettingsActivity extends AppCompatActivity {
     FileManager fileManager;
     ImageView back;
 
-    LinearLayout endpointLayout, portLayout, lanLayout, psiphonLayout, countryLayout, licenseLayout, goalLayout;
+    LinearLayout endpointLayout, portLayout, lanLayout, psiphonLayout, countryLayout, licenseLayout, goolLayout;
 
     TextView endpoint, port, country, license;
-    CheckBox psiphon, lan, goal;
+    CheckBox psiphon, lan, gool;
+
+    private CheckBox.OnCheckedChangeListener psiphonListener;
+    private CheckBox.OnCheckedChangeListener goolListener;
+
+    private void setCheckBoxWithoutTriggeringListener(CheckBox checkBox, boolean isChecked, CheckBox.OnCheckedChangeListener listener) {
+        checkBox.setOnCheckedChangeListener(null); // Temporarily detach the listener
+        checkBox.setChecked(isChecked); // Set the checked state
+        checkBox.setOnCheckedChangeListener(listener); // Reattach the listener
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +37,9 @@ public class SettingsActivity extends AppCompatActivity {
 
         init();
 
+        // Set Current Values
+        settingBasicValuesFromSPF();
+
         SheetsCallBack sheetsCallBack = this::settingBasicValuesFromSPF;
         // Listen to Changes
         endpointLayout.setOnClickListener(v -> (new EditSheet(this, "اندپوینت", "endpoint", sheetsCallBack)).start());
@@ -34,43 +47,46 @@ public class SettingsActivity extends AppCompatActivity {
         countryLayout.setOnClickListener(v -> (new EditSheet(this, "کشور", "country", sheetsCallBack)).start());
         licenseLayout.setOnClickListener(v -> (new EditSheet(this, "لایسنس", "license", sheetsCallBack)).start());
 
-        goalLayout.setOnClickListener(v -> goal.setChecked(!goal.isChecked()));
+        goolLayout.setOnClickListener(v -> gool.setChecked(!gool.isChecked()));
         lanLayout.setOnClickListener(v -> lan.setChecked(!lan.isChecked()));
         psiphonLayout.setOnClickListener(v -> psiphon.setChecked(!psiphon.isChecked()));
 
-
-        psiphon.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        lan.setOnCheckedChangeListener((buttonView, isChecked) -> fileManager.set("USERSETTING_lan", isChecked));
+        // Initialize the listeners
+        psiphonListener = (buttonView, isChecked) -> {
             fileManager.set("USERSETTING_psiphon", isChecked);
-            if (!isChecked) {
+            if (isChecked && gool.isChecked()) {
+                setCheckBoxWithoutTriggeringListener(gool, false, goolListener);
+                fileManager.set("USERSETTING_gool", false);
+            }
+            countryLayout.setAlpha(isChecked ? 1f : 0.2f);
+            countryLayout.setClickable(isChecked);
+        };
+
+        goolListener = (buttonView, isChecked) -> {
+            fileManager.set("USERSETTING_gool", isChecked);
+            if (isChecked && psiphon.isChecked()) {
+                setCheckBoxWithoutTriggeringListener(psiphon, false, psiphonListener);
+                fileManager.set("USERSETTING_psiphon", false);
                 countryLayout.setAlpha(0.2f);
                 countryLayout.setClickable(false);
-            } else {
-                countryLayout.setAlpha(1f);
-                countryLayout.setClickable(true);
             }
-        });
+        };
 
-        lan.setOnCheckedChangeListener((buttonView, isChecked) -> fileManager.set("USERSETTING_lan", isChecked));
-        goal.setOnCheckedChangeListener((buttonView, isChecked) -> fileManager.set("USERSETTING_goal", isChecked));
-
-        // Set Current Values
-        settingBasicValuesFromSPF();
+        // Set the listeners to the checkboxes
+        psiphon.setOnCheckedChangeListener(psiphonListener);
+        gool.setOnCheckedChangeListener(goolListener);
     }
 
     private void settingBasicValuesFromSPF() {
         endpoint.setText(fileManager.getString("USERSETTING_endpoint"));
         port.setText(fileManager.getString("USERSETTING_port"));
         country.setText(fileManager.getString("USERSETTING_country"));
-
-        String licenseKey = fileManager.getString("USERSETTING_license");
-        if (licenseKey.length() > 8)
-            license.setText(licenseKey.substring(0, 8));
-        else
-            license.setText(licenseKey);
+        license.setText(fileManager.getString("USERSETTING_license"));
 
         psiphon.setChecked(fileManager.getBoolean("USERSETTING_psiphon"));
         lan.setChecked(fileManager.getBoolean("USERSETTING_lan"));
-        goal.setChecked(fileManager.getBoolean("USERSETTING_goal"));
+        gool.setChecked(fileManager.getBoolean("USERSETTING_gool"));
 
 
         if (!psiphon.isChecked()) {
@@ -92,7 +108,7 @@ public class SettingsActivity extends AppCompatActivity {
         psiphonLayout = findViewById(R.id.psiphon_layout);
         countryLayout = findViewById(R.id.country_layout);
         licenseLayout = findViewById(R.id.license_layout);
-        goalLayout = findViewById(R.id.goal_layout);
+        goolLayout = findViewById(R.id.gool_layout);
 
         back = findViewById(R.id.back);
         endpoint = findViewById(R.id.endpoint);
@@ -102,7 +118,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         psiphon = findViewById(R.id.psiphon);
         lan = findViewById(R.id.lan);
-        goal = findViewById(R.id.goal);
+        gool = findViewById(R.id.gool);
 
         back.setOnClickListener(v -> onBackPressed());
     }

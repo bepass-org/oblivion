@@ -72,18 +72,21 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:fontFamily="@font/shabnammedium"
-                        android:text="127.0.0.1"
+                        android:text="engage.cloudflareclient.com:2048"
                         android:textColor="#E4AB53"
-                        android:textSize="24sp" />
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:textSize="20sp" />
                     
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="100dp"
                         android:layout_alignParentEnd="true"
                         android:fontFamily="@font/shabnam"
                         android:text="اندپوینت"
                         android:textColor="@color/black"
-                        android:textSize="24sp" />
+                        android:textSize="20sp" />
 
                 </LinearLayout>
                 
@@ -91,7 +94,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/shabnam"
-                    android:text="می‌تواند بصورت IPV4/V6 یا دامنه باشد"
+                    android:text="ترکیبی از IP یا نام دامنه به‌همراه پورت"
                     android:textColor="#9A9A9A"
                     android:textSize="16sp" />
             </LinearLayout>
@@ -128,16 +131,19 @@
                         android:layout_weight="2"
                         android:fontFamily="@font/shabnammedium"
                         android:text="8086"
+                        android:maxLines="1"
+                        android:ellipsize="end"
                         android:textColor="#E4AB53"
-                        android:textSize="24sp" />
+                        android:textSize="20sp" />
                     
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="100dp"
                         android:fontFamily="@font/shabnam"
                         android:text="پورت"
                         android:textColor="@color/black"
-                        android:textSize="24sp" />
+                        android:textSize="20sp" />
 
                 </LinearLayout>
 
@@ -186,26 +192,27 @@
                             android:id="@+id/lan"
                             android:layout_width="50dp"
                             android:layout_height="38dp"
-                            android:scaleX="1.8"
-                            android:scaleY="1.8"
+                            android:scaleX="1.5"
+                            android:scaleY="1.5"
                             android:buttonTint="#9F9D9E"
-                            android:translationX="10dp" />
+                            android:translationX="5dp" />
                     </LinearLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="100dp"
                         android:fontFamily="@font/shabnam"
                         android:text="اتصال از LAN"
                         android:textColor="@color/black"
-                        android:textSize="24sp" />
+                        android:textSize="20sp" />
                 </LinearLayout>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/shabnam"
-                    android:text="فعالسازی خروجی Tethering"
+                    android:text="امکان اتصال سایر دستگاه‌های شبکه"
                     android:textColor="#9A9A9A"
                     android:textSize="16sp" />
 
@@ -246,19 +253,20 @@
                             android:id="@+id/psiphon"
                             android:layout_width="50dp"
                             android:layout_height="38dp"
-                            android:scaleX="1.8"
-                            android:scaleY="1.8"
+                            android:scaleX="1.5"
+                            android:scaleY="1.5"
                             android:buttonTint="#9F9D9E"
-                            android:translationX="10dp" />
+                            android:translationX="5dp" />
                     </LinearLayout>
                     
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="100dp"
                         android:fontFamily="@font/shabnam"
                         android:text="سایفون"
                         android:textColor="@color/black"
-                        android:textSize="24sp" />
+                        android:textSize="20sp" />
 
                 </LinearLayout>
 
@@ -304,16 +312,19 @@
                         android:layout_weight="2"
                         android:fontFamily="@font/shabnammedium"
                         android:text="Iran"
+                        android:maxLines="1"
+                        android:ellipsize="end"
                         android:textColor="#E4AB53"
-                        android:textSize="24sp" />
+                        android:textSize="20sp" />
                     
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="100dp"
                         android:fontFamily="@font/shabnam"
                         android:text="انتخاب کشور"
                         android:textColor="@color/black"
-                        android:textSize="24sp" />
+                        android:textSize="20sp" />
 
                 </LinearLayout>
 
@@ -321,7 +332,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/shabnam"
-                    android:text="کشور محل اتصال"
+                    android:text="کشوری که از آن به اینترنت متصل می‌شوید"
                     android:textColor="#9A9A9A"
                     android:textSize="16sp" />
 
@@ -359,16 +370,19 @@
                         android:layout_weight="2"
                         android:fontFamily="@font/shabnammedium"
                         android:text="ADSNjIOV56899QQ"
+                        android:maxLines="1"
+                        android:ellipsize="end"
                         android:textColor="#E4AB53"
-                        android:textSize="24sp" />
+                        android:textSize="20sp" />
                     
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="100dp"
                         android:fontFamily="@font/shabnam"
                         android:text="لایسنس"
                         android:textColor="@color/black"
-                        android:textSize="24sp" />
+                        android:textSize="20sp" />
 
                 </LinearLayout>
 
@@ -376,7 +390,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/shabnam"
-                    android:text="اگر از لایسنس شخصی برخوردارید"
+                    android:text="اگر لایسنس دارید(هر لایسنس 2 بار مصرف می‌شود)"
                     android:textColor="#9A9A9A"
                     android:textSize="16sp" />
 
@@ -395,7 +409,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/goal_layout"
+                android:id="@+id/gool_layout"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:gravity="center"
@@ -412,22 +426,23 @@
                         android:layout_weight="2"
                         >
                         <CheckBox
-                            android:id="@+id/goal"
+                            android:id="@+id/gool"
                             android:layout_width="50dp"
                             android:layout_height="38dp"
-                            android:scaleX="1.8"
-                            android:scaleY="1.8"
+                            android:scaleX="1.5"
+                            android:scaleY="1.5"
                             android:buttonTint="#9F9D9E"
-                            android:translationX="10dp" />
+                            android:translationX="5dp" />
                     </LinearLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="100dp"
                         android:fontFamily="@font/shabnam"
                         android:text="گول"
                         android:textColor="@color/black"
-                        android:textSize="24sp" />
+                        android:textSize="20sp" />
 
                 </LinearLayout>
 
@@ -435,7 +450,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/shabnam"
-                    android:text="فعالسازی یا غیرفعالسازی گول"
+                    android:text="فعالسازی یا غیرفعالسازی Warp In Warp"
                     android:textColor="#9A9A9A"
                     android:textSize="16sp" />
                 
