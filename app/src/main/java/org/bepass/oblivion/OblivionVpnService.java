@@ -9,7 +9,11 @@ import android.content.pm.PackageManager;
 import android.net.VpnService;
 import android.os.Build;
 import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
 import android.os.ParcelFileDescriptor;
+import android.os.RemoteException;
 import android.util.Log;
 
 import androidx.core.app.NotificationChannelCompat;
@@ -32,6 +36,39 @@ public class OblivionVpnService extends VpnService {
     private Thread vpnThread;
 
     private final Handler handler = new Handler();
+
+    static final int MSG_PERFORM_TASK = 1; // Identifier for the message
+    static final int MSG_TASK_COMPLETED = 2; // Identifier for the response
+
+    private final Messenger serviceMessenger = new Messenger(new IncomingHandler());
+
+    private static class IncomingHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_PERFORM_TASK:
+                    // Perform your task here
+                    // ...
+
+                    // After completing the task, send a response back
+                    try {
+                        Message replyMsg = Message.obtain(null, MSG_TASK_COMPLETED);
+                        msg.replyTo.send(replyMsg);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                default:
+                    super.handleMessage(msg);
+            }
+        }
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return serviceMessenger.getBinder();
+    }
+
     private final Runnable logRunnable = new Runnable() {
         @Override
         public void run() {

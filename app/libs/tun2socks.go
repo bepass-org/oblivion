@@ -111,7 +111,12 @@ func runServer(ctx context.Context, fd string) {
 	defer wg.Done()
 
 	// Start wireguard-go and gvisor-tun2socks.
-	go app.RunWarp(*psiphonEnabled, *gool, *scan, *verbose, *country, *bindAddress, *endpoint, *license)
+	go func() {
+		err := app.RunWarp(*psiphonEnabled, *gool, *scan, *verbose, *country, *bindAddress, *endpoint, *license, ctx)
+		if err != nil {
+			log.Println(err)
+		}
+	}()
 
 	key := &gvisor.Key{
 		Mark:                     0,

@@ -5,7 +5,7 @@ go 1.20
 replace github.com/Psiphon-Labs/psiphon-tunnel-core => github.com/uoosef/psiphon-tunnel-core v0.0.0-20240126135009-9fbc37b0b068
 
 require (
-	github.com/bepass-org/wireguard-go v0.0.16-alpha.0.20240206091753-7b6da0e8dd8b
+	github.com/bepass-org/wireguard-go v1.0.1-rc1
 	github.com/docker/go-units v0.5.0
 	github.com/xjasonlyu/tun2socks/v2 v2.5.1
 	gvisor.dev/gvisor v0.0.0-20230927004350-cbd86285d259

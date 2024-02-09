@@ -45,6 +45,18 @@
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bottom_sheet_cancel"
+            android:fontFamily="@font/shabnam"
+            android:text="انصراف"
+            android:textColor="@color/black"
+            android:textSize="17sp" />
+
+        <Button
             android:id="@+id/applyButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -53,18 +65,6 @@
             android:background="@drawable/bottom_sheet_closer"
             android:fontFamily="@font/shabnam"
             android:text="بروزرسانی"
-            android:textColor="@color/white"
-            android:textSize="17sp" />
-
-        <Button
-            android:id="@+id/cancelButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/bottom_sheet_closer"
-            android:fontFamily="@font/shabnam"
-            android:text="انصراف"
             android:textColor="@color/white"
             android:textSize="17sp" />
 
