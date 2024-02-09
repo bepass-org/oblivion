@@ -43,7 +43,7 @@ public class OblivionVpnService extends VpnService {
                     e.printStackTrace();
                 }
             }
-            handler.postDelayed(this, 2000); // Poll every second
+            handler.postDelayed(this, 2000); // Poll every 2 seconds
         }
     };
 

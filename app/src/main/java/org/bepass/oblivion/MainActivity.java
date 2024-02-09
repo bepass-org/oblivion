@@ -15,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.suke.widget.SwitchButton;
-import org.bepass.oblivion.R;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher<String> pushNotificationPermissionLauncher;
@@ -62,10 +61,7 @@ public class MainActivity extends AppCompatActivity {
                     disconnected();
                 }
             } else {
-                // Switch is now OFF
-                if (connectionState == 2) {
-                    disconnected();
-                }
+                disconnected();
             }
         });
     }
