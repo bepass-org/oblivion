@@ -12,10 +12,10 @@ import (
 	"strings"
 	"sync"
 	"syscall"
+	"tun2socks/lwip"
 
 	"github.com/bepass-org/wireguard-go/app"
 	L "github.com/xjasonlyu/tun2socks/v2/log"
-	"tun2socks/gvisor"
 )
 
 // Variables to hold flag values.
@@ -43,7 +43,7 @@ func (writer logWriter) Write(bytes []byte) (int, error) {
 	return len(bytes), nil
 }
 
-func RunWarp(argStr, fd, path string) {
+func RunWarp(argStr, path string, fd int) {
 	logger := logWriter{}
 	log.SetOutput(logger)
 	r, w, _ := os.Pipe()
@@ -107,7 +107,7 @@ func RunWarp(argStr, fd, path string) {
 	log.Println("Server shut down gracefully.")
 }
 
-func runServer(ctx context.Context, fd string) {
+func runServer(ctx context.Context, fd int) {
 	defer wg.Done()
 
 	// Start wireguard-go and gvisor-tun2socks.
@@ -118,26 +118,21 @@ func runServer(ctx context.Context, fd string) {
 		}
 	}()
 
-	key := &gvisor.Key{
-		Mark:                     0,
-		MTU:                      0,
-		Device:                   "fd://" + fd,
-		Interface:                "",
-		LogLevel:                 "debug",
-		Proxy:                    "socks5://" + *bindAddress,
-		RestAPI:                  "",
-		TCPSendBufferSize:        "",
-		TCPReceiveBufferSize:     "",
-		TCPModerateReceiveBuffer: false,
+	tun2socksStartOptions := &lwip.Tun2socksStartOptions{
+		TunFd:        fd,
+		Socks5Server: "socks5://" + *bindAddress,
+		FakeIPRange:  "24.0.0.0/8",
+		MTU:          0,
+		EnableIPv6:   true,
+		AllowLan:     true,
 	}
-	gvisor.Insert(key)
-	gvisor.Start()
+	lwip.Start(tun2socksStartOptions)
 
 	// Wait for context cancellation.
 	<-ctx.Done()
 
 	// Perform cleanup and exit.
-	gvisor.Stop()
+	lwip.Stop()
 	log.Println("Cleanup done, exiting runServer goroutine.")
 }
 
