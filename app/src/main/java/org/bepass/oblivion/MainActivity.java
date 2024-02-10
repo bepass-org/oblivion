@@ -59,17 +59,12 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        init();
-        firstValueInit();
-        if(isMyServiceRunning()) {
-            connected();
-        }
-        switchButton.setOnCheckedChangeListener((view, isChecked) -> {
+    private SwitchButton.OnCheckedChangeListener createSwitchCheckedChangeListener() {
+        return (view, isChecked) -> {
+            if(connectionState == 4) {
+                connectionState = 1;
+                return;
+            }
             if(!canShowNotification) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     pushNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
@@ -87,12 +82,24 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     startVpnService();
                 }
-
-            } else if (connectionState == 3) {
+            } else if(connectionState < 4) {
                 disconnected();
                 stopVpnService();
             }
-        });
+        };
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        init();
+        firstValueInit();
+        if(isMyServiceRunning()) {
+            connected();
+        }
+        switchButton.setOnCheckedChangeListener(createSwitchCheckedChangeListener());
     }
 
     private void sendMessageToService() {
@@ -105,7 +112,11 @@ public class MainActivity extends AppCompatActivity {
             Messenger replyMessenger = new Messenger(new Handler(message -> {
                 if (message.what == OblivionVpnService.MSG_TASK_COMPLETED) {
                     // Handle task completion
-                    onTaskCompleted();
+                    Toast.makeText(getApplicationContext(), "Completed", Toast.LENGTH_LONG).show();
+                    connected();
+                } else {
+                    disconnected();
+                    stopVpnService();
                 }
                 return true;
             }));
@@ -116,12 +127,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-    }
-
-    private void onTaskCompleted() {
-        // Handle the task completion here
-        Toast.makeText(this, "Task completed", Toast.LENGTH_SHORT).show();
-        connected();
     }
 
     @Override
@@ -143,15 +148,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void connected() {
         stateText.setText("اتصال برقرار شد");
+        switchButton.setOnCheckedChangeListener((view, isChecked) -> {});
         switchButton.setChecked(true);
         connectionState = 3;
+        switchButton.setOnCheckedChangeListener(createSwitchCheckedChangeListener());
     }
 
     private void disconnected() {
         // From Connecting to Disconnecting
         stateText.setText("متصل نیستید");
+        connectionState = 4;
         switchButton.setChecked(false);
-        connectionState = 1;
     }
 
     private void firstValueInit() {
@@ -202,8 +209,60 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
+    private String getBindAddress(boolean addB) {
+        String B = " -b ";
+        if(!addB) {
+            B = "";
+        }
+        String port = fileManager.getString("USERSETTING_port");
+        boolean enableLan = fileManager.getBoolean("USERSETTING_lan");
+        String Bind = "";
+        Bind += B +  "127.0.0.1:" + port;
+        if(enableLan) {
+            Bind = B +  "0.0.0.0:" + port;
+        }
+        return Bind;
+    }
+
+    private String calculateArgs() {
+        String Arg = "";
+        String endpoint = fileManager.getString("USERSETTING_endpoint");
+        String country = fileManager.getString("USERSETTING_country");
+        String license = fileManager.getString("USERSETTING_license");
+
+        boolean enablePsiphon = fileManager.getBoolean("USERSETTING_psiphon");
+        boolean enableGool = fileManager.getBoolean("USERSETTING_gool");
+
+        if(!endpoint.contains("engage.cloudflareclient.com")) {
+            Arg = "-e" + endpoint;
+        } else {
+            Arg = "-scan";
+        }
+
+        Arg += getBindAddress(true);
+
+        if(!license.trim().isEmpty()) {
+            Arg += " -k " + license.trim();
+        }
+
+        if(enablePsiphon && !enableGool) {
+            Arg += " -cfon";
+            if(!country.trim().isEmpty() && country.length() == 2) {
+                Arg += " -country " + country.trim();
+            }
+        }
+
+        if(!enablePsiphon && enableGool) {
+            Arg += " -gool";
+        }
+
+        return Arg;
+    }
+
     private void startVpnService() {
         Intent intent = new Intent(this, OblivionVpnService.class);
+        intent.putExtra("command", calculateArgs());
+        intent.putExtra("bindAddress", getBindAddress(false));
         intent.setAction(OblivionVpnService.FLAG_VPN_START);
         ContextCompat.startForegroundService(this, intent);
         sendMessageToService();

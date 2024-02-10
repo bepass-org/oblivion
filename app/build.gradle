@@ -39,10 +39,8 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion '1.4.3'
     }
-    packaging {
-        resources {
-            excludes += '/META-INF/{AL2.0,LGPL2.1}'
-        }
+    packagingOptions {
+        resources.excludes.add("META-INF/*")
     }
 }
 
@@ -52,5 +50,6 @@ dependencies {
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.github.zcweng:switch-button:0.0.3@aar'
+    implementation 'cz.msebera.android:httpclient:4.4.1.2'
     implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'])
 }
