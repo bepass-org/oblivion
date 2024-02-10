@@ -10,6 +10,7 @@ import android.net.VpnService;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.ParcelFileDescriptor;
@@ -20,43 +21,168 @@ import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import cz.msebera.android.httpclient.HttpHost;
+import cz.msebera.android.httpclient.client.config.RequestConfig;
+import cz.msebera.android.httpclient.client.methods.CloseableHttpResponse;
+import cz.msebera.android.httpclient.client.methods.HttpGet;
+import cz.msebera.android.httpclient.impl.client.CloseableHttpClient;
+import cz.msebera.android.httpclient.impl.client.HttpClients;
 import tun2socks.Tun2socks;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class OblivionVpnService extends VpnService {
-    private static final String TAG = "chepassVPN";
-    public static final String FLAG_VPN_START = "com.example.chepass.START";
-    public static final String FLAG_VPN_STOP = "com.example.chepass.STOP";
+    private static final String TAG = "oblivionVPN";
+    public static final String FLAG_VPN_START = "org.bepass.oblivion.START";
+    public static final String FLAG_VPN_STOP = "org.bepass.oblivion.STOP";
     private static final String PRIVATE_VLAN4_CLIENT = "172.19.0.1";
     private static final String PRIVATE_VLAN6_CLIENT = "fdfe:dcba:9876::1";
     private Notification notification;
     private ParcelFileDescriptor mInterface;
     private Thread vpnThread;
-
+    private String command;
+    private String bindAddress;
     private final Handler handler = new Handler();
 
     static final int MSG_PERFORM_TASK = 1; // Identifier for the message
     static final int MSG_TASK_COMPLETED = 2; // Identifier for the response
+    static final int MSG_TASK_FAILED = 3; // Identifier for the response
 
-    private final Messenger serviceMessenger = new Messenger(new IncomingHandler());
+    private final Messenger serviceMessenger = new Messenger(new IncomingHandler(this));
 
-    private static class IncomingHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_PERFORM_TASK:
-                    // Perform your task here
-                    // ...
 
-                    // After completing the task, send a response back
+    public static Map<String, Integer> splitHostAndPort(String hostPort) {
+        if(hostPort == null || hostPort.isEmpty()){
+            return null;
+        }
+        Map<String, Integer> result = new HashMap<>();
+        String host;
+        int port = -1; // Default port value if not specified
+
+        // Check if the host part is an IPv6 address (enclosed in square brackets)
+        if (hostPort.startsWith("[")) {
+            int closingBracketIndex = hostPort.indexOf(']');
+            if (closingBracketIndex > 0) {
+                host = hostPort.substring(1, closingBracketIndex);
+                if (hostPort.length() > closingBracketIndex + 1 && hostPort.charAt(closingBracketIndex + 1) == ':') {
+                    // There's a port number after the closing bracket
+                    port = Integer.parseInt(hostPort.substring(closingBracketIndex + 2));
+                }
+            } else {
+                throw new IllegalArgumentException("Invalid IPv6 address format");
+            }
+        } else {
+            // Handle IPv4 or hostname (split at the last colon)
+            int lastColonIndex = hostPort.lastIndexOf(':');
+            if (lastColonIndex > 0) {
+                host = hostPort.substring(0, lastColonIndex);
+                port = Integer.parseInt(hostPort.substring(lastColonIndex + 1));
+            } else {
+                host = hostPort; // No port specified
+            }
+        }
+
+        result.put(host, port);
+        return result;
+    }
+
+    private static String pingOverHTTP(String bindAddress) {
+        // Configure the HTTP proxy details
+        Map<String, Integer> result = splitHostAndPort(bindAddress);
+        if(result == null) {
+            return "false";
+        }
+        String socksHost = result.keySet().iterator().next();
+        int socksPort = result.values().iterator().next(); // Replace with your HTTP proxy port
+
+        CloseableHttpClient httpClient;
+        RequestConfig config;
+
+        int connectionTimeout = 5 * 1000; // 5 seconds
+        int socketTimeout = 5 * 1000; // 5 seconds
+        int connectionRequestTimeout = 5 * 1000; // 5 seconds
+
+        try {
+            httpClient = HttpClients.custom()
+                    .setProxy(new HttpHost(socksHost, socksPort, "http"))
+                    .build();
+            config = RequestConfig.custom()
+                    .setConnectTimeout(connectionTimeout)
+                    .setSocketTimeout(socketTimeout)
+                    .setConnectionRequestTimeout(connectionRequestTimeout)
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "exception";
+        }
+
+        try {
+            HttpGet request = new HttpGet("https://8.8.8.8");
+            request.setConfig(config);
+            CloseableHttpResponse response = httpClient.execute(request);
+            return response.getStatusLine().getStatusCode() == 200 ? "true" : "false";
+        } catch (IOException e) {
+            if(e.getMessage().contains("ECONNREFUSED")) {
+                return "false";
+            }
+            return "exception";
+        }
+    }
+
+    private static void performPingTask(Message msg, String bindAddress) {
+        new Thread(() -> {
+            long startTime = System.currentTimeMillis();
+            boolean isSuccessful = false;
+
+            while (System.currentTimeMillis() - startTime < 2 * 60 * 1000) { // 2 minutes
+                String result = pingOverHTTP(bindAddress);
+                if (result.contains("exception")) {
+                    Message replyMsg = Message.obtain(null, MSG_TASK_FAILED);
                     try {
-                        Message replyMsg = Message.obtain(null, MSG_TASK_COMPLETED);
                         msg.replyTo.send(replyMsg);
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
+                    return;
+                }
+                if (result.contains("true")) {
+                    isSuccessful = true;
+                    break;
+                }
+                try {
+                    Thread.sleep(1000); // Sleep for a second before retrying
+                } catch (InterruptedException e) {
+                    break; // Exit if interrupted (e.g., service stopping)
+                }
+            }
+
+            Message replyMsg = Message.obtain(null, isSuccessful ? MSG_TASK_COMPLETED : MSG_TASK_FAILED);
+            try {
+                msg.replyTo.send(replyMsg);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private static class IncomingHandler extends Handler {
+        private final WeakReference<OblivionVpnService> serviceRef;
+
+        IncomingHandler(OblivionVpnService service) {
+            serviceRef = new WeakReference<>(service);
+        }
+        @Override
+        public void handleMessage(Message msg) {
+            final Message message = new Message();
+            message.copyFrom(msg);
+            switch (msg.what) {
+                case MSG_PERFORM_TASK:
+                    performPingTask(message, serviceRef.get().bindAddress);
                     break;
                 default:
                     super.handleMessage(msg);
@@ -95,6 +221,8 @@ public class OblivionVpnService extends VpnService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && FLAG_VPN_START.equals(intent.getAction())) {
+            command = intent.getStringExtra("command");
+            bindAddress = intent.getStringExtra("bindAddress");
             runVpn();
             return START_STICKY;
         } else if (intent != null && FLAG_VPN_STOP.equals(intent.getAction())) {
@@ -113,14 +241,12 @@ public class OblivionVpnService extends VpnService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        stopVpn();
         handler.removeCallbacks(logRunnable);
     }
 
     @Override
     public void onRevoke() {
         super.onRevoke();
-        stopVpn();
     }
 
     private void runVpn() {
@@ -135,21 +261,22 @@ public class OblivionVpnService extends VpnService {
 
     private void stopVpn() {
         Log.i(TAG, "Stopping VPN");
-        Tun2socks.shutdown(); // Signal the Go code to shutdown gracefully
-        if (vpnThread != null) {
-            vpnThread.interrupt(); // Interrupt the thread
-            try {
-                vpnThread.join(); // Wait for the thread to finish
-            } catch (InterruptedException e) {
-                Log.e(TAG, "Failed to join VPN thread", e);
-            }
-        }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             if (notificationManager != null) {
-                notificationManager.deleteNotificationChannel("chepass");
+                notificationManager.deleteNotificationChannel("oblivion");
             }
+        }
+        try {
+            stopForeground(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Tun2socks.shutdown();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         if (mInterface != null) {
@@ -159,8 +286,13 @@ public class OblivionVpnService extends VpnService {
                 Log.e(TAG, "Error closing the VPN interface", e);
             }
         }
-        stopSelf();
-        stopForeground(true);
+
+        if(vpnThread != null){
+            try {
+                vpnThread.join();
+                vpnThread.stop();
+            } catch (InterruptedException e) {}
+        }
     }
 
     private void createNotification() {
@@ -189,7 +321,7 @@ public class OblivionVpnService extends VpnService {
     private void configure() {
         VpnService.Builder builder = new VpnService.Builder();
         try {
-            builder.setSession("chepass")
+            builder.setSession("oblivion")
                     .setMtu(1500)
                     .addAddress(PRIVATE_VLAN4_CLIENT, 30)
                     .addAddress(PRIVATE_VLAN6_CLIENT, 126)
@@ -208,7 +340,7 @@ public class OblivionVpnService extends VpnService {
         mInterface = builder.establish();
         Log.i(TAG, "Interface created");
         vpnThread = new Thread(() -> Tun2socks.runWarp(
-                "-gool",
+                command,
                 Integer.toString(mInterface.getFd()),
                 getApplicationContext().getFilesDir().getAbsolutePath()
         ));
