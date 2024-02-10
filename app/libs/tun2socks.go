@@ -108,7 +108,14 @@ func RunWarp(argStr, path string, fd int) {
 }
 
 func runServer(ctx context.Context, fd int) {
-	defer wg.Done()
+	// Ensuring a cleanup operation even in the case of an error
+	defer func() {
+		// Perform cleanup and exit.
+		lwip.Stop()
+		log.Println("Cleanup done, exiting runServer goroutine.")
+
+		defer wg.Done()
+	}()
 
 	// Start wireguard-go and gvisor-tun2socks.
 	go func() {
@@ -130,10 +137,6 @@ func runServer(ctx context.Context, fd int) {
 
 	// Wait for context cancellation.
 	<-ctx.Done()
-
-	// Perform cleanup and exit.
-	lwip.Stop()
-	log.Println("Cleanup done, exiting runServer goroutine.")
 }
 
 // Shutdown can be called to stop the server from another part of the app.
@@ -149,7 +152,7 @@ func GetLogMessages() string {
 	if len(logMessages) == 0 {
 		return ""
 	}
-	logs := logMessages
-	logMessages = []string{}
-	return strings.Join(logs, "\n")
+	logs := strings.Join(logMessages, "\n")
+	logMessages = nil // Clear logMessages for better memory management
+	return logs
 }
