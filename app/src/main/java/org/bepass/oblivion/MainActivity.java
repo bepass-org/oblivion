@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             }
             if (connectionState == 1 && isChecked) {
                 // From NoAction to Connecting
-                stateText.setText("در حال اتصال...");
+                stateText.setText("درحال اتصال ...");
                 connectionState = 2;
 
                 Intent vpnIntent = OblivionVpnService.prepare(this);
