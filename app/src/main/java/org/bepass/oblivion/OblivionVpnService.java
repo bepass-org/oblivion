@@ -10,7 +10,6 @@ import android.net.VpnService;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.ParcelFileDescriptor;
@@ -21,20 +20,19 @@ import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import cz.msebera.android.httpclient.HttpHost;
-import cz.msebera.android.httpclient.client.config.RequestConfig;
-import cz.msebera.android.httpclient.client.methods.CloseableHttpResponse;
-import cz.msebera.android.httpclient.client.methods.HttpGet;
-import cz.msebera.android.httpclient.impl.client.CloseableHttpClient;
-import cz.msebera.android.httpclient.impl.client.HttpClients;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import tun2socks.Tun2socks;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class OblivionVpnService extends VpnService {
     private static final String TAG = "oblivionVPN";
@@ -91,46 +89,34 @@ public class OblivionVpnService extends VpnService {
         return result;
     }
 
-    private static String pingOverHTTP(String bindAddress) {
-        // Configure the HTTP proxy details
+    public static String pingOverHTTP(String bindAddress) {
         Map<String, Integer> result = splitHostAndPort(bindAddress);
-        if(result == null) {
+        if (result == null) {
             return "false";
         }
         String socksHost = result.keySet().iterator().next();
-        int socksPort = result.values().iterator().next(); // Replace with your HTTP proxy port
+        int socksPort = result.values().iterator().next();
 
-        CloseableHttpClient httpClient;
-        RequestConfig config;
+        // Set up the SOCKS proxy
+        Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(socksHost, socksPort));
 
-        int connectionTimeout = 5 * 1000; // 5 seconds
-        int socketTimeout = 5 * 1000; // 5 seconds
-        int connectionRequestTimeout = 5 * 1000; // 5 seconds
+        // Create OkHttpClient with SOCKS proxy
+        OkHttpClient client = new OkHttpClient.Builder()
+                .proxy(proxy)
+                .connectTimeout(5, TimeUnit.SECONDS) // 5 seconds connection timeout
+                .readTimeout(5, TimeUnit.SECONDS) // 5 seconds read timeout
+                .build();
 
-        try {
-            httpClient = HttpClients.custom()
-                    .setProxy(new HttpHost(socksHost, socksPort, "http"))
-                    .build();
-            config = RequestConfig.custom()
-                    .setConnectTimeout(connectionTimeout)
-                    .setSocketTimeout(socketTimeout)
-                    .setConnectionRequestTimeout(connectionRequestTimeout)
-                    .build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "exception";
-        }
+        // Build the request
+        Request request = new Request.Builder()
+                .url("https://8.8.8.8") // Replace with actual URL
+                .build();
 
-        try {
-            HttpGet request = new HttpGet("https://8.8.8.8");
-            request.setConfig(config);
-            CloseableHttpResponse response = httpClient.execute(request);
-            return response.getStatusLine().getStatusCode() == 200 ? "true" : "false";
+        // Execute the request
+        try (Response response = client.newCall(request).execute()) {
+            return response.isSuccessful() ? "true" : "false";
         } catch (IOException e) {
-            if(e.getMessage().contains("ECONNREFUSED")) {
-                return "false";
-            }
-            return "exception";
+            return e.getMessage().contains("ECONNREFUSED") || e.getMessage().contains("general failure") ? "false" : "exception";
         }
     }
 
@@ -291,7 +277,7 @@ public class OblivionVpnService extends VpnService {
             try {
                 vpnThread.join();
                 vpnThread.stop();
-            } catch (InterruptedException e) {}
+            } catch (Exception e) {}
         }
     }
 

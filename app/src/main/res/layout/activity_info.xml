@@ -45,7 +45,7 @@
         android:fontFamily="@font/shabnammedium"
         android:textColor="@color/black"
         android:paddingHorizontal="12dp"
-        android:text="این برنامه به هدف دسترسی آزاد به اینترنت تهیه شده است و هر گونه استفاده تجاری از آن مجاز نیست" />
+        android:text="این برنامه به هدف دسترسی آزاد به اینترنت تهیه شده است و هر گونه استفاده تجاری از آن مجاز نیست.\n\n\n'اینترنت برای همه یا هیچکس!'" />
 
     <RelativeLayout
         android:id="@+id/github_layout"
@@ -89,90 +89,6 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/twitter_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/about_item"
-        android:gravity="center"
-        android:paddingVertical="8dp">
-
-        <ImageView
-            android:id="@+id/twitter_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_twitter"
-            app:tint="@color/black" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@id/twitter_image"
-            android:fontFamily="@font/shabnam"
-            android:text="Twitter"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="16dp"
-            android:fontFamily="@font/shabnambold"
-            android:text="uo0sef"
-            android:textColor="@color/black" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/ircf_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/about_item"
-        android:gravity="center"
-        android:paddingVertical="8dp">
-
-        <ImageView
-            android:id="@+id/ircf_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_ircf"
-            app:tint="@color/black" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@id/ircf_image"
-            android:fontFamily="@font/shabnam"
-            android:text="IRCF"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="16dp"
-            android:fontFamily="@font/shabnambold"
-            android:text="ircf.space"
-            android:textColor="@color/black" />
-
-    </RelativeLayout>
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -180,7 +96,7 @@
         android:fontFamily="@font/shabnam"
         android:textColor="@color/black"
         android:gravity="center"
-        android:text="App Version: 1.1.1" />
+        android:text="App Version: 0.0.0-test" />
 
 
 </LinearLayout>

@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     FileManager fileManager;
 
     Boolean canShowNotification = false;
+    Boolean disconnected = false;
 
     private ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -61,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
 
     private SwitchButton.OnCheckedChangeListener createSwitchCheckedChangeListener() {
         return (view, isChecked) -> {
-            if(connectionState == 4) {
-                connectionState = 1;
+            if(disconnected && !isChecked) {
+                disconnected = false;
                 return;
             }
             if(!canShowNotification) {
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return;
             }
-            if (connectionState == 1) {
+            if (connectionState == 1 && isChecked) {
                 // From NoAction to Connecting
                 stateText.setText("در حال اتصال...");
                 connectionState = 2;
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     startVpnService();
                 }
-            } else if(connectionState < 4) {
+            } else if(connectionState < 4 && !isChecked) {
                 disconnected();
                 stopVpnService();
             }
@@ -157,7 +158,8 @@ public class MainActivity extends AppCompatActivity {
     private void disconnected() {
         // From Connecting to Disconnecting
         stateText.setText("متصل نیستید");
-        connectionState = 4;
+        disconnected = true;
+        connectionState = 1;
         switchButton.setChecked(false);
     }
 

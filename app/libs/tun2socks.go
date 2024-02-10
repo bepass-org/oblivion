@@ -120,7 +120,7 @@ func runServer(ctx context.Context, fd int) {
 
 	tun2socksStartOptions := &lwip.Tun2socksStartOptions{
 		TunFd:        fd,
-		Socks5Server: "socks5://" + *bindAddress,
+		Socks5Server: strings.Replace(*bindAddress, "0.0.0.0", "127.0.0.1", -1),
 		FakeIPRange:  "24.0.0.0/8",
 		MTU:          0,
 		EnableIPv6:   true,
