@@ -1,5 +1,7 @@
 package org.bepass.oblivion;
 
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -240,7 +242,12 @@ public class OblivionVpnService extends VpnService {
         clearLogFile();
         Log.i(TAG, "Create Notification");
         createNotification();
-        startForeground(1, notification);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            startForeground(1, notification);
+        } else {
+            startForeground(1, notification,
+                    FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED);
+        }
         Log.i(TAG, "Configuring VPN service");
         configure();
     }
