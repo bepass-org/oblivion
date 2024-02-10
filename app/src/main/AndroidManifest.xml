@@ -19,7 +19,9 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
+        android:supportsRtl="false"
+        tools:replace="android:supportsRtl"
+        android:screenOrientation="portrait"
         android:theme="@style/Theme.OblivionUI"
         tools:targetApi="31">
 
