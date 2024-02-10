@@ -37,15 +37,15 @@ public class SettingsActivity extends AppCompatActivity {
 
         init();
 
-        // Set Current Values
-        settingBasicValuesFromSPF();
-
         SheetsCallBack sheetsCallBack = this::settingBasicValuesFromSPF;
         // Listen to Changes
         endpointLayout.setOnClickListener(v -> (new EditSheet(this, "اندپوینت", "endpoint", sheetsCallBack)).start());
         portLayout.setOnClickListener(v -> (new EditSheet(this, "پورت", "port", sheetsCallBack)).start());
         countryLayout.setOnClickListener(v -> (new EditSheet(this, "کشور", "country", sheetsCallBack)).start());
         licenseLayout.setOnClickListener(v -> (new EditSheet(this, "لایسنس", "license", sheetsCallBack)).start());
+
+        // Set Current Values
+        settingBasicValuesFromSPF();
 
         goolLayout.setOnClickListener(v -> gool.setChecked(!gool.isChecked()));
         lanLayout.setOnClickListener(v -> lan.setChecked(!lan.isChecked()));
