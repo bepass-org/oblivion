@@ -21,7 +21,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.appcompat.widget.SwitchCompat;
+
+import com.suke.widget.SwitchButton;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher<String> pushNotificationPermissionLauncher;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Views
     ImageView infoIcon, bugIcon, settingsIcon;
-    SwitchCompat switchButton;
+    SwitchButton switchButton;
     TextView stateText;
 
     FileManager fileManager;
@@ -59,17 +60,14 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private SwitchCompat.OnCheckedChangeListener createSwitchCheckedChangeListener() {
+    private SwitchButton.OnCheckedChangeListener createSwitchCheckedChangeListener() {
         return (view, isChecked) -> {
-            Toast.makeText(getApplicationContext(), "State Changed", Toast.LENGTH_LONG).show();
             if(disconnected && !isChecked) {
                 disconnected = false;
                 return;
             }
-            if(!canShowNotification) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    pushNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-                }
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !canShowNotification) {
+                pushNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
                 return;
             }
             if (connectionState == 1 && isChecked) {
@@ -237,9 +235,9 @@ public class MainActivity extends AppCompatActivity {
 
         if(!endpoint.contains("engage.cloudflareclient.com")) {
             Arg = "-e" + endpoint;
-        }/* else {
+        } else {
             Arg = "-scan";
-        }*/
+        }
 
         Arg += getBindAddress(true);
 

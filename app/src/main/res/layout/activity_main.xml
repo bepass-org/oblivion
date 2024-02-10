@@ -64,19 +64,21 @@
     </LinearLayout>
 
 
-    <androidx.appcompat.widget.SwitchCompat
+    <com.suke.widget.SwitchButton
         android:id="@+id/switch_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="160dp"
+        android:layout_height="75dp"
         android:layout_centerInParent="true"
-        android:thumb="@drawable/custom_thumb"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.557"
-        app:track="@drawable/custom_track" />
+        app:layout_constraintVertical_bias="0.565"
+        app:sb_background="#D7D7D7"
+        app:sb_border_width="3dp"
+        app:sb_checked_color="#FFA200"
+        app:sb_show_indicator="false" />
 
     <TextView
         android:id="@+id/state_text"
