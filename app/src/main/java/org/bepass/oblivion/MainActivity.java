@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
     FileManager fileManager;
 
     Boolean canShowNotification = false;
-    Boolean disconnected = false;
 
     private ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -62,10 +61,6 @@ public class MainActivity extends AppCompatActivity {
 
     private SwitchButton.OnCheckedChangeListener createSwitchCheckedChangeListener() {
         return (view, isChecked) -> {
-            if(disconnected && !isChecked) {
-                disconnected = false;
-                return;
-            }
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !canShowNotification) {
                 pushNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
                 return;
@@ -81,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     startVpnService();
                 }
-            } else if(connectionState < 4 && !isChecked) {
+            } else if(connectionState < 4 && connectionState > 1) {
                 disconnected();
                 stopVpnService();
             }
@@ -146,19 +141,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void connected() {
+        switchButton.setOnCheckedChangeListener(null);
         stateText.setText("اتصال برقرار شد");
-        switchButton.setOnCheckedChangeListener((view, isChecked) -> {});
-        switchButton.setChecked(true);
         connectionState = 3;
+        switchButton.setChecked(true);
         switchButton.setOnCheckedChangeListener(createSwitchCheckedChangeListener());
     }
 
     private void disconnected() {
+        switchButton.setOnCheckedChangeListener(null);
         // From Connecting to Disconnecting
         stateText.setText("متصل نیستید");
-        disconnected = true;
         connectionState = 1;
         switchButton.setChecked(false);
+        switchButton.setOnCheckedChangeListener(createSwitchCheckedChangeListener());
     }
 
     private void firstValueInit() {

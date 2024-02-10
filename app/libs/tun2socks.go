@@ -143,6 +143,7 @@ func runServer(ctx context.Context, fd int) {
 func Shutdown() {
 	if cancelFunc != nil {
 		cancelFunc()
+		os.Exit(0)
 	}
 }
 
