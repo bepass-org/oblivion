@@ -6,10 +6,10 @@ plugins {
 android {
     namespace 'org.bepass.oblivion'
     compileSdk 34
-
+    compileSdkVersion 34
     defaultConfig {
         applicationId "org.bepass.oblivion"
-        minSdk 23
+        minSdk 21
         targetSdk 34
         versionCode 3
         versionName "1.2"
