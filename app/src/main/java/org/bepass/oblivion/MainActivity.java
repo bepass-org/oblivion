@@ -21,8 +21,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-
-import com.suke.widget.SwitchButton;
+import androidx.appcompat.widget.SwitchCompat;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher<String> pushNotificationPermissionLauncher;
@@ -38,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Views
     ImageView infoIcon, bugIcon, settingsIcon;
-    SwitchButton switchButton;
+    SwitchCompat switchButton;
     TextView stateText;
 
     FileManager fileManager;
@@ -60,8 +59,9 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private SwitchButton.OnCheckedChangeListener createSwitchCheckedChangeListener() {
+    private SwitchCompat.OnCheckedChangeListener createSwitchCheckedChangeListener() {
         return (view, isChecked) -> {
+            Toast.makeText(getApplicationContext(), "State Changed", Toast.LENGTH_LONG).show();
             if(disconnected && !isChecked) {
                 disconnected = false;
                 return;
@@ -237,9 +237,9 @@ public class MainActivity extends AppCompatActivity {
 
         if(!endpoint.contains("engage.cloudflareclient.com")) {
             Arg = "-e" + endpoint;
-        } else {
+        }/* else {
             Arg = "-scan";
-        }
+        }*/
 
         Arg += getBindAddress(true);
 
