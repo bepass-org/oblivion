@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"regexp"
 	"strings"
 	"sync"
 	"syscall"
@@ -43,6 +44,23 @@ func (writer logWriter) Write(bytes []byte) (int, error) {
 	return len(bytes), nil
 }
 
+func parseCommandLine(argStr string) ([]string, error) {
+	// Regular expression to match flags (like -b or --gool) and their optional values
+	re := regexp.MustCompile(`(--?\w+)([= ]("[^"]*"|'[^']*'|[^ ]+))?`)
+	matches := re.FindAllStringSubmatch(argStr, -1)
+
+	var args []string
+	for _, match := range matches {
+		args = append(args, match[1]) // Flag name
+		if match[3] != "" {
+			// Remove surrounding quotes if present
+			value := strings.Trim(match[3], `"'`)
+			args = append(args, value) // Flag value
+		}
+	}
+	return args, nil
+}
+
 func RunWarp(argStr, path string, fd int) {
 	logger := logWriter{}
 	log.SetOutput(logger)
@@ -66,7 +84,10 @@ func RunWarp(argStr, path string, fd int) {
 		log.Fatal("Error changing to 'main' directory:", err)
 	}
 	// Parse command-line arguments.
-	args := strings.Split(argStr, " ")
+	args, err := parseCommandLine(argStr)
+	if err != nil {
+		log.Fatal(err)
+	}
 	fs := flag.NewFlagSet("tun2socks", flag.ExitOnError)
 	verbose = fs.Bool("v", false, "verbose")
 	bindAddress = fs.String("b", "127.0.0.1:8086", "socks bind address")
@@ -76,7 +97,7 @@ func RunWarp(argStr, path string, fd int) {
 	psiphonEnabled = fs.Bool("cfon", false, "enable psiphonEnabled over warp")
 	gool = fs.Bool("gool", false, "enable warp gooling")
 	scan = fs.Bool("scan", false, "enable warp scanner(experimental)")
-	err := fs.Parse(args)
+	err = fs.Parse(args)
 	if err != nil {
 		log.Fatalf("Failed to parse flags: %v", err)
 	}

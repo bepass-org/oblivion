@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
         boolean enableGool = fileManager.getBoolean("USERSETTING_gool");
 
         if(!endpoint.contains("engage.cloudflareclient.com")) {
-            Arg = "-e" + endpoint;
+            Arg = "-e " + endpoint;
         }/* else {
             Arg = "-scan";
         }*/

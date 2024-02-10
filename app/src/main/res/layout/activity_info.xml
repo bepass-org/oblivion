@@ -96,7 +96,7 @@
         android:fontFamily="@font/shabnam"
         android:textColor="@color/black"
         android:gravity="center"
-        android:text="App Version: 0.0.3-test" />
+        android:text="App Version: 0.0.4-test" />
 
 
 </LinearLayout>
