@@ -235,9 +235,9 @@ public class MainActivity extends AppCompatActivity {
 
         if(!endpoint.contains("engage.cloudflareclient.com")) {
             Arg = "-e" + endpoint;
-        } else {
+        }/* else {
             Arg = "-scan";
-        }
+        }*/
 
         Arg += getBindAddress(true);
 
