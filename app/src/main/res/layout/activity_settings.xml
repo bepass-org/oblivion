@@ -94,7 +94,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/shabnam"
-                    android:text="ترکیبی از IP یا نام دامنه به‌همراه پورت"
+                    android:text="ترکیبی از IP یا نام دامنه، به‌همراه پورت"
                     android:textColor="#9A9A9A"
                     android:textSize="16sp" />
             </LinearLayout>
@@ -141,7 +141,7 @@
                         android:layout_height="wrap_content"
                         android:minWidth="100dp"
                         android:fontFamily="@font/shabnam"
-                        android:text="پورت"
+                        android:text="پورت تونل"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
 
@@ -390,7 +390,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/shabnam"
-                    android:text="اگر لایسنس دارید(هر لایسنس 2 بار مصرف می‌شود)"
+                    android:text="اگر لایسنس دارید (هر لایسنس 2x می‌شود)"
                     android:textColor="#9A9A9A"
                     android:textSize="16sp" />
 
@@ -450,7 +450,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/shabnam"
-                    android:text="فعالسازی یا غیرفعالسازی Warp In Warp"
+                    android:text="فعالسازی Warp In Warp"
                     android:textColor="#9A9A9A"
                     android:textSize="16sp" />
                 
