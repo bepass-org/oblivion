@@ -341,8 +341,8 @@ public class OblivionVpnService extends VpnService {
         Log.i(TAG, "Interface created");
         vpnThread = new Thread(() -> Tun2socks.runWarp(
                 command,
-                Integer.toString(mInterface.getFd()),
-                getApplicationContext().getFilesDir().getAbsolutePath()
+                getApplicationContext().getFilesDir().getAbsolutePath(),
+                mInterface.getFd()
         ));
         vpnThread.start();
     }
