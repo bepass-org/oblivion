@@ -45,7 +45,7 @@
         android:fontFamily="@font/shabnammedium"
         android:textColor="@color/black"
         android:paddingHorizontal="12dp"
-        android:text="این برنامه به هدف دسترسی آزاد به اینترنت تهیه شده است و هر گونه استفاده تجاری از آن مجاز نیست.\n\n\n'اینترنت برای همه یا هیچکس!'" />
+        android:text="این برنامه با هدف دسترسی به اینترنت آزاد تهیه شده و هرگونه استفاده تجاری از آن مجاز نیست.\n\n\n'اینترنت برای، همه یا هیچ‌کس!'" />
 
     <RelativeLayout
         android:id="@+id/github_layout"
