@@ -55,12 +55,12 @@ jobs:
       - name: Install NDK
         uses: nttld/setup-ndk@v1
         with:
-          ndk-version: r26b
+          ndk-version: r23c
           link-to-sdk: true
 
-      - name: Install NDK and Gomobile
+      - name: Install Gomobile
         run: |
-          for d in $ANDROID_NDK_HOME/../26*; do
+          for d in $ANDROID_NDK_HOME/../23*; do
             ANDROID_NDK_HOME=$d
           done
           cd app/libs
