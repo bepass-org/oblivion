@@ -49,7 +49,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'zulu'
+          distribution: 'microsoft'
           cache: 'gradle'
 
       - name: Install NDK
