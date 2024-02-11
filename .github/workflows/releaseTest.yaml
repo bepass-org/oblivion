@@ -77,11 +77,6 @@ jobs:
           GOPROXY: https://proxy.golang.org,direct
           GO111MODULE: "on"
 
-        uses: softprops/action-gh-release@v1
-        with:
-          files: app-release-signed.apk
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   android-build-and-release:
     needs: go-build
     runs-on: ubuntu-latest
