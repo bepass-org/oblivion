@@ -101,5 +101,6 @@ jobs:
         if: github.event_name == 'release'
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./app/build/outputs/apk/release/app-release.apk
+          file: ./app/build/outputs/apk/release/*
           tag: ${{ github.ref }}
+          overwrite: true
