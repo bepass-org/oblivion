@@ -44,13 +44,21 @@ jobs:
           go-version: '1.20.0'
           check-latest: true
 
+      - name: Install Gomobile
+        run: |
+          cd app/libs
+          go install golang.org/x/mobile/cmd/gomobile@latest
+          go install golang.org/x/mobile/cmd/gobind@latest
+          go get golang.org/x/mobile/cmd/gobind
+          go get golang.org/x/mobile/cmd/gomobile
+          gomobile init
+        env:
+          GOPROXY: https://proxy.golang.org,direct
+          GO111MODULE: "on"
+
       # Build Go part with gomobile
       - name: Build Go part with gomobile
         run: |
-          cd app/libs
-          go mod tidy
-          go get golang.org/x/mobile/cmd/gomobile/...
-          gomobile init
           gomobile bind -ldflags '-s -w' -o tun2socks.aar -target android .
           cd ../..
 
