@@ -22,7 +22,7 @@ public class InfoActivity extends AppCompatActivity {
 
         init();
 
-        github.setOnClickListener(v -> openURL("https://github.com/bepass"));
+        github.setOnClickListener(v -> openURL("https://github.com/bepass-org/oblivion"));
 
         back.setOnClickListener(v -> onBackPressed());
     }

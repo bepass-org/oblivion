@@ -38,7 +38,7 @@ public class BugActivity extends AppCompatActivity {
             @Override
             public void run() {
                 readLogsFromFile();
-                handler.postDelayed(this, 2000); // Refresh every 5 seconds
+                handler.postDelayed(this, 2000); // Refresh every 2 seconds
             }
         };
     }
