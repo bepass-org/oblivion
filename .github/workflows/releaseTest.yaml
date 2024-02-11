@@ -76,6 +76,11 @@ jobs:
         env:
           GOPROXY: https://proxy.golang.org,direct
           GO111MODULE: "on"
+      - name: Upload AAR Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: tun2socks-aar
+          path: app/libs/tun2socks.aar
 
   android-build-and-release:
     needs: go-build
@@ -90,6 +95,12 @@ jobs:
           java-version: '17'
           distribution: 'microsoft'
           cache: 'gradle'
+          
+      - name: Download AAR Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: tun2socks-aar
+          path: app/libs
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
