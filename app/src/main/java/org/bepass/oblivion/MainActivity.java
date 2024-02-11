@@ -256,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startVpnService() {
-        Toast.makeText(getApplicationContext(), calculateArgs(), Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), calculateArgs(), Toast.LENGTH_LONG).show();
         Intent intent = new Intent(this, OblivionVpnService.class);
         intent.putExtra("command", calculateArgs());
         intent.putExtra("bindAddress", getBindAddress(false));
