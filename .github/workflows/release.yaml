@@ -94,7 +94,7 @@ jobs:
         with:
           name: app-release.apk
           path: |
-            ./app/build/outputs/apk/release/app-release.apk
+            ./app/build/outputs/apk/release/*
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
@@ -103,4 +103,3 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./app/build/outputs/apk/release/app-release.apk
           tag: ${{ github.ref }}
-          file_glob: true
