@@ -34,6 +34,10 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -98,7 +102,7 @@ public class OblivionVpnService extends VpnService {
     public static String pingOverHTTP(String bindAddress) {
         Map<String, Integer> result = splitHostAndPort(bindAddress);
         if (result == null) {
-            return "false";
+            return "exception";
         }
         String socksHost = result.keySet().iterator().next();
         int socksPort = result.values().iterator().next();
@@ -115,7 +119,7 @@ public class OblivionVpnService extends VpnService {
 
         // Build the request
         Request request = new Request.Builder()
-                .url("https://8.8.8.8") // Replace with actual URL
+                .url("https://1.1.1.1") // Replace with actual URL
                 .build();
 
         // Execute the request
@@ -127,13 +131,30 @@ public class OblivionVpnService extends VpnService {
         }
     }
 
+    public static String isLocalPortInUse(String bindAddress) {
+        Map<String, Integer> result = splitHostAndPort(bindAddress);
+        if (result == null) {
+            return "exception";
+        }
+        int socksPort = result.values().iterator().next();
+        try {
+            // ServerSocket try to open a LOCAL port
+            new ServerSocket(socksPort).close();
+            // local port can be opened, it's available
+            return "false";
+        } catch(IOException e) {
+            // local port cannot be opened, it's in use
+            return "true";
+        }
+    }
+
     private static void performPingTask(Message msg, String bindAddress) {
         new Thread(() -> {
             long startTime = System.currentTimeMillis();
             boolean isSuccessful = false;
 
             while (System.currentTimeMillis() - startTime < 2 * 60 * 1000) { // 2 minutes
-                String result = pingOverHTTP(bindAddress);
+                String result = isLocalPortInUse(bindAddress);
                 if (result.contains("exception")) {
                     Message replyMsg = Message.obtain(null, MSG_TASK_FAILED);
                     try {
@@ -316,21 +337,6 @@ public class OblivionVpnService extends VpnService {
                 .build();
     }
 
-    private String getBindAddress(boolean addB) {
-        String B = " -b ";
-        if(!addB) {
-            B = "";
-        }
-        String port = fileManager.getString("USERSETTING_port", "");
-        boolean enableLan = fileManager.getBoolean("USERSETTING_lan", false);
-        String Bind = "";
-        Bind += B +  "127.0.0.1:" + port;
-        if(enableLan) {
-            Bind = B +  "0.0.0.0:" + port;
-        }
-        return Bind;
-    }
-
     private StartOptions calculateArgs() {
         StartOptions so = new StartOptions();
         so.setPath(getApplicationContext().getFilesDir().getAbsolutePath());
@@ -350,7 +356,7 @@ public class OblivionVpnService extends VpnService {
             so.setScan(true);
         }
 
-        so.setBindAddress(getBindAddress(false));
+        so.setBindAddress(bindAddress);
 
         if(!license.trim().isEmpty()) {
             so.setLicense(license.trim());
@@ -369,7 +375,7 @@ public class OblivionVpnService extends VpnService {
             so.setGool(true);
         }
 
-        so.setRtt(1000);
+        so.setRtt(800);
 
         return so;
     }
