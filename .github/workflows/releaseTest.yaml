@@ -1,0 +1,116 @@
+name: Android CI
+
+on:
+  workflow_dispatch:
+  release:
+    types: [ published ]
+
+jobs:
+  build:
+
+    permissions:
+      contents: write
+
+    runs-on: ubuntu-latest
+
+    env:
+      GOOS: ${{ matrix.goos }}
+      GOARCH: ${{ matrix.goarch }}
+      GOARM: ${{ matrix.goarm }}
+      CGO_ENABLED: 0
+
+    steps:
+
+      - name: Checkout codebase
+        uses: actions/checkout@v3
+
+      # Set Current Date As Env Variable
+      - name: Set current date as env variable
+        run: echo "date_today=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
+      # Set Repository Name As Env Variable
+      - name: Set repository name as env variable
+        run: echo "repository_name=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
+
+      - name: Show workflow information
+        run: |
+          export _NAME=$GOOS-$GOARCH$GOARM$GOMIPS.${GITHUB_SHA::6}
+          echo "GOOS: $GOOS, GOARCH: $GOARCH, GOARM: $GOARM, GOMIPS: $GOMIPS, RELEASE_NAME: $_NAME"
+          echo "ASSET_NAME=$_NAME" >> $GITHUB_ENV
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20.0'
+          check-latest: true
+
+      # Set up JDK
+      - name: Set Up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+          cache: 'gradle'
+
+      - name: Install NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r26b
+          link-to-sdk: true
+
+      - name: Install Gomobile and Build native parts
+        run: |
+          for d in $ANDROID_NDK_HOME/../26*; do
+            ANDROID_NDK_HOME=$d
+          done
+          cd app/libs
+          go mod tidy
+          go install golang.org/x/mobile/cmd/gomobile@latest
+          go install golang.org/x/mobile/cmd/gobind@latest
+          go get golang.org/x/mobile/cmd/gobind
+          go get golang.org/x/mobile/cmd/gomobile
+          go get golang.org/x/mobile
+          gomobile init
+          gomobile bind -ldflags '-s -w' -o tun2socks.aar -androidapi 21 -target android .
+          cd ../..
+        env:
+          GOPROXY: https://proxy.golang.org,direct
+          GO111MODULE: "on"
+
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
+      # Run Build Project
+      - name: Build gradle project
+        run: ./gradlew build
+
+      # Build APKs
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+
+     # Signing the APK
+      - uses: r0adkll/sign-android-release@v1
+        name: Sign app APK
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/apk/release  # Adjust the path to where your debug APK is generated
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "30.0.2"
+
+      # Upload the signed APK as an artifact
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Signed app APK
+          path: ${{ steps.sign_app.outputs.signedReleaseFile }}
+
+      # Assuming you want to attach the signed APK to a GitHub Release
+      - name: Release with Notes
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ steps.sign_app.outputs.signedReleaseFile }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
