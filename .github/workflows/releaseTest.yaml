@@ -6,7 +6,7 @@ on:
     types: [ published ]
 
 jobs:
-  build:
+  go-build:
 
     permissions:
       contents: write
@@ -49,7 +49,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'zulu'
+          distribution: 'microsoft'
           cache: 'gradle'
 
       - name: Install NDK
@@ -77,43 +77,50 @@ jobs:
           GOPROXY: https://proxy.golang.org,direct
           GO111MODULE: "on"
 
-      - name: Change wrapper permissions
+  android-build-and-release:
+    needs: go-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout codebase
+        uses: actions/checkout@v3
+
+      - name: Set Up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'microsoft'
+          cache: 'gradle'
+
+      - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      # Run Build Project
-      - name: Build gradle project
-        run: ./gradlew build
-
-      # Build APKs
       - name: Build Release APK
         run: ./gradlew assembleRelease
 
-      # Signing steps
-      - name: Decode signing keystore
+      - name: Sign APK
         run: |
-          echo "${{ secrets.SIGNING_KEY }}" > signing_key_store.jks
-          echo "${{ secrets.KEY_STORE_PASSWORD }}" > keystore_password.txt
-  
-      - name: Sign the APK
-        run: |
-          keytool -list -keystore signing_key_store.jks -alias "${{ secrets.ALIAS }}" -storepass "$(cat keystore_password.txt)"
-          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA256 -keystore signing_key_store.jks -storepass "$(cat keystore_password.txt)" -keypass "${{ secrets.KEY_PASSWORD }}" -signedjar app-release-signed.apk app-release.apk "${{ secrets.ALIAS }}"
-  
-      - name: Clean up temporary files
-        run: |
-          rm signing_key_store.jks keystore_password.txt
-  
-      # Update upload step to use signed APK
-      - name: Upload files to Artifacts
-        uses: actions/upload-artifact@v3
+          echo "${{ secrets.SIGNING_KEY }}" | base64 --decode > my-release-key.keystore
+          ./gradlew signReleaseBundle \
+            --no-daemon \
+            -Pandroid.injected.signing.store.file=my-release-key.keystore \
+            -Pandroid.injected.signing.store.password=${{ secrets.KEY_STORE_PASSWORD }} \
+            -Pandroid.injected.signing.key.alias=${{ secrets.ALIAS }} \
+            -Pandroid.injected.signing.key.password=${{ secrets.KEY_PASSWORD }}
+        env:
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          ALIAS: ${{ secrets.ALIAS }}
+
+      - name: Upload Signed APK to Artifacts
+        uses: actions/upload-artifact@v2
         with:
-          name: app-release.apk
-          path: app-release-signed.apk
-  
-      # Update release step to use signed APK
-      - name: Release with Notes
+          name: Signed APK
+          path: app/build/outputs/apk/release/app-release.apk
+
+      - name: Release APK
+        if: github.event_name == 'release' && github.event.action == 'published'
         uses: softprops/action-gh-release@v1
         with:
-          files: app-release-signed.apk
+          files: app/build/outputs/apk/release/app-release.apk
         env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
