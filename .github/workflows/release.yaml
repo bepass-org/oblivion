@@ -55,12 +55,12 @@ jobs:
       - name: Install NDK
         uses: nttld/setup-ndk@v1
         with:
-          ndk-version: r23c
+          ndk-version: r26b
           link-to-sdk: true
 
       - name: Install Gomobile
         run: |
-          for d in $ANDROID_NDK_HOME/../23*; do
+          for d in $ANDROID_NDK_HOME/../26*; do
             ANDROID_NDK_HOME=$d
           done
           cd app/libs
@@ -76,7 +76,7 @@ jobs:
       # Build Go part with gomobile
       - name: Build Go part with gomobile
         run: |
-          gomobile bind -ldflags '-s -w' -o tun2socks.aar -target android .
+          gomobile bind -ldflags '-s -w' -o tun2socks.aar -androidapi 21 -target android .
           cd ../..
 
       - name: Change wrapper permissions
