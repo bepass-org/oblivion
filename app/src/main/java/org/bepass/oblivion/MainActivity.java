@@ -24,6 +24,8 @@ import androidx.core.content.ContextCompat;
 
 import com.suke.widget.SwitchButton;
 
+import tun2socks.StartOptions;
+
 public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher<String> pushNotificationPermissionLauncher;
     private ActivityResultLauncher<Intent> vpnPermissionLauncher;
@@ -205,11 +207,8 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    private String getBindAddress(boolean addB) {
-        String B = " -b ";
-        if(!addB) {
-            B = "";
-        }
+    private String getBindAddress() {
+        String B = "";
         String port = fileManager.getString("USERSETTING_port");
         boolean enableLan = fileManager.getBoolean("USERSETTING_lan");
         String Bind = "";
@@ -220,46 +219,10 @@ public class MainActivity extends AppCompatActivity {
         return Bind;
     }
 
-    private String calculateArgs() {
-        String Arg = "";
-        String endpoint = fileManager.getString("USERSETTING_endpoint");
-        String country = fileManager.getString("USERSETTING_country");
-        String license = fileManager.getString("USERSETTING_license");
-
-        boolean enablePsiphon = fileManager.getBoolean("USERSETTING_psiphon");
-        boolean enableGool = fileManager.getBoolean("USERSETTING_gool");
-
-        if(!endpoint.contains("engage.cloudflareclient.com")) {
-            Arg = "-e " + endpoint;
-        } else {
-            Arg = "-scan true";
-        }
-
-        Arg += getBindAddress(true);
-
-        if(!license.trim().isEmpty()) {
-            Arg += " -k " + license.trim();
-        }
-
-        if(enablePsiphon && !enableGool) {
-            Arg += " -cfon";
-            if(!country.trim().isEmpty() && country.length() == 2) {
-                Arg += " -country " + country.trim();
-            }
-        }
-
-        if(!enablePsiphon && enableGool) {
-            Arg += " -gool";
-        }
-
-        return Arg;
-    }
-
     private void startVpnService() {
         //Toast.makeText(getApplicationContext(), calculateArgs(), Toast.LENGTH_LONG).show();
         Intent intent = new Intent(this, OblivionVpnService.class);
-        intent.putExtra("command", calculateArgs());
-        intent.putExtra("bindAddress", getBindAddress(false));
+        intent.putExtra("bindAddress", getBindAddress());
         intent.setAction(OblivionVpnService.FLAG_VPN_START);
         ContextCompat.startForegroundService(this, intent);
         sendMessageToService();
