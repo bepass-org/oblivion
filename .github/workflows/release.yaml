@@ -88,18 +88,33 @@ jobs:
       - name: Build Release APK
         run: ./gradlew assembleRelease
 
+      - name: Sign app APK
+        uses: r0adkll/sign-android-release@v1
+        # ID used to access action output
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          # override default build-tools version (29.0.3) -- optional
+          BUILD_TOOLS_VERSION: "34.0.0"
+
+
       # Upload APKs to GitHub Release
       - name: Upload files to Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: app-release.apk
+          name: Signed app bundle
           path: |
-            ./app/build/outputs/apk/release/*
+            ${{steps.sign_app.outputs.signedReleaseFile}}
 
       - name: Release with Notes
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            app/build/outputs/apk/release/app-release-unsigned.apk
+            ${{steps.sign_app.outputs.signedReleaseFile}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
