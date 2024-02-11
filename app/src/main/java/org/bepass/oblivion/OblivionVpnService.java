@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.VpnService;
 import android.os.Build;
@@ -26,6 +27,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import tun2socks.Tun2socks;
+import tun2socks.StartOptions;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,6 +36,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class OblivionVpnService extends VpnService {
@@ -45,9 +48,10 @@ public class OblivionVpnService extends VpnService {
     private Notification notification;
     private ParcelFileDescriptor mInterface;
     private Thread vpnThread;
-    private String command;
     private String bindAddress;
     private final Handler handler = new Handler();
+
+    SharedPreferences fileManager;
 
     static final int MSG_PERFORM_TASK = 1; // Identifier for the message
     static final int MSG_TASK_COMPLETED = 2; // Identifier for the response
@@ -118,8 +122,8 @@ public class OblivionVpnService extends VpnService {
         try (Response response = client.newCall(request).execute()) {
             return response.isSuccessful() ? "true" : "false";
         } catch (IOException e) {
-            e.printStackTrace();
-            return e.getMessage().contains("ECONNREFUSED") || e.getMessage().contains("general failure") || e.getMessage().contains("timed out") ? "false" : "exception";
+            //e.printStackTrace();
+            return Objects.requireNonNull(e.getMessage()).contains("ECONNREFUSED") || e.getMessage().contains("general failure") || e.getMessage().contains("timed out") ? "false" : "exception";
         }
     }
 
@@ -210,7 +214,6 @@ public class OblivionVpnService extends VpnService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && FLAG_VPN_START.equals(intent.getAction())) {
-            command = intent.getStringExtra("command");
             bindAddress = intent.getStringExtra("bindAddress");
             runVpn();
             return START_STICKY;
@@ -239,6 +242,7 @@ public class OblivionVpnService extends VpnService {
     }
 
     private void runVpn() {
+        fileManager = getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
         Log.i(TAG, "Clearing Logs");
         clearLogFile();
         Log.i(TAG, "Create Notification");
@@ -312,6 +316,64 @@ public class OblivionVpnService extends VpnService {
                 .build();
     }
 
+    private String getBindAddress(boolean addB) {
+        String B = " -b ";
+        if(!addB) {
+            B = "";
+        }
+        String port = fileManager.getString("USERSETTING_port", "");
+        boolean enableLan = fileManager.getBoolean("USERSETTING_lan", false);
+        String Bind = "";
+        Bind += B +  "127.0.0.1:" + port;
+        if(enableLan) {
+            Bind = B +  "0.0.0.0:" + port;
+        }
+        return Bind;
+    }
+
+    private StartOptions calculateArgs() {
+        StartOptions so = new StartOptions();
+        so.setPath(getApplicationContext().getFilesDir().getAbsolutePath());
+        so.setVerbose(true);
+        so.setVerbose(true);
+        String endpoint = fileManager.getString("USERSETTING_endpoint", "notset");
+        String country = fileManager.getString("USERSETTING_country", "");
+        String license = fileManager.getString("USERSETTING_license", "notset");
+
+        boolean enablePsiphon = fileManager.getBoolean("USERSETTING_psiphon", false);
+        boolean enableGool = fileManager.getBoolean("USERSETTING_gool", false);
+
+        if(!endpoint.contains("engage.cloudflareclient.com")) {
+            so.setEndpoint(endpoint);
+        } else {
+            so.setEndpoint("notset");
+            so.setScan(true);
+        }
+
+        so.setBindAddress(getBindAddress(false));
+
+        if(!license.trim().isEmpty()) {
+            so.setLicense(license.trim());
+        } else {
+            so.setLicense("notset");
+        }
+
+        if(enablePsiphon && !enableGool) {
+            so.setPsiphonEnabled(true);
+            if(!country.trim().isEmpty() && country.length() == 2) {
+                so.setCountry(country.trim());
+            }
+        }
+
+        if(!enablePsiphon && enableGool) {
+            so.setGool(true);
+        }
+
+        so.setRtt(1000);
+
+        return so;
+    }
+
     private void configure() {
         VpnService.Builder builder = new VpnService.Builder();
         try {
@@ -333,11 +395,11 @@ public class OblivionVpnService extends VpnService {
         }
         mInterface = builder.establish();
         Log.i(TAG, "Interface created");
-        vpnThread = new Thread(() -> Tun2socks.runWarp(
-                command,
-                getApplicationContext().getFilesDir().getAbsolutePath(),
-                mInterface.getFd()
-        ));
+
+        StartOptions so = calculateArgs();
+        so.setTunFd(mInterface.getFd());
+
+        vpnThread = new Thread(() -> Tun2socks.runWarp(so));
         vpnThread.start();
     }
 }
