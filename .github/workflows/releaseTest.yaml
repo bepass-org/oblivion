@@ -88,27 +88,32 @@ jobs:
       - name: Build Release APK
         run: ./gradlew assembleRelease
 
-     # Signing the APK
-      - uses: r0adkll/sign-android-release@v1
-        name: Sign app APK
-        id: sign_app
+      # Signing steps
+      - name: Decode signing keystore
+        run: |
+          echo "${{ secrets.SIGNING_KEY }}" > signing_key_store.jks
+          echo "${{ secrets.KEY_STORE_PASSWORD }}" > keystore_password.txt
+  
+      - name: Sign the APK
+        run: |
+          keytool -list -keystore signing_key_store.jks -alias "${{ secrets.ALIAS }}" -storepass "$(cat keystore_password.txt)"
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA256 -keystore signing_key_store.jks -storepass "$(cat keystore_password.txt)" -keypass "${{ secrets.KEY_PASSWORD }}" -signedjar app-release-signed.apk app-release.apk "${{ secrets.ALIAS }}"
+  
+      - name: Clean up temporary files
+        run: |
+          rm signing_key_store.jks keystore_password.txt
+  
+      # Update upload step to use signed APK
+      - name: Upload files to Artifacts
+        uses: actions/upload-artifact@v3
         with:
-          releaseDirectory: app/build/outputs/apk/release  # Adjust the path to where your debug APK is generated
-          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-          alias: ${{ secrets.ALIAS }}
-          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
-
-      # Upload the signed APK as an artifact
-      - uses: actions/upload-artifact@v2
-        with:
-          name: Signed app APK
-          path: ${{ steps.sign_app.outputs.signedReleaseFile }}
-
-      # Assuming you want to attach the signed APK to a GitHub Release
+          name: app-release.apk
+          path: app-release-signed.apk
+  
+      # Update release step to use signed APK
       - name: Release with Notes
         uses: softprops/action-gh-release@v1
         with:
-          files: ${{ steps.sign_app.outputs.signedReleaseFile }}
+          files: app-release-signed.apk
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
