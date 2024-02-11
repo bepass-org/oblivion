@@ -49,7 +49,7 @@ jobs:
         run: |
           cd app/libs
           go mod tidy
-          go get golang.org/x/mobile/cmd/gomobile
+          go get golang.org/x/mobile/cmd/gomobile/...
           gomobile init
           gomobile bind -ldflags '-s -w' -o tun2socks.aar -target android .
           cd ../..
