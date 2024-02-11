@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             Messenger replyMessenger = new Messenger(new Handler(message -> {
                 if (message.what == OblivionVpnService.MSG_TASK_COMPLETED) {
                     // Handle task completion
-                    Toast.makeText(getApplicationContext(), "Completed", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "متصل شدید!", Toast.LENGTH_LONG).show();
                     connected();
                 } else {
                     disconnected();
@@ -231,9 +231,9 @@ public class MainActivity extends AppCompatActivity {
 
         if(!endpoint.contains("engage.cloudflareclient.com")) {
             Arg = "-e " + endpoint;
-        }/* else {
-            Arg = "-scan";
-        }*/
+        } else {
+            Arg = "-scan true";
+        }
 
         Arg += getBindAddress(true);
 
@@ -256,6 +256,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startVpnService() {
+        //Toast.makeText(getApplicationContext(), calculateArgs(), Toast.LENGTH_LONG).show();
         Intent intent = new Intent(this, OblivionVpnService.class);
         intent.putExtra("command", calculateArgs());
         intent.putExtra("bindAddress", getBindAddress(false));

@@ -29,6 +29,7 @@ var (
 	psiphonEnabled *bool
 	gool           *bool
 	scan           *bool
+	rtt            *int
 	logMessages    []string
 	mu             sync.Mutex
 	wg             sync.WaitGroup
@@ -97,6 +98,8 @@ func RunWarp(argStr, path string, fd int) {
 	psiphonEnabled = fs.Bool("cfon", false, "enable psiphonEnabled over warp")
 	gool = fs.Bool("gool", false, "enable warp gooling")
 	scan = fs.Bool("scan", false, "enable warp scanner(experimental)")
+	rtt = flag.Int("rtt", 1000, "scanner rtt threshold, default 1000")
+
 	err = fs.Parse(args)
 	if err != nil {
 		log.Fatalf("Failed to parse flags: %v", err)
@@ -140,7 +143,7 @@ func runServer(ctx context.Context, fd int) {
 
 	// Start wireguard-go and gvisor-tun2socks.
 	go func() {
-		err := app.RunWarp(*psiphonEnabled, *gool, *scan, *verbose, *country, *bindAddress, *endpoint, *license, ctx)
+		err := app.RunWarp(*psiphonEnabled, *gool, *scan, *verbose, *country, *bindAddress, *endpoint, *license, ctx, *rtt)
 		if err != nil {
 			log.Println(err)
 		}
