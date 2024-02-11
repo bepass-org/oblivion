@@ -64,20 +64,18 @@ jobs:
             ANDROID_NDK_HOME=$d
           done
           cd app/libs
+          go mod tidy
           go install golang.org/x/mobile/cmd/gomobile@latest
           go install golang.org/x/mobile/cmd/gobind@latest
           go get golang.org/x/mobile/cmd/gobind
           go get golang.org/x/mobile/cmd/gomobile
+          go get golang.org/x/mobile
           gomobile init
+          gomobile bind -ldflags '-s -w' -o tun2socks.aar -androidapi 21 -target android .
+          cd ../..
         env:
           GOPROXY: https://proxy.golang.org,direct
           GO111MODULE: "on"
-
-      # Build Go part with gomobile
-      - name: Build Go part with gomobile
-        run: |
-          gomobile bind -ldflags '-s -w' -o tun2socks.aar -androidapi 21 -target android .
-          cd ../..
 
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
