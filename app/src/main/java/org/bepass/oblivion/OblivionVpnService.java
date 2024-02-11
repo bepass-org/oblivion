@@ -118,7 +118,8 @@ public class OblivionVpnService extends VpnService {
         try (Response response = client.newCall(request).execute()) {
             return response.isSuccessful() ? "true" : "false";
         } catch (IOException e) {
-            return e.getMessage().contains("ECONNREFUSED") || e.getMessage().contains("general failure") ? "false" : "exception";
+            e.printStackTrace();
+            return e.getMessage().contains("ECONNREFUSED") || e.getMessage().contains("general failure") || e.getMessage().contains("timed out") ? "false" : "exception";
         }
     }
 
