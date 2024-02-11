@@ -2,7 +2,9 @@
 
 "Internet, for everyone or no one."
 
-Oblivion provides secure, optimized internet access through a user-friendly Android app. Leveraging `bepass-sdk` and a custom Go implementation of WireGuard, it's designed for fast and private online experiences.
+Oblivion provides secure, optimized internet access through a user-friendly Android app. 
+
+Leveraging `bepass-sdk` and a custom Go implementation of WireGuard, it's designed for fast and private online experiences.
 
 ## Features
 
