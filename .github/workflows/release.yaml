@@ -96,11 +96,20 @@ jobs:
           path: |
             ./app/build/outputs/apk/release/*
 
-      - name: Upload binaries to release
+  upload-release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: app-release.apk
+
+      - name: Upload to GitHub Release
         uses: svenstaro/upload-release-action@v2
-        if: github.event_name == 'release'
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./app/build/outputs/apk/release/*
+          file: app-release.apk
           tag: ${{ github.ref }}
           overwrite: true
