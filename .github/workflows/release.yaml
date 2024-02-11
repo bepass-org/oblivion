@@ -111,12 +111,11 @@ jobs:
           path: |
             ${{steps.sign_app.outputs.signedReleaseFile}}
 
-      - name: Release with Notes
-        uses: softprops/action-gh-release@v1
+      - name: Upload to GitHub Release
+        uses: svenstaro/upload-release-action@v2
         if: github.event_name == 'release'
         with:
-          tag_name: ${{ github.ref }}
-          files: |
-            ${{steps.sign_app.outputs.signedReleaseFile}}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{steps.sign_app.outputs.signedReleaseFile}}
+          tag: ${{ github.ref }}
+          overwrite: true
