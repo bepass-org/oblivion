@@ -44,8 +44,25 @@ jobs:
           go-version: '1.20.0'
           check-latest: true
 
-      - name: Install Gomobile
+      # Set up JDK
+      - name: Set Up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+          cache: 'gradle'
+
+      - name: Install NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r26b
+          link-to-sdk: true
+
+      - name: Install NDK and Gomobile
         run: |
+          for d in $ANDROID_NDK_HOME/../26*; do
+            ANDROID_NDK_HOME=$d
+          done
           cd app/libs
           go install golang.org/x/mobile/cmd/gomobile@latest
           go install golang.org/x/mobile/cmd/gobind@latest
@@ -61,14 +78,6 @@ jobs:
         run: |
           gomobile bind -ldflags '-s -w' -o tun2socks.aar -target android .
           cd ../..
-
-      # Set up JDK
-      - name: Set Up JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'zulu'
-          cache: 'gradle'
 
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
