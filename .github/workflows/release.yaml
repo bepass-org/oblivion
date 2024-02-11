@@ -58,7 +58,7 @@ jobs:
           ndk-version: r26b
           link-to-sdk: true
 
-      - name: Install Gomobile
+      - name: Install Gomobile and Build native parts
         run: |
           for d in $ANDROID_NDK_HOME/../26*; do
             ANDROID_NDK_HOME=$d
@@ -85,29 +85,22 @@ jobs:
         run: ./gradlew build
 
       # Build APKs
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
-
       - name: Build Release APK
         run: ./gradlew assembleRelease
 
       # Upload APKs to GitHub Release
-      - name: Upload APKs to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload files to Artifacts
+        uses: actions/upload-artifact@v3
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./app/build/outputs/apk/release/app-release.apk
-          asset_name: app-release.apk
-          asset_content_type: application/vnd.android.package-archive
+          name: app-release.apk
+          path: |
+            ./app/build/outputs/apk/release/app-release.apk
 
-      - name: Upload Debug APK
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        if: github.event_name == 'release'
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./app/build/outputs/apk/debug/app-debug.apk
-          asset_name: app-debug.apk
-          asset_content_type: application/vnd.android.package-archive
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./app/build/outputs/apk/release/app-release.apk
+          tag: ${{ github.ref }}
+          file_glob: true
