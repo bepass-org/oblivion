@@ -107,12 +107,13 @@ jobs:
       - name: Upload files to Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Signed app bundle
+          name: app-signed.apk
           path: |
             ${{steps.sign_app.outputs.signedReleaseFile}}
 
       - name: Release with Notes
         uses: softprops/action-gh-release@v1
+        if: github.event_name == 'release'
         with:
           files: |
             ${{steps.sign_app.outputs.signedReleaseFile}}
