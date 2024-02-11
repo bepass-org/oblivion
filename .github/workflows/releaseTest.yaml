@@ -107,13 +107,14 @@ jobs:
 
       - name: Build Release APK
         run: ./gradlew assembleRelease
-
+      
       - name: Sign APK
         run: |
-          echo "${{ secrets.SIGNING_KEY }}" | base64 --decode > my-release-key.keystore
+          echo "${{ secrets.SIGNING_KEY }}" | base64 --decode > ./app/my-release-key.keystore
+          ls -la ./app/ # Debugging step to list contents and verify my-release-key.keystore is present
           ./gradlew signReleaseBundle \
             --no-daemon \
-            -Pandroid.injected.signing.store.file=my-release-key.keystore \
+            -Pandroid.injected.signing.store.file=./app/my-release-key.keystore \
             -Pandroid.injected.signing.store.password=${{ secrets.KEY_STORE_PASSWORD }} \
             -Pandroid.injected.signing.key.alias=${{ secrets.ALIAS }} \
             -Pandroid.injected.signing.key.password=${{ secrets.KEY_PASSWORD }}
@@ -121,6 +122,7 @@ jobs:
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           ALIAS: ${{ secrets.ALIAS }}
+
 
       - name: Upload Signed APK to Artifacts
         uses: actions/upload-artifact@v2
