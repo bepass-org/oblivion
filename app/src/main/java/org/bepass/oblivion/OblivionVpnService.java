@@ -23,22 +23,15 @@ import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import tun2socks.Tun2socks;
 import tun2socks.StartOptions;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 public class OblivionVpnService extends VpnService {
     private static final String TAG = "oblivionVPN";
@@ -133,39 +126,6 @@ public class OblivionVpnService extends VpnService {
 
         result.put(host, port);
         return result;
-    }
-
-
-    public static String pingOverHTTP(String bindAddress) {
-        Map<String, Integer> result = splitHostAndPort(bindAddress);
-        if (result == null) {
-            return "exception";
-        }
-        String socksHost = result.keySet().iterator().next();
-        int socksPort = result.values().iterator().next();
-
-        // Set up the SOCKS proxy
-        Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(socksHost, socksPort));
-
-        // Create OkHttpClient with SOCKS proxy
-        OkHttpClient client = new OkHttpClient.Builder()
-                .proxy(proxy)
-                .connectTimeout(5, TimeUnit.SECONDS) // 5 seconds connection timeout
-                .readTimeout(5, TimeUnit.SECONDS) // 5 seconds read timeout
-                .build();
-
-        // Build the request
-        Request request = new Request.Builder()
-                .url("https://1.1.1.1") // Replace with actual URL
-                .build();
-
-        // Execute the request
-        try (Response response = client.newCall(request).execute()) {
-            return response.isSuccessful() ? "true" : "false";
-        } catch (IOException e) {
-            //e.printStackTrace();
-            return Objects.requireNonNull(e.getMessage()).contains("ECONNREFUSED") || e.getMessage().contains("general failure") || e.getMessage().contains("timed out") ? "false" : "exception";
-        }
     }
 
     private static int findFreePort() {
@@ -473,7 +433,7 @@ public class OblivionVpnService extends VpnService {
                 this, 2, new Intent(this, MainActivity.class), PendingIntent.FLAG_IMMUTABLE);
         notification = new NotificationCompat.Builder(this, notificationChannel.getId())
                 .setContentTitle("Vpn service")
-                .setContentText("Testing Tun2Socks")
+                .setContentText("Oblivion WARP")
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setOnlyAlertOnce(true)
                 .setOngoing(true)
