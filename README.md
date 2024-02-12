@@ -1,10 +1,10 @@
 # Oblivion - Unofficial Warp Client for Android
 
-"Internet, for everyone or no one."
+"Internet, for all or none!"
 
-Oblivion provides secure, optimized internet access through a user-friendly Android app. 
+Oblivion provides secure, optimized internet access through a user-friendly Android app using cloudflare warp technology
 
-Leveraging `bepass-sdk` and a custom Go implementation of WireGuard, it's designed for fast and private online experiences.
+It's leveraging `bepass-sdk` and a custom Go implementation of WireGuard, it's designed for fast and private online experiences.
 
 ## Features
 
@@ -79,6 +79,38 @@ gomobile bind -ldflags '-s -w' -o tun2socks.aar -androidapi 21 -target android .
 
 We're a community-driven project, aiming to make the internet accessible for all. Whether you want to contribute code, suggest features, or need some help, we'd love to hear from you! Check out our [GitHub Issues](https://github.com/bepass-org/oblivion/issues) or submit a pull request.
 
-## Disclaimer
+## Acknowledgements and Credits
 
-Think of this as your new buddy in the digital realm. Like all friends, it comes with no warranties, but it promises to make your internet experience a lot more fun. Just remember, with great power comes great responsibility. Use it wisely!
+This project makes use of several open-source tools and libraries, and we are grateful to the developers and communities behind these projects. In particular, we would like to acknowledge:
+
+### Cloudflare Warp
+
+- **Project**: Cloudflare Warp
+- **Website**: [Cloudflare Warp](https://www.cloudflare.com/products/warp/)
+- **License**: [License information](https://www.cloudflare.com/application/terms/)
+- **Description**: Cloudflare Warp is a technology that enhances the security and performance of Internet applications. We use it in our project for its efficient and secure network traffic routing capabilities.
+
+### WireGuard-go
+
+- **Project**: WireGuard-go
+- **GitHub Repository**: [WireGuard-go on GitHub](https://github.com/WireGuard/wireguard-go)
+- **License**: [GNU General Public License v2.0](https://github.com/WireGuard/wireguard-go/blob/master/COPYING)
+- **Description**: WireGuard-go is an implementation of the WireGuard secure network tunnel. It's used in our project to provide fast, modern, and secure VPN tunneling.
+
+Please note that the use of these tools is governed by their respective licenses, and you should consult those licenses for terms and conditions of use.
+
+## License
+
+This project is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License - see the [CC BY-NC-SA 4.0 License](https://creativecommons.org/licenses/by-nc-sa/4.0/) for details.
+
+### Summary of License
+
+The CC BY-NC-SA 4.0 License is a free, copyleft license suitable for non-commercial use. Here's what it means for using this project:
+
+- **Attribution (BY)**: You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+
+- **NonCommercial (NC)**: You may not use the material for commercial purposes.
+
+- **ShareAlike (SA)**: If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.
+
+This summary is only a brief overview. For the full legal text, please visit the provided link.
