@@ -11,7 +11,8 @@
     <uses-permission
         android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED"
         android:minSdkVersion="34" />
-
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -40,6 +41,20 @@
                 android:name="android.net.VpnService.SUPPORTS_ALWAYS_ON"
                 android:value="true" />
         </service>
+
+        <service
+            android:name=".QuickStartService"
+            android:exported="true"
+            android:label="Oblivion"
+            android:icon="@drawable/vpn_off"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <meta-data android:name="android.service.quicksettings.TOGGLEABLE_TILE"
+                android:value="true" />
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+
+    </service>
 
         <activity
             android:name="org.bepass.oblivion.MainActivity"
