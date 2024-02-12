@@ -53,8 +53,15 @@ public class FileManager {
         return sharedPreferences.getString(name, "");
     }
 
+    public String getString(String name, String defaultValue) {
+        return sharedPreferences.getString(name, defaultValue);
+    }
+
     public boolean getBoolean(String name) {
         return sharedPreferences.getBoolean(name, false);
+    }
+    public boolean getBoolean(String name, boolean defaultValue) {
+        return sharedPreferences.getBoolean(name, defaultValue);
     }
 
     public int getInt(String name) {
