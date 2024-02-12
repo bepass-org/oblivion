@@ -64,7 +64,7 @@
     </LinearLayout>
 
 
-    <com.suke.widget.SwitchButton
+    <org.bepass.oblivion.TouchAwareSwitch
         android:id="@+id/switch_button"
         android:layout_width="160dp"
         android:layout_height="75dp"
