@@ -7,7 +7,7 @@ replace github.com/Psiphon-Labs/psiphon-tunnel-core => github.com/uoosef/psiphon
 replace github.com/eycorsican/go-tun2socks => github.com/trojan-gfw/go-tun2socks v1.16.3-0.20210702214000-083d49176e05
 
 require (
-	github.com/bepass-org/wireguard-go v1.0.3-rc2
+	github.com/bepass-org/wireguard-go v1.0.4-rc2
 	github.com/eycorsican/go-tun2socks v1.16.11
 	github.com/songgao/water v0.0.0-20200317203138-2b4b6d7c09d8
 	github.com/xjasonlyu/tun2socks/v2 v2.5.2
