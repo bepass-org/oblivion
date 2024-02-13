@@ -284,6 +284,14 @@ public class OblivionVpnService extends VpnService {
 
     @Override
     public IBinder onBind(Intent intent) {
+        String action = intent != null ? intent.getAction() : null;
+        /*
+        If we override onBind, we never receive onRevoke.
+        return superclass onBind when action is SERVICE_INTERFACE to receive onRevoke lifecycle call.
+         */
+        if (action != null && action.equals(VpnService.SERVICE_INTERFACE)) {
+            return super.onBind(intent);
+        }
         return serviceMessenger.getBinder();
     }
 
@@ -339,7 +347,7 @@ public class OblivionVpnService extends VpnService {
 
     @Override
     public void onRevoke() {
-        super.onRevoke();
+        stopVpn();
     }
 
     private void runVpn() {
