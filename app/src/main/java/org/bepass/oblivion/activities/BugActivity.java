@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +8,8 @@ import android.os.Looper;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import org.bepass.oblivion.R;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

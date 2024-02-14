@@ -1,7 +1,8 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.CheckBox;
@@ -9,14 +10,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.bepass.oblivion.EditSheet;
+import org.bepass.oblivion.FileManager;
 import org.bepass.oblivion.R;
+import org.bepass.oblivion.SheetsCallBack;
 
 public class SettingsActivity extends AppCompatActivity {
 
     FileManager fileManager;
     ImageView back;
 
-    LinearLayout endpointLayout, portLayout, lanLayout, psiphonLayout, countryLayout, licenseLayout, goolLayout;
+    LinearLayout endpointLayout, portLayout, lanLayout, psiphonLayout, countryLayout, licenseLayout, goolLayout,splitTunnelLayout;
 
     TextView endpoint, port, country, license;
     CheckBox psiphon, lan, gool;
@@ -43,6 +47,8 @@ public class SettingsActivity extends AppCompatActivity {
         portLayout.setOnClickListener(v -> (new EditSheet(this, "پورت", "port", sheetsCallBack)).start());
         countryLayout.setOnClickListener(v -> (new EditSheet(this, "کشور", "country", sheetsCallBack)).start());
         licenseLayout.setOnClickListener(v -> (new EditSheet(this, "لایسنس", "license", sheetsCallBack)).start());
+
+        splitTunnelLayout.setOnClickListener(v -> startActivity(new Intent(this, SplitTunnelActivity.class)));
 
         // Set Current Values
         settingBasicValuesFromSPF();
@@ -104,6 +110,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         endpointLayout = findViewById(R.id.endpoint_layout);
         portLayout = findViewById(R.id.port_layout);
+        splitTunnelLayout = findViewById(R.id.split_tunnel_layout);
         lanLayout = findViewById(R.id.lan_layout);
         psiphonLayout = findViewById(R.id.psiphon_layout);
         countryLayout = findViewById(R.id.country_layout);
@@ -120,6 +127,6 @@ public class SettingsActivity extends AppCompatActivity {
         lan = findViewById(R.id.lan);
         gool = findViewById(R.id.gool);
 
-        back.setOnClickListener(v -> onBackPressed());
+        back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
     }
 }

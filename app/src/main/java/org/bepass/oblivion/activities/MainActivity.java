@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.activities;
 
 import android.Manifest;
 import android.content.ComponentName;
@@ -20,14 +20,17 @@ import androidx.core.content.ContextCompat;
 
 import com.suke.widget.SwitchButton;
 
-public class MainActivity extends AppCompatActivity {
+import org.bepass.oblivion.enums.ConnectionState;
+import org.bepass.oblivion.ConnectionStateChangeListener;
+import org.bepass.oblivion.FileManager;
+import org.bepass.oblivion.services.OblivionVpnService;
+import org.bepass.oblivion.R;
+import org.bepass.oblivion.custom_views.TouchAwareSwitch;
 
-    private static final String ConnectionStateObserverKey = "mainActivity";
+public class MainActivity extends ConnectionAwareBaseActivity {
+
     private ActivityResultLauncher<String> pushNotificationPermissionLauncher;
     private ActivityResultLauncher<Intent> vpnPermissionLauncher;
-
-    private Messenger serviceMessenger;
-    private boolean isBound;
 
 
     // Views
@@ -39,45 +42,6 @@ public class MainActivity extends AppCompatActivity {
 
     Boolean canShowNotification = false;
 
-    private ConnectionState lastKnownConnectionState = ConnectionState.DISCONNECTED;
-
-    private ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            serviceMessenger = new Messenger(service);
-            isBound = true;
-            observeConnectionStatus();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            serviceMessenger = null;
-            isBound = false;
-        }
-    };
-
-
-    private SwitchButton.OnCheckedChangeListener createSwitchCheckedChangeListener() {
-        return (view, isChecked) -> {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !canShowNotification) {
-                pushNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-                return;
-            }
-
-            if (lastKnownConnectionState == ConnectionState.DISCONNECTED && isChecked) {
-                // From NoAction to Connecting
-                Intent vpnIntent = OblivionVpnService.prepare(this);
-                if (vpnIntent != null) {
-                    vpnPermissionLauncher.launch(vpnIntent);
-                } else {
-                    startVpnService();
-                }
-            } else if(lastKnownConnectionState == ConnectionState.CONNECTED || lastKnownConnectionState == ConnectionState.CONNECTING) {
-                stopVpnService();
-            }
-        };
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,23 +51,18 @@ public class MainActivity extends AppCompatActivity {
         switchButton.setOnCheckedChangeListener(createSwitchCheckedChangeListener());
     }
 
-
-
-    private void observeConnectionStatus() {
-        if (!isBound) return;
-        OblivionVpnService.registerConnectionStateObserver(ConnectionStateObserverKey, serviceMessenger, new ConnectionStateChangeListener() {
-            @Override
-            public void onChange(ConnectionState state) {
-                lastKnownConnectionState = state;
-                updateUi();
-            }
-        });
+    @Override
+    void onConnectionStateChange(ConnectionState state) {
+        updateUi();
     }
 
-    private void unsubscribeConnectionStatus() {
-        if (!isBound) return;
-        OblivionVpnService.unregisterConnectionStateObserver(ConnectionStateObserverKey, serviceMessenger);
+    @Override
+    String getKey() {
+        return "mainActivity";
     }
+
+
+
     private void updateUi() {
         switch(lastKnownConnectionState) {
             case DISCONNECTED:
@@ -118,23 +77,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Bind to the service
-        bindService(new Intent(this, OblivionVpnService.class), connection, Context.BIND_AUTO_CREATE);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        // Unbind from the service
-        if (isBound) {
-            unsubscribeConnectionStatus();
-            unbindService(connection);
-            isBound = false;
-        }
-    }
 
     private void connected() {
         stateText.setText("اتصال برقرار شد");
@@ -163,6 +105,8 @@ public class MainActivity extends AppCompatActivity {
         fileManager.set("isFirstValueInit", true);
     }
 
+
+
     private void initPermissionLauncher() {
         pushNotificationPermissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
@@ -179,28 +123,15 @@ public class MainActivity extends AppCompatActivity {
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_OK) {
-                        startVpnService();
+                        OblivionVpnService.startVpnService(this);
                     } else {
-                        stopVpnService();
+                        OblivionVpnService.stopVpnService(this);
                         Toast.makeText(this, "Really!?", Toast.LENGTH_LONG).show();
                     }
                 }
         );
     }
 
-
-    private void startVpnService() {
-        //Toast.makeText(getApplicationContext(), calculateArgs(), Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, OblivionVpnService.class);
-        intent.setAction(OblivionVpnService.FLAG_VPN_START);
-        ContextCompat.startForegroundService(this, intent);
-    }
-
-    private void stopVpnService() {
-        Intent intent = new Intent(this, OblivionVpnService.class);
-        intent.setAction(OblivionVpnService.FLAG_VPN_STOP);
-        ContextCompat.startForegroundService(this, intent);
-    }
 
     private void init() {
         initPermissionLauncher();
@@ -220,4 +151,28 @@ public class MainActivity extends AppCompatActivity {
         bugIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, BugActivity.class)));
         settingsIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, SettingsActivity.class)));
     }
+
+
+    private SwitchButton.OnCheckedChangeListener createSwitchCheckedChangeListener() {
+        return (view, isChecked) -> {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !canShowNotification) {
+                pushNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+                return;
+            }
+
+            if (lastKnownConnectionState == ConnectionState.DISCONNECTED && isChecked) {
+                // From NoAction to Connecting
+                Intent vpnIntent = OblivionVpnService.prepare(this);
+                if (vpnIntent != null) {
+                    vpnPermissionLauncher.launch(vpnIntent);
+                } else {
+                    OblivionVpnService.startVpnService(this);
+                }
+            } else if(lastKnownConnectionState == ConnectionState.CONNECTED || lastKnownConnectionState == ConnectionState.CONNECTING) {
+                OblivionVpnService.stopVpnService(this);
+            }
+        };
+    }
+
+
 }

@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.services;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -13,7 +13,10 @@ import android.service.quicksettings.TileService;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
-import androidx.core.content.ContextCompat;
+
+import org.bepass.oblivion.enums.ConnectionState;
+import org.bepass.oblivion.ConnectionStateChangeListener;
+import org.bepass.oblivion.R;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class QuickStartService extends TileService  {
@@ -69,27 +72,14 @@ public class QuickStartService extends TileService  {
             if (vpnIntent != null) {
                 Toast.makeText(this, "لطفا یک‌بار از درون اپلیکیشن متصل شوید", Toast.LENGTH_LONG).show();
             } else {
-                startVpnService();
+                OblivionVpnService.startVpnService(this);
             }
         } else {
-            stopVpnService();
+            OblivionVpnService.stopVpnService(this);
         }
     }
 
 
-    private void startVpnService() {
-        //Toast.makeText(getApplicationContext(), calculateArgs(), Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, OblivionVpnService.class);
-        intent.setAction(OblivionVpnService.FLAG_VPN_START);
-        ContextCompat.startForegroundService(this, intent);
-    }
-
-
-    private void stopVpnService() {
-        Intent intent = new Intent(this, OblivionVpnService.class);
-        intent.setAction(OblivionVpnService.FLAG_VPN_STOP);
-        ContextCompat.startForegroundService(this, intent);
-    }
 
     private void subscribe() {
         if (!isBound) return;

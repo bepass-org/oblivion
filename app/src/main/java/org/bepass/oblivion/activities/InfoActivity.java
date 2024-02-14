@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 

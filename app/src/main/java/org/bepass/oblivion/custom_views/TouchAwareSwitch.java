@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.custom_views;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -39,7 +39,7 @@ public class TouchAwareSwitch extends SwitchButton {
     }
 
     public void setChecked(boolean checked, boolean notify) {
-        if (!notify) setTag("TAG");
+        if (!notify) setTag("DO NOT REACT");
         setChecked(checked);
     }
 

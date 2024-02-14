@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.services;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED;
 
@@ -18,10 +18,19 @@ import android.os.Messenger;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
+
+import org.bepass.oblivion.enums.ConnectionState;
+import org.bepass.oblivion.ConnectionStateChangeListener;
+import org.bepass.oblivion.FileManager;
+import org.bepass.oblivion.R;
+import org.bepass.oblivion.activities.MainActivity;
+import org.bepass.oblivion.enums.SplitTunnelMode;
 
 import tun2socks.Tun2socks;
 import tun2socks.StartOptions;
@@ -31,7 +40,9 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.ServerSocket;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class OblivionVpnService extends VpnService {
     private static final String TAG = "oblivionVPN";
@@ -49,7 +60,7 @@ public class OblivionVpnService extends VpnService {
 
     private ConnectionState lastKnownState = ConnectionState.DISCONNECTED;
 
-    static final int MSG_PERFORM_CONNECTION_TEST= 1;
+    static final int MSG_PERFORM_CONNECTION_TEST = 1;
     static final int MSG_CONNECTION_STATE_SUBSCRIBE = 2;
     static final int MSG_CONNECTION_STATE_UNSUBSCRIBE = 3;
     static final int MSG_TILE_STATE_SUBSCRIPTION_RESULT = 4;
@@ -58,6 +69,19 @@ public class OblivionVpnService extends VpnService {
 
     private final Map<String, Messenger> connectionStateObservers = new HashMap<>();
 
+
+    public static void startVpnService(Context context) {
+        //Toast.makeText(getApplicationContext(), calculateArgs(), Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(context, OblivionVpnService.class);
+        intent.setAction(OblivionVpnService.FLAG_VPN_START);
+        ContextCompat.startForegroundService(context, intent);
+    }
+
+    public static void stopVpnService(Context context) {
+        Intent intent = new Intent(context, OblivionVpnService.class);
+        intent.setAction(OblivionVpnService.FLAG_VPN_STOP);
+        ContextCompat.startForegroundService(context, intent);
+    }
 
     public static void registerConnectionStateObserver(String key, Messenger serviceMessenger, ConnectionStateChangeListener observer) {
         // Create a message for the service
@@ -92,6 +116,7 @@ public class OblivionVpnService extends VpnService {
             e.printStackTrace();
         }
     }
+
 
     public static Map<String, Integer> splitHostAndPort(String hostPort) {
         if (hostPort == null || hostPort.isEmpty()) {
@@ -260,19 +285,18 @@ public class OblivionVpnService extends VpnService {
                     if (key == null)
                         throw new RuntimeException("No key was provided for the connection state observer");
                     if (service.connectionStateObservers.containsKey(key)) {
-                        //Already subscribed. Just push the latest known state to it.
-                        service.publishConnectionStateTo(key, service.lastKnownState);
-                        break;
+                        //Already subscribed
+                        return;
                     }
                     service.addConnectionStateObserver(key, message.replyTo);
-                    service.publishConnectionState(service.lastKnownState);
+                    service.publishConnectionStateTo(key, service.lastKnownState);
                     break;
                 }
                 case MSG_CONNECTION_STATE_UNSUBSCRIBE: {
                     String key = message.getData().getString("key");
                     if (key == null)
                         throw new RuntimeException("No observer was specified to unregister");
-                    service.removeConnectionStateObserver(key, null);
+                    service.removeConnectionStateObserver(key);
                     break;
                 }
                 default: {
@@ -404,14 +428,16 @@ public class OblivionVpnService extends VpnService {
         }
     }
 
+
     private void publishConnectionState(ConnectionState state) {
         if (!connectionStateObservers.isEmpty()) {
-            for (String observerKey : connectionStateObservers.keySet()) publishConnectionStateTo(observerKey, state);
+            for (String observerKey : connectionStateObservers.keySet())
+                publishConnectionStateTo(observerKey, state);
         }
     }
 
     private void publishConnectionStateTo(String observerKey, ConnectionState state) {
-        Log.i("Publisher", "Publishing state " + state);
+        Log.i("Publisher", "Publishing state " + state + " to " + observerKey);
         Messenger observer = connectionStateObservers.get(observerKey);
         if (observer == null) return;
         Bundle args = new Bundle();
@@ -457,7 +483,7 @@ public class OblivionVpnService extends VpnService {
         connectionStateObservers.put(key, messenger);
     }
 
-    public void removeConnectionStateObserver(String key, Messenger messenger) {
+    public void removeConnectionStateObserver(String key) {
         connectionStateObservers.remove(key);
     }
 
@@ -520,6 +546,15 @@ public class OblivionVpnService extends VpnService {
                     .addDisallowedApplication(getPackageName())
                     .addRoute("0.0.0.0", 0)
                     .addRoute("::", 0);
+            fileManager.getStringSet("splitTunnelApps", new HashSet<>());
+            SplitTunnelMode splitTunnelMode = SplitTunnelMode.getSplitTunnelMode(fileManager);
+            if (splitTunnelMode != SplitTunnelMode.DISABLED) {
+                for (String packageName : getSplitTunnelApps(fileManager)) {
+                    if (splitTunnelMode == SplitTunnelMode.BLACKLIST)
+                        builder.addDisallowedApplication(packageName);
+                }
+            }
+
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -531,5 +566,10 @@ public class OblivionVpnService extends VpnService {
 
         vpnThread = new Thread(() -> Tun2socks.runWarp(so));
         vpnThread.start();
+    }
+
+
+    private static Set<String> getSplitTunnelApps(FileManager fm) {
+        return fm.getStringSet("splitTunnelApps", new HashSet<>());
     }
 }
