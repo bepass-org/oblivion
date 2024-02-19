@@ -23,6 +23,7 @@
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
+            android:background="?selectableItemBackgroundBorderless"
             android:src="@drawable/ic_info"
             app:tint="#000000" />
 
@@ -34,6 +35,7 @@
             android:layout_marginTop="7dp"
             android:layout_marginEnd="14dp"
             android:layout_toStartOf="@id/setting_icon"
+            android:background="?selectableItemBackgroundBorderless"
             android:src="@drawable/ic_bug"
             app:tint="#555" />
 
@@ -44,6 +46,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="16dp"
+            android:background="?selectableItemBackgroundBorderless"
             android:src="@drawable/ic_settings"
             app:tint="#000000" />
 
@@ -63,22 +66,28 @@
 
     </LinearLayout>
 
-
-    <org.bepass.oblivion.TouchAwareSwitch
-        android:id="@+id/switch_button"
+    <FrameLayout
+        android:id="@+id/switch_button_frame"
         android:layout_width="160dp"
         android:layout_height="75dp"
         android:layout_centerInParent="true"
+        android:background="@drawable/switch_ripple"
+        android:padding="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.565"
-        app:sb_background="#D7D7D7"
-        app:sb_border_width="3dp"
-        app:sb_checked_color="#FFA200"
-        app:sb_show_indicator="false" />
+        app:layout_constraintVertical_bias="0.565">
+
+        <org.bepass.oblivion.TouchAwareSwitch
+            android:id="@+id/switch_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:sb_border_width="3dp"
+            app:sb_checked_color="#FFA200"
+            app:sb_show_indicator="false" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/state_text"
@@ -91,7 +100,7 @@
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/switch_button" />
+        app:layout_constraintTop_toBottomOf="@id/switch_button_frame" />
 
     <TextView
         android:id="@+id/app_name_1"

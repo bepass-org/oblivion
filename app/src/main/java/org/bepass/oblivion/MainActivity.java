@@ -12,6 +12,7 @@ import android.os.Messenger;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.FrameLayout;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
     private SwitchButton.OnCheckedChangeListener createSwitchCheckedChangeListener() {
         return (view, isChecked) -> {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !canShowNotification) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !canShowNotification) {
                 pushNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
                 return;
             }
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     startVpnService();
                 }
-            } else if(lastKnownConnectionState == ConnectionState.CONNECTED || lastKnownConnectionState == ConnectionState.CONNECTING) {
+            } else if (lastKnownConnectionState == ConnectionState.CONNECTED || lastKnownConnectionState == ConnectionState.CONNECTING) {
                 stopVpnService();
             }
         };
@@ -86,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
         firstValueInit();
         switchButton.setOnCheckedChangeListener(createSwitchCheckedChangeListener());
     }
-
 
 
     private void observeConnectionStatus() {
@@ -104,8 +104,9 @@ public class MainActivity extends AppCompatActivity {
         if (!isBound) return;
         OblivionVpnService.unregisterConnectionStateObserver(ConnectionStateObserverKey, serviceMessenger);
     }
+
     private void updateUi() {
-        switch(lastKnownConnectionState) {
+        switch (lastKnownConnectionState) {
             case DISCONNECTED:
                 disconnected();
                 break;
@@ -213,11 +214,15 @@ public class MainActivity extends AppCompatActivity {
         bugIcon = findViewById(R.id.bug_icon);
         settingsIcon = findViewById(R.id.setting_icon);
 
+        FrameLayout switchButtonFrame = findViewById(R.id.switch_button_frame);
         switchButton = findViewById(R.id.switch_button);
         stateText = findViewById(R.id.state_text);
 
         infoIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, InfoActivity.class)));
         bugIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, BugActivity.class)));
         settingsIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, SettingsActivity.class)));
+        switchButtonFrame.setOnClickListener(v -> {
+            switchButton.toggle();
+        });
     }
 }

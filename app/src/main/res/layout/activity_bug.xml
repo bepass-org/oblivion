@@ -20,6 +20,7 @@
             android:id="@+id/back"
             android:layout_width="36dp"
             android:layout_height="36dp"
+            android:background="?selectableItemBackgroundBorderless"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:layout_marginStart="16dp"

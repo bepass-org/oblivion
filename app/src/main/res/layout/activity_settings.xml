@@ -23,6 +23,7 @@
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
+            android:background="?selectableItemBackgroundBorderless"
             android:src="@drawable/ic_back"
             app:tint="#000000" />
 
@@ -57,10 +58,13 @@
             <LinearLayout
                 android:id="@+id/endpoint_layout"
                 android:layout_width="match_parent"
-                android:layout_marginHorizontal="16dp"
                 android:layout_height="80dp"
+                android:paddingHorizontal="16dp"
+                android:background="?selectableItemBackground"
+                android:focusable="true"
                 android:gravity="center"
                 android:orientation="vertical">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -71,25 +75,25 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
+                        android:ellipsize="end"
                         android:fontFamily="@font/shabnammedium"
+                        android:maxLines="1"
                         android:text="engage.cloudflareclient.com:2048"
                         android:textColor="#E4AB53"
-                        android:maxLines="1"
-                        android:ellipsize="end"
                         android:textSize="20sp" />
-                    
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:minWidth="100dp"
                         android:layout_alignParentEnd="true"
                         android:fontFamily="@font/shabnam"
+                        android:minWidth="100dp"
                         android:text="اندپوینت"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
 
                 </LinearLayout>
-                
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -103,20 +107,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
                 android:gravity="center"
-                android:orientation="vertical"
-            >
+                android:orientation="vertical">
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@android:color/darker_gray"/>
+                    android:background="@android:color/darker_gray" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/port_layout"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
+                android:paddingHorizontal="16dp"
+                android:background="?selectableItemBackground"
                 android:gravity="center"
-                android:layout_marginHorizontal="16dp"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -129,18 +134,18 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
-                        android:fontFamily="@font/shabnammedium"
-                        android:text="8086"
-                        android:maxLines="1"
                         android:ellipsize="end"
+                        android:fontFamily="@font/shabnammedium"
+                        android:maxLines="1"
+                        android:text="8086"
                         android:textColor="#E4AB53"
                         android:textSize="20sp" />
-                    
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:minWidth="100dp"
                         android:fontFamily="@font/shabnam"
+                        android:minWidth="100dp"
                         android:text="پورت تونل"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
@@ -161,20 +166,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
                 android:gravity="center"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical">
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@android:color/darker_gray"/>
+                    android:background="@android:color/darker_gray" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/lan_layout"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
+                android:paddingHorizontal="16dp"
+                android:background="?selectableItemBackground"
                 android:gravity="center"
-                android:layout_marginHorizontal="16dp"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -186,23 +192,23 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        >
+                        android:layout_weight="2">
+
                         <CheckBox
                             android:id="@+id/lan"
                             android:layout_width="50dp"
                             android:layout_height="38dp"
+                            android:buttonTint="#9F9D9E"
                             android:scaleX="1.5"
                             android:scaleY="1.5"
-                            android:buttonTint="#9F9D9E"
                             android:translationX="5dp" />
                     </LinearLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:minWidth="100dp"
                         android:fontFamily="@font/shabnam"
+                        android:minWidth="100dp"
                         android:text="اتصال از LAN"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
@@ -222,22 +228,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
                 android:gravity="center"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical">
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@android:color/darker_gray"/>
+                    android:background="@android:color/darker_gray" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/psiphon_layout"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
+                android:paddingHorizontal="16dp"
+                android:background="?selectableItemBackground"
                 android:gravity="center"
-                android:layout_marginHorizontal="16dp"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -247,23 +253,23 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        >
+                        android:layout_weight="2">
+
                         <CheckBox
                             android:id="@+id/psiphon"
                             android:layout_width="50dp"
                             android:layout_height="38dp"
+                            android:buttonTint="#9F9D9E"
                             android:scaleX="1.5"
                             android:scaleY="1.5"
-                            android:buttonTint="#9F9D9E"
                             android:translationX="5dp" />
                     </LinearLayout>
-                    
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:minWidth="100dp"
                         android:fontFamily="@font/shabnam"
+                        android:minWidth="100dp"
                         android:text="سایفون"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
@@ -284,20 +290,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
                 android:gravity="center"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical">
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@android:color/darker_gray"/>
+                    android:background="@android:color/darker_gray" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/country_layout"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
+                android:paddingHorizontal="16dp"
+                android:background="?selectableItemBackground"
                 android:gravity="center"
-                android:layout_marginHorizontal="16dp"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -310,18 +317,18 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
-                        android:fontFamily="@font/shabnammedium"
-                        android:text="Iran"
-                        android:maxLines="1"
                         android:ellipsize="end"
+                        android:fontFamily="@font/shabnammedium"
+                        android:maxLines="1"
+                        android:text="Iran"
                         android:textColor="#E4AB53"
                         android:textSize="20sp" />
-                    
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:minWidth="100dp"
                         android:fontFamily="@font/shabnam"
+                        android:minWidth="100dp"
                         android:text="انتخاب کشور"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
@@ -342,20 +349,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
                 android:gravity="center"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical">
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@android:color/darker_gray"/>
+                    android:background="@android:color/darker_gray" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/license_layout"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
+                android:paddingHorizontal="16dp"
+                android:background="?selectableItemBackground"
                 android:gravity="center"
-                android:layout_marginHorizontal="16dp"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -368,18 +376,18 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
-                        android:fontFamily="@font/shabnammedium"
-                        android:text="ADSNjIOV56899QQ"
-                        android:maxLines="1"
                         android:ellipsize="end"
+                        android:fontFamily="@font/shabnammedium"
+                        android:maxLines="1"
+                        android:text="ADSNjIOV56899QQ"
                         android:textColor="#E4AB53"
                         android:textSize="20sp" />
-                    
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:minWidth="100dp"
                         android:fontFamily="@font/shabnam"
+                        android:minWidth="100dp"
                         android:text="لایسنس"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
@@ -400,20 +408,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
                 android:gravity="center"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical">
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@android:color/darker_gray"/>
+                    android:background="@android:color/darker_gray" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/gool_layout"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
+                android:paddingHorizontal="16dp"
+                android:background="?selectableItemBackground"
                 android:gravity="center"
-                android:layout_marginHorizontal="16dp"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -423,23 +432,23 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        >
+                        android:layout_weight="2">
+
                         <CheckBox
                             android:id="@+id/gool"
                             android:layout_width="50dp"
                             android:layout_height="38dp"
+                            android:buttonTint="#9F9D9E"
                             android:scaleX="1.5"
                             android:scaleY="1.5"
-                            android:buttonTint="#9F9D9E"
                             android:translationX="5dp" />
                     </LinearLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:minWidth="100dp"
                         android:fontFamily="@font/shabnam"
+                        android:minWidth="100dp"
                         android:text="گول"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
@@ -453,7 +462,7 @@
                     android:text="فعالسازی Warp In Warp"
                     android:textColor="#9A9A9A"
                     android:textSize="16sp" />
-                
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
