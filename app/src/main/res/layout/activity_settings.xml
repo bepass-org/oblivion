@@ -305,22 +305,17 @@
                     android:layout_height="wrap_content"
                     android:gravity="end">
 
-                    <TextView
+                    <Spinner
                         android:id="@+id/country"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:fontFamily="@font/shabnammedium"
-                        android:text="Iran"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        android:textColor="#E4AB53"
-                        android:textSize="20sp" />
+                        android:layout_weight="1"/>
                     
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:minWidth="100dp"
+                        android:layout_marginStart="40dp"
                         android:fontFamily="@font/shabnam"
                         android:text="انتخاب کشور"
                         android:textColor="@color/black"
