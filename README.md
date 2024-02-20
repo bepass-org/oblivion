@@ -36,26 +36,8 @@ Navigate to the libs directory:
 
 ```bash
 cd app/libs
-```
-Initialize Go modules and install required packages:
-
-```bash
-go mod tidy
-go install golang.org/x/mobile/cmd/gomobile@latest
-go install golang.org/x/mobile/cmd/gobind@latest
-go get golang.org/x/mobile/cmd/gobind
-go get golang.org/x/mobile/cmd/gomobile
-go get golang.org/x/mobile
-```
-Initialize Go mobile:
-
-```bash
-gomobile init
-```
-Bind the Go package to Android:
-
-```bash
-gomobile bind -ldflags '-s -w' -o tun2socks.aar -androidapi 21 -target android .
+go run golang.org/x/mobile/cmd/gomobile init
+go run golang.org/x/mobile/cmd/gomobile bind -ldflags="-w -s" -target=android -androidapi=21 -o=tun2socks.aar .
 ```
 ### Generate Signed Bundle/APK:
 - In Android Studio, navigate to "Build" in the menu bar.

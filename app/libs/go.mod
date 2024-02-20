@@ -11,6 +11,7 @@ require (
 	github.com/eycorsican/go-tun2socks v1.16.11
 	github.com/songgao/water v0.0.0-20200317203138-2b4b6d7c09d8
 	github.com/xjasonlyu/tun2socks/v2 v2.5.2
+	golang.org/x/mobile v0.0.0-20240213143359-d1f7d3436075
 )
 
 require (
@@ -77,15 +78,15 @@ require (
 	gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/goptlib v1.5.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/mock v0.3.0 // indirect
-	golang.org/x/crypto v0.18.0 // indirect
+	golang.org/x/crypto v0.19.0 // indirect
 	golang.org/x/exp v0.0.0-20230725093048-515e97ebf090 // indirect
-	golang.org/x/mobile v0.0.0-20240112133503-c713f31d574b // indirect
-	golang.org/x/mod v0.14.0 // indirect
-	golang.org/x/net v0.20.0 // indirect
-	golang.org/x/sys v0.16.0 // indirect
+	golang.org/x/mod v0.15.0 // indirect
+	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/sync v0.6.0 // indirect
+	golang.org/x/sys v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	golang.org/x/tools v0.17.0 // indirect
+	golang.org/x/tools v0.18.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	google.golang.org/protobuf v1.32.0 // indirect
 	gvisor.dev/gvisor v0.0.0-20230927004350-cbd86285d259 // indirect
