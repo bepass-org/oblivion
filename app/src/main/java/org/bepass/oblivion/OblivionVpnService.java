@@ -357,19 +357,40 @@ public class OblivionVpnService extends VpnService {
         publishConnectionState(lastKnownState);
     }
 
+    private String getNotificationText() {
+        boolean usePsiphon = fileManager.getBoolean("USERSETTING_psiphon");
+        boolean useWarp = fileManager.getBoolean("USERSETTING_gool");
+
+        if (usePsiphon) {
+            String countryCode = fileManager.getString("USERSETTING_country");
+            String countryName = "".equals(countryCode) ? "Automatic" : CountryUtils.getCountryName(countryCode);
+            return "Psiphon (" + countryName + ") in Warp";
+
+        } else if (useWarp) {
+            return "Warp in Warp";
+
+        } else {
+            return "Warp";
+        }
+    }
+
     private void createNotification() {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         NotificationChannelCompat notificationChannel = new NotificationChannelCompat.Builder(
                 "vpn_service", NotificationManagerCompat.IMPORTANCE_DEFAULT)
-                .setName("Vpn service")
+                .setName("Vpn Service")
                 .build();
         notificationManager.createNotificationChannel(notificationChannel);
+        Intent disconnectIntent = new Intent(this, OblivionVpnService.class);
+        disconnectIntent.setAction(OblivionVpnService.FLAG_VPN_STOP);
+        PendingIntent disconnectPendingIntent = PendingIntent.getService(
+                this, 0, disconnectIntent, PendingIntent.FLAG_IMMUTABLE);
         PendingIntent contentPendingIntent = PendingIntent.getActivity(
                 this, 2, new Intent(this, MainActivity.class), PendingIntent.FLAG_IMMUTABLE);
         notification = new NotificationCompat.Builder(this, notificationChannel.getId())
-                .setContentTitle("Vpn service")
-                .setContentText("Oblivion WARP")
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("Vpn Service")
+                .setContentText("Oblivion - " + getNotificationText())
+                .setSmallIcon(R.mipmap.ic_notification)
                 .setOnlyAlertOnce(true)
                 .setOngoing(true)
                 .setAutoCancel(true)
@@ -377,6 +398,7 @@ public class OblivionVpnService extends VpnService {
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setDefaults(NotificationCompat.FLAG_ONLY_ALERT_ONCE)
                 .setContentIntent(contentPendingIntent)
+                .addAction(0, "Disconnect", disconnectPendingIntent)
                 .build();
     }
 
