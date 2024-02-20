@@ -3,54 +3,35 @@ name: Android CI
 on:
   workflow_dispatch:
   release:
-    types: [ published ]
+    types: [published]
 
 jobs:
   build:
-
     permissions:
       contents: write
 
     runs-on: ubuntu-latest
 
     env:
-      GOOS: ${{ matrix.goos }}
-      GOARCH: ${{ matrix.goarch }}
-      GOARM: ${{ matrix.goarm }}
       CGO_ENABLED: 0
 
     steps:
-
       - name: Checkout codebase
         uses: actions/checkout@v3
-
-      # Set Current Date As Env Variable
-      - name: Set current date as env variable
-        run: echo "date_today=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-
-      # Set Repository Name As Env Variable
-      - name: Set repository name as env variable
-        run: echo "repository_name=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
-
-      - name: Show workflow information
-        run: |
-          export _NAME=$GOOS-$GOARCH$GOARM$GOMIPS.${GITHUB_SHA::6}
-          echo "GOOS: $GOOS, GOARCH: $GOARCH, GOARM: $GOARM, GOMIPS: $GOMIPS, RELEASE_NAME: $_NAME"
-          echo "ASSET_NAME=$_NAME" >> $GITHUB_ENV
 
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.20.0'
+          go-version: "1.20"
           check-latest: true
 
       # Set up JDK
       - name: Set Up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
-          distribution: 'zulu'
-          cache: 'gradle'
+          java-version: "17"
+          distribution: "zulu"
+          cache: "gradle"
 
       - name: Install NDK
         uses: nttld/setup-ndk@v1
@@ -64,18 +45,9 @@ jobs:
             ANDROID_NDK_HOME=$d
           done
           cd app/libs
-          go mod tidy
-          go install golang.org/x/mobile/cmd/gomobile@latest
-          go install golang.org/x/mobile/cmd/gobind@latest
-          go get golang.org/x/mobile/cmd/gobind
-          go get golang.org/x/mobile/cmd/gomobile
-          go get golang.org/x/mobile
-          gomobile init
-          gomobile bind -ldflags '-s -w' -o tun2socks.aar -androidapi 21 -target android .
+          go run golang.org/x/mobile/cmd/gomobile init
+          go run golang.org/x/mobile/cmd/gomobile bind -ldflags="-w -s" -target=android -androidapi=21 -o=tun2socks.aar .
           cd ../..
-        env:
-          GOPROXY: https://proxy.golang.org,direct
-          GO111MODULE: "on"
 
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
@@ -86,36 +58,23 @@ jobs:
 
       # Build APKs
       - name: Build Release APK
-        run: ./gradlew assembleRelease
+        run: |
+          ./gradlew assembleRelease
 
-      - name: Sign app APK
-        uses: r0adkll/sign-android-release@v1
-        # ID used to access action output
-        id: sign_app
-        with:
-          releaseDirectory: app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-          alias: ${{ secrets.ALIAS }}
-          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
-        env:
-          # override default build-tools version (29.0.3) -- optional
-          BUILD_TOOLS_VERSION: "34.0.0"
-
-
-      # Upload APKs to GitHub Release
+      # Upload APK artifact
       - name: Upload files to Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: app-signed.apk
+          name: oblivion-${{ github.sha }}-unsigned.apk
           path: |
-            ${{steps.sign_app.outputs.signedReleaseFile}}
+            app/build/outputs/apk/release/app-release-unsigned.apk
 
       - name: Upload to GitHub Release
         uses: svenstaro/upload-release-action@v2
         if: github.event_name == 'release'
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{steps.sign_app.outputs.signedReleaseFile}}
+          file: app/build/outputs/apk/release/app-release-unsigned.apk
+          asset_name: oblivion-${{ github.event.release.tag_name }}-unsigned.apk
           tag: ${{ github.ref }}
           overwrite: true
