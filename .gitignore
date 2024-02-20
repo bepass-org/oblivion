@@ -14,7 +14,7 @@
 .cxx
 local.properties
 .idea
-go.sum
 /app/libs/*.aar
 /app/libs/*.jar
 /app/libs/.idea
+/app/release
