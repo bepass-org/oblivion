@@ -2,8 +2,10 @@ name: Android CI
 
 on:
   workflow_dispatch:
+  push:
+    branches: ["main"]
   release:
-    types: [published]
+    types: ["published"]
 
 jobs:
   build:
