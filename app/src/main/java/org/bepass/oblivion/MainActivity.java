@@ -15,14 +15,13 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.suke.widget.SwitchButton;
 
-public class MainActivity extends AppCompatActivity {
-
-    private static final String ConnectionStateObserverKey = "mainActivity";
+public class MainActivity extends ConnectionAwareBaseActivity {
     // Views
     ImageView infoIcon, bugIcon, settingsIcon;
     TouchAwareSwitch switchButton;
@@ -31,24 +30,6 @@ public class MainActivity extends AppCompatActivity {
     Boolean canShowNotification = false;
     private ActivityResultLauncher<String> pushNotificationPermissionLauncher;
     private ActivityResultLauncher<Intent> vpnPermissionLauncher;
-    private Messenger serviceMessenger;
-    private boolean isBound;
-    private ConnectionState lastKnownConnectionState = ConnectionState.DISCONNECTED;
-
-    private final ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            serviceMessenger = new Messenger(service);
-            isBound = true;
-            observeConnectionStatus();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            serviceMessenger = null;
-            isBound = false;
-        }
-    };
 
 
     private SwitchButton.OnCheckedChangeListener createSwitchCheckedChangeListener() {
@@ -82,20 +63,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void observeConnectionStatus() {
-        if (!isBound) return;
-        OblivionVpnService.registerConnectionStateObserver(ConnectionStateObserverKey, serviceMessenger, new ConnectionStateChangeListener() {
-            @Override
-            public void onChange(ConnectionState state) {
-                lastKnownConnectionState = state;
-                updateUi();
-            }
-        });
+    @NonNull
+    @Override
+    String getKey() {
+        return "mainActivity";
     }
 
-    private void unsubscribeConnectionStatus() {
-        if (!isBound) return;
-        OblivionVpnService.unregisterConnectionStateObserver(ConnectionStateObserverKey, serviceMessenger);
+    @Override
+    void onConnectionStateChange(ConnectionState state) {
+        updateUi();
     }
 
     private void updateUi() {
@@ -109,24 +85,6 @@ public class MainActivity extends AppCompatActivity {
             case CONNECTED:
                 connected();
                 break;
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Bind to the service
-        bindService(new Intent(this, OblivionVpnService.class), connection, Context.BIND_AUTO_CREATE);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        // Unbind from the service
-        if (isBound) {
-            unsubscribeConnectionStatus();
-            unbindService(connection);
-            isBound = false;
         }
     }
 
