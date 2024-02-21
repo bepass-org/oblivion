@@ -115,10 +115,8 @@ public class SettingsActivity extends AppCompatActivity {
         license.setText(fileManager.getString("USERSETTING_license"));
 
         String countryCode = fileManager.getString("USERSETTING_country");
-        int index;
-        if ("".equals(countryCode)) {
-            index = 0;
-        } else {
+        int index = 0;
+        if (!countryCode.equals("")) {
             String countryName = CountryUtils.getCountryName(countryCode);
             index = getIndexFromName(country, countryName);
         }
