@@ -72,7 +72,6 @@
         android:layout_height="75dp"
         android:layout_centerInParent="true"
         android:background="@drawable/switch_ripple"
-        android:padding="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -86,6 +85,7 @@
             android:layout_height="match_parent"
             app:sb_border_width="3dp"
             app:sb_checked_color="#FFA200"
+            app:sb_background="#D7D7D7"
             app:sb_show_indicator="false" />
     </FrameLayout>
 
