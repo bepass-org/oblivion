@@ -70,26 +70,11 @@ public class QuickStartService extends TileService {
             if (vpnIntent != null) {
                 Toast.makeText(this, "لطفا یک‌بار از درون اپلیکیشن متصل شوید", Toast.LENGTH_LONG).show();
             } else {
-                startVpnService();
+                OblivionVpnService.startVpnService(this);
             }
         } else {
-            stopVpnService();
+            OblivionVpnService.stopVpnService(this);
         }
-    }
-
-
-    private void startVpnService() {
-        //Toast.makeText(getApplicationContext(), calculateArgs(), Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, OblivionVpnService.class);
-        intent.setAction(OblivionVpnService.FLAG_VPN_START);
-        ContextCompat.startForegroundService(this, intent);
-    }
-
-
-    private void stopVpnService() {
-        Intent intent = new Intent(this, OblivionVpnService.class);
-        intent.setAction(OblivionVpnService.FLAG_VPN_STOP);
-        ContextCompat.startForegroundService(this, intent);
     }
 
     private void subscribe() {
