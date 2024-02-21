@@ -45,10 +45,10 @@ public class MainActivity extends ConnectionAwareBaseActivity {
                 if (vpnIntent != null) {
                     vpnPermissionLauncher.launch(vpnIntent);
                 } else {
-                    startVpnService();
+                    OblivionVpnService.startVpnService(this);
                 }
             } else if (lastKnownConnectionState == ConnectionState.CONNECTED || lastKnownConnectionState == ConnectionState.CONNECTING) {
-                stopVpnService();
+                OblivionVpnService.stopVpnService(this);
             }
         };
     }
@@ -126,26 +126,12 @@ public class MainActivity extends ConnectionAwareBaseActivity {
         });
         vpnPermissionLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == RESULT_OK) {
-                startVpnService();
+                OblivionVpnService.startVpnService(this);
             } else {
-                stopVpnService();
+                OblivionVpnService.stopVpnService(this);
                 Toast.makeText(this, "Really!?", Toast.LENGTH_LONG).show();
             }
         });
-    }
-
-
-    private void startVpnService() {
-        //Toast.makeText(getApplicationContext(), calculateArgs(), Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, OblivionVpnService.class);
-        intent.setAction(OblivionVpnService.FLAG_VPN_START);
-        ContextCompat.startForegroundService(this, intent);
-    }
-
-    private void stopVpnService() {
-        Intent intent = new Intent(this, OblivionVpnService.class);
-        intent.setAction(OblivionVpnService.FLAG_VPN_STOP);
-        ContextCompat.startForegroundService(this, intent);
     }
 
     private void init() {
