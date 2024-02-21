@@ -1,75 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:background="@drawable/rounded_bottom_sheet"
+  android:gravity="center"
+  android:orientation="vertical">
+
+  <View
+    android:id="@+id/dividingCloser"
+    android:layout_width="64dp"
+    android:layout_height="5dp"
+    android:layout_marginTop="8dp"
+    android:background="@drawable/bottom_sheet_closer" />
+
+  <TextView
+    android:id="@+id/title"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:fontFamily="@font/shabnam"
+    android:text="تغییر مقدار Endpoint"
+    android:textColor="@color/black"
+    android:textSize="18sp" />
+
+  <EditText
+    android:id="@+id/edittext"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="12dp"
+    android:padding="12dp"
+    android:background="@drawable/edittext_back"
+    android:fontFamily="@font/shabnam"
+    android:lineSpacingExtra="4dp"
+    android:textAlignment="center"
+    android:textColor="@color/black"
+    android:textSize="15sp" />
+
+  <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/rounded_bottom_sheet"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="12dp"
+    android:orientation="horizontal">
 
-    <View
-        android:id="@+id/dividingCloser"
-        android:layout_width="64dp"
-        android:layout_height="5dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/bottom_sheet_closer" />
+    <Button
+      android:id="@+id/cancelButton"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="8dp"
+      android:layout_weight="1"
+      android:background="@drawable/bottom_sheet_cancel"
+      android:fontFamily="@font/shabnam"
+      android:text="انصراف"
+      android:textColor="@color/black"
+      android:textSize="17sp" />
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/shabnam"
-        android:text="تغییر مقدار Endpoint"
-        android:textColor="@color/black"
-        android:textSize="18sp" />
+    <Button
+      android:id="@+id/applyButton"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="8dp"
+      android:layout_weight="1"
+      android:background="@drawable/bottom_sheet_closer"
+      android:fontFamily="@font/shabnam"
+      android:text="بروزرسانی"
+      android:textColor="@color/white"
+      android:textSize="17sp" />
 
-    <EditText
-        android:id="@+id/edittext"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="12dp"
-        android:padding="12dp"
-        android:background="@drawable/edittext_back"
-        android:fontFamily="@font/shabnam"
-        android:lineSpacingExtra="4dp"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textSize="15sp" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="12dp"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/cancelButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/bottom_sheet_cancel"
-            android:fontFamily="@font/shabnam"
-            android:text="انصراف"
-            android:textColor="@color/black"
-            android:textSize="17sp" />
-
-        <Button
-            android:id="@+id/applyButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/bottom_sheet_closer"
-            android:fontFamily="@font/shabnam"
-            android:text="بروزرسانی"
-            android:textColor="@color/white"
-            android:textSize="17sp" />
-
-    </LinearLayout>
+  </LinearLayout>
 
 
 </LinearLayout>
