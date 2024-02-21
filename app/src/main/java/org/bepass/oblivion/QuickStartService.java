@@ -61,6 +61,10 @@ public class QuickStartService extends TileService {
     @Override
     public void onClick() {
         Tile tile = getQsTile();
+        if (tile == null) {
+            //Quick setting tile was not registered by system. Return to prevent crash
+            return;
+        }
         if (tile.getState() == Tile.STATE_INACTIVE) {
             Intent vpnIntent = OblivionVpnService.prepare(this);
             if (vpnIntent != null) {
@@ -94,6 +98,10 @@ public class QuickStartService extends TileService {
             @Override
             public void onChange(ConnectionState state) {
                 Tile tile = getQsTile();
+                if (tile == null) {
+                    //Quick setting tile was not registered by system. Return to prevent crash
+                    return;
+                }
                 switch (state) {
                     case DISCONNECTED:
                         tile.setState(Tile.STATE_INACTIVE);
