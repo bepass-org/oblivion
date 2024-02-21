@@ -2,13 +2,11 @@ package org.bepass.oblivion;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 public class FileManager {
-    private static FileManager instance;
-    private SharedPreferences sharedPreferences;
-
     public static String currentLog;
+    private static FileManager instance;
+    private final SharedPreferences sharedPreferences;
 
     // Private constructor for singleton pattern
     private FileManager(Context context) {
@@ -60,6 +58,7 @@ public class FileManager {
     public boolean getBoolean(String name) {
         return sharedPreferences.getBoolean(name, false);
     }
+
     public boolean getBoolean(String name, boolean defaultValue) {
         return sharedPreferences.getBoolean(name, defaultValue);
     }

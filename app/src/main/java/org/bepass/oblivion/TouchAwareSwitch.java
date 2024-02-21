@@ -3,8 +3,6 @@ package org.bepass.oblivion;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.View;
 
 import com.suke.widget.SwitchButton;
 
@@ -21,6 +19,7 @@ public class TouchAwareSwitch extends SwitchButton {
     public TouchAwareSwitch(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void setOnCheckedChangeListener(final OnCheckedChangeListener listener) {
@@ -42,10 +41,6 @@ public class TouchAwareSwitch extends SwitchButton {
         if (!notify) setTag("TAG");
         setChecked(checked);
     }
-
-
-
-
 
 
 }

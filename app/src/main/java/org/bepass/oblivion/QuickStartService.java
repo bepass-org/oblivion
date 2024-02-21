@@ -16,13 +16,11 @@ import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
-public class QuickStartService extends TileService  {
+public class QuickStartService extends TileService {
+    private final static String CONNECTION_OBSERVER_KEY = "quickstartToggleButton";
     private boolean isBound;
     private Messenger serviceMessenger;
-
-    private final static String CONNECTION_OBSERVER_KEY = "quickstartToggleButton";
-
-    private ServiceConnection connection = new ServiceConnection() {
+    private final ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             serviceMessenger = new Messenger(service);
@@ -36,7 +34,6 @@ public class QuickStartService extends TileService  {
             isBound = false;
         }
     };
-
 
 
     // Called when your app can update your tile.
