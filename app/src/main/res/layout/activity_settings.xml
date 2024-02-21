@@ -171,6 +171,52 @@
       </LinearLayout>
 
       <LinearLayout
+          android:id="@+id/split_tunnel_layout"
+          android:layout_width="match_parent"
+          android:layout_height="80dp"
+          android:background="?android:selectableItemBackground"
+          android:gravity="center"
+          android:layout_marginHorizontal="16dp"
+          android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end">
+
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:minWidth="100dp"
+              android:fontFamily="@font/shabnam"
+              android:text="لیست سیاه"
+              android:textColor="@color/black"
+              android:textSize="20sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/shabnam"
+            android:text="تعیین کنید چه برنامه‌هایی از VPN استفاده نکنند"
+            android:textColor="#9A9A9A"
+            android:textSize="16sp" />
+
+      </LinearLayout>
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="10dp"
+          android:gravity="center"
+          android:orientation="vertical"
+          >
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+      </LinearLayout>
+
+      <LinearLayout
         android:id="@+id/lan_layout"
         android:layout_width="match_parent"
         android:layout_height="80dp"

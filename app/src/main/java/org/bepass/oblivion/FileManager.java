@@ -3,6 +3,8 @@ package org.bepass.oblivion;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.Set;
+
 public class FileManager {
     public static String currentLog;
     private static FileManager instance;
@@ -30,6 +32,10 @@ public class FileManager {
         sharedPreferences.edit().putBoolean(name, value).apply();
     }
 
+    public void set(String name, Set<String> value) {
+        sharedPreferences.edit().putStringSet(name, value).apply();
+    }
+
     public void set(String name, int value) {
         sharedPreferences.edit().putInt(name, value).apply();
     }
@@ -53,6 +59,10 @@ public class FileManager {
 
     public String getString(String name, String defaultValue) {
         return sharedPreferences.getString(name, defaultValue);
+    }
+
+    public Set<String> getStringSet(String name, Set<String> def) {
+        return sharedPreferences.getStringSet(name, def);
     }
 
     public boolean getBoolean(String name) {
