@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/imagesContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/rightText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rightImage"
+            android:layout_marginTop="8dp"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="@font/shabnammedium"
+            android:gravity="center_horizontal"
+            android:text="#یوسف_قبادی"
+            android:textAlignment="textEnd"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/rightImage"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/rightImage"
+            app:layout_constraintTop_toBottomOf="@id/rightImage"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/leftText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/leftImage"
+            android:layout_marginTop="8dp"
+            android:autoSizeMinTextSize="18dp"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="@font/shabnammedium"
+            android:gravity="center_horizontal"
+            android:text="#سگارو"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/leftImage"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/leftImage"
+            app:layout_constraintTop_toBottomOf="@id/leftImage"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <ImageView
+            android:id="@+id/leftImage"
+            android:layout_width="191dp"
+            android:layout_height="149dp"
+            android:foreground="@drawable/light_shadow_bottom"
+            android:src="@drawable/segaro_image"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="2:1"
+            app:layout_constraintEnd_toStartOf="@id/rightImage"
+            app:layout_constraintHorizontal_bias="0.55"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.5" />
+
+        <ImageView
+            android:id="@+id/rightImage"
+            android:layout_width="191dp"
+            android:layout_height="149dp"
+            android:foreground="@drawable/light_shadow_bottom"
+            android:src="@drawable/yousef_image"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="2:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@id/leftImage"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.5" />
+
+        <TextView
+            android:id="@+id/leftaboveText"
+            android:layout_width="246dp"
+            android:layout_height="61dp"
+            android:autoSizeMinTextSize="18dp"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="@font/shabnammedium"
+            android:gravity="center_horizontal"
+            android:text='یعنی "فراموشی،بیخیالی"'
+            android:textAlignment="textEnd"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@+id/leftImage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.054"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.665" />
+
+        <TextView
+            android:id="@+id/rightaboveText"
+            android:layout_width="114dp"
+            android:layout_height="47dp"
+            android:autoSizeMinTextSize="18dp"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="@font/shabnammedium"
+            android:gravity="center_horizontal"
+            android:text="@string/app_name"
+            android:textAlignment="textEnd"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@+id/rightImage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.858"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.532" />
+
+        <ImageView
+            android:id="@+id/quote_icon"
+            android:layout_width="25dp"
+            android:layout_height="46dp"
+            android:layout_marginStart="7dp"
+            android:src="@drawable/quote"
+            app:layout_constraintBottom_toTopOf="@+id/rightImage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/rightaboveText"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.534" />
+
+        <TextView
+            android:id="@+id/rightaboveaboveText"
+            android:layout_width="123dp"
+            android:layout_height="46dp"
+            android:autoSizeMinTextSize="18dp"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="@font/shabnammedium"
+            android:gravity="center_horizontal"
+            android:text="فراموش نکنید!"
+            android:textAlignment="textEnd"
+            android:textColor="#FFA200"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/rightImage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.878"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.824" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/shabnammedium"
+            android:text="اینترنت برای همه، یا هیچکس"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            app:flow_horizontalAlign="center"
+            app:flow_verticalAlign="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/leftText"
+            app:layout_constraintVertical_bias="0.839" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
