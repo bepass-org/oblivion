@@ -1,13 +1,13 @@
 package org.bepass.oblivion;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -16,11 +16,11 @@ import java.io.InputStreamReader;
 
 public class BugActivity extends AppCompatActivity {
 
+    private final Handler handler = new Handler(Looper.getMainLooper());
     private ImageView back;
     private TextView logs;
     private ScrollView logScrollView;
     private boolean isUserScrollingUp = false;
-    private Handler handler = new Handler(Looper.getMainLooper());
     private Runnable logUpdater;
 
     @Override

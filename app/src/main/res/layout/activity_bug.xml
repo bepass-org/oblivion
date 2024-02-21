@@ -1,62 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@drawable/background_gradient"
+  tools:context="org.bepass.oblivion.BugActivity">
+
+  <RelativeLayout
+    android:id="@+id/top_bar"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/background_gradient"
-    tools:context="org.bepass.oblivion.BugActivity">
+    android:layout_height="48dp"
+    android:layout_marginTop="8dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
 
-    <RelativeLayout
-        android:id="@+id/top_bar"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <ImageView
+      android:id="@+id/back"
+      android:layout_width="36dp"
+      android:layout_height="36dp"
+      android:layout_alignParentStart="true"
+      android:layout_centerVertical="true"
+      android:layout_marginStart="16dp"
+      android:src="@drawable/ic_back"
+      app:tint="#000000" />
 
-        <ImageView
-            android:id="@+id/back"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
-            android:src="@drawable/ic_back"
-            app:tint="#000000" />
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:layout_centerVertical="true"
+      android:layout_marginEnd="16dp"
+      android:fontFamily="@font/shabnamlight"
+      android:text="لاگ برنامه"
+      android:textColor="@color/black"
+      android:textSize="32sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="16dp"
-            android:fontFamily="@font/shabnamlight"
-            android:text="لاگ برنامه"
-            android:textColor="@color/black"
-            android:textSize="32sp" />
+  </RelativeLayout>
 
-    </RelativeLayout>
+  <ScrollView
+    android:id="@+id/logScrollView"
+    android:layout_width="match_parent"
+    android:fillViewport="true"
+    android:layout_height="0dp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="16dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/top_bar">
 
-    <ScrollView
-        android:id="@+id/logScrollView"
-        android:layout_width="match_parent"
-        android:fillViewport="true"
-        android:layout_height="0dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/top_bar">
-
-        <TextView
-            android:id="@+id/logs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Start Logging Here.." />
-    </ScrollView>
+    <TextView
+      android:id="@+id/logs"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="Start Logging Here.." />
+  </ScrollView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

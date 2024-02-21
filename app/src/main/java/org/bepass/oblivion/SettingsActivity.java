@@ -1,9 +1,6 @@
 package org.bepass.oblivion;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,7 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.bepass.oblivion.R;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -119,7 +116,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         String countryCode = fileManager.getString("USERSETTING_country");
         int index;
-        if("".equals(countryCode)) {
+        if ("".equals(countryCode)) {
             index = 0;
         } else {
             String countryName = CountryUtils.getCountryName(countryCode);
