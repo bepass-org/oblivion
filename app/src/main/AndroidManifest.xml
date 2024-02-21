@@ -13,6 +13,13 @@
         android:minSdkVersion="34" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+        </intent>
+    </queries>
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -69,7 +76,7 @@
             android:theme="@style/Theme.OblivionUI">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -86,6 +93,9 @@
             android:exported="false"
             android:windowSoftInputMode="stateAlwaysHidden" />
 
+        <activity
+            android:name=".SplitTunnelActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

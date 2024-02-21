@@ -39,7 +39,12 @@ public class MainActivity extends ConnectionAwareBaseActivity {
                 return;
             }
 
-            if (lastKnownConnectionState == ConnectionState.DISCONNECTED && isChecked) {
+            if (!lastKnownConnectionState.isDisconnected()) {
+                OblivionVpnService.stopVpnService(this);
+                return;
+            }
+
+            if (isChecked) {
                 // From NoAction to Connecting
                 Intent vpnIntent = OblivionVpnService.prepare(this);
                 if (vpnIntent != null) {
@@ -47,9 +52,8 @@ public class MainActivity extends ConnectionAwareBaseActivity {
                 } else {
                     OblivionVpnService.startVpnService(this);
                 }
-            } else if (lastKnownConnectionState.isConnectedOrConnecting()) {
-                OblivionVpnService.stopVpnService(this);
             }
+
         };
     }
 
