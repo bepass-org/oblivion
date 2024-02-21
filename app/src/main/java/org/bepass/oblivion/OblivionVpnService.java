@@ -22,6 +22,7 @@ import android.util.Log;
 import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -66,6 +67,19 @@ public class OblivionVpnService extends VpnService {
     private String bindAddress;
     private FileManager fileManager;
     private ConnectionState lastKnownState = ConnectionState.DISCONNECTED;
+
+    public static void startVpnService(Context context) {
+        Intent intent = new Intent(context, OblivionVpnService.class);
+        intent.setAction(OblivionVpnService.FLAG_VPN_START);
+        ContextCompat.startForegroundService(context, intent);
+    }
+
+
+    public static void stopVpnService(Context context) {
+        Intent intent = new Intent(context, OblivionVpnService.class);
+        intent.setAction(OblivionVpnService.FLAG_VPN_STOP);
+        ContextCompat.startForegroundService(context, intent);
+    }
 
     public static void registerConnectionStateObserver(String key, Messenger serviceMessenger, ConnectionStateChangeListener observer) {
         // Create a message for the service
@@ -137,9 +151,7 @@ public class OblivionVpnService extends VpnService {
     }
 
     private static int findFreePort() {
-        ServerSocket socket = null;
-        try {
-            socket = new ServerSocket(0);
+        try (ServerSocket socket = new ServerSocket(0)) {
             socket.setReuseAddress(true);
             int port = socket.getLocalPort();
             try {
@@ -148,14 +160,7 @@ public class OblivionVpnService extends VpnService {
                 // Ignore IOException on close()
             }
             return port;
-        } catch (IOException e) {
-        } finally {
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                }
-            }
+        } catch (IOException ignored) {
         }
         throw new IllegalStateException("Could not find a free TCP/IP port to start embedded Jetty HTTP Server on");
     }
@@ -333,7 +338,7 @@ public class OblivionVpnService extends VpnService {
     }
 
     private void publishConnectionStateTo(String observerKey, ConnectionState state) {
-        Log.i("Publisher", "Publishing state " + state);
+        Log.i("Publisher", "Publishing state " + state + " to " + observerKey);
         Messenger observer = connectionStateObservers.get(observerKey);
         if (observer == null) return;
         Bundle args = new Bundle();
@@ -379,7 +384,7 @@ public class OblivionVpnService extends VpnService {
         connectionStateObservers.put(key, messenger);
     }
 
-    public void removeConnectionStateObserver(String key, Messenger messenger) {
+    public void removeConnectionStateObserver(String key) {
         connectionStateObservers.remove(key);
     }
 
@@ -504,19 +509,18 @@ public class OblivionVpnService extends VpnService {
                     if (key == null)
                         throw new RuntimeException("No key was provided for the connection state observer");
                     if (service.connectionStateObservers.containsKey(key)) {
-                        //Already subscribed. Just push the latest known state to it.
-                        service.publishConnectionStateTo(key, service.lastKnownState);
-                        break;
+                        //Already subscribed
+                        return;
                     }
                     service.addConnectionStateObserver(key, message.replyTo);
-                    service.publishConnectionState(service.lastKnownState);
+                    service.publishConnectionStateTo(key, service.lastKnownState);
                     break;
                 }
                 case MSG_CONNECTION_STATE_UNSUBSCRIBE: {
                     String key = message.getData().getString("key");
                     if (key == null)
                         throw new RuntimeException("No observer was specified to unregister");
-                    service.removeConnectionStateObserver(key, null);
+                    service.removeConnectionStateObserver(key);
                     break;
                 }
                 default: {
