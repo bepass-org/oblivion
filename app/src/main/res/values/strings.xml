@@ -1,3 +1,35 @@
 <resources>
-    <string name="app_name">Oblivion</string>
+  <string name="app_name">Oblivion</string>
+  <string-array name="countries">
+    <item>Automatic</item>
+    <item>Austria</item>
+    <item>Belgium</item>
+    <item>Brazil</item>
+    <item>Bulgaria</item>
+    <item>Canada</item>
+    <item>Denmark</item>
+    <item>Estonia</item>
+    <item>Finland</item>
+    <item>France</item>
+    <item>Germany</item>
+    <item>Hungary</item>
+    <item>India</item>
+    <item>Ireland</item>
+    <item>Italy</item>
+    <item>Japan</item>
+    <item>Latvia</item>
+    <item>Netherlands</item>
+    <item>Norway</item>
+    <item>Poland</item>
+    <item>Romania</item>
+    <item>Serbia</item>
+    <item>Singapore</item>
+    <item>Slovakia</item>
+    <item>Spain</item>
+    <item>Sweden</item>
+    <item>Switzerland</item>
+    <item>Ukraine</item>
+    <item>United Kingdom</item>
+    <item>United States</item>
+  </string-array>
 </resources>

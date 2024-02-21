@@ -1,15 +1,16 @@
 package org.bepass.oblivion;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.bepass.oblivion.R;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -18,8 +19,10 @@ public class SettingsActivity extends AppCompatActivity {
 
     LinearLayout endpointLayout, portLayout, lanLayout, psiphonLayout, countryLayout, licenseLayout, goolLayout;
 
-    TextView endpoint, port, country, license;
+    TextView endpoint, port, license;
     CheckBox psiphon, lan, gool;
+    Spinner country;
+    ArrayAdapter adapter;
 
     private CheckBox.OnCheckedChangeListener psiphonListener;
     private CheckBox.OnCheckedChangeListener goolListener;
@@ -41,8 +44,25 @@ public class SettingsActivity extends AppCompatActivity {
         // Listen to Changes
         endpointLayout.setOnClickListener(v -> (new EditSheet(this, "اندپوینت", "endpoint", sheetsCallBack)).start());
         portLayout.setOnClickListener(v -> (new EditSheet(this, "پورت", "port", sheetsCallBack)).start());
-        countryLayout.setOnClickListener(v -> (new EditSheet(this, "کشور", "country", sheetsCallBack)).start());
         licenseLayout.setOnClickListener(v -> (new EditSheet(this, "لایسنس", "license", sheetsCallBack)).start());
+
+        adapter = ArrayAdapter.createFromResource(this, R.array.countries, R.layout.country_item_layout);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        country.setAdapter(adapter);
+
+        country.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView parent, View view, int position, long id) {
+                String name = parent.getItemAtPosition(position).toString();
+                String code = CountryUtils.getCountryCode(name);
+                fileManager.set("USERSETTING_country", code);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView parent) {
+
+            }
+        });
 
         // Set Current Values
         settingBasicValuesFromSPF();
@@ -60,7 +80,7 @@ public class SettingsActivity extends AppCompatActivity {
                 fileManager.set("USERSETTING_gool", false);
             }
             countryLayout.setAlpha(isChecked ? 1f : 0.2f);
-            countryLayout.setClickable(isChecked);
+            country.setEnabled(isChecked);
         };
 
         goolListener = (buttonView, isChecked) -> {
@@ -69,7 +89,7 @@ public class SettingsActivity extends AppCompatActivity {
                 setCheckBoxWithoutTriggeringListener(psiphon, false, psiphonListener);
                 fileManager.set("USERSETTING_psiphon", false);
                 countryLayout.setAlpha(0.2f);
-                countryLayout.setClickable(false);
+                country.setEnabled(false);
             }
         };
 
@@ -78,11 +98,29 @@ public class SettingsActivity extends AppCompatActivity {
         gool.setOnCheckedChangeListener(goolListener);
     }
 
+    private int getIndexFromName(Spinner spinner, String name) {
+
+        for (int i = 0; i < spinner.getCount(); i++) {
+            if (spinner.getItemAtPosition(i).toString().equals(name)) {
+                return i;
+            }
+        }
+
+        return 0;
+    }
+
     private void settingBasicValuesFromSPF() {
         endpoint.setText(fileManager.getString("USERSETTING_endpoint"));
         port.setText(fileManager.getString("USERSETTING_port"));
-        country.setText(fileManager.getString("USERSETTING_country"));
         license.setText(fileManager.getString("USERSETTING_license"));
+
+        String countryCode = fileManager.getString("USERSETTING_country");
+        int index = 0;
+        if (!countryCode.equals("")) {
+            String countryName = CountryUtils.getCountryName(countryCode);
+            index = getIndexFromName(country, countryName);
+        }
+        country.setSelection(index);
 
         psiphon.setChecked(fileManager.getBoolean("USERSETTING_psiphon"));
         lan.setChecked(fileManager.getBoolean("USERSETTING_lan"));
@@ -91,10 +129,10 @@ public class SettingsActivity extends AppCompatActivity {
 
         if (!psiphon.isChecked()) {
             countryLayout.setAlpha(0.2f);
-            countryLayout.setClickable(false);
+            country.setEnabled(false);
         } else {
             countryLayout.setAlpha(1f);
-            countryLayout.setClickable(true);
+            country.setEnabled(true);
         }
     }
 

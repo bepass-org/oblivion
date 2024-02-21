@@ -24,25 +24,19 @@ import com.suke.widget.SwitchButton;
 public class MainActivity extends AppCompatActivity {
 
     private static final String ConnectionStateObserverKey = "mainActivity";
-    private ActivityResultLauncher<String> pushNotificationPermissionLauncher;
-    private ActivityResultLauncher<Intent> vpnPermissionLauncher;
-
-    private Messenger serviceMessenger;
-    private boolean isBound;
-
-
     // Views
     ImageView infoIcon, bugIcon, settingsIcon;
     TouchAwareSwitch switchButton;
     TextView stateText;
-
     FileManager fileManager;
-
     Boolean canShowNotification = false;
-
+    private ActivityResultLauncher<String> pushNotificationPermissionLauncher;
+    private ActivityResultLauncher<Intent> vpnPermissionLauncher;
+    private Messenger serviceMessenger;
+    private boolean isBound;
     private ConnectionState lastKnownConnectionState = ConnectionState.DISCONNECTED;
 
-    private ServiceConnection connection = new ServiceConnection() {
+    private final ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             serviceMessenger = new Messenger(service);
@@ -165,28 +159,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initPermissionLauncher() {
-        pushNotificationPermissionLauncher = registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(),
-                isGranted -> {
-                    if (isGranted) {
-                        canShowNotification = true;
-                    } else {
-                        disconnected();
-                        Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
-                    }
-                }
-        );
-        vpnPermissionLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK) {
-                        startVpnService();
-                    } else {
-                        stopVpnService();
-                        Toast.makeText(this, "Really!?", Toast.LENGTH_LONG).show();
-                    }
-                }
-        );
+        pushNotificationPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                canShowNotification = true;
+            } else {
+                disconnected();
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
+            }
+        });
+        vpnPermissionLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                startVpnService();
+            } else {
+                stopVpnService();
+                Toast.makeText(this, "Really!?", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 

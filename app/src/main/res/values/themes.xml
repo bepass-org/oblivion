@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.OblivionUI" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
-    </style>
+  <style name="Theme.OblivionUI" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
+  </style>
 
-    <style name="CustomBottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
-        <item name="android:windowIsFloating">false</item>
-        <item name="android:windowSoftInputMode">adjustResize</item>
-        <item name="bottomSheetStyle">@style/CustomBottomSheet</item>
-    </style>
+  <style name="CustomBottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+    <item name="android:windowIsFloating">false</item>
+    <item name="android:windowSoftInputMode">adjustResize</item>
+    <item name="bottomSheetStyle">@style/CustomBottomSheet</item>
+  </style>
 
-    <style name="CustomBottomSheet" parent="Widget.MaterialComponents.BottomSheet.Modal">`
-        <item name="backgroundTint">@android:color/transparent</item>
-    </style>
+  <style name="CustomBottomSheet" parent="Widget.MaterialComponents.BottomSheet.Modal">` <item
+      name="backgroundTint">@android:color/transparent</item>
+  </style>
 
 
 </resources>

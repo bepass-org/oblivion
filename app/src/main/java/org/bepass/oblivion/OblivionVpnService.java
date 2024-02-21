@@ -23,9 +23,6 @@ import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import tun2socks.Tun2socks;
-import tun2socks.StartOptions;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -33,31 +30,42 @@ import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.Map;
 
+import tun2socks.StartOptions;
+import tun2socks.Tun2socks;
+
 public class OblivionVpnService extends VpnService {
-    private static final String TAG = "oblivionVPN";
     public static final String FLAG_VPN_START = "org.bepass.oblivion.START";
     public static final String FLAG_VPN_STOP = "org.bepass.oblivion.STOP";
+    static final int MSG_PERFORM_CONNECTION_TEST = 1;
+    static final int MSG_CONNECTION_STATE_SUBSCRIBE = 2;
+    static final int MSG_CONNECTION_STATE_UNSUBSCRIBE = 3;
+    static final int MSG_TILE_STATE_SUBSCRIPTION_RESULT = 4;
+    private static final String TAG = "oblivionVPN";
     private static final String PRIVATE_VLAN4_CLIENT = "172.19.0.1";
     private static final String PRIVATE_VLAN6_CLIENT = "fdfe:dcba:9876::1";
+    private final Handler handler = new Handler();
+    private final Messenger serviceMessenger = new Messenger(new IncomingHandler(this));
+    private final Map<String, Messenger> connectionStateObservers = new HashMap<>();
+    private final Runnable logRunnable = new Runnable() {
+        @Override
+        public void run() {
+            String logMessages = Tun2socks.getLogMessages();
+            if (!logMessages.isEmpty()) {
+                try (FileOutputStream fos = getApplicationContext().openFileOutput("logs.txt", Context.MODE_APPEND)) {
+                    fos.write((logMessages).getBytes());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            handler.postDelayed(this, 2000); // Poll every 2 seconds
+        }
+    };
     private Notification notification;
     private ParcelFileDescriptor mInterface;
     private Thread vpnThread;
     private String bindAddress;
-    private final Handler handler = new Handler();
-
     private FileManager fileManager;
-
     private ConnectionState lastKnownState = ConnectionState.DISCONNECTED;
-
-    static final int MSG_PERFORM_CONNECTION_TEST= 1;
-    static final int MSG_CONNECTION_STATE_SUBSCRIBE = 2;
-    static final int MSG_CONNECTION_STATE_UNSUBSCRIBE = 3;
-    static final int MSG_TILE_STATE_SUBSCRIPTION_RESULT = 4;
-
-    private final Messenger serviceMessenger = new Messenger(new IncomingHandler(this));
-
-    private final Map<String, Messenger> connectionStateObservers = new HashMap<>();
-
 
     public static void registerConnectionStateObserver(String key, Messenger serviceMessenger, ConnectionStateChangeListener observer) {
         // Create a message for the service
@@ -152,20 +160,6 @@ public class OblivionVpnService extends VpnService {
         throw new IllegalStateException("Could not find a free TCP/IP port to start embedded Jetty HTTP Server on");
     }
 
-    private String getBindAddress() {
-        String port = fileManager.getString("USERSETTING_port");
-        boolean enableLan = fileManager.getBoolean("USERSETTING_lan");
-        if (OblivionVpnService.isLocalPortInUse("127.0.0.1:" + port).equals("true")) {
-            port = findFreePort() + "";
-        }
-        String Bind = "";
-        Bind += "127.0.0.1:" + port;
-        if (enableLan) {
-            Bind = "0.0.0.0:" + port;
-        }
-        return Bind;
-    }
-
     public static String isLocalPortInUse(String bindAddress) {
         Map<String, Integer> result = splitHostAndPort(bindAddress);
         if (result == null) {
@@ -210,97 +204,32 @@ public class OblivionVpnService extends VpnService {
         }).start();
     }
 
-
-    private static class IncomingHandler extends Handler {
-        private final WeakReference<OblivionVpnService> serviceRef;
-
-        IncomingHandler(OblivionVpnService service) {
-            serviceRef = new WeakReference<>(service);
+    private String getBindAddress() {
+        String port = fileManager.getString("USERSETTING_port");
+        boolean enableLan = fileManager.getBoolean("USERSETTING_lan");
+        if (OblivionVpnService.isLocalPortInUse("127.0.0.1:" + port).equals("true")) {
+            port = String.valueOf(findFreePort());
         }
-
-        @Override
-        public void handleMessage(Message msg) {
-            final Message message = new Message();
-            message.copyFrom(msg);
-            OblivionVpnService service = serviceRef.get();
-            if (service == null) return;
-            switch (msg.what) {
-                case MSG_PERFORM_CONNECTION_TEST: {
-                    performConnectionTest(service.bindAddress, new ConnectionStateChangeListener() {
-                        @Override
-                        public void onChange(ConnectionState state) {
-                            service.setLastKnownState(state);
-                            Bundle data = new Bundle();
-                            if (state == ConnectionState.DISCONNECTED) {
-                                data.putBoolean("success", false);
-                                Message replyMsg = Message.obtain(null, MSG_PERFORM_CONNECTION_TEST);
-                                replyMsg.setData(data);
-                                try {
-                                    message.replyTo.send(replyMsg);
-                                } catch (RemoteException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                data.putBoolean("success", true);
-                                Message replyMsg = Message.obtain(null, MSG_PERFORM_CONNECTION_TEST);
-                                replyMsg.setData(data);
-                                try {
-                                    message.replyTo.send(replyMsg);
-                                } catch (RemoteException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                        }
-                    });
-                    break;
-                }
-                case MSG_CONNECTION_STATE_SUBSCRIBE: {
-                    String key = message.getData().getString("key");
-                    if (key == null)
-                        throw new RuntimeException("No key was provided for the connection state observer");
-                    if (service.connectionStateObservers.containsKey(key)) {
-                        //Already subscribed. Just push the latest known state to it.
-                        service.publishConnectionStateTo(key, service.lastKnownState);
-                        break;
-                    }
-                    service.addConnectionStateObserver(key, message.replyTo);
-                    service.publishConnectionState(service.lastKnownState);
-                    break;
-                }
-                case MSG_CONNECTION_STATE_UNSUBSCRIBE: {
-                    String key = message.getData().getString("key");
-                    if (key == null)
-                        throw new RuntimeException("No observer was specified to unregister");
-                    service.removeConnectionStateObserver(key, null);
-                    break;
-                }
-                default: {
-                    super.handleMessage(msg);
-                }
-            }
+        String Bind = "";
+        Bind += "127.0.0.1:" + port;
+        if (enableLan) {
+            Bind = "0.0.0.0:" + port;
         }
+        return Bind;
     }
 
     @Override
     public IBinder onBind(Intent intent) {
+        String action = intent != null ? intent.getAction() : null;
+        /*
+        If we override onBind, we never receive onRevoke.
+        return superclass onBind when action is SERVICE_INTERFACE to receive onRevoke lifecycle call.
+         */
+        if (action != null && action.equals(VpnService.SERVICE_INTERFACE)) {
+            return super.onBind(intent);
+        }
         return serviceMessenger.getBinder();
     }
-
-    private final Runnable logRunnable = new Runnable() {
-        @Override
-        public void run() {
-            String logMessages = Tun2socks.getLogMessages();
-            if (!logMessages.isEmpty()) {
-                try (FileOutputStream fos = getApplicationContext().openFileOutput("logs.txt", Context.MODE_APPEND)) {
-                    fos.write((logMessages).getBytes());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            handler.postDelayed(this, 2000); // Poll every 2 seconds
-        }
-    };
 
     private void clearLogFile() {
         try (FileOutputStream fos = getApplicationContext().openFileOutput("logs.txt", Context.MODE_PRIVATE)) {
@@ -339,7 +268,7 @@ public class OblivionVpnService extends VpnService {
 
     @Override
     public void onRevoke() {
-        super.onRevoke();
+        stopVpn();
     }
 
     private void runVpn() {
@@ -398,7 +327,8 @@ public class OblivionVpnService extends VpnService {
 
     private void publishConnectionState(ConnectionState state) {
         if (!connectionStateObservers.isEmpty()) {
-            for (String observerKey : connectionStateObservers.keySet()) publishConnectionStateTo(observerKey, state);
+            for (String observerKey : connectionStateObservers.keySet())
+                publishConnectionStateTo(observerKey, state);
         }
     }
 
@@ -523,5 +453,76 @@ public class OblivionVpnService extends VpnService {
 
         vpnThread = new Thread(() -> Tun2socks.runWarp(so));
         vpnThread.start();
+    }
+
+    private static class IncomingHandler extends Handler {
+        private final WeakReference<OblivionVpnService> serviceRef;
+
+        IncomingHandler(OblivionVpnService service) {
+            serviceRef = new WeakReference<>(service);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            final Message message = new Message();
+            message.copyFrom(msg);
+            OblivionVpnService service = serviceRef.get();
+            if (service == null) return;
+            switch (msg.what) {
+                case MSG_PERFORM_CONNECTION_TEST: {
+                    performConnectionTest(service.bindAddress, new ConnectionStateChangeListener() {
+                        @Override
+                        public void onChange(ConnectionState state) {
+                            service.setLastKnownState(state);
+                            Bundle data = new Bundle();
+                            if (state == ConnectionState.DISCONNECTED) {
+                                data.putBoolean("success", false);
+                                Message replyMsg = Message.obtain(null, MSG_PERFORM_CONNECTION_TEST);
+                                replyMsg.setData(data);
+                                try {
+                                    message.replyTo.send(replyMsg);
+                                } catch (RemoteException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                data.putBoolean("success", true);
+                                Message replyMsg = Message.obtain(null, MSG_PERFORM_CONNECTION_TEST);
+                                replyMsg.setData(data);
+                                try {
+                                    message.replyTo.send(replyMsg);
+                                } catch (RemoteException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                        }
+                    });
+                    break;
+                }
+                case MSG_CONNECTION_STATE_SUBSCRIBE: {
+                    String key = message.getData().getString("key");
+                    if (key == null)
+                        throw new RuntimeException("No key was provided for the connection state observer");
+                    if (service.connectionStateObservers.containsKey(key)) {
+                        //Already subscribed. Just push the latest known state to it.
+                        service.publishConnectionStateTo(key, service.lastKnownState);
+                        break;
+                    }
+                    service.addConnectionStateObserver(key, message.replyTo);
+                    service.publishConnectionState(service.lastKnownState);
+                    break;
+                }
+                case MSG_CONNECTION_STATE_UNSUBSCRIBE: {
+                    String key = message.getData().getString("key");
+                    if (key == null)
+                        throw new RuntimeException("No observer was specified to unregister");
+                    service.removeConnectionStateObserver(key, null);
+                    break;
+                }
+                default: {
+                    super.handleMessage(msg);
+                }
+            }
+        }
     }
 }

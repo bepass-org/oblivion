@@ -1,103 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@drawable/background_gradient"
+  android:orientation="vertical"
+  tools:context="org.bepass.oblivion.InfoActivity">
+
+  <RelativeLayout
+    android:id="@+id/top_bar"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/background_gradient"
-    android:orientation="vertical"
-    tools:context="org.bepass.oblivion.InfoActivity">
+    android:layout_height="48dp"
+    android:layout_marginTop="8dp">
 
-    <RelativeLayout
-        android:id="@+id/top_bar"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp">
-
-        <ImageView
-            android:id="@+id/back"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:background="?selectableItemBackgroundBorderless"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
-            android:src="@drawable/ic_back"
-            app:tint="#000000" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="16dp"
-            android:fontFamily="@font/shabnamlight"
-            android:text="درباره برنامه"
-            android:textColor="@color/black"
-            android:textSize="32sp" />
-
-    </RelativeLayout>
+    <ImageView
+      android:id="@+id/back"
+      android:layout_width="36dp"
+      android:layout_height="36dp"
+        android:background="?selectableItemBackgroundBorderless"
+      android:layout_alignParentStart="true"
+      android:layout_centerVertical="true"
+      android:layout_marginStart="16dp"
+      android:src="@drawable/ic_back"
+      app:tint="#000000" />
 
     <TextView
-        android:id="@+id/about"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/shabnammedium"
-        android:textColor="@color/black"
-        android:paddingHorizontal="12dp"
-        android:text="این برنامه با هدف دسترسی به اینترنت آزاد تهیه شده و هرگونه استفاده تجاری از آن مجاز نیست.\n\n\n'اینترنت برای همه، یا هیچ‌کس!'" />
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:layout_centerVertical="true"
+      android:layout_marginEnd="16dp"
+      android:fontFamily="@font/shabnamlight"
+      android:text="درباره برنامه"
+      android:textColor="@color/black"
+      android:textSize="32sp" />
 
-    <RelativeLayout
-        android:id="@+id/github_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/about_item"
-        android:gravity="center"
-        android:paddingVertical="8dp">
+  </RelativeLayout>
 
-        <ImageView
-            android:id="@+id/github_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_github"
-            app:tint="@color/black" />
+  <TextView
+    android:id="@+id/about"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:fontFamily="@font/shabnammedium"
+    android:textColor="@color/black"
+    android:paddingHorizontal="12dp"
+    android:text="این برنامه با هدف دسترسی به اینترنت آزاد تهیه شده و هرگونه استفاده تجاری از آن مجاز نیست.\n\n\n'اینترنت برای همه، یا هیچ‌کس!'" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_toEndOf="@id/github_image"
-            android:fontFamily="@font/shabnam"
-            android:text="Github"
-            android:textColor="@color/black" />
+  <RelativeLayout
+    android:id="@+id/github_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="32dp"
+    android:background="@drawable/about_item"
+    android:gravity="center"
+    android:paddingVertical="8dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="16dp"
-            android:fontFamily="@font/shabnambold"
-            android:text="BePass/Oblivion"
-            android:textColor="@color/black" />
-
-    </RelativeLayout>
+    <ImageView
+      android:id="@+id/github_image"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentStart="true"
+      android:layout_centerVertical="true"
+      android:layout_marginStart="8dp"
+      android:layout_marginEnd="8dp"
+      android:src="@drawable/ic_github"
+      app:tint="@color/black" />
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/shabnam"
-        android:textColor="@color/black"
-        android:gravity="center"
-        android:text="App Version: 0.0.9-test" />
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_centerInParent="true"
+      android:layout_toEndOf="@id/github_image"
+      android:fontFamily="@font/shabnam"
+      android:text="Github"
+      android:textColor="@color/black" />
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:layout_centerVertical="true"
+      android:layout_marginEnd="16dp"
+      android:fontFamily="@font/shabnambold"
+      android:text="BePass/Oblivion"
+      android:textColor="@color/black" />
+
+  </RelativeLayout>
+
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:fontFamily="@font/shabnam"
+    android:textColor="@color/black"
+    android:gravity="center"
+    android:text="App Version: 0.0.9-test" />
 
 
 </LinearLayout>
