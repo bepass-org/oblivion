@@ -1,5 +1,6 @@
 package org.bepass.oblivion;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,7 +18,7 @@ public class SettingsActivity extends AppCompatActivity {
     FileManager fileManager;
     ImageView back;
 
-    LinearLayout endpointLayout, portLayout, lanLayout, psiphonLayout, countryLayout, licenseLayout, goolLayout;
+    LinearLayout endpointLayout, portLayout, lanLayout, psiphonLayout, countryLayout, licenseLayout, goolLayout, splitTunnelLayout;
 
     TextView endpoint, port, license;
     CheckBox psiphon, lan, gool;
@@ -63,6 +64,8 @@ public class SettingsActivity extends AppCompatActivity {
 
             }
         });
+
+        splitTunnelLayout.setOnClickListener(v -> startActivity(new Intent(this, SplitTunnelActivity.class)));
 
         // Set Current Values
         settingBasicValuesFromSPF();
@@ -142,6 +145,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         endpointLayout = findViewById(R.id.endpoint_layout);
         portLayout = findViewById(R.id.port_layout);
+        splitTunnelLayout = findViewById(R.id.split_tunnel_layout);
         lanLayout = findViewById(R.id.lan_layout);
         psiphonLayout = findViewById(R.id.psiphon_layout);
         countryLayout = findViewById(R.id.country_layout);
@@ -158,6 +162,6 @@ public class SettingsActivity extends AppCompatActivity {
         lan = findViewById(R.id.lan);
         gool = findViewById(R.id.gool);
 
-        back.setOnClickListener(v -> onBackPressed());
+        back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
     }
 }

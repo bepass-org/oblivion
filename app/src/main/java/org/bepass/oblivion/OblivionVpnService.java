@@ -29,7 +29,9 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.ServerSocket;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import tun2socks.StartOptions;
 import tun2socks.Tun2socks;
@@ -469,6 +471,14 @@ public class OblivionVpnService extends VpnService {
                     .addDisallowedApplication(getPackageName())
                     .addRoute("0.0.0.0", 0)
                     .addRoute("::", 0);
+            fileManager.getStringSet("splitTunnelApps", new HashSet<>());
+            SplitTunnelMode splitTunnelMode = SplitTunnelMode.getSplitTunnelMode(fileManager);
+            if (splitTunnelMode == SplitTunnelMode.BLACKLIST) {
+                for (String packageName : getSplitTunnelApps(fileManager)) {
+                    builder.addDisallowedApplication(packageName);
+                }
+            }
+
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -480,6 +490,10 @@ public class OblivionVpnService extends VpnService {
 
         vpnThread = new Thread(() -> Tun2socks.runWarp(so));
         vpnThread.start();
+    }
+
+    private static Set<String> getSplitTunnelApps(FileManager fm) {
+        return fm.getStringSet("splitTunnelApps", new HashSet<>());
     }
 
     private static class IncomingHandler extends Handler {
