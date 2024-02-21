@@ -47,7 +47,7 @@ public class MainActivity extends ConnectionAwareBaseActivity {
                 } else {
                     OblivionVpnService.startVpnService(this);
                 }
-            } else if (lastKnownConnectionState == ConnectionState.CONNECTED || lastKnownConnectionState == ConnectionState.CONNECTING) {
+            } else if (lastKnownConnectionState.isConnectedOrConnecting()) {
                 OblivionVpnService.stopVpnService(this);
             }
         };
