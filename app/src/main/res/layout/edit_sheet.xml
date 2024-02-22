@@ -25,18 +25,19 @@
     android:textSize="18sp" />
 
   <EditText
-    android:id="@+id/edittext"
-    android:layout_width="match_parent"
-    android:layout_height="48dp"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginTop="12dp"
-    android:padding="12dp"
-    android:background="@drawable/edittext_back"
-    android:fontFamily="@font/shabnam"
-    android:lineSpacingExtra="4dp"
-    android:textAlignment="center"
-    android:textColor="@color/black"
-    android:textSize="15sp" />
+      android:id="@+id/edittext"
+      android:layout_width="match_parent"
+      android:layout_height="48dp"
+      android:layout_marginHorizontal="16dp"
+      android:layout_marginTop="12dp"
+      android:background="@drawable/edittext_back"
+      android:fontFamily="@font/shabnam"
+      android:lineSpacingExtra="4dp"
+      android:padding="12dp"
+      android:singleLine="true"
+      android:textAlignment="center"
+      android:textColor="@color/black"
+      android:textSize="15sp" />
 
   <LinearLayout
     android:layout_width="match_parent"
