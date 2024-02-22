@@ -82,17 +82,58 @@
     app:sb_show_indicator="false" />
 
   <TextView
-    android:id="@+id/state_text"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="96dp"
-    android:fontFamily="@font/shabnammedium"
-    android:text="متصل نیستید"
-    android:textColor="@color/black"
-    android:textSize="24sp"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/switch_button" />
+      android:id="@+id/state_text"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="64dp"
+      android:fontFamily="@font/shabnammedium"
+      android:text="متصل نیستید"
+      android:textColor="@color/black"
+      android:textSize="24sp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/switch_button" />
+
+  <TextView
+      android:id="@+id/publicIP"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="48dp"
+      android:fontFamily="@font/shabnammedium"
+      android:visibility="invisible"
+      android:text="Public IP"
+      android:textColor="@color/black"
+      android:textSize="16sp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/state_text" />
+
+  <ProgressBar
+      android:id="@+id/ipProgressBar"
+      style="?android:attr/progressBarStyleLarge"
+      android:layout_marginTop="48dp"
+      android:visibility="invisible"
+      android:layout_width="48dp"
+      android:layout_height="wrap_content"
+      android:indeterminate="true"
+      android:indeterminateTint="#FFA200"
+      android:layout_centerHorizontal="true"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/state_text"/>
+
+  <TextView
+      android:id="@+id/ipDetails"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:fontFamily="@font/shabnammedium"
+      android:visibility="invisible"
+      android:text="Country, City"
+      android:textColor="@color/black"
+      android:textSize="16sp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/publicIP" />
 
   <TextView
     android:id="@+id/app_name_1"
