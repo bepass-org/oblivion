@@ -27,12 +27,19 @@ import androidx.core.content.ContextCompat;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import tun2socks.StartOptions;
 import tun2socks.Tun2socks;
 
@@ -167,6 +174,51 @@ public class OblivionVpnService extends VpnService {
         throw new IllegalStateException("Could not find a free TCP/IP port to start embedded Jetty HTTP Server on");
     }
 
+
+    private static boolean waitForConnection(String bindAddress) {
+        long startTime = System.currentTimeMillis();
+        boolean isSuccessful = false;
+        while (System.currentTimeMillis() - startTime < 60 * 1000) { //60 seconds
+            boolean result = pingOverHTTP(bindAddress);
+            if (result) {
+                isSuccessful = true;
+                break;
+            }
+            try {
+                Thread.sleep(500); // Sleep before retrying
+            } catch (InterruptedException e) {
+                break; // Exit if interrupted (e.g., service stopping)
+            }
+        }
+        return isSuccessful;
+    }
+
+    public static boolean pingOverHTTP(String bindAddress) {
+        System.out.println("Pinging");
+        Map<String, Integer> result = splitHostAndPort(bindAddress);
+        if (result == null) {
+            throw new RuntimeException("Could not split host and port of " + bindAddress);
+        }
+        String socksHost = result.keySet().iterator().next();
+        int socksPort = result.values().iterator().next();
+        Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(socksHost, socksPort));
+        OkHttpClient client = new OkHttpClient.Builder()
+                .proxy(proxy)
+                .connectTimeout(5, TimeUnit.SECONDS) // 5 seconds connection timeout
+                .readTimeout(5, TimeUnit.SECONDS) // 5 seconds read timeout
+                .build();
+        Request request = new Request.Builder()
+                .url("https://1.1.1.1")
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            return response.isSuccessful();
+        } catch (IOException e) {
+            //e.printStackTrace();
+            return false;
+        }
+    }
+
+
     public static String isLocalPortInUse(String bindAddress) {
         Map<String, Integer> result = splitHostAndPort(bindAddress);
         if (result == null) {
@@ -184,7 +236,7 @@ public class OblivionVpnService extends VpnService {
         }
     }
 
-    private static void performConnectionTest(String bindAddress, ConnectionStateChangeListener changeListener) {
+    private static void performConnectionTest(String bindAddress, boolean psiphonMode, ConnectionStateChangeListener changeListener) {
         new Thread(() -> {
             long startTime = System.currentTimeMillis();
             boolean isSuccessful = false;
@@ -197,7 +249,7 @@ public class OblivionVpnService extends VpnService {
                     return;
                 }
                 if (result.contains("true")) {
-                    isSuccessful = true;
+                    isSuccessful = !psiphonMode || waitForConnection(bindAddress);
                     break;
                 }
                 try {
@@ -252,7 +304,14 @@ public class OblivionVpnService extends VpnService {
             fileManager = FileManager.getInstance(this);
             bindAddress = getBindAddress();
             runVpn();
-            performConnectionTest(bindAddress, this::setLastKnownState);
+            boolean psiphonMode = fileManager.getBoolean("USERSETTING_psiphon");
+            performConnectionTest(bindAddress, psiphonMode, (state) -> {
+                if (state == ConnectionState.DISCONNECTED) {
+                    stopVpnService(getApplicationContext());
+                    return;
+                }
+                setLastKnownState(state);
+            });
             return START_STICKY;
         } else if (intent != null && FLAG_VPN_STOP.equals(intent.getAction())) {
             stopVpn();
@@ -511,7 +570,8 @@ public class OblivionVpnService extends VpnService {
             if (service == null) return;
             switch (msg.what) {
                 case MSG_PERFORM_CONNECTION_TEST: {
-                    performConnectionTest(service.bindAddress, new ConnectionStateChangeListener() {
+                    boolean psiphonMode = service.fileManager.getBoolean("USERSETTING_psiphon");
+                    performConnectionTest(service.bindAddress, psiphonMode, new ConnectionStateChangeListener() {
                         @Override
                         public void onChange(ConnectionState state) {
                             service.setLastKnownState(state);
