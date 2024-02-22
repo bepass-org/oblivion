@@ -41,6 +41,7 @@ public abstract class ConnectionAwareBaseActivity extends AppCompatActivity {
     private void observeConnectionStatus() {
         if (!isBound) return;
         OblivionVpnService.registerConnectionStateObserver(getKey(), serviceMessenger, state -> {
+            if (lastKnownConnectionState == state) return;
             lastKnownConnectionState = state;
             onConnectionStateChange(state);
         });
