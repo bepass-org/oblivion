@@ -102,7 +102,7 @@ public class MainActivity extends ConnectionAwareBaseActivity {
             ipProgressBar.setVisibility(View.GONE);
             if (details.ip != null){
                 String ipString = "Your IP: " + details.ip;
-                String locationString = CountryUtils.getCountryName(details.country) + ", " + details.city;
+                String locationString = details.flag + " " + details.country + ", " + details.city;
                 publicIP.setText(ipString);
                 ipDetails.setText(locationString);
                 publicIP.setVisibility(View.VISIBLE);

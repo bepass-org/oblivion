@@ -48,21 +48,21 @@ public class PublicIPUtils {
         new Thread(() -> {
             IPDetails details = new IPDetails();
             try {
-                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", port));
-                URL url = new URL("https://ipinfo.io/json");
+                Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1", port));
+                URL url = new URL("https://ipwho.is/");
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection(proxy);
                 InputStream in = new BufferedInputStream(connection.getInputStream());
                 String response = convertStreamToString(in);
-                JSONObject obj = new JSONObject(response);
-                details.ip = obj.getString("ip");
-                details.country = obj.getString("country");
-                details.city = obj.getString("city");
+                JSONObject jsonData = new JSONObject(response);
+                JSONObject flag = jsonData.getJSONObject("flag");
+                details.ip = jsonData.getString("ip");
+                details.country = jsonData.getString("country");
+                details.city = jsonData.getString("city");
+                details.flag = flag.getString("emoji");
             } catch (Exception e) {
                 Log.i("VPN", "Failed to get details", e);
             }
-            handler.post(() -> {
-                    callback.onDetailsReceived(details);
-            });
+            handler.post(() -> callback.onDetailsReceived(details));
         }).start();
     }
 
