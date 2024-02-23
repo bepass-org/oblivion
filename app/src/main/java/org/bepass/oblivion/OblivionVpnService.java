@@ -419,20 +419,17 @@ public class OblivionVpnService extends VpnService {
     }
 
     private String getNotificationText() {
+
         boolean usePsiphon = fileManager.getBoolean("USERSETTING_psiphon");
         boolean useWarp = fileManager.getBoolean("USERSETTING_gool");
 
         if (usePsiphon) {
-            String countryCode = fileManager.getString("USERSETTING_country");
-            String countryName = "".equals(countryCode) ? "Automatic" : CountryUtils.getCountryName(countryCode);
-            return "Psiphon (" + countryName + ") in Warp";
-
+            return "Psiphon in Warp";
         } else if (useWarp) {
             return "Warp in Warp";
-
-        } else {
-            return "Warp";
         }
+        return "Warp";
+
     }
 
     private void createNotification() {
