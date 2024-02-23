@@ -1,16 +1,25 @@
 package org.bepass.oblivion;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.net.Uri;
+import android.os.PowerManager;
+import android.provider.Settings;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -18,12 +27,13 @@ public class SettingsActivity extends AppCompatActivity {
     FileManager fileManager;
     ImageView back;
 
-    LinearLayout endpointLayout, portLayout, lanLayout, psiphonLayout, countryLayout, licenseLayout, goolLayout, splitTunnelLayout;
+    LinearLayout endpointLayout, portLayout, lanLayout, psiphonLayout, countryLayout, licenseLayout, goolLayout, splitTunnelLayout, batteryLayout, batteryDivider;
 
     TextView endpoint, port, license;
     CheckBox psiphon, lan, gool;
     Spinner country;
     ArrayAdapter adapter;
+    Button battery;
 
     private CheckBox.OnCheckedChangeListener psiphonListener;
     private CheckBox.OnCheckedChangeListener goolListener;
@@ -99,7 +109,51 @@ public class SettingsActivity extends AppCompatActivity {
         // Set the listeners to the checkboxes
         psiphon.setOnCheckedChangeListener(psiphonListener);
         gool.setOnCheckedChangeListener(goolListener);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (isIgnoringBatteryOptimization()) {
+                batteryLayout.setVisibility(View.GONE);
+                batteryDivider.setVisibility(View.GONE);
+            } else {
+                batteryLayout.setVisibility(View.VISIBLE);
+                batteryDivider.setVisibility(View.VISIBLE);
+                battery.setOnClickListener(v -> ignoreBatteryOptimization());
+            }
+        }
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private boolean isIgnoringBatteryOptimization() {
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        String packageName = getPackageName();
+        return powerManager != null && powerManager.isIgnoringBatteryOptimizations(packageName);
+    }
+
+    @SuppressLint("BatteryLife")
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void ignoreBatteryOptimization() {
+        Intent intent = new Intent();
+        String packageName = getPackageName();
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        if (pm != null && !pm.isIgnoringBatteryOptimizations(packageName)) {
+            intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+            intent.setData(Uri.parse("package:" + packageName));
+            batteryOptimizationLauncher.launch(intent);
+        } else {
+            batteryLayout.setVisibility(View.GONE);
+            batteryDivider.setVisibility(View.GONE);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    ActivityResultLauncher<Intent> batteryOptimizationLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (isIgnoringBatteryOptimization()) {
+                    batteryLayout.setVisibility(View.GONE);
+                    batteryDivider.setVisibility(View.GONE);
+                }
+            });
 
     private int getIndexFromName(Spinner spinner, String name) {
 
@@ -151,6 +205,8 @@ public class SettingsActivity extends AppCompatActivity {
         countryLayout = findViewById(R.id.country_layout);
         licenseLayout = findViewById(R.id.license_layout);
         goolLayout = findViewById(R.id.gool_layout);
+        batteryLayout = findViewById(R.id.battery_layout);
+        batteryDivider = findViewById(R.id.battery_layout_divider);
 
         back = findViewById(R.id.back);
         endpoint = findViewById(R.id.endpoint);
@@ -161,6 +217,8 @@ public class SettingsActivity extends AppCompatActivity {
         psiphon = findViewById(R.id.psiphon);
         lan = findViewById(R.id.lan);
         gool = findViewById(R.id.gool);
+
+        battery = findViewById(R.id.battery);
 
         back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
     }

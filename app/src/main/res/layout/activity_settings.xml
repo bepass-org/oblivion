@@ -497,6 +497,70 @@
           android:textSize="16sp" />
 
       </LinearLayout>
+
+      <LinearLayout
+          android:id="@+id/battery_layout_divider"
+          android:layout_width="match_parent"
+          android:layout_height="10dp"
+          android:gravity="center"
+          android:orientation="vertical"
+          >
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+      </LinearLayout>
+
+      <LinearLayout
+          android:id="@+id/battery_layout"
+          android:layout_width="match_parent"
+          android:layout_height="80dp"
+          android:gravity="center"
+          android:layout_marginHorizontal="16dp"
+          android:visibility="gone"
+          android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+          <LinearLayout
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_weight="2"
+              >
+
+            <Button
+                android:id="@+id/battery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#E4AB53"
+                android:fontFamily="@font/shabnam"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:text="غیرفعال‌سازی" />
+          </LinearLayout>
+
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:minWidth="100dp"
+              android:fontFamily="@font/shabnam"
+              android:text="بهینه‌ساز باطری"
+              android:textColor="@color/black"
+              android:textSize="20sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/shabnam"
+            android:text="غیرفعال‌سازی بهینه‌ساز باطری جهت اجرا در پس‌زمینه"
+            android:textColor="#9A9A9A"
+            android:textSize="16sp" />
+
+      </LinearLayout>
     </LinearLayout>
   </ScrollView>
 
