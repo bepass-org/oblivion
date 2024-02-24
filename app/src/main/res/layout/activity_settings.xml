@@ -546,7 +546,7 @@
               android:layout_height="wrap_content"
               android:minWidth="100dp"
               android:fontFamily="@font/shabnam"
-              android:text="بهینه‌ساز باطری"
+              android:text="بهینه‌ساز باتری"
               android:textColor="@color/black"
               android:textSize="20sp" />
 
@@ -556,7 +556,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/shabnam"
-            android:text="غیرفعال‌سازی بهینه‌ساز باطری جهت اجرا در پس‌زمینه"
+            android:text="غیرفعال‌سازی بهینه‌ساز باتری جهت اجرا در پس‌زمینه"
             android:textColor="#9A9A9A"
             android:textSize="16sp" />
 

@@ -134,12 +134,9 @@ public class SettingsActivity extends AppCompatActivity {
     private void ignoreBatteryOptimization() {
         Intent intent = new Intent();
         String packageName = getPackageName();
-        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        if (powerManager != null) {
-            intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-            intent.setData(Uri.parse("package:" + packageName));
-            batteryOptimizationLauncher.launch(intent);
-        }
+        intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+        intent.setData(Uri.parse("package:" + packageName));
+        batteryOptimizationLauncher.launch(intent);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
