@@ -1,14 +1,9 @@
 package org.bepass.oblivion;
 
 import android.Manifest;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.Messenger;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -18,8 +13,6 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import com.suke.widget.SwitchButton;
 
@@ -27,8 +20,8 @@ public class MainActivity extends ConnectionAwareBaseActivity {
     // Views
     ImageView infoIcon, bugIcon, settingsIcon;
     TouchAwareSwitch switchButton;
-    TextView stateText, publicIP, ipDetails;
-    private ProgressBar ipProgressBar;
+    TextView stateText, publicIP;
+    ProgressBar ipProgressBar;
     FileManager fileManager;
     Boolean canShowNotification = false;
     private ActivityResultLauncher<String> pushNotificationPermissionLauncher;
@@ -100,13 +93,10 @@ public class MainActivity extends ConnectionAwareBaseActivity {
         int port = Integer.parseInt(fileManager.getString("USERSETTING_port"));
         PublicIPUtils.getIPDetails(port, (details) -> {
             ipProgressBar.setVisibility(View.GONE);
-            if (details.ip != null){
-                String ipString = "Your IP: " + details.ip;
-                String locationString = details.flag + " " + details.country + ", " + details.city;
+            if (details.ip != null && details.flag != null){
+                String ipString = details.ip  + " " + details.flag;
                 publicIP.setText(ipString);
-                ipDetails.setText(locationString);
                 publicIP.setVisibility(View.VISIBLE);
-                ipDetails.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -120,14 +110,12 @@ public class MainActivity extends ConnectionAwareBaseActivity {
     private void connecting() {
         stateText.setText("در حال اتصال...");
         publicIP.setVisibility(View.GONE);
-        ipDetails.setVisibility(View.GONE);
         switchButton.setChecked(true, false);
     }
 
     private void disconnected() {
         stateText.setText("متصل نیستید");
         publicIP.setVisibility(View.GONE);
-        ipDetails.setVisibility(View.GONE);
         switchButton.setChecked(false, false);
     }
 
@@ -176,7 +164,6 @@ public class MainActivity extends ConnectionAwareBaseActivity {
         switchButton = findViewById(R.id.switch_button);
         stateText = findViewById(R.id.state_text);
         publicIP = findViewById(R.id.publicIP);
-        ipDetails = findViewById(R.id.ipDetails);
         ipProgressBar = (ProgressBar)findViewById(R.id.ipProgressBar);
 
         infoIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, InfoActivity.class)));
