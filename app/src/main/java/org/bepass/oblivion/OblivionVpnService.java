@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.ParcelFileDescriptor;
@@ -33,7 +34,6 @@ import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -70,6 +70,7 @@ public class OblivionVpnService extends VpnService {
             handler.postDelayed(this, 2000); // Poll every 2 seconds
         }
     };
+    private NotificationCompat.Builder notificationBuilder;
     private Notification notification;
     private ParcelFileDescriptor mInterface;
     private Thread vpnThread;
@@ -415,6 +416,10 @@ public class OblivionVpnService extends VpnService {
 
     public void setLastKnownState(ConnectionState lastKnownState) {
         this.lastKnownState = lastKnownState;
+        if (lastKnownState == ConnectionState.CONNECTED) {
+            updateNotification();
+            updateNotificationWithIPDetails();
+        }
         publishConnectionState(lastKnownState);
     }
 
@@ -439,25 +444,51 @@ public class OblivionVpnService extends VpnService {
                 .setName("Vpn Service")
                 .build();
         notificationManager.createNotificationChannel(notificationChannel);
-        Intent disconnectIntent = new Intent(this, OblivionVpnService.class);
-        disconnectIntent.setAction(OblivionVpnService.FLAG_VPN_STOP);
-        PendingIntent disconnectPendingIntent = PendingIntent.getService(
-                this, 0, disconnectIntent, PendingIntent.FLAG_IMMUTABLE);
         PendingIntent contentPendingIntent = PendingIntent.getActivity(
                 this, 2, new Intent(this, MainActivity.class), PendingIntent.FLAG_IMMUTABLE);
-        notification = new NotificationCompat.Builder(this, notificationChannel.getId())
-                .setContentTitle("Vpn Service")
-                .setContentText("Oblivion - " + getNotificationText())
+        notificationBuilder = new NotificationCompat.Builder(this, notificationChannel.getId())
+                .setContentTitle("Oblivion - " + getNotificationText())
+                .setContentText("Connecting...")
                 .setSmallIcon(R.mipmap.ic_notification)
-                .setOnlyAlertOnce(true)
+                .setSilent(true)
                 .setOngoing(true)
                 .setAutoCancel(true)
                 .setShowWhen(false)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setDefaults(NotificationCompat.FLAG_ONLY_ALERT_ONCE)
-                .setContentIntent(contentPendingIntent)
-                .addAction(0, "Disconnect", disconnectPendingIntent)
-                .build();
+                .setContentIntent(contentPendingIntent);
+        notification = notificationBuilder.build();
+    }
+
+    private void updateNotification() {
+        if (notificationBuilder != null) {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (notificationManager != null) {
+                Intent disconnectIntent = new Intent(this, OblivionVpnService.class);
+                disconnectIntent.setAction(OblivionVpnService.FLAG_VPN_STOP);
+                PendingIntent disconnectPendingIntent = PendingIntent.getService(
+                        this, 0, disconnectIntent, PendingIntent.FLAG_IMMUTABLE);
+                notificationBuilder.setContentText("Connected");
+                notificationBuilder.addAction(0, "Disconnect", disconnectPendingIntent);
+                notificationManager.notify(1, notificationBuilder.build());
+            }
+        }
+    }
+
+    private void updateNotificationWithIPDetails() {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(() -> {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (notificationManager != null) {
+                int port = Integer.parseInt(fileManager.getString("USERSETTING_port"));
+                PublicIPUtils.getIPDetails(port, (details) -> {
+                    if (details != null && details.country != null && details.city != null) {
+                        notificationBuilder.setContentText("Connected to " + details.country + ", " + details.city);
+                        notificationManager.notify(1, notificationBuilder.build());
+                    }
+                });
+            }
+        });
     }
 
     public void addConnectionStateObserver(String key, Messenger messenger) {
