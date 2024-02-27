@@ -18,7 +18,7 @@ public class SettingsActivity extends AppCompatActivity {
     FileManager fileManager;
     ImageView back;
 
-    LinearLayout endpointLayout, portLayout, lanLayout, psiphonLayout, countryLayout, licenseLayout, goolLayout, splitTunnelLayout;
+    LinearLayout endpointLayout, portLayout, lanLayout, psiphonLayout, countryLayout, licenseLayout, goolLayout, splitTunnelLayout, batteryLayout;
 
     TextView endpoint, port, license;
     CheckBox psiphon, lan, gool;
@@ -73,6 +73,8 @@ public class SettingsActivity extends AppCompatActivity {
         goolLayout.setOnClickListener(v -> gool.setChecked(!gool.isChecked()));
         lanLayout.setOnClickListener(v -> lan.setChecked(!lan.isChecked()));
         psiphonLayout.setOnClickListener(v -> psiphon.setChecked(!psiphon.isChecked()));
+        batteryLayout.setOnClickListener(v -> startActivity(new Intent(this, BatteryManagementActivity.class)));
+
 
         lan.setOnCheckedChangeListener((buttonView, isChecked) -> fileManager.set("USERSETTING_lan", isChecked));
         // Initialize the listeners
@@ -151,6 +153,7 @@ public class SettingsActivity extends AppCompatActivity {
         countryLayout = findViewById(R.id.country_layout);
         licenseLayout = findViewById(R.id.license_layout);
         goolLayout = findViewById(R.id.gool_layout);
+        batteryLayout = findViewById(R.id.battery_layout);
 
         back = findViewById(R.id.back);
         endpoint = findViewById(R.id.endpoint);

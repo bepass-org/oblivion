@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />
@@ -95,6 +96,10 @@
 
         <activity
             android:name=".SplitTunnelActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".BatteryManagementActivity"
             android:exported="false" />
     </application>
 
