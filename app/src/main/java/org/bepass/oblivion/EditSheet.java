@@ -56,6 +56,11 @@ public class EditSheet {
         return titleView == null || value == null || apply == null || cancel == null;
     }
 
+    private boolean validatePort(String portStr) {
+        int port = Integer.parseInt(portStr);
+        return port >= 1024 && port <= 65535;
+    }
+
     public void start() {
         if (isElementsNull()) {
             return;
@@ -71,10 +76,23 @@ public class EditSheet {
 
         cancel.setOnClickListener(v -> sheet.cancel());
         apply.setOnClickListener(v -> {
-            if(!value.getText().toString().equals("") || Objects.equals(sharedPrefKey, "license")){
-                fileManager.set("USERSETTING_" + sharedPrefKey, value.getText().toString());
-                sheet.cancel();
+
+            String input = value.getText().toString();
+
+            if(input.equals("") && !Objects.equals(sharedPrefKey, "license")) {
+                return;
             }
+
+            boolean isPort = Objects.equals(sharedPrefKey, "port");
+            boolean isValidPort = !isPort || validatePort(input);
+            if(!isValidPort) {
+                return;
+            }
+
+            String prefKey = "USERSETTING_" + sharedPrefKey;
+            fileManager.set(prefKey, input);
+            sheet.cancel();
+
         });
 
         sheet.show();
