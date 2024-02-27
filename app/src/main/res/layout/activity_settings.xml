@@ -497,6 +497,74 @@
           android:textSize="16sp" />
 
       </LinearLayout>
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="10dp"
+          android:gravity="center"
+          android:orientation="vertical"
+          >
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+      </LinearLayout>
+
+      <LinearLayout
+          android:id="@+id/battery_layout"
+          android:layout_width="match_parent"
+          android:layout_height="80dp"
+          android:gravity="center"
+          android:layout_marginHorizontal="16dp"
+          android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+          <LinearLayout
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_weight="2"
+              >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start">
+
+              <TextView
+                  android:id="@+id/battery"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:fontFamily="@font/shabnam"
+                  android:text="مدیریت"
+                  android:textSize="20sp"
+                  android:textColor="#E4AB53" />
+
+            </LinearLayout>
+          </LinearLayout>
+
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:minWidth="100dp"
+              android:fontFamily="@font/shabnam"
+              android:text="بهینه‌ساز باتری"
+              android:textColor="@color/black"
+              android:textSize="20sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/shabnam"
+            android:text="جهت اجرای برنامه در پس‌زمینه"
+            android:textColor="#9A9A9A"
+            android:textSize="16sp" />
+
+      </LinearLayout>
     </LinearLayout>
   </ScrollView>
 
