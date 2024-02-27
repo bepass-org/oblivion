@@ -1,11 +1,16 @@
 package org.bepass.oblivion;
 
 import android.content.Context;
+import android.text.InputType;
+import android.text.method.DigitsKeyListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+
+import java.util.Objects;
 
 public class EditSheet {
 
@@ -52,9 +57,19 @@ public class EditSheet {
         return titleView == null || value == null || apply == null || cancel == null;
     }
 
+    private boolean validatePort(String portStr) {
+        int port = Integer.parseInt(portStr);
+        return port >= 1024 && port <= 65535;
+    }
+
     public void start() {
         if (isElementsNull()) {
             return;
+        }
+
+        if(Objects.equals(sharedPrefKey, "port")) {
+            value.setInputType(InputType.TYPE_CLASS_NUMBER);
+            value.setKeyListener(DigitsKeyListener.getInstance());
         }
 
         titleView.setText(title);
@@ -62,8 +77,25 @@ public class EditSheet {
 
         cancel.setOnClickListener(v -> sheet.cancel());
         apply.setOnClickListener(v -> {
-            fileManager.set("USERSETTING_" + sharedPrefKey, value.getText().toString());
+
+            String input = value.getText().toString();
+
+            if(input.equals("") && !Objects.equals(sharedPrefKey, "license")) {
+                Toast.makeText(context, "Please enter a value", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            boolean isPort = Objects.equals(sharedPrefKey, "port");
+            boolean isValidPort = !isPort || validatePort(input);
+            if(!isValidPort) {
+                Toast.makeText(context, "Port must be between 1024 - 65535", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            String prefKey = "USERSETTING_" + sharedPrefKey;
+            fileManager.set(prefKey, input);
             sheet.cancel();
+
         });
 
         sheet.show();
