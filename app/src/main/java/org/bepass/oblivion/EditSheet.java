@@ -6,6 +6,7 @@ import android.text.method.DigitsKeyListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
@@ -80,12 +81,14 @@ public class EditSheet {
             String input = value.getText().toString();
 
             if(input.equals("") && !Objects.equals(sharedPrefKey, "license")) {
+                Toast.makeText(context, "Please enter a value", Toast.LENGTH_LONG).show();
                 return;
             }
 
             boolean isPort = Objects.equals(sharedPrefKey, "port");
             boolean isValidPort = !isPort || validatePort(input);
             if(!isValidPort) {
+                Toast.makeText(context, "Port must be between 1024 - 65535", Toast.LENGTH_LONG).show();
                 return;
             }
 
