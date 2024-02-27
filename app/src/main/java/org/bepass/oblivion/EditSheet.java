@@ -1,11 +1,15 @@
 package org.bepass.oblivion;
 
 import android.content.Context;
+import android.text.InputType;
+import android.text.method.DigitsKeyListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+
+import java.util.Objects;
 
 public class EditSheet {
 
@@ -57,13 +61,20 @@ public class EditSheet {
             return;
         }
 
+        if(Objects.equals(sharedPrefKey, "port")) {
+            value.setInputType(InputType.TYPE_CLASS_NUMBER);
+            value.setKeyListener(DigitsKeyListener.getInstance());
+        }
+
         titleView.setText(title);
         value.setText(fileManager.getString("USERSETTING_" + sharedPrefKey));
 
         cancel.setOnClickListener(v -> sheet.cancel());
         apply.setOnClickListener(v -> {
-            fileManager.set("USERSETTING_" + sharedPrefKey, value.getText().toString());
-            sheet.cancel();
+            if(!value.getText().toString().equals("") || Objects.equals(sharedPrefKey, "license")){
+                fileManager.set("USERSETTING_" + sharedPrefKey, value.getText().toString());
+                sheet.cancel();
+            }
         });
 
         sheet.show();
