@@ -32,6 +32,8 @@ public abstract class ConnectionAwareBaseActivity extends AppCompatActivity {
         public void onServiceDisconnected(ComponentName arg0) {
             serviceMessenger = null;
             isBound = false;
+         MainActivity.refresh.recreate();  //for show در حال اتصال
+
         }
     };
 
