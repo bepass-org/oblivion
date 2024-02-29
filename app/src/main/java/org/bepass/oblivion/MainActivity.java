@@ -22,6 +22,8 @@ public class MainActivity extends ConnectionAwareBaseActivity {
     TouchAwareSwitch switchButton;
     TextView stateText, publicIP;
     ProgressBar ipProgressBar;
+    static Activity refresh;
+
     FileManager fileManager;
     Boolean canShowNotification = false;
     private ActivityResultLauncher<String> pushNotificationPermissionLauncher;
@@ -57,6 +59,8 @@ public class MainActivity extends ConnectionAwareBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        refresh = this; //for show در حال اتصال 
+
         init();
         firstValueInit();
         switchButton.setOnCheckedChangeListener(createSwitchCheckedChangeListener());
