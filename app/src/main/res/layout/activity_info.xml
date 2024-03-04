@@ -38,14 +38,17 @@
   </RelativeLayout>
 
   <TextView
-    android:id="@+id/about"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="16dp"
-    android:fontFamily="@font/shabnammedium"
-    android:textColor="@color/black"
-    android:paddingHorizontal="12dp"
-    android:text="این برنامه با هدف دسترسی به اینترنت آزاد تهیه شده و هرگونه استفاده تجاری از آن مجاز نیست.\n\n\n'اینترنت برای همه، یا هیچ‌کس!'" />
+      android:id="@+id/about"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="end"
+      android:layout_marginTop="16dp"
+      android:fontFamily="@font/shabnammedium"
+      android:paddingHorizontal="12dp"
+      android:text='این برنامه با هدف دسترسی به اینترنت آزاد تهیه شده و هرگونه استفاده تجاری از آن مجاز نیست.\n\n\n" اینترنت برای همه، یا هیچ‌کس! "'
+      android:textAlignment="textEnd"
+      android:textColor="@color/black"
+      android:textSize="16sp" />
 
   <RelativeLayout
     android:id="@+id/github_layout"
@@ -69,34 +72,37 @@
       app:tint="@color/black" />
 
     <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_centerInParent="true"
-      android:layout_toEndOf="@id/github_image"
-      android:fontFamily="@font/shabnam"
-      android:text="Github"
-      android:textColor="@color/black" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_toEndOf="@id/github_image"
+        android:fontFamily="@font/shabnam"
+        android:text="Github"
+        android:textColor="@color/black"
+        android:textSize="14sp" />
 
     <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignParentEnd="true"
-      android:layout_centerVertical="true"
-      android:layout_marginEnd="16dp"
-      android:fontFamily="@font/shabnambold"
-      android:text="BePass/Oblivion"
-      android:textColor="@color/black" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/shabnambold"
+        android:text="BePass/Oblivion"
+        android:textColor="@color/black"
+        android:textSize="14sp" />
 
   </RelativeLayout>
 
   <TextView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:fontFamily="@font/shabnam"
-    android:textColor="@color/black"
-    android:gravity="center"
-    android:text="App Version: 1" />
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:fontFamily="@font/shabnam"
+      android:gravity="center"
+      android:text="App Version: 1"
+      android:textColor="@color/black"
+      android:textSize="14sp" />
 
 
 </LinearLayout>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Checked and enabled -->
+    <item android:color="#FFA200" android:state_checked="true" android:state_enabled="true"/>
+    <!-- Default (disabled) -->
+    <item android:color="?android:attr/colorControlNormal"/> <!-- This uses the default color -->
+</selector>
