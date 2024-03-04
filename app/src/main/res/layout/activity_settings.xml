@@ -241,7 +241,7 @@
               android:layout_height="38dp"
               android:scaleX="1.5"
               android:scaleY="1.5"
-              android:buttonTint="#9F9D9E"
+              android:buttonTint="@color/checkbox_tint"
               android:translationX="5dp" />
           </LinearLayout>
 
@@ -302,7 +302,7 @@
               android:layout_height="38dp"
               android:scaleX="1.5"
               android:scaleY="1.5"
-              android:buttonTint="#9F9D9E"
+              android:buttonTint="@color/checkbox_tint"
               android:translationX="5dp" />
           </LinearLayout>
 
@@ -473,7 +473,7 @@
               android:layout_height="38dp"
               android:scaleX="1.5"
               android:scaleY="1.5"
-              android:buttonTint="#9F9D9E"
+              android:buttonTint="@color/checkbox_tint"
               android:translationX="5dp" />
           </LinearLayout>
 
