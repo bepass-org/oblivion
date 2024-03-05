@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.FrameLayout;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -161,6 +162,7 @@ public class MainActivity extends ConnectionAwareBaseActivity {
         bugIcon = findViewById(R.id.bug_icon);
         settingsIcon = findViewById(R.id.setting_icon);
 
+        FrameLayout switchButtonFrame = findViewById(R.id.switch_button_frame);
         switchButton = findViewById(R.id.switch_button);
         stateText = findViewById(R.id.state_text);
         publicIP = findViewById(R.id.publicIP);
@@ -169,5 +171,8 @@ public class MainActivity extends ConnectionAwareBaseActivity {
         infoIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, InfoActivity.class)));
         bugIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, BugActivity.class)));
         settingsIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, SettingsActivity.class)));
+        switchButtonFrame.setOnClickListener(v -> {
+            switchButton.toggle();
+        });
     }
 }
