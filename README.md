@@ -1,6 +1,8 @@
-# Oblivion - Unofficial Warp Client for Android
+# [Oblivion](https://github.com/bepass-org/oblivion/) For Android TV - Unofficial Warp Client for Android TV
 
-## TV Version (Check release page for more info and files)
+
+# Everthing here originally belongs to people that helped in making the [original Oblivion](https://github.com/bepass-org/oblivion/)
+
 
 "Internet, for all or none!"
 
@@ -16,4 +18,5 @@ It's leveraging `bepass-sdk` and a custom Go implementation of WireGuard, it's d
 
 ______________________________________________________________________________
 
-**This forked version is designed to work on Android TV.**
+# Files In main branch are original files used for [original version](https://github.com/bepass-org/oblivion/), Check release page for more info and files
+**This forked version is designed to work on Android TV _But It also works on normal android phone_.**
