@@ -1,6 +1,6 @@
 # To Connect, Please make sure that you've installed the correct version from https://github.com/AbsoluteTakeOff/OblivionAndroidTV/releases .
 _________________________________
-## After that follow these steps:
+## After that, follow these steps:
 
 1.Plug your mouse to your Television (If your mouse uses bluetooth and it is wireless, pair and connect mouse to your TV)
 
