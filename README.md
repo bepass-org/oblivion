@@ -1,5 +1,7 @@
 # Oblivion - Unofficial Warp Client for Android
 
+## TV Version (Check release page for more info and files)
+
 "Internet, for all or none!"
 
 Oblivion provides secure, optimized internet access through a user-friendly Android app using cloudflare warp technology
