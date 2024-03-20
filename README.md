@@ -1,7 +1,7 @@
 # [Oblivion](https://github.com/bepass-org/oblivion/) For Android TV - Unofficial Warp Client for Android TV
 
 
-# Everthing here originally belongs to people that helped in making the [original Oblivion](https://github.com/bepass-org/oblivion/)
+# Everything here originally belongs to people that helped in making the [original Oblivion](https://github.com/bepass-org/oblivion/)
 
 
 "Internet, for all or none!"
