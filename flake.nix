@@ -47,6 +47,12 @@
             # system-images-android-34-google-apis-playstore-arm64-v8a
           ]
           ++ lib.optionals (system == "x86_64-darwin" || system == "x86_64-linux") [
+            system-images-android-31-google-apis-x86-64
+            system-images-android-31-google-apis-playstore-x86-64
+            system-images-android-32-google-apis-x86-64
+            system-images-android-32-google-apis-playstore-x86-64
+            system-images-android-33-google-apis-x86-64
+            system-images-android-33-google-apis-playstore-x86-64
             system-images-android-34-google-apis-x86-64
             system-images-android-34-google-apis-playstore-x86-64
           ]);

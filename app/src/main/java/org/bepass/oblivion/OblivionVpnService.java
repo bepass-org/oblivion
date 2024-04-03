@@ -33,8 +33,10 @@ import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -46,10 +48,10 @@ import tun2socks.Tun2socks;
 public class OblivionVpnService extends VpnService {
     public static final String FLAG_VPN_START = "org.bepass.oblivion.START";
     public static final String FLAG_VPN_STOP = "org.bepass.oblivion.STOP";
-    static final int MSG_PERFORM_CONNECTION_TEST = 1;
-    static final int MSG_CONNECTION_STATE_SUBSCRIBE = 2;
-    static final int MSG_CONNECTION_STATE_UNSUBSCRIBE = 3;
-    static final int MSG_TILE_STATE_SUBSCRIPTION_RESULT = 4;
+    static final int MSG_CONNECTION_STATE_SUBSCRIBE = 1;
+    static final int MSG_CONNECTION_STATE_UNSUBSCRIBE = 2;
+    static final int MSG_TILE_STATE_SUBSCRIPTION_RESULT = 3;
+
     private static final String TAG = "oblivionVPN";
     private static final String PRIVATE_VLAN4_CLIENT = "172.19.0.1";
     private static final String PRIVATE_VLAN6_CLIENT = "fdfe:dcba:9876::1";
@@ -70,9 +72,10 @@ public class OblivionVpnService extends VpnService {
             handler.postDelayed(this, 2000); // Poll every 2 seconds
         }
     };
+//    ExecutorService executorService = Executors.newFixedThreadPool(2);
+    private Executor executorService = Executors.newSingleThreadExecutor();
     private Notification notification;
     private ParcelFileDescriptor mInterface;
-    private Thread vpnThread;
     private String bindAddress;
     private FileManager fileManager;
     private ConnectionState lastKnownState = ConnectionState.DISCONNECTED;
@@ -174,25 +177,6 @@ public class OblivionVpnService extends VpnService {
         throw new IllegalStateException("Could not find a free TCP/IP port to start embedded Jetty HTTP Server on");
     }
 
-
-    private static boolean waitForConnection(String bindAddress) {
-        long startTime = System.currentTimeMillis();
-        boolean isSuccessful = false;
-        while (System.currentTimeMillis() - startTime < 60 * 1000) { //60 seconds
-            boolean result = pingOverHTTP(bindAddress);
-            if (result) {
-                isSuccessful = true;
-                break;
-            }
-            try {
-                Thread.sleep(500); // Sleep before retrying
-            } catch (InterruptedException e) {
-                break; // Exit if interrupted (e.g., service stopping)
-            }
-        }
-        return isSuccessful;
-    }
-
     public static boolean pingOverHTTP(String bindAddress) {
         System.out.println("Pinging");
         Map<String, Integer> result = splitHostAndPort(bindAddress);
@@ -236,31 +220,32 @@ public class OblivionVpnService extends VpnService {
         }
     }
 
-    private static void performConnectionTest(String bindAddress, boolean psiphonMode, ConnectionStateChangeListener changeListener) {
-        new Thread(() -> {
-            long startTime = System.currentTimeMillis();
-            boolean isSuccessful = false;
+    private static Set<String> getSplitTunnelApps(FileManager fm) {
+        return fm.getStringSet("splitTunnelApps", new HashSet<>());
+    }
 
-            while (System.currentTimeMillis() - startTime < 2 * 60 * 1000) { // 2 minutes
-                String result = isLocalPortInUse(bindAddress);
-                if (result.contains("exception")) {
-                    if (changeListener != null)
-                        changeListener.onChange(ConnectionState.DISCONNECTED);
-                    return;
-                }
-                if (result.contains("true")) {
-                    isSuccessful = !psiphonMode || waitForConnection(bindAddress);
-                    break;
-                }
-                try {
-                    Thread.sleep(1000); // Sleep for a second before retrying
-                } catch (InterruptedException e) {
-                    break; // Exit if interrupted (e.g., service stopping)
-                }
+    private void performConnectionTest(String bindAddress, ConnectionStateChangeListener changeListener) {
+        if (changeListener == null) {
+            return;
+        }
+
+        long startTime = System.currentTimeMillis();
+
+        while (System.currentTimeMillis() - startTime < 60 * 1000) { // 1 minute
+            boolean result = pingOverHTTP(bindAddress);
+            if (result) {
+                changeListener.onChange(ConnectionState.CONNECTED);
+                return;
             }
-            if (changeListener != null)
-                changeListener.onChange(isSuccessful ? ConnectionState.CONNECTED : ConnectionState.DISCONNECTED);
-        }).start();
+
+            try {
+                Thread.sleep(1000); // Sleep before retrying
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        changeListener.onChange(ConnectionState.DISCONNECTED);
     }
 
     private String getBindAddress() {
@@ -298,23 +283,49 @@ public class OblivionVpnService extends VpnService {
         }
     }
 
+    private void start() {
+        fileManager = FileManager.getInstance(this);
+        bindAddress = getBindAddress();
+
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                setLastKnownState(ConnectionState.CONNECTING);
+                Log.i(TAG, "Clearing Logs");
+                clearLogFile();
+                Log.i(TAG, "Create Notification");
+                createNotification();
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                    startForeground(1, notification);
+                } else {
+                    startForeground(1, notification, FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED);
+                }
+                Log.i(TAG, "Configuring VPN service");
+                configure();
+
+                performConnectionTest(bindAddress, (state) -> {
+                    if (state == ConnectionState.DISCONNECTED) {
+                        onRevoke();
+                    }
+                    setLastKnownState(state);
+                });
+            }
+        });
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null && FLAG_VPN_START.equals(intent.getAction())) {
-            fileManager = FileManager.getInstance(this);
-            bindAddress = getBindAddress();
-            runVpn();
-            boolean psiphonMode = fileManager.getBoolean("USERSETTING_psiphon");
-            performConnectionTest(bindAddress, psiphonMode, (state) -> {
-                if (state == ConnectionState.DISCONNECTED) {
-                    stopVpnService(getApplicationContext());
-                    return;
-                }
-                setLastKnownState(state);
-            });
+        if (intent == null) {
+            return START_NOT_STICKY;
+        }
+
+        if (intent.getAction().equals(FLAG_VPN_START)) {
+            start();
             return START_STICKY;
-        } else if (intent != null && FLAG_VPN_STOP.equals(intent.getAction())) {
-            stopVpn();
+        }
+
+        if (intent.getAction().equals(FLAG_VPN_STOP)) {
+            onRevoke();
             return START_NOT_STICKY;
         }
         return START_NOT_STICKY;
@@ -334,26 +345,6 @@ public class OblivionVpnService extends VpnService {
 
     @Override
     public void onRevoke() {
-        stopVpn();
-    }
-
-    private void runVpn() {
-        setLastKnownState(ConnectionState.CONNECTING);
-        Log.i(TAG, "Clearing Logs");
-        clearLogFile();
-        Log.i(TAG, "Create Notification");
-        createNotification();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            startForeground(1, notification);
-        } else {
-            startForeground(1, notification,
-                    FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED);
-        }
-        Log.i(TAG, "Configuring VPN service");
-        configure();
-    }
-
-    private void stopVpn() {
         setLastKnownState(ConnectionState.DISCONNECTED);
         Log.i(TAG, "Stopping VPN");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -368,12 +359,6 @@ public class OblivionVpnService extends VpnService {
             e.printStackTrace();
         }
 
-        try {
-            Tun2socks.shutdown();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         if (mInterface != null) {
             try {
                 mInterface.close();
@@ -382,13 +367,16 @@ public class OblivionVpnService extends VpnService {
             }
         }
 
-        if (vpnThread != null) {
-            try {
-                vpnThread.join();
-                vpnThread.stop();
-            } catch (Exception e) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Tun2socks.stop();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-        }
+        });
     }
 
     private void publishConnectionState(ConnectionState state) {
@@ -468,49 +456,6 @@ public class OblivionVpnService extends VpnService {
         connectionStateObservers.remove(key);
     }
 
-    private StartOptions calculateArgs() {
-        StartOptions so = new StartOptions();
-        so.setPath(getApplicationContext().getFilesDir().getAbsolutePath());
-        so.setVerbose(true);
-        so.setVerbose(true);
-        String endpoint = fileManager.getString("USERSETTING_endpoint", "notset");
-        String country = fileManager.getString("USERSETTING_country", "");
-        String license = fileManager.getString("USERSETTING_license", "notset");
-
-        boolean enablePsiphon = fileManager.getBoolean("USERSETTING_psiphon", false);
-        boolean enableGool = fileManager.getBoolean("USERSETTING_gool", false);
-
-        if (!endpoint.contains("engage.cloudflareclient.com")) {
-            so.setEndpoint(endpoint);
-        } else {
-            so.setEndpoint("notset");
-            so.setScan(true);
-        }
-
-        so.setBindAddress(bindAddress);
-
-        if (!license.trim().isEmpty()) {
-            so.setLicense(license.trim());
-        } else {
-            so.setLicense("notset");
-        }
-
-        if (enablePsiphon && !enableGool) {
-            so.setPsiphonEnabled(true);
-            if (!country.trim().isEmpty() && country.length() == 2) {
-                so.setCountry(country.trim());
-            }
-        }
-
-        if (!enablePsiphon && enableGool) {
-            so.setGool(true);
-        }
-
-        so.setRtt(800);
-
-        return so;
-    }
-
     private void configure() {
         VpnService.Builder builder = new VpnService.Builder();
         try {
@@ -527,29 +472,59 @@ public class OblivionVpnService extends VpnService {
                     .addDisallowedApplication(getPackageName())
                     .addRoute("0.0.0.0", 0)
                     .addRoute("::", 0);
-            fileManager.getStringSet("splitTunnelApps", new HashSet<>());
-            SplitTunnelMode splitTunnelMode = SplitTunnelMode.getSplitTunnelMode(fileManager);
-            if (splitTunnelMode == SplitTunnelMode.BLACKLIST) {
-                for (String packageName : getSplitTunnelApps(fileManager)) {
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        fileManager.getStringSet("splitTunnelApps", new HashSet<>());
+        SplitTunnelMode splitTunnelMode = SplitTunnelMode.getSplitTunnelMode(fileManager);
+        if (splitTunnelMode == SplitTunnelMode.BLACKLIST) {
+            for (String packageName : getSplitTunnelApps(fileManager)) {
+                try {
                     builder.addDisallowedApplication(packageName);
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
                 }
             }
-
-        } catch (PackageManager.NameNotFoundException e) {
-            throw new RuntimeException(e);
         }
+
         mInterface = builder.establish();
         Log.i(TAG, "Interface created");
 
-        StartOptions so = calculateArgs();
+        String endpoint = fileManager.getString("USERSETTING_endpoint", "engage.cloudflareclient.com:2408").trim();
+        if (endpoint.equals("engage.cloudflareclient.com:2408")) {
+            endpoint = "";
+        }
+
+        String license = fileManager.getString("USERSETTING_license", "").trim();
+        boolean enablePsiphon = fileManager.getBoolean("USERSETTING_psiphon", false);
+        String country = fileManager.getString("USERSETTING_country", "AT").trim();
+        boolean enableGool = fileManager.getBoolean("USERSETTING_gool", false);
+
+        StartOptions so = new StartOptions();
+        so.setPath(getApplicationContext().getFilesDir().getAbsolutePath());
+        so.setVerbose(true);
+        so.setEndpoint(endpoint);
+        so.setBindAddress(bindAddress);
+        so.setLicense(license);
+
+        if (enablePsiphon && !enableGool) {
+            so.setPsiphonEnabled(true);
+            so.setCountry(country);
+        }
+
+        if (!enablePsiphon && enableGool) {
+            so.setGool(true);
+        }
+
         so.setTunFd(mInterface.getFd());
 
-        vpnThread = new Thread(() -> Tun2socks.runWarp(so));
-        vpnThread.start();
-    }
-
-    private static Set<String> getSplitTunnelApps(FileManager fm) {
-        return fm.getStringSet("splitTunnelApps", new HashSet<>());
+        try {
+            Tun2socks.start(so);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static class IncomingHandler extends Handler {
@@ -566,37 +541,6 @@ public class OblivionVpnService extends VpnService {
             OblivionVpnService service = serviceRef.get();
             if (service == null) return;
             switch (msg.what) {
-                case MSG_PERFORM_CONNECTION_TEST: {
-                    boolean psiphonMode = service.fileManager.getBoolean("USERSETTING_psiphon");
-                    performConnectionTest(service.bindAddress, psiphonMode, new ConnectionStateChangeListener() {
-                        @Override
-                        public void onChange(ConnectionState state) {
-                            service.setLastKnownState(state);
-                            Bundle data = new Bundle();
-                            if (state == ConnectionState.DISCONNECTED) {
-                                data.putBoolean("success", false);
-                                Message replyMsg = Message.obtain(null, MSG_PERFORM_CONNECTION_TEST);
-                                replyMsg.setData(data);
-                                try {
-                                    message.replyTo.send(replyMsg);
-                                } catch (RemoteException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                data.putBoolean("success", true);
-                                Message replyMsg = Message.obtain(null, MSG_PERFORM_CONNECTION_TEST);
-                                replyMsg.setData(data);
-                                try {
-                                    message.replyTo.send(replyMsg);
-                                } catch (RemoteException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                        }
-                    });
-                    break;
-                }
                 case MSG_CONNECTION_STATE_SUBSCRIBE: {
                     String key = message.getData().getString("key");
                     if (key == null)

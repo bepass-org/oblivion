@@ -24,7 +24,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: "1.20"
+          go-version: "1.21"
           check-latest: true
 
       # Set up JDK
@@ -70,13 +70,3 @@ jobs:
           name: oblivion-${{ github.sha }}-unsigned.apk
           path: |
             app/build/outputs/apk/release/app-release-unsigned.apk
-
-      - name: Upload to GitHub Release
-        uses: svenstaro/upload-release-action@v2
-        if: github.event_name == 'release'
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: app/build/outputs/apk/release/app-release-unsigned.apk
-          asset_name: oblivion-${{ github.event.release.tag_name }}-unsigned.apk
-          tag: ${{ github.ref }}
-          overwrite: true

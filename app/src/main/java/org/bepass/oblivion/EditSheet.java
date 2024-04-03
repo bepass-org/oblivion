@@ -70,6 +70,4 @@ public class EditSheet {
         value.requestFocus();
         sheet.setOnCancelListener(dialog -> sheetsCallBack.onSheetClosed());
     }
-
-
 }

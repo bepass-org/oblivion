@@ -25,7 +25,7 @@ It's leveraging `bepass-sdk` and a custom Go implementation of WireGuard, it's d
 - Gradle 8
 - Android Gradle Plugin (AGP) 8.1.2
 - NDK r26b (26.1.10909125)
-- Go 1.20.0
+- Go 1.21
 
 Follow the steps below to build the Oblivion:
 
@@ -43,19 +43,6 @@ go run golang.org/x/mobile/cmd/gomobile bind -ldflags="-w -s" -target=android -a
 - In Android Studio, navigate to "Build" in the menu bar.
 - Select "Generate Signed Bundle/APK..."
 - Choose "APK" and proceed.
-
-#### Select Keystore:
-- Click on "Choose existing..." or "Create new..." to locate your keystore file.
-- Enter the keystore password when prompted.
-
-#### Configure APK Signature:
-- Select the appropriate key alias from the dropdown menu.
-- Input the key password.
-- Continue to the next step.
-
-#### Select APK Destination:
-- Choose the destination folder for the signed APK.
-- Finalize by clicking "Finish" to generate the signed APK.
 
 ## Get Involved
 

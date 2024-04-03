@@ -30,10 +30,10 @@ public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAd
     private static final String TAG = "InstalledAppsAdapter";
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private List<AppInfo> appList = new ArrayList<>();
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final FileManager fm;
     private final LoadListener loadListener;
+    private List<AppInfo> appList = new ArrayList<>();
     private OnAppSelectListener onAppSelectListener;
 
 
@@ -118,7 +118,8 @@ public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAd
                 newSet.remove(appInfo.packageName);
             }
             fm.set("splitTunnelApps", newSet);
-            if (onAppSelectListener != null) onAppSelectListener.onSelect(appInfo.packageName, appInfo.isSelected);
+            if (onAppSelectListener != null)
+                onAppSelectListener.onSelect(appInfo.packageName, appInfo.isSelected);
         });
     }
 
@@ -126,6 +127,14 @@ public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAd
     @Override
     public int getItemCount() {
         return appList.size();
+    }
+
+    public interface LoadListener {
+        void onLoad(boolean loading);
+    }
+
+    public interface OnAppSelectListener {
+        void onSelect(String packageName, boolean selected);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -158,14 +167,4 @@ public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAd
             Drawable load();
         }
     }
-
-    public interface LoadListener {
-        void onLoad(boolean loading);
-    }
-
-    public interface OnAppSelectListener {
-        void onSelect(String packageName, boolean selected);
-    }
-
-
 }

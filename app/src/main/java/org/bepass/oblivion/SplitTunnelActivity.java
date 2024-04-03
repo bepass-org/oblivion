@@ -18,6 +18,7 @@ public class SplitTunnelActivity extends ConnectionAwareBaseActivity {
     private RecyclerView appsRecycler;
     private CircularProgressIndicator progress;
     private boolean settingsChanged = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,8 +34,8 @@ public class SplitTunnelActivity extends ConnectionAwareBaseActivity {
                 if (settingsChanged) {
                     settingsChanged = false;
                     if (!lastKnownConnectionState.isDisconnected()) {
-                        OblivionVpnService.stopVpnService(SplitTunnelActivity.this);
-                        OblivionVpnService.startVpnService(SplitTunnelActivity.this);
+                       OblivionVpnService.stopVpnService(SplitTunnelActivity.this);
+                       OblivionVpnService.startVpnService(SplitTunnelActivity.this);
                     }
                 }
                 finish();
@@ -45,11 +46,14 @@ public class SplitTunnelActivity extends ConnectionAwareBaseActivity {
             @Override
             public void onLoad(boolean loading) {
                 appsRecycler.setVisibility(loading ? View.INVISIBLE : View.VISIBLE);
-                if (loading) progress.show(); else progress.hide();
+                if (loading) progress.show();
+                else progress.hide();
             }
         });
 
-        bypassListAppsAdapter.setOnAppSelectListener((packageName, selected) -> { settingsChanged = true; } );
+        bypassListAppsAdapter.setOnAppSelectListener((packageName, selected) -> {
+            settingsChanged = true;
+        });
         SplitTunnelOptionsAdapter optionsAdapter = new SplitTunnelOptionsAdapter(this, new SplitTunnelOptionsAdapter.OnSettingsChanged() {
 
             @Override
@@ -77,6 +81,4 @@ public class SplitTunnelActivity extends ConnectionAwareBaseActivity {
     String getKey() {
         return "splitTunnelActivity";
     }
-
-
 }
