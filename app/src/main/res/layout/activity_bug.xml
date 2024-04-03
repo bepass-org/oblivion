@@ -57,7 +57,8 @@
       android:id="@+id/logs"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:text="Start Logging Here.." />
+      android:text="Start Logging Here.."
+      android:textSize="11sp" />
   </ScrollView>
 
 
