@@ -13,5 +13,4 @@ public enum SplitTunnelMode {
         }
         return splitTunnelMode;
     }
-
 }

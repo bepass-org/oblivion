@@ -13,7 +13,6 @@ import android.service.quicksettings.TileService;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
-import androidx.core.content.ContextCompat;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class QuickStartService extends TileService {
@@ -62,19 +61,20 @@ public class QuickStartService extends TileService {
     public void onClick() {
         Tile tile = getQsTile();
         if (tile == null) {
-            //Quick setting tile was not registered by system. Return to prevent crash
+            return; //Quick setting tile was not registered by system. Return to prevent crash
+        }
+
+        if (tile.getState() == Tile.STATE_ACTIVE) {
+            OblivionVpnService.stopVpnService(this);
             return;
         }
-        if (tile.getState() == Tile.STATE_INACTIVE) {
-            Intent vpnIntent = OblivionVpnService.prepare(this);
-            if (vpnIntent != null) {
-                Toast.makeText(this, "لطفا یک‌بار از درون اپلیکیشن متصل شوید", Toast.LENGTH_LONG).show();
-            } else {
-                OblivionVpnService.startVpnService(this);
-            }
-        } else {
-            OblivionVpnService.stopVpnService(this);
+
+        if (OblivionVpnService.prepare(this) != null) {
+            Toast.makeText(this, "لطفا یک‌بار از درون اپلیکیشن متصل شوید", Toast.LENGTH_LONG).show();
+            return;
         }
+
+        OblivionVpnService.startVpnService(this);
     }
 
     private void subscribe() {
@@ -84,8 +84,7 @@ public class QuickStartService extends TileService {
             public void onChange(ConnectionState state) {
                 Tile tile = getQsTile();
                 if (tile == null) {
-                    //Quick setting tile was not registered by system. Return to prevent crash
-                    return;
+                    return; //Quick setting tile was not registered by system. Return to prevent crash
                 }
                 switch (state) {
                     case DISCONNECTED:
@@ -114,5 +113,4 @@ public class QuickStartService extends TileService {
         if (!isBound) return;
         OblivionVpnService.unregisterConnectionStateObserver(CONNECTION_OBSERVER_KEY, serviceMessenger);
     }
-
 }

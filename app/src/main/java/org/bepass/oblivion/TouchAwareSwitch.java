@@ -41,6 +41,4 @@ public class TouchAwareSwitch extends SwitchButton {
         if (!notify) setTag("TAG");
         setChecked(checked);
     }
-
-
 }
