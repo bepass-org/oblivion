@@ -35,8 +35,12 @@ public class SplitTunnelOptionsAdapter extends RecyclerView.Adapter<SplitTunnelO
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         SplitTunnelMode stm = SplitTunnelMode.getSplitTunnelMode(fm);
         switch (stm) {
-            case DISABLED: holder.disabled.setChecked(true); break;
-            case BLACKLIST: holder.blacklist.setChecked(true); break;
+            case DISABLED:
+                holder.disabled.setChecked(true);
+                break;
+            case BLACKLIST:
+                holder.blacklist.setChecked(true);
+                break;
         }
         holder.showSystemApps.setOnCheckedChangeListener((buttonView, isChecked) -> settingsCallback.shouldShowSystemApps(isChecked));
         holder.disabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -59,6 +63,12 @@ public class SplitTunnelOptionsAdapter extends RecyclerView.Adapter<SplitTunnelO
         return 1; // Header has only one item
     }
 
+    public interface OnSettingsChanged {
+        void splitTunnelMode(SplitTunnelMode mode);
+
+        void shouldShowSystemApps(boolean show);
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         SwitchMaterial showSystemApps;
         RadioButton disabled;
@@ -71,10 +81,5 @@ public class SplitTunnelOptionsAdapter extends RecyclerView.Adapter<SplitTunnelO
             disabled = itemView.findViewById(R.id.disabled);
             blacklist = itemView.findViewById(R.id.blacklist);
         }
-    }
-
-    public interface OnSettingsChanged {
-        void splitTunnelMode(SplitTunnelMode mode);
-        void shouldShowSystemApps(boolean show);
     }
 }

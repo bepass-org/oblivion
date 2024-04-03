@@ -5,15 +5,18 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
+	"log/slog"
+	"net/netip"
 	"os"
 	"os/signal"
 	"strings"
 	"sync"
 	"syscall"
+	"time"
 	"tun2socks/lwip"
 
-	"github.com/bepass-org/wireguard-go/app"
+	"github.com/bepass-org/warp-plus/app"
+	"github.com/bepass-org/warp-plus/wiresocks"
 	L "github.com/xjasonlyu/tun2socks/v2/log"
 )
 
@@ -21,8 +24,9 @@ import (
 var (
 	logMessages []string
 	mu          sync.Mutex
-	wg          sync.WaitGroup
+	ctx         context.Context
 	cancelFunc  context.CancelFunc
+	l           *slog.Logger
 )
 
 type StartOptions struct {
@@ -36,8 +40,6 @@ type StartOptions struct {
 	Country        string
 	PsiphonEnabled bool
 	Gool           bool
-	Scan           bool
-	Rtt            int
 }
 
 var global StartOptions
@@ -51,14 +53,37 @@ func (writer logWriter) Write(bytes []byte) (int, error) {
 	return len(bytes), nil
 }
 
-func RunWarp(opt *StartOptions) {
+func Start(opt *StartOptions) {
 	global = *opt
+
+	ctx, cancelFunc = signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+
+	if err := os.Chdir(global.Path); err != nil {
+		l.Error("error changing to 'main' directory", "error", err.Error())
+		os.Exit(1)
+	}
+
 	logger := logWriter{}
-	log.SetOutput(logger)
+
+	lOpts := slog.HandlerOptions{
+		Level: func() slog.Level {
+			if global.Verbose {
+				return slog.LevelDebug
+			}
+			return slog.LevelInfo
+		}(),
+		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+			if (a.Key == slog.TimeKey || a.Key == slog.LevelKey) && len(groups) == 0 {
+				return slog.Attr{} // remove excess keys
+			}
+			return a
+		},
+	}
+
+	l = slog.New(slog.NewTextHandler(logger, &lOpts))
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 	os.Stderr = w
-
 	L.SetLevel(L.DebugLevel)
 	L.SetOutput(logger)
 
@@ -71,74 +96,59 @@ func RunWarp(opt *StartOptions) {
 			fmt.Fprintln(os.Stderr, "There was an error with the scanner", err)
 		}
 	}(r)
-	if err := os.Chdir(global.Path); err != nil {
-		log.Fatal("Error changing to 'main' directory:", err)
-	}
 
-	// Setup context with cancellation.
-	ctx, cancel := context.WithCancel(context.Background())
-	cancelFunc = cancel
-	wg.Add(1)
-
-	// Start your long-running process.
-	go runServer(ctx, global.TunFd)
-
-	// Wait for interrupt signal.
-	sigCh := make(chan os.Signal, 1)
-	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
-
-	select {
-	case <-sigCh:
-		// Received an interrupt signal, shut down.
-		log.Println("Shutting down server...")
-		cancelFunc()
-	case <-ctx.Done():
-		// Context was cancelled, perhaps from another part of the app calling Shutdown().
-	}
-
-	// Wait for the server goroutine to finish.
-	wg.Wait()
-	log.Println("Server shut down gracefully.")
-}
-
-func runServer(ctx context.Context, fd int) {
-	// Ensuring a cleanup operation even in the case of an error
-	defer func() {
-		// Perform cleanup and exit.
-		lwip.Stop()
-		log.Println("Cleanup done, exiting runServer goroutine.")
-
-		defer wg.Done()
-	}()
-
-	// Start wireguard-go and gvisor-tun2socks.
-	go func() {
-		err := app.RunWarp(global.PsiphonEnabled, global.Gool, global.Scan, global.Verbose, global.Country, global.BindAddress, global.Endpoint, global.License, ctx, global.Rtt)
-		if err != nil {
-			log.Println(err)
+	var scanOpts *wiresocks.ScanOptions
+	if global.Endpoint == "" {
+		scanOpts = &wiresocks.ScanOptions{
+			V4:     true,
+			V6:     true,
+			MaxRTT: 1500 * time.Millisecond,
 		}
-	}()
+	}
+
+	var psiphonOpts *app.PsiphonOptions
+	if global.PsiphonEnabled {
+		psiphonOpts = &app.PsiphonOptions{
+			Country: global.Country,
+		}
+	}
+
+	err := app.RunWarp(ctx, l, app.WarpOptions{
+		Bind:     netip.MustParseAddrPort(global.BindAddress),
+		Endpoint: global.Endpoint,
+		License:  global.License,
+		Psiphon:  psiphonOpts,
+		Gool:     global.Gool,
+		Scan:     scanOpts,
+	})
+	if err != nil {
+		l.Error(err.Error())
+		os.Exit(1)
+	}
 
 	tun2socksStartOptions := &lwip.Tun2socksStartOptions{
-		TunFd:        fd,
+		TunFd:        global.TunFd,
 		Socks5Server: strings.Replace(global.BindAddress, "0.0.0.0", "127.0.0.1", -1),
 		FakeIPRange:  "24.0.0.0/8",
 		MTU:          0,
 		EnableIPv6:   true,
 		AllowLan:     true,
 	}
-	lwip.Start(tun2socksStartOptions)
+	if ret := lwip.Start(tun2socksStartOptions); ret != 0 {
+		l.Error("failed to start LWIP")
+		os.Exit(1)
+	}
 
-	// Wait for context cancellation.
-	<-ctx.Done()
+	go func() {
+		<-ctx.Done()
+		lwip.Stop()
+
+		l.Info("server shut down gracefully")
+	}()
 }
 
-// Shutdown can be called to stop the server from another part of the app.
-func Shutdown() {
-	if cancelFunc != nil {
-		cancelFunc()
-		os.Exit(0)
-	}
+func Stop() {
+	os.Exit(0)
 }
 
 func GetLogMessages() string {

@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 public abstract class ConnectionAwareBaseActivity extends AppCompatActivity {
 
     protected ConnectionState lastKnownConnectionState = ConnectionState.DISCONNECTED;
-
     private Messenger serviceMessenger;
     private boolean isBound;
 
@@ -36,6 +35,7 @@ public abstract class ConnectionAwareBaseActivity extends AppCompatActivity {
     };
 
     abstract String getKey();
+
     abstract void onConnectionStateChange(ConnectionState state);
 
     private void observeConnectionStatus() {
@@ -69,5 +69,4 @@ public abstract class ConnectionAwareBaseActivity extends AppCompatActivity {
             isBound = false;
         }
     }
-
 }
