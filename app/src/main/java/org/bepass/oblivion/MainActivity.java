@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.FrameLayout;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -27,7 +28,8 @@ public class MainActivity extends ConnectionAwareBaseActivity {
     Boolean canShowNotification = false;
     private ActivityResultLauncher<String> pushNotificationPermissionLauncher;
     private ActivityResultLauncher<Intent> vpnPermissionLauncher;
-
+    private long backPressedTime;
+    private Toast backToast;
 
     private SwitchButton.OnCheckedChangeListener createSwitchCheckedChangeListener() {
         return (view, isChecked) -> {
@@ -58,11 +60,26 @@ public class MainActivity extends ConnectionAwareBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Custom back pressed logic here
+                if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                    if (backToast != null) backToast.cancel();
+                    finish(); // or super.handleOnBackPressed() if you want to keep default behavior alongside
+                } else {
+                    if (backToast != null) backToast.cancel(); // Cancel the existing toast to avoid stacking
+                    backToast = Toast.makeText(MainActivity.this, "برای خروج، دوباره بازگشت را فشار دهید.", Toast.LENGTH_SHORT);
+                    backToast.show();
+                }
+                backPressedTime = System.currentTimeMillis();
+            }
+        });
         init();
         firstValueInit();
         switchButton.setOnCheckedChangeListener(createSwitchCheckedChangeListener());
-    }
 
+    }
 
     @NonNull
     @Override
