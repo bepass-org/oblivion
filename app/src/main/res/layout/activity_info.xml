@@ -101,7 +101,7 @@
       android:layout_marginTop="8dp"
       android:fontFamily="@font/shabnam"
       android:gravity="center"
-      android:text="App Version: 1"
+      android:text="App Version: 2"
       android:textColor="@color/black"
       android:textSize="14sp" />
 
