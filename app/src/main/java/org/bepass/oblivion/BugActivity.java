@@ -17,7 +17,6 @@ import java.io.InputStreamReader;
 public class BugActivity extends AppCompatActivity {
 
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private ImageView back;
     private TextView logs;
     private ScrollView logScrollView;
     private boolean isUserScrollingUp = false;
@@ -28,12 +27,12 @@ public class BugActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bug);
 
-        back = findViewById(R.id.back);
+        ImageView back = findViewById(R.id.back);
         logs = findViewById(R.id.logs);
         logScrollView = findViewById(R.id.logScrollView);
 
         setupScrollListener();
-        back.setOnClickListener(v -> onBackPressed());
+        back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         logUpdater = new Runnable() {
             @Override
             public void run() {

@@ -24,7 +24,6 @@ public class MainActivity extends ConnectionAwareBaseActivity {
     ProgressBar ipProgressBar;
     FileManager fileManager;
     PublicIPUtils pIPUtils;
-    private ActivityResultLauncher<String> pushNotificationPermissionLauncher;
     private ActivityResultLauncher<Intent> vpnPermissionLauncher;
     private long backPressedTime;
     private Toast backToast;
@@ -49,7 +48,7 @@ public class MainActivity extends ConnectionAwareBaseActivity {
                 backPressedTime = System.currentTimeMillis();
             }
         });
-        pushNotificationPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+        ActivityResultLauncher<String> pushNotificationPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
             if (!isGranted) {
                 Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
             }
@@ -76,7 +75,7 @@ public class MainActivity extends ConnectionAwareBaseActivity {
         switchButton = findViewById(R.id.switch_button);
         stateText = findViewById(R.id.state_text);
         publicIP = findViewById(R.id.publicIP);
-        ipProgressBar = (ProgressBar) findViewById(R.id.ipProgressBar);
+        ipProgressBar = findViewById(R.id.ipProgressBar);
 
         infoIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, InfoActivity.class)));
         bugIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, BugActivity.class)));
