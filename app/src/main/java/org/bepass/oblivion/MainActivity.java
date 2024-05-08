@@ -16,7 +16,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
-public class MainActivity extends ConnectionAwareBaseActivity {
+public class MainActivity extends StateAwareBaseActivity {
     // Views
     ImageView infoIcon, bugIcon, settingsIcon;
     TouchAwareSwitch switchButton;
