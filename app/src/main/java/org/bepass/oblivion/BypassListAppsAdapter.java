@@ -26,9 +26,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAdapter.ViewHolder> {
-
-    private static final String TAG = "InstalledAppsAdapter";
-
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final FileManager fm;
@@ -156,7 +153,7 @@ public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAd
         IconLoader iconLoader;
         boolean isSelected;
 
-        public AppInfo(String name, IconLoader iconLoader, String packageName, boolean isSelected) {
+        AppInfo(String name, IconLoader iconLoader, String packageName, boolean isSelected) {
             this.appName = name;
             this.packageName = packageName;
             this.iconLoader = iconLoader;

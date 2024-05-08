@@ -17,9 +17,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     FileManager fileManager;
     ImageView back;
-
     LinearLayout endpointLayout, portLayout, lanLayout, psiphonLayout, countryLayout, licenseLayout, goolLayout, splitTunnelLayout;
-
     TextView endpoint, port, license;
     CheckBox psiphon, lan, gool;
     Spinner country;
@@ -60,9 +58,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingSelected(AdapterView parent) {
-
-            }
+            public void onNothingSelected(AdapterView parent) {}
         });
 
         splitTunnelLayout.setOnClickListener(v -> startActivity(new Intent(this, SplitTunnelActivity.class)));
@@ -119,7 +115,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         String countryCode = fileManager.getString("USERSETTING_country");
         int index = 0;
-        if (!countryCode.equals("")) {
+        if (!countryCode.isEmpty()) {
             String countryName = CountryUtils.getCountryName(countryCode);
             index = getIndexFromName(country, countryName);
         }

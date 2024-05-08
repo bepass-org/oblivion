@@ -19,6 +19,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -35,7 +36,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -72,8 +72,8 @@ public class OblivionVpnService extends VpnService {
             handler.postDelayed(this, 2000); // Poll every 2 seconds
         }
     };
-//    ExecutorService executorService = Executors.newFixedThreadPool(2);
-    private Executor executorService = Executors.newSingleThreadExecutor();
+
+    private final Executor executorService = Executors.newSingleThreadExecutor();
     private Notification notification;
     private ParcelFileDescriptor mInterface;
     private String bindAddress;
@@ -287,29 +287,26 @@ public class OblivionVpnService extends VpnService {
         fileManager = FileManager.getInstance(this);
         bindAddress = getBindAddress();
 
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                setLastKnownState(ConnectionState.CONNECTING);
-                Log.i(TAG, "Clearing Logs");
-                clearLogFile();
-                Log.i(TAG, "Create Notification");
-                createNotification();
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                    startForeground(1, notification);
-                } else {
-                    startForeground(1, notification, FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED);
-                }
-                Log.i(TAG, "Configuring VPN service");
-                configure();
-
-                performConnectionTest(bindAddress, (state) -> {
-                    if (state == ConnectionState.DISCONNECTED) {
-                        onRevoke();
-                    }
-                    setLastKnownState(state);
-                });
+        executorService.execute(() -> {
+            setLastKnownState(ConnectionState.CONNECTING);
+            Log.i(TAG, "Clearing Logs");
+            clearLogFile();
+            Log.i(TAG, "Create Notification");
+            createNotification();
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU) {
+                startForeground(1, notification);
+            } else {
+                startForeground(1, notification, FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED);
             }
+            Log.i(TAG, "Configuring VPN service");
+            configure();
+
+            performConnectionTest(bindAddress, (state) -> {
+                if (state == ConnectionState.DISCONNECTED) {
+                    onRevoke();
+                }
+                setLastKnownState(state);
+            });
         });
     }
 
@@ -319,12 +316,17 @@ public class OblivionVpnService extends VpnService {
             return START_NOT_STICKY;
         }
 
-        if (intent.getAction().equals(FLAG_VPN_START)) {
+        String action = intent.getAction();
+        if (action == null) {
+            return START_NOT_STICKY;
+        }
+
+        if (action.equals(FLAG_VPN_START)) {
             start();
             return START_STICKY;
         }
 
-        if (intent.getAction().equals(FLAG_VPN_STOP)) {
+        if (action.equals(FLAG_VPN_STOP)) {
             onRevoke();
             return START_NOT_STICKY;
         }
@@ -367,14 +369,11 @@ public class OblivionVpnService extends VpnService {
             }
         }
 
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Tun2socks.stop();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        executorService.execute(() -> {
+            try {
+                Tun2socks.stop();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }
@@ -401,7 +400,7 @@ public class OblivionVpnService extends VpnService {
         }
     }
 
-    public void setLastKnownState(ConnectionState lastKnownState) {
+    private void setLastKnownState(ConnectionState lastKnownState) {
         this.lastKnownState = lastKnownState;
         publishConnectionState(lastKnownState);
     }
@@ -535,7 +534,7 @@ public class OblivionVpnService extends VpnService {
         }
 
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(@NonNull Message msg) {
             final Message message = new Message();
             message.copyFrom(msg);
             OblivionVpnService service = serviceRef.get();
