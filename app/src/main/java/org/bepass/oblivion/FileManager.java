@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import java.util.Set;
 
 public class FileManager {
-    public static String currentLog;
     private static FileManager instance;
     private final SharedPreferences sharedPreferences;
 

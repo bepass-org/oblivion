@@ -15,7 +15,7 @@ public class SplitTunnelOptionsAdapter extends RecyclerView.Adapter<SplitTunnelO
 
     private final OnSettingsChanged settingsCallback;
 
-    private FileManager fm;
+    private final FileManager fm;
 
 
     public SplitTunnelOptionsAdapter(Context context, OnSettingsChanged settingsCallback) {
@@ -73,7 +73,6 @@ public class SplitTunnelOptionsAdapter extends RecyclerView.Adapter<SplitTunnelO
         SwitchMaterial showSystemApps;
         RadioButton disabled;
         RadioButton blacklist;
-        RadioButton whitelist;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

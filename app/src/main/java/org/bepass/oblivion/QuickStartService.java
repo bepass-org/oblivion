@@ -79,32 +79,29 @@ public class QuickStartService extends TileService {
 
     private void subscribe() {
         if (!isBound) return;
-        OblivionVpnService.registerConnectionStateObserver(CONNECTION_OBSERVER_KEY, serviceMessenger, new ConnectionStateChangeListener() {
-            @Override
-            public void onChange(ConnectionState state) {
-                Tile tile = getQsTile();
-                if (tile == null) {
-                    return; //Quick setting tile was not registered by system. Return to prevent crash
-                }
-                switch (state) {
-                    case DISCONNECTED:
-                        tile.setState(Tile.STATE_INACTIVE);
-                        tile.setLabel("Oblivion");
-                        tile.setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.vpn_off));
-                        tile.updateTile();
-                        break;
-                    case CONNECTING:
-                        tile.setState(Tile.STATE_ACTIVE);
-                        tile.setLabel("Connecting");
-                        tile.setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.vpn_off));
-                        tile.updateTile();
-                        break;
-                    case CONNECTED:
-                        tile.setState(Tile.STATE_ACTIVE);
-                        tile.setLabel("Connected");
-                        tile.setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.vpn_on));
-                        tile.updateTile();
-                }
+        OblivionVpnService.registerConnectionStateObserver(CONNECTION_OBSERVER_KEY, serviceMessenger, state -> {
+            Tile tile = getQsTile();
+            if (tile == null) {
+                return; //Quick setting tile was not registered by system. Return to prevent crash
+            }
+            switch (state) {
+                case DISCONNECTED:
+                    tile.setState(Tile.STATE_INACTIVE);
+                    tile.setLabel("Oblivion");
+                    tile.setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.vpn_off));
+                    tile.updateTile();
+                    break;
+                case CONNECTING:
+                    tile.setState(Tile.STATE_ACTIVE);
+                    tile.setLabel("Connecting");
+                    tile.setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.vpn_off));
+                    tile.updateTile();
+                    break;
+                case CONNECTED:
+                    tile.setState(Tile.STATE_ACTIVE);
+                    tile.setLabel("Connected");
+                    tile.setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.vpn_on));
+                    tile.updateTile();
             }
         });
     }

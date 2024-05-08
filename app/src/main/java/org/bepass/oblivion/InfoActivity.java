@@ -18,21 +18,15 @@ public class InfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
 
-        init();
-
-        github.setOnClickListener(v -> openURL("https://github.com/bepass-org/oblivion"));
-
-        back.setOnClickListener(v -> onBackPressed());
-    }
-
-    private void init() {
         back = findViewById(R.id.back);
         github = findViewById(R.id.github_layout);
-    }
 
-    protected void openURL(String url) {
-        Uri uri = Uri.parse(url);
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        startActivity(intent);
+        github.setOnClickListener(v -> {
+            Uri uri = Uri.parse("https://github.com/bepass-org/oblivion");
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        });
+
+        back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
     }
 }
