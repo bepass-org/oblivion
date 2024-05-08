@@ -2,6 +2,8 @@ package org.bepass.oblivion;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -11,9 +13,10 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends StateAwareBaseActivity {
 
     FileManager fileManager;
     ImageView back;
@@ -159,5 +162,27 @@ public class SettingsActivity extends AppCompatActivity {
         gool = findViewById(R.id.gool);
 
         back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (StateAwareBaseActivity.getRequireRestartVpnService()) {
+                    StateAwareBaseActivity.setRequireRestartVpnService(false);
+                    if (!lastKnownConnectionState.isDisconnected()) {
+                        OblivionVpnService.stopVpnService(SettingsActivity.this);
+                        OblivionVpnService.startVpnService(SettingsActivity.this);
+                    }
+                }
+                finish();
+            }
+        });
     }
+
+    @Override
+    String getKey() {
+        return "settingsActivity";
+    }
+
+    @Override
+    void onConnectionStateChange(ConnectionState state) {}
 }

@@ -12,53 +12,39 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 
-public class SplitTunnelActivity extends ConnectionAwareBaseActivity {
-
-    private ImageView back;
+public class SplitTunnelActivity extends StateAwareBaseActivity {
     private RecyclerView appsRecycler;
     private CircularProgressIndicator progress;
-    private boolean settingsChanged = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Sets the contents from the layout
         setContentView(R.layout.activity_split_tunnel);
-        back = findViewById(R.id.back);
+
+        // Find UI elements and assign them to vars
+        ImageView back = findViewById(R.id.back);
         appsRecycler = findViewById(R.id.appsRecycler);
         progress = findViewById(R.id.progress);
 
+        // Handles the back button behaviour
         back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                if (settingsChanged) {
-                    settingsChanged = false;
-                    if (!lastKnownConnectionState.isDisconnected()) {
-                       OblivionVpnService.stopVpnService(SplitTunnelActivity.this);
-                       OblivionVpnService.startVpnService(SplitTunnelActivity.this);
-                    }
-                }
-                finish();
-            }
-        });
 
-        BypassListAppsAdapter bypassListAppsAdapter = new BypassListAppsAdapter(this, new BypassListAppsAdapter.LoadListener() {
-            @Override
-            public void onLoad(boolean loading) {
+        BypassListAppsAdapter bypassListAppsAdapter = new BypassListAppsAdapter(this, loading -> {
                 appsRecycler.setVisibility(loading ? View.INVISIBLE : View.VISIBLE);
                 if (loading) progress.show();
                 else progress.hide();
-            }
         });
 
         bypassListAppsAdapter.setOnAppSelectListener((packageName, selected) -> {
-            settingsChanged = true;
+            StateAwareBaseActivity.setRequireRestartVpnService(true);
         });
         SplitTunnelOptionsAdapter optionsAdapter = new SplitTunnelOptionsAdapter(this, new SplitTunnelOptionsAdapter.OnSettingsChanged() {
 
             @Override
             public void splitTunnelMode(SplitTunnelMode mode) {
-                settingsChanged = true;
+                StateAwareBaseActivity.setRequireRestartVpnService(true);
                 FileManager.getInstance(SplitTunnelActivity.this).set("splitTunnelMode", mode.toString());
             }
 
