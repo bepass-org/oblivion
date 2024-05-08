@@ -13,13 +13,21 @@ import androidx.appcompat.app.AppCompatActivity;
 /**
  * Those activities that inherit this class observe connection state by default and have access to lastKnownConnectionState variable.
  */
-public abstract class ConnectionAwareBaseActivity extends AppCompatActivity {
-
+public abstract class StateAwareBaseActivity extends AppCompatActivity {
     protected ConnectionState lastKnownConnectionState = ConnectionState.DISCONNECTED;
+    private static boolean requireRestartVpnService = false;
     private Messenger serviceMessenger;
     private boolean isBound;
 
-    private ServiceConnection connection = new ServiceConnection() {
+    public static boolean getRequireRestartVpnService() {
+        return requireRestartVpnService;
+    }
+
+     public static void setRequireRestartVpnService(boolean b) {
+         StateAwareBaseActivity.requireRestartVpnService = b;
+    }
+
+    private final ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             serviceMessenger = new Messenger(service);
