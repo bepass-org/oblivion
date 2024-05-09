@@ -63,10 +63,17 @@ jobs:
         run: |
           ./gradlew assembleRelease
 
+      # Upload build aar to Artifacts
+      - name: Upload build aar to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: "tun2socks"
+          path: app/libs/*.aar
+
       # Upload APK artifact
       - name: Upload files to Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: oblivion-${{ github.sha }}-unsigned.apk
           path: |
-            app/build/outputs/apk/release/app-release-unsigned.apk
+            app/build/outputs/apk/release/*.apk
