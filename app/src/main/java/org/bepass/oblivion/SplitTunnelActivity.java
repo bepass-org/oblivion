@@ -31,17 +31,20 @@ public class SplitTunnelActivity extends StateAwareBaseActivity {
         // Handles the back button behaviour
         back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
 
+        // Set up the app list
         BypassListAppsAdapter bypassListAppsAdapter = new BypassListAppsAdapter(this, loading -> {
                 appsRecycler.setVisibility(loading ? View.INVISIBLE : View.VISIBLE);
                 if (loading) progress.show();
                 else progress.hide();
         });
 
+        // Signal the need to restart the VPN service on app selection change
         bypassListAppsAdapter.setOnAppSelectListener((packageName, selected) -> {
             StateAwareBaseActivity.setRequireRestartVpnService(true);
         });
-        SplitTunnelOptionsAdapter optionsAdapter = new SplitTunnelOptionsAdapter(this, new SplitTunnelOptionsAdapter.OnSettingsChanged() {
 
+        // Set behaviour for Split tunnel options
+        SplitTunnelOptionsAdapter optionsAdapter = new SplitTunnelOptionsAdapter(this, new SplitTunnelOptionsAdapter.OnSettingsChanged() {
             @Override
             public void splitTunnelMode(SplitTunnelMode mode) {
                 StateAwareBaseActivity.setRequireRestartVpnService(true);
@@ -58,13 +61,9 @@ public class SplitTunnelActivity extends StateAwareBaseActivity {
     }
 
     @Override
-    void onConnectionStateChange(ConnectionState state) {
-
-    }
+    void onConnectionStateChange(ConnectionState state) { }
 
     @NonNull
     @Override
-    String getKey() {
-        return "splitTunnelActivity";
-    }
+    String getKey() { return "splitTunnelActivity"; }
 }

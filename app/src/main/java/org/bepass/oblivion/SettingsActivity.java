@@ -2,8 +2,6 @@ package org.bepass.oblivion;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -14,18 +12,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AppCompatActivity;
 
 public class SettingsActivity extends StateAwareBaseActivity {
-
-    FileManager fileManager;
-    ImageView back;
-    LinearLayout endpointLayout, portLayout, lanLayout, psiphonLayout, countryLayout, licenseLayout, goolLayout, splitTunnelLayout;
-    TextView endpoint, port, license;
-    CheckBox psiphon, lan, gool;
-    Spinner country;
-    ArrayAdapter adapter;
-
+    private FileManager fileManager;
+    private LinearLayout countryLayout;
+    private TextView endpoint, port, license;
+    private CheckBox psiphon, lan, gool;
+    private Spinner country;
     private CheckBox.OnCheckedChangeListener psiphonListener;
     private CheckBox.OnCheckedChangeListener goolListener;
 
@@ -40,7 +33,42 @@ public class SettingsActivity extends StateAwareBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        init();
+        fileManager = FileManager.getInstance(getApplicationContext());
+
+        LinearLayout endpointLayout = findViewById(R.id.endpoint_layout);
+        LinearLayout portLayout = findViewById(R.id.port_layout);
+        LinearLayout splitTunnelLayout = findViewById(R.id.split_tunnel_layout);
+        LinearLayout lanLayout = findViewById(R.id.lan_layout);
+        LinearLayout psiphonLayout = findViewById(R.id.psiphon_layout);
+        countryLayout = findViewById(R.id.country_layout);
+        LinearLayout licenseLayout = findViewById(R.id.license_layout);
+        LinearLayout goolLayout = findViewById(R.id.gool_layout);
+
+        endpoint = findViewById(R.id.endpoint);
+        port = findViewById(R.id.port);
+        country = findViewById(R.id.country);
+        license = findViewById(R.id.license);
+
+        psiphon = findViewById(R.id.psiphon);
+        lan = findViewById(R.id.lan);
+        gool = findViewById(R.id.gool);
+
+        ImageView back = findViewById(R.id.back);
+        back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (StateAwareBaseActivity.getRequireRestartVpnService()) {
+                    StateAwareBaseActivity.setRequireRestartVpnService(false);
+                    if (!lastKnownConnectionState.isDisconnected()) {
+                        OblivionVpnService.stopVpnService(SettingsActivity.this);
+                        OblivionVpnService.startVpnService(SettingsActivity.this);
+                    }
+                }
+                finish();
+            }
+        });
 
         SheetsCallBack sheetsCallBack = this::settingBasicValuesFromSPF;
         // Listen to Changes
@@ -48,7 +76,7 @@ public class SettingsActivity extends StateAwareBaseActivity {
         portLayout.setOnClickListener(v -> (new EditSheet(this, "پورت", "port", sheetsCallBack)).start());
         licenseLayout.setOnClickListener(v -> (new EditSheet(this, "لایسنس", "license", sheetsCallBack)).start());
 
-        adapter = ArrayAdapter.createFromResource(this, R.array.countries, R.layout.country_item_layout);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.countries, R.layout.country_item_layout);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         country.setAdapter(adapter);
 
@@ -101,7 +129,6 @@ public class SettingsActivity extends StateAwareBaseActivity {
     }
 
     private int getIndexFromName(Spinner spinner, String name) {
-
         for (int i = 0; i < spinner.getCount(); i++) {
             if (spinner.getItemAtPosition(i).toString().equals(name)) {
                 return i;
@@ -136,46 +163,6 @@ public class SettingsActivity extends StateAwareBaseActivity {
             countryLayout.setAlpha(1f);
             country.setEnabled(true);
         }
-    }
-
-    private void init() {
-
-        fileManager = FileManager.getInstance(getApplicationContext());
-
-        endpointLayout = findViewById(R.id.endpoint_layout);
-        portLayout = findViewById(R.id.port_layout);
-        splitTunnelLayout = findViewById(R.id.split_tunnel_layout);
-        lanLayout = findViewById(R.id.lan_layout);
-        psiphonLayout = findViewById(R.id.psiphon_layout);
-        countryLayout = findViewById(R.id.country_layout);
-        licenseLayout = findViewById(R.id.license_layout);
-        goolLayout = findViewById(R.id.gool_layout);
-
-        back = findViewById(R.id.back);
-        endpoint = findViewById(R.id.endpoint);
-        port = findViewById(R.id.port);
-        country = findViewById(R.id.country);
-        license = findViewById(R.id.license);
-
-        psiphon = findViewById(R.id.psiphon);
-        lan = findViewById(R.id.lan);
-        gool = findViewById(R.id.gool);
-
-        back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
-
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                if (StateAwareBaseActivity.getRequireRestartVpnService()) {
-                    StateAwareBaseActivity.setRequireRestartVpnService(false);
-                    if (!lastKnownConnectionState.isDisconnected()) {
-                        OblivionVpnService.stopVpnService(SettingsActivity.this);
-                        OblivionVpnService.startVpnService(SettingsActivity.this);
-                    }
-                }
-                finish();
-            }
-        });
     }
 
     @Override
