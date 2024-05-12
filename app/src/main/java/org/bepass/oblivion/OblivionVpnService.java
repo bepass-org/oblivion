@@ -80,14 +80,14 @@ public class OblivionVpnService extends VpnService {
     private FileManager fileManager;
     private ConnectionState lastKnownState = ConnectionState.DISCONNECTED;
 
-    public static void startVpnService(Context context) {
+    public static synchronized void startVpnService(Context context) {
         Intent intent = new Intent(context, OblivionVpnService.class);
         intent.setAction(OblivionVpnService.FLAG_VPN_START);
         ContextCompat.startForegroundService(context, intent);
     }
 
 
-    public static void stopVpnService(Context context) {
+    public static synchronized void stopVpnService(Context context) {
         Intent intent = new Intent(context, OblivionVpnService.class);
         intent.setAction(OblivionVpnService.FLAG_VPN_STOP);
         ContextCompat.startForegroundService(context, intent);
@@ -220,8 +220,8 @@ public class OblivionVpnService extends VpnService {
         }
     }
 
-    private static Set<String> getSplitTunnelApps(FileManager fm) {
-        return fm.getStringSet("splitTunnelApps", new HashSet<>());
+    private Set<String> getSplitTunnelApps() {
+        return fileManager.getStringSet("splitTunnelApps", new HashSet<>());
     }
 
     private void performConnectionTest(String bindAddress, ConnectionStateChangeListener changeListener) {
@@ -285,21 +285,28 @@ public class OblivionVpnService extends VpnService {
 
     private void start() {
         fileManager = FileManager.getInstance(this);
-        bindAddress = getBindAddress();
+
+        setLastKnownState(ConnectionState.CONNECTING);
+        Log.i(TAG, "Clearing Logs");
+        clearLogFile();
+        Log.i(TAG, "Create Notification");
+        createNotification();
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU) {
+            startForeground(1, notification);
+        } else {
+            startForeground(1, notification, FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED);
+        }
 
         executorService.execute(() -> {
-            setLastKnownState(ConnectionState.CONNECTING);
-            Log.i(TAG, "Clearing Logs");
-            clearLogFile();
-            Log.i(TAG, "Create Notification");
-            createNotification();
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU) {
-                startForeground(1, notification);
-            } else {
-                startForeground(1, notification, FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED);
-            }
+            bindAddress = getBindAddress();
             Log.i(TAG, "Configuring VPN service");
-            configure();
+            try {
+                configure();
+            } catch (Exception e) {
+                onRevoke();
+                e.printStackTrace();
+                return;
+            }
 
             performConnectionTest(bindAddress, (state) -> {
                 if (state == ConnectionState.DISCONNECTED) {
@@ -311,7 +318,7 @@ public class OblivionVpnService extends VpnService {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public synchronized int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null) {
             return START_NOT_STICKY;
         }
@@ -369,13 +376,7 @@ public class OblivionVpnService extends VpnService {
             }
         }
 
-        executorService.execute(() -> {
-            try {
-                Tun2socks.stop();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        executorService.execute(Tun2socks::stop);
     }
 
     private void publishConnectionState(ConnectionState state) {
@@ -455,31 +456,23 @@ public class OblivionVpnService extends VpnService {
         connectionStateObservers.remove(key);
     }
 
-    private void configure() {
+    private void configure() throws Exception {
         VpnService.Builder builder = new VpnService.Builder();
-        try {
-            builder.setSession("oblivion")
-                    .setMtu(1500)
-                    .addAddress(PRIVATE_VLAN4_CLIENT, 30)
-                    .addAddress(PRIVATE_VLAN6_CLIENT, 126)
-                    .addDnsServer("8.8.8.8")
-                    .addDnsServer("8.8.4.4")
-                    .addDnsServer("1.1.1.1")
-                    .addDnsServer("1.0.0.1")
-                    .addDnsServer("2001:4860:4860::8888")
-                    .addDnsServer("2001:4860:4860::8844")
-                    .addDisallowedApplication(getPackageName())
-                    .addRoute("0.0.0.0", 0)
-                    .addRoute("::", 0);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
+        builder.setSession("oblivion")
+            .setMtu(1500)
+            .addAddress(PRIVATE_VLAN4_CLIENT, 30)
+            .addAddress(PRIVATE_VLAN6_CLIENT, 126)
+            .addDnsServer("1.1.1.1")
+            .addDnsServer("1.0.0.1")
+            .addDisallowedApplication(getPackageName())
+            .addRoute("0.0.0.0", 0)
+            .addRoute("::", 0);
 
         fileManager.getStringSet("splitTunnelApps", new HashSet<>());
         SplitTunnelMode splitTunnelMode = SplitTunnelMode.getSplitTunnelMode(fileManager);
         if (splitTunnelMode == SplitTunnelMode.BLACKLIST) {
-            for (String packageName : getSplitTunnelApps(fileManager)) {
+            for (String packageName : getSplitTunnelApps()) {
                 try {
                     builder.addDisallowedApplication(packageName);
                 } catch (PackageManager.NameNotFoundException e) {
@@ -489,6 +482,7 @@ public class OblivionVpnService extends VpnService {
         }
 
         mInterface = builder.establish();
+        if (mInterface == null) throw new RuntimeException("failed to establish VPN interface");
         Log.i(TAG, "Interface created");
 
         String endpoint = fileManager.getString("USERSETTING_endpoint", "engage.cloudflareclient.com:2408").trim();
@@ -519,11 +513,7 @@ public class OblivionVpnService extends VpnService {
 
         so.setTunFd(mInterface.getFd());
 
-        try {
-            Tun2socks.start(so);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Tun2socks.start(so);
     }
 
     private static class IncomingHandler extends Handler {
