@@ -10,8 +10,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:padding="16sp"
         app:layout_constraintBottom_toTopOf="@id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -71,7 +71,6 @@
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16sp"
             android:fontFamily="@font/shabnambold"
             android:gravity="center"
             android:text="فراموش نکنید!"
@@ -79,28 +78,29 @@
             android:textColor="#ffa200"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/textView"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@+id/textView"
-            app:layout_constraintTop_toBottomOf="@+id/textView"
-            app:layout_constraintVertical_bias="0.3" />
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16sp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:clipChildren="false"
         android:clipToPadding="false"
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingStart="20sp"
         android:paddingEnd="20sp"
+        app:layout_constraintBottom_toBottomOf="@id/textView5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
 
         <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imageViewSegaro"
             android:layout_width="0sp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8sp"
@@ -111,7 +111,7 @@
             app:srcCompat="@drawable/segaro" />
 
         <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imageView7"
+            android:id="@+id/imageViewYousef"
             android:layout_width="0sp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -128,7 +128,7 @@
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
-        android:layout_height="50sp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8sp"
         android:gravity="center|top"
         android:orientation="horizontal"
@@ -164,7 +164,7 @@
     <TextView
         android:id="@+id/textView5"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="20sp"
         android:layout_marginBottom="8sp"
         android:fontFamily="@font/shabnammedium"
@@ -177,6 +177,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+        app:layout_constraintTop_toBottomOf="@id/linearLayout2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
