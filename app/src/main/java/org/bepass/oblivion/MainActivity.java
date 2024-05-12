@@ -2,6 +2,7 @@ package org.bepass.oblivion;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -16,6 +17,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class MainActivity extends StateAwareBaseActivity {
     private TouchAwareSwitch switchButton;
     private TextView stateText, publicIP;
@@ -28,17 +32,7 @@ public class MainActivity extends StateAwareBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Get the global FileManager instance
-        FileManager fileManager = FileManager.getInstance(getApplicationContext());
-
-        if (!fileManager.getBoolean("isFirstValueInit")) {
-            fileManager.set("USERSETTING_endpoint", "engage.cloudflareclient.com:2408");
-            fileManager.set("USERSETTING_port", "8086");
-            fileManager.set("USERSETTING_gool", false);
-            fileManager.set("USERSETTING_psiphon", false);
-            fileManager.set("USERSETTING_lan", false);
-            fileManager.set("isFirstValueInit", true);
-        }
+        cleanOrMigrateSettings();
 
         // Get the global PublicIPUtils instance
         pIPUtils = PublicIPUtils.getInstance(getApplicationContext());
@@ -116,6 +110,34 @@ public class MainActivity extends StateAwareBaseActivity {
                 backPressedTime = System.currentTimeMillis();
             }
         });
+    }
+
+    protected void cleanOrMigrateSettings() {
+        // Get the global FileManager instance
+        FileManager fileManager = FileManager.getInstance(getApplicationContext());
+
+        if (!fileManager.getBoolean("isFirstValueInit")) {
+            fileManager.set("USERSETTING_endpoint", "engage.cloudflareclient.com:2408");
+            fileManager.set("USERSETTING_port", "8086");
+            fileManager.set("USERSETTING_gool", false);
+            fileManager.set("USERSETTING_psiphon", false);
+            fileManager.set("USERSETTING_lan", false);
+            fileManager.set("isFirstValueInit", true);
+        }
+
+        // Check which split mode apps have been uninstalled and remove them from the list in settings
+        Set<String> splitApps = fileManager.getStringSet("splitTunnelApps", new HashSet<>());
+        Set<String> shouldKeep = new HashSet<>();
+        final PackageManager pm = getApplicationContext().getPackageManager();
+        for (String packageName : splitApps) {
+            try {
+                pm.getPackageInfo(packageName, PackageManager.GET_META_DATA);
+            } catch (PackageManager.NameNotFoundException ignored) {
+                continue;
+            }
+            shouldKeep.add(packageName);
+        }
+        fileManager.set("splitTunnelApps", shouldKeep);
     }
 
     @NonNull
