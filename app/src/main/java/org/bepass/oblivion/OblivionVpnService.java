@@ -16,6 +16,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.ParcelFileDescriptor;
+import android.os.PowerManager;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -78,6 +79,7 @@ public class OblivionVpnService extends VpnService {
     private ParcelFileDescriptor mInterface;
     private String bindAddress;
     private FileManager fileManager;
+    private static PowerManager.WakeLock wLock;
     private ConnectionState lastKnownState = ConnectionState.DISCONNECTED;
 
     public static synchronized void startVpnService(Context context) {
@@ -297,6 +299,11 @@ public class OblivionVpnService extends VpnService {
             startForeground(1, notification, FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED);
         }
 
+        if (wLock == null) {
+            wLock = ((PowerManager) getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "oblivion:vpn");
+            wLock.setReferenceCounted(false);
+        }
+
         executorService.execute(() -> {
             bindAddress = getBindAddress();
             Log.i(TAG, "Configuring VPN service");
@@ -368,6 +375,11 @@ public class OblivionVpnService extends VpnService {
             e.printStackTrace();
         }
 
+        if (wLock != null) {
+            wLock.release();
+            wLock = null;
+        }
+
         if (mInterface != null) {
             try {
                 mInterface.close();
@@ -407,7 +419,6 @@ public class OblivionVpnService extends VpnService {
     }
 
     private String getNotificationText() {
-
         boolean usePsiphon = fileManager.getBoolean("USERSETTING_psiphon");
         boolean useWarp = fileManager.getBoolean("USERSETTING_gool");
 
@@ -417,7 +428,6 @@ public class OblivionVpnService extends VpnService {
             return "Warp in Warp";
         }
         return "Warp";
-
     }
 
     private void createNotification() {
