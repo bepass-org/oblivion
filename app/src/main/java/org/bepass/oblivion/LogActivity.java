@@ -10,11 +10,10 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class BugActivity extends AppCompatActivity {
+public class LogActivity extends AppCompatActivity {
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private TextView logs;
@@ -25,7 +24,7 @@ public class BugActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bug);
+        setContentView(R.layout.activity_log);
 
         ImageView back = findViewById(R.id.back);
         logs = findViewById(R.id.logs);
@@ -63,26 +62,23 @@ public class BugActivity extends AppCompatActivity {
     }
 
     private void readLogsFromFile() {
-        new Thread(() -> {
-            try (FileInputStream fis = openFileInput("logs.txt")) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
-                StringBuilder sb = new StringBuilder();
-                String line;
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(openFileInput("logs.txt")))) {
+            StringBuilder sb = new StringBuilder();
+            String line;
 
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line).append("\n");
-                }
-
-                String finalLog = sb.toString();
-                runOnUiThread(() -> {
-                    logs.setText(finalLog);
-                    if (!isUserScrollingUp) {
-                        logScrollView.post(() -> logScrollView.fullScroll(ScrollView.FOCUS_DOWN));
-                    }
-                });
-            } catch (IOException e) {
-                e.printStackTrace();
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append("\n");
             }
-        }).start();
+
+            String finalLog = sb.toString();
+            runOnUiThread(() -> {
+                logs.setText(finalLog);
+                if (!isUserScrollingUp) {
+                    logScrollView.post(() -> logScrollView.fullScroll(ScrollView.FOCUS_DOWN));
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

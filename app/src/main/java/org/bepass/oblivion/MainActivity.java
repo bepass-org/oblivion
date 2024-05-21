@@ -1,10 +1,24 @@
 package org.bepass.oblivion;
 
+import static org.bepass.oblivion.OblivionVpnService.startVpnService;
+import static org.bepass.oblivion.OblivionVpnService.stopVpnService;
+
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.PowerManager;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -16,6 +30,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,6 +43,15 @@ public class MainActivity extends StateAwareBaseActivity {
     private long backPressedTime;
     private Toast backToast;
 
+    private static final int REQUEST_CODE_BATTERY_OPTIMIZATIONS = 1;
+    private final ActivityResultLauncher<Intent> batteryOptimizationLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                // Do nothing, as no return value is expected
+            });
+
+    private Handler handler = new Handler();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,10 +63,14 @@ public class MainActivity extends StateAwareBaseActivity {
 
         // Set the layout of the main activity
         setContentView(R.layout.activity_main);
-
+        if (!isIgnoringBatteryOptimizations()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestIgnoreBatteryOptimizations();
+            }
+        }
         // Views
         ImageView infoIcon = findViewById(R.id.info_icon);
-        ImageView bugIcon = findViewById(R.id.bug_icon);
+        ImageView logIcon = findViewById(R.id.bug_icon);
         ImageView settingsIcon = findViewById(R.id.setting_icon);
 
         FrameLayout switchButtonFrame = findViewById(R.id.switch_button_frame);
@@ -53,7 +81,7 @@ public class MainActivity extends StateAwareBaseActivity {
 
         // Set listeners
         infoIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, InfoActivity.class)));
-        bugIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, BugActivity.class)));
+        logIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, LogActivity.class)));
         settingsIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, SettingsActivity.class)));
         switchButtonFrame.setOnClickListener(v -> switchButton.toggle());
 
@@ -64,12 +92,11 @@ public class MainActivity extends StateAwareBaseActivity {
             }
             switchButton.setChecked(false);
         });
-
         // Listener for toggle switch
         switchButton.setOnCheckedChangeListener((view, isChecked) -> {
             if (!isChecked) {
                 if (!lastKnownConnectionState.isDisconnected()) {
-                    OblivionVpnService.stopVpnService(this);
+                    stopVpnService(this);
                 }
                 return;
             }
@@ -78,10 +105,27 @@ public class MainActivity extends StateAwareBaseActivity {
                 vpnPermissionLauncher.launch(vpnIntent);
                 return;
             }
+            // Handle the case when the VPN is in the connecting state and the user clicks to abort
+            if (lastKnownConnectionState.isConnecting()) {
+                stopVpnService(this);
+                return;
+            }
+            // Start the VPN service if it's disconnected
             if (lastKnownConnectionState.isDisconnected()) {
                 OblivionVpnService.startVpnService(this);
             }
+            // To check is Internet Connection is available
+            handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(!lastKnownConnectionState.isDisconnected()) {
+                            checkInternetConnectionAndDisconnectVPN();
+                            handler.postDelayed(this, 3000); // Check every 3 seconds
+                        }
+                    }
+                }, 5000); // Start checking after 5 seconds
         });
+
 
         // Request permission to create push notifications
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -112,6 +156,56 @@ public class MainActivity extends StateAwareBaseActivity {
         });
     }
 
+    // Check internet connectivity
+    private boolean isConnectedToInternet() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Network activeNetwork = connectivityManager.getActiveNetwork();
+                if (activeNetwork != null) {
+                    NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork);
+                    return networkCapabilities != null &&
+                            (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                                    networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
+                }
+            } else {
+                // For API levels below 23, use the deprecated method
+                NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+                return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+            }
+        }
+        return false;
+    }
+
+    // Periodically check internet connection and disconnect VPN if not connected
+    private void checkInternetConnectionAndDisconnectVPN() {
+        if (!isConnectedToInternet()) {
+            stopVpnService(this);
+        }
+    }
+    private boolean isIgnoringBatteryOptimizations() {
+        String packageName = getPackageName();
+        PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+        if (pm != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                return pm.isIgnoringBatteryOptimizations(packageName);
+            }
+        }
+        return false;
+    }
+    @SuppressLint("BatteryLife")
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void requestIgnoreBatteryOptimizations() {
+        try {
+            Intent intent = new Intent();
+            String packageName = getPackageName();
+            intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+            intent.setData(Uri.parse("package:" + packageName));
+            batteryOptimizationLauncher.launch(intent);
+        } catch (Exception e) {
+            Toast.makeText(this, "Unable to request ignore battery optimizations", Toast.LENGTH_SHORT).show();
+        }
+    }
     protected void cleanOrMigrateSettings() {
         // Get the global FileManager instance
         FileManager fileManager = FileManager.getInstance(getApplicationContext());
@@ -161,7 +255,7 @@ public class MainActivity extends StateAwareBaseActivity {
                 publicIP.setVisibility(View.GONE);
                 ipProgressBar.setVisibility(View.VISIBLE);
                 switchButton.setChecked(true, false);
-                switchButton.setEnabled(false);
+                switchButton.setEnabled(true);
                 break;
             case CONNECTED:
                 switchButton.setEnabled(true);

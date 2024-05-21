@@ -6,4 +6,7 @@ public enum ConnectionState {
     public boolean isDisconnected() {
         return this == DISCONNECTED;
     }
+    public boolean isConnecting(){
+        return this == CONNECTING;
+    }
 }
