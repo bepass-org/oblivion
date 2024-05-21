@@ -94,7 +94,6 @@ public class OblivionVpnService extends VpnService {
         intent.setAction(OblivionVpnService.FLAG_VPN_STOP);
         ContextCompat.startForegroundService(context, intent);
     }
-
     public static void registerConnectionStateObserver(String key, Messenger serviceMessenger, ConnectionStateChangeListener observer) {
         // Create a message for the service
         Message subscriptionMessage = Message.obtain(null, OblivionVpnService.MSG_CONNECTION_STATE_SUBSCRIBE);
@@ -302,6 +301,7 @@ public class OblivionVpnService extends VpnService {
         if (wLock == null) {
             wLock = ((PowerManager) getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "oblivion:vpn");
             wLock.setReferenceCounted(false);
+            wLock.acquire();
         }
 
         executorService.execute(() -> {
@@ -357,6 +357,10 @@ public class OblivionVpnService extends VpnService {
     public void onDestroy() {
         super.onDestroy();
         handler.removeCallbacks(logRunnable);
+        if (wLock != null && wLock.isHeld()) {
+            wLock.release();
+            wLock = null;
+        }
     }
 
     @Override
@@ -375,7 +379,7 @@ public class OblivionVpnService extends VpnService {
             e.printStackTrace();
         }
 
-        if (wLock != null) {
+        if (wLock != null && wLock.isHeld()) {
             wLock.release();
             wLock = null;
         }
