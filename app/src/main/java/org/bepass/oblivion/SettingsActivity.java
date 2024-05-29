@@ -72,9 +72,9 @@ public class SettingsActivity extends StateAwareBaseActivity {
 
         SheetsCallBack sheetsCallBack = this::settingBasicValuesFromSPF;
         // Listen to Changes
-        endpointLayout.setOnClickListener(v -> (new EditSheet(this, "اندپوینت", "endpoint", sheetsCallBack)).start());
-        portLayout.setOnClickListener(v -> (new EditSheet(this, "پورت", "port", sheetsCallBack)).start());
-        licenseLayout.setOnClickListener(v -> (new EditSheet(this, "لایسنس", "license", sheetsCallBack)).start());
+        endpointLayout.setOnClickListener(v -> (new EditSheet(this, getString(R.string.endpointText), "endpoint", sheetsCallBack)).start());
+        portLayout.setOnClickListener(v -> (new EditSheet(this, getString(R.string.portTunText), "port", sheetsCallBack)).start());
+        licenseLayout.setOnClickListener(v -> (new EditSheet(this, getString(R.string.licenseText), "license", sheetsCallBack)).start());
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.countries, R.layout.country_item_layout);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

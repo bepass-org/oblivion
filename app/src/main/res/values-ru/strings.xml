@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">забвение</string>
+    <string name="stateText">Не подключен</string>
+    <string name="basedOnWarp">Основано на Warp</string>
+    <string name="aboutApp">О приложении</string>
+    <string name="aboutAppDesc">"Это приложение предназначено для свободного доступа к интернету, и любое коммерческое использование запрещено.\n\n\n Интернет для всех или ни для кого!"</string>
+    <string name="appVersion">Версия приложения: 2</string>
+    <string name="logApp">Журнал приложения</string>
+    <string name="means" formatted="true">Означает \"неведение, незнание\"</string>
+    <string name="dontForget">Не забудьте!</string>
+    <string name="segaro">#Segaro</string>
+    <string name="yousef">#Yousef_Ghobadi</string>
+    <string name="slogan">Интернет для всех или ни для кого</string>
+    <string name="blackList">Черный список</string>
+    <string name="disabledR">Отключено</string>
+    <string name="disabledRText">В режиме отключения весь трафик приложений проходит через VPN.</string>
+    <string name="enabledR">Включено</string>
+    <string name="enabledRText">В режиме включения трафик выбранных приложений не проходит через VPN.</string>
+    <string name="showSystemAppsText">Показать системные приложения</string>
+    <string name="settingsText">Настройки</string>
+    <string name="endpointText">Конечная точка</string>
+    <string name="endpointTextDesc">Комбинация IP или доменного имени с портом</string>
+    <string name="portTunText">Порт туннеля</string>
+    <string name="portTunTextDesc">Укажите порт туннеля для приложения</string>
+    <string name="blackListTextDesc">Укажите, какие приложения не должны использовать VPN</string>
+    <string name="connectFromLanText">Подключение через LAN</string>
+    <string name="connectFromLanTextDesc">Возможность подключения других сетевых устройств</string>
+    <string name="psiphonText">Psiphon</string>
+    <string name="psiphonTextDesc">Активировать Psiphon</string>
+    <string name="chooseText">Выбрать страну</string>
+    <string name="chooseTextDesc">Страна для подключения к интернету</string>
+    <string name="licenseText">Лицензия</string>
+    <string name="licenseTextDesc">Если у вас есть лицензия (каждая лицензия удваивается)</string>
+    <string name="goolText">Gool</string>
+    <string name="goolTextDesc">Активировать Warp в Warp</string>
+    <string name="editSheetEndpoint">Изменить значение конечной точки</string>
+    <string name="cancel">Отмена</string>
+    <string name="update">Обновить</string>
+    <string name="notConnected">Не подключено</string>
+    <string name="connecting">Подключение…</string>
+    <string name="connected">Подключено</string>
+    <string-array name="countries">
+        <item>Австрия</item>
+        <item>Бельгия</item>
+        <item>Бразилия</item>
+        <item>Болгария</item>
+        <item>Канада</item>
+        <item>Хорватия</item>
+        <item>Чехия</item>
+        <item>Дания</item>
+        <item>Эстония</item>
+        <item>Финляндия</item>
+        <item>Франция</item>
+        <item>Германия</item>
+        <item>Венгрия</item>
+        <item>Индия</item>
+        <item>Ирландия</item>
+        <item>Италия</item>
+        <item>Япония</item>
+        <item>Латвия</item>
+        <item>Нидерланды</item>
+        <item>Норвегия</item>
+        <item>Польша</item>
+        <item>Португалия</item>
+        <item>Румыния</item>
+        <item>Сербия</item>
+        <item>Сингапур</item>
+        <item>Словакия</item>
+        <item>Испания</item>
+        <item>Швеция</item>
+        <item>Швейцария</item>
+        <item>Украина</item>
+        <item>Великобритания</item>
+        <item>Соединенные Штаты</item>
+    </string-array>
+</resources>

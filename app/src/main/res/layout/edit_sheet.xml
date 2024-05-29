@@ -20,7 +20,7 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="16sp"
     android:fontFamily="@font/shabnam"
-    android:text="تغییر مقدار Endpoint"
+    android:text="@string/editSheetEndpoint"
     android:textColor="@color/black"
     android:textSize="18sp" />
 
@@ -54,7 +54,7 @@
       android:layout_weight="1"
       android:background="@drawable/bottom_sheet_cancel"
       android:fontFamily="@font/shabnam"
-      android:text="انصراف"
+      android:text="@string/cancel"
       android:textColor="@color/black"
       android:textSize="17sp" />
 
@@ -66,7 +66,7 @@
       android:layout_weight="1"
       android:background="@drawable/bottom_sheet_closer"
       android:fontFamily="@font/shabnam"
-      android:text="بروزرسانی"
+      android:text="@string/update"
       android:textColor="@color/white"
       android:textSize="17sp" />
 
