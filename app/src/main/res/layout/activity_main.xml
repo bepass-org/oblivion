@@ -8,6 +8,20 @@
   android:background="@drawable/background_gradient"
   tools:context="org.bepass.oblivion.MainActivity">
 
+  <com.google.android.material.floatingactionbutton.FloatingActionButton
+      android:id="@+id/floatingActionButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="24dp"
+      android:layout_marginBottom="24dp"
+      android:clickable="true"
+      android:focusable="true"
+      android:src="@drawable/ic_translate"
+      android:tint="#ffffff"
+      app:backgroundTint="#ffa200"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent" />
+
   <RelativeLayout
     android:id="@+id/top_bar"
     android:layout_width="match_parent"
@@ -96,7 +110,7 @@
       android:layout_height="wrap_content"
       android:layout_marginTop="96dp"
       android:fontFamily="@font/shabnammedium"
-      android:text="متصل نیستید"
+      android:text="@string/stateText"
       android:textColor="@color/black"
       android:textSize="24sp"
       app:layout_constraintEnd_toEndOf="parent"
@@ -110,7 +124,6 @@
       android:layout_marginTop="24dp"
       android:fontFamily="@font/emoji"
       android:visibility="invisible"
-      android:text="Public IP"
       android:textStyle="bold"
       android:textColor="@color/black"
       android:textSize="18sp"
@@ -136,8 +149,9 @@
     android:layout_width="wrap_content"
     android:layout_height="60dp"
     android:fontFamily="@font/shabnambold"
-    android:text="OBLIVION"
+    android:text="@string/app_name"
     android:textColor="@color/black"
+    android:textAllCaps="true"
     android:textSize="48sp"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
@@ -151,7 +165,7 @@
     android:layout_width="212dp"
     android:layout_height="wrap_content"
     android:fontFamily="@font/shabnammedium"
-    android:text="بر پایه وارپ"
+    android:text="@string/basedOnWarp"
     android:textColor="#FFA200"
     android:textSize="24sp"
     app:layout_constraintEnd_toEndOf="parent"
