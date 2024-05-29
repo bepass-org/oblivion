@@ -35,7 +35,7 @@
       android:layout_centerVertical="true"
       android:layout_marginEnd="16dp"
       android:fontFamily="@font/shabnamlight"
-      android:text="تنظیمات"
+      android:text="@string/settingsText"
       android:textColor="@color/black"
       android:textSize="24sp" />
 
@@ -82,24 +82,25 @@
             android:textSize="20sp" />
 
           <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="100dp"
-            android:layout_alignParentEnd="true"
-            android:fontFamily="@font/shabnam"
-            android:text="اندپوینت"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:fontFamily="@font/shabnam"
+              android:minWidth="100dp"
+              android:text="@string/endpointText"
+              android:textAlignment="viewEnd"
+              android:textColor="@color/black"
+              android:textSize="20sp" />
 
         </LinearLayout>
 
         <TextView
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:fontFamily="@font/shabnam"
-          android:text="ترکیبی از IP یا نام دامنه، به‌همراه پورت"
-          android:textColor="#9A9A9A"
-          android:textSize="16sp" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/shabnam"
+            android:text="@string/endpointTextDesc"
+            android:textColor="#9A9A9A"
+            android:textSize="16sp" />
       </LinearLayout>
 
       <LinearLayout
@@ -141,23 +142,25 @@
             android:textSize="20sp" />
 
           <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="100dp"
-            android:fontFamily="@font/shabnam"
-            android:text="پورت تونل"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:fontFamily="@font/shabnam"
+              android:minWidth="100dp"
+              android:text="@string/portTunText"
+              android:textAlignment="viewEnd"
+              android:textColor="@color/black"
+              android:textSize="20sp" />
 
         </LinearLayout>
 
         <TextView
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:fontFamily="@font/shabnam"
-          android:text="تعیین پورت تونل برنامه"
-          android:textColor="#9A9A9A"
-          android:textSize="16sp" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/shabnam"
+            android:text="@string/portTunTextDesc"
+            android:textColor="#9A9A9A"
+            android:textSize="16sp" />
 
       </LinearLayout>
 
@@ -190,9 +193,10 @@
           <TextView
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:minWidth="100dp"
               android:fontFamily="@font/shabnam"
-              android:text="لیست سیاه"
+              android:minWidth="100dp"
+              android:text="@string/blackList"
+              android:textAlignment="viewEnd"
               android:textColor="@color/black"
               android:textSize="20sp" />
         </LinearLayout>
@@ -200,8 +204,9 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:fontFamily="@font/shabnam"
-            android:text="تعیین کنید چه برنامه‌هایی از VPN استفاده نکنند"
+            android:text="@string/blackListTextDesc"
             android:textColor="#9A9A9A"
             android:textSize="16sp" />
 
@@ -235,37 +240,40 @@
 
 
           <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-          >
+              android:layout_width="115dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="2">
+
             <CheckBox
-              android:id="@+id/lan"
-              android:layout_width="50dp"
-              android:layout_height="38dp"
-              android:scaleX="1.5"
-              android:scaleY="1.5"
-              android:buttonTint="@color/checkbox_tint"
-              android:translationX="5dp" />
+                android:id="@+id/lan"
+                android:layout_width="50dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="10dp"
+                android:buttonTint="@color/checkbox_tint"
+                android:scaleX="1.5"
+                android:scaleY="1.5"
+                android:translationX="5dp" />
           </LinearLayout>
 
           <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="100dp"
-            android:fontFamily="@font/shabnam"
-            android:text="اتصال از LAN"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:fontFamily="@font/shabnam"
+              android:minWidth="100dp"
+              android:text="@string/connectFromLanText"
+              android:textAlignment="viewEnd"
+              android:textColor="@color/black"
+              android:textSize="20sp" />
         </LinearLayout>
 
         <TextView
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:fontFamily="@font/shabnam"
-          android:text="امکان اتصال سایر دستگاه‌های شبکه"
-          android:textColor="#9A9A9A"
-          android:textSize="16sp" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/shabnam"
+            android:text="@string/connectFromLanTextDesc"
+            android:textColor="#9A9A9A"
+            android:textSize="16sp" />
 
       </LinearLayout>
 
@@ -307,28 +315,31 @@
               android:layout_height="38dp"
               android:scaleX="1.5"
               android:scaleY="1.5"
+              android:layout_marginStart="10dp"
               android:buttonTint="@color/checkbox_tint"
               android:translationX="5dp" />
           </LinearLayout>
 
           <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="100dp"
-            android:fontFamily="@font/shabnam"
-            android:text="سایفون"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:fontFamily="@font/shabnam"
+              android:minWidth="100dp"
+              android:text="@string/psiphonText"
+              android:textAlignment="viewEnd"
+              android:textColor="@color/black"
+              android:textSize="20sp" />
 
         </LinearLayout>
 
         <TextView
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:fontFamily="@font/shabnam"
-          android:text="فعالسازی سایفون"
-          android:textColor="#9A9A9A"
-          android:textSize="16sp" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/shabnam"
+            android:text="@string/psiphonTextDesc"
+            android:textColor="#9A9A9A"
+            android:textSize="16sp" />
 
       </LinearLayout>
 
@@ -365,24 +376,26 @@
             android:layout_weight="1" />
 
           <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="100dp"
-            android:layout_marginStart="40dp"
-            android:fontFamily="@font/shabnam"
-            android:text="انتخاب کشور"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginStart="40dp"
+              android:fontFamily="@font/shabnam"
+              android:minWidth="100dp"
+              android:text="@string/chooseText"
+              android:textAlignment="viewEnd"
+              android:textColor="@color/black"
+              android:textSize="20sp" />
 
         </LinearLayout>
 
         <TextView
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:fontFamily="@font/shabnam"
-          android:text="کشوری که از آن به اینترنت متصل می‌شوید"
-          android:textColor="#9A9A9A"
-          android:textSize="16sp" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/shabnam"
+            android:text="@string/chooseTextDesc"
+            android:textColor="#9A9A9A"
+            android:textSize="16sp" />
 
       </LinearLayout>
 
@@ -425,23 +438,25 @@
             android:textSize="20sp" />
 
           <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="100dp"
-            android:fontFamily="@font/shabnam"
-            android:text="لایسنس"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:fontFamily="@font/shabnam"
+              android:minWidth="100dp"
+              android:text="@string/licenseText"
+              android:textAlignment="viewEnd"
+              android:textColor="@color/black"
+              android:textSize="20sp" />
 
         </LinearLayout>
 
         <TextView
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:fontFamily="@font/shabnam"
-          android:text="اگر لایسنس دارید (هر لایسنس 2x می‌شود)"
-          android:textColor="#9A9A9A"
-          android:textSize="16sp" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/shabnam"
+            android:text="@string/licenseTextDesc"
+            android:textColor="#9A9A9A"
+            android:textSize="16sp" />
 
       </LinearLayout>
 
@@ -481,28 +496,31 @@
               android:layout_height="38dp"
               android:scaleX="1.5"
               android:scaleY="1.5"
+              android:layout_marginStart="10dp"
               android:buttonTint="@color/checkbox_tint"
               android:translationX="5dp" />
           </LinearLayout>
 
           <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="100dp"
-            android:fontFamily="@font/shabnam"
-            android:text="گول"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:fontFamily="@font/shabnam"
+              android:minWidth="100dp"
+              android:text="@string/goolText"
+              android:textAlignment="viewEnd"
+              android:textColor="@color/black"
+              android:textSize="20sp" />
 
         </LinearLayout>
 
         <TextView
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:fontFamily="@font/shabnam"
-          android:text="فعالسازی Warp In Warp"
-          android:textColor="#9A9A9A"
-          android:textSize="16sp" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/shabnam"
+            android:text="@string/goolTextDesc"
+            android:textColor="#9A9A9A"
+            android:textSize="16sp" />
 
       </LinearLayout>
     </LinearLayout>

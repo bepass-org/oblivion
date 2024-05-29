@@ -28,7 +28,7 @@
             android:paddingTop="10dp"
             android:paddingRight="20dp"
             android:paddingBottom="10dp"
-            android:text="غیرفعال"
+            android:text="@string/disabledR"
             android:fontFamily="@font/shabnam"
             android:textAlignment="textStart"
             android:textSize="14sp" />
@@ -41,7 +41,7 @@
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:paddingBottom="10dp"
-            android:text="در حالت غیرفعال، ترافیک تمامی برنامه ها از VPN عبور می‌کند."
+            android:text="@string/disabledRText"
             android:fontFamily="@font/shabnam"
 
             android:textAlignment="textStart"
@@ -60,7 +60,7 @@
             android:paddingTop="10dp"
             android:paddingRight="20dp"
             android:paddingBottom="10dp"
-            android:text="فعال"
+            android:text="@string/enabledR"
             android:fontFamily="@font/shabnam"
             android:textAlignment="textStart"
             android:textSize="14sp" />
@@ -75,7 +75,7 @@
             android:paddingRight="20dp"
             android:paddingBottom="10dp"
             android:fontFamily="@font/shabnam"
-            android:text="در حالت فعال، ترافیک برنامه‌های انتخابی از VPN عبور نمی‌کند."
+            android:text="@string/enabledRText"
             android:textAlignment="textStart"
             android:textSize="14sp" />
 
@@ -86,13 +86,14 @@
         android:id="@+id/showSystemApps"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp"
-        android:padding="4dp"
         android:checked="false"
         android:fontFamily="@font/shabnam"
-        android:text=" نمایش برنامه‌های سیستمی"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
+        android:text="@string/showSystemAppsText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup"
+        app:switchPadding="4dp"
+        android:padding="4dp"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

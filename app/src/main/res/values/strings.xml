@@ -1,5 +1,44 @@
 <resources>
   <string name="app_name">Oblivion</string>
+  <string name="stateText">Not Connected</string>
+  <string name="basedOnWarp">Based on Warp</string>
+  <string name="aboutApp">About the App</string>
+  <string name="aboutAppDesc">"This application is designed to access the internet freely, and any commercial use of it is prohibited.\n\n\n Internet for all, or no one! "</string>
+  <string name="appVersion">App Version: 2</string>
+  <string name="logApp">App Log</string>
+  <string name="means" formatted="true">Means \"unawareness, ignorance\"</string>
+  <string name="dontForget">Don\'t Forget!</string>
+  <string name="segaro">#Segaro</string>
+  <string name="yousef">#Yousef_Ghobadi</string>
+  <string name="slogan">Internet for All, or No One</string>
+  <string name="blackList">Blacklist</string>
+  <string name="disabledR">Disabled</string>
+  <string name="disabledRText">In disabled mode, traffic of all apps passes through VPN.</string>
+  <string name="enabledR">Enabled</string>
+  <string name="enabledRText">In enabled mode, traffic of selected apps does not pass through VPN.</string>
+  <string name="showSystemAppsText">Show System Apps</string>
+  <string name="settingsText">Settings</string>
+  <string name="endpointText">Endpoint</string>
+  <string name="endpointTextDesc">Combination of IP or domain name, along with port</string>
+  <string name="portTunText">Tunnel Port</string>
+  <string name="portTunTextDesc">Specify the tunnel port for the app</string>
+  <string name="blackListTextDesc">Specify which apps should not use VPN</string>
+  <string name="connectFromLanText">Connect from LAN</string>
+  <string name="connectFromLanTextDesc">Ability to connect other network devices</string>
+  <string name="psiphonText">Psiphon</string>
+  <string name="psiphonTextDesc">Activate Psiphon</string>
+  <string name="chooseText">Choose Country</string>
+  <string name="chooseTextDesc">Country to connect to the internet from</string>
+  <string name="licenseText">License</string>
+  <string name="licenseTextDesc">If you have a license (each license is doubled)</string>
+  <string name="goolText">Gool</string>
+  <string name="goolTextDesc">Activate Warp In Warp</string>
+  <string name="editSheetEndpoint">Change Endpoint Value</string>
+  <string name="cancel">Cancel</string>
+  <string name="update">Update</string>
+  <string name="notConnected">Not Connected</string>
+  <string name="connecting">Connecting…</string>
+  <string name="connected">Connected</string>
   <string-array name="countries">
     <item>Austria</item>
     <item>Belgium</item>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stateText">متصل نیستید</string>
+    <string name="basedOnWarp">بر پایه وارپ</string>
+    <string name="aboutApp">درباره برنامه</string>
+    <string name="aboutAppDesc">"این برنامه با هدف دسترسی به اینترنت آزاد تهیه شده و هرگونه استفاده تجاری از آن مجاز نیست.\n\n\n اینترنت برای همه، یا هیچ‌کس! "</string>
+    <string name="appVersion">نسخه برنامه : 2</string>
+    <string name="logApp">لاگ برنامه</string>
+    <string name="means">یعنی "فراموشی، بی‌خیالی"</string>
+    <string name="dontForget">فراموش نکنید!</string>
+    <string name="segaro">#سگارو</string>
+    <string name="yousef">#یوسف_قبادی</string>
+    <string name="slogan">اینترنت برای همه، یا هیچکس</string>
+    <string name="blackList">لیست سیاه</string>
+    <string name="disabledR">غیرفعال</string>
+    <string name="disabledRText">در حالت غیرفعال، ترافیک تمامی برنامه ها از VPN عبور می‌کند.</string>
+    <string name="enabledR">فعال</string>
+    <string name="enabledRText">در حالت فعال، ترافیک برنامه‌های انتخابی از VPN عبور نمی‌کند.</string>
+    <string name="showSystemAppsText">نمایش برنامه‌های سیستمی</string>
+    <string name="settingsText">تنظیمات</string>
+    <string name="endpointText">اندپوینت</string>
+    <string name="endpointTextDesc">ترکیبی از IP یا نام دامنه، به‌همراه پورت</string>
+    <string name="portTunText">پورت تونل</string>
+    <string name="portTunTextDesc">تعیین پورت تونل برنامه</string>
+    <string name="blackListTextDesc">تعیین کنید چه برنامه‌هایی از VPN استفاده نکنند</string>
+    <string name="connectFromLanText">اتصال از LAN</string>
+    <string name="connectFromLanTextDesc">امکان اتصال سایر دستگاه‌های شبکه</string>
+    <string name="psiphonText">سایفون</string>
+    <string name="psiphonTextDesc">فعالسازی سایفون</string>
+    <string name="chooseText">انتخاب کشور</string>
+    <string name="chooseTextDesc">کشوری که از آن به اینترنت متصل می‌شوید</string>
+    <string name="licenseText">لایسنس</string>
+    <string name="licenseTextDesc">اگر لایسنس دارید (هر لایسنس 2x می‌شود)</string>
+    <string name="goolText">گول</string>
+    <string name="goolTextDesc">فعالسازی Warp In Warp</string>
+    <string name="editSheetEndpoint">تغییر مقدار Endpoint</string>
+    <string name="cancel">انصراف</string>
+    <string name="update">بروزرسانی</string>
+    <string name="notConnected">متصل نیستید</string>
+    <string name="connecting">در حال اتصال…</string>
+    <string name="connected">اتصال برقرار شد</string>
+    <string-array name="countries">
+        <item>اتریش</item>
+        <item>بلژیک</item>
+        <item>برزیل</item>
+        <item>بلغارستان</item>
+        <item>کانادا</item>
+        <item>کرواسی</item>
+        <item>چک</item>
+        <item>دانمارک</item>
+        <item>استونی</item>
+        <item>فنلاند</item>
+        <item>فرانسه</item>
+        <item>آلمان</item>
+        <item>مجارستان</item>
+        <item>هند</item>
+        <item>ایرلند</item>
+        <item>ایتالیا</item>
+        <item>ژاپن</item>
+        <item>لتونی</item>
+        <item>هلند</item>
+        <item>نروژ</item>
+        <item>لهستان</item>
+        <item>پرتغال</item>
+        <item>رومانی</item>
+        <item>صربستان</item>
+        <item>سنگاپور</item>
+        <item>اسلواکی</item>
+        <item>اسپانیا</item>
+        <item>سوئد</item>
+        <item>سوئیس</item>
+        <item>اوکراین</item>
+        <item>بریتانیا</item>
+        <item>ایالات متحده</item>
+    </string-array>
+</resources>

@@ -5,8 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/splashScreen"
     android:background="@drawable/background_gradient">
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout3"
@@ -18,54 +18,33 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="21sp"
-            android:layout_height="21sp"
-            android:layout_marginTop="100sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.888"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/quote" />
-
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8sp"
-            android:fontFamily="@font/shabnambold"
-            android:gravity="center"
-            android:text="Oblivion"
-            android:textSize="18sp"
+            android:layout_marginTop="32dp"
+            android:text="@string/app_name"
+            android:textAllCaps="true"
+            android:textSize="48sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView"
-            app:layout_constraintEnd_toStartOf="@+id/imageView" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8sp"
             android:fontFamily="@font/shabnammedium"
             android:gravity="center"
-            android:text="یعنی"
+            android:text="@string/means"
             android:textAlignment="textEnd"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="@+id/textView"
-            app:layout_constraintEnd_toStartOf="@+id/textView" />
-
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="4sp"
-            android:fontFamily="@font/shabnammedium"
-            android:gravity="center"
-            android:text='"فراموشی، بی‌خیالی"'
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="@+id/textView2"
-            app:layout_constraintEnd_toStartOf="@+id/textView2" />
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView"
+            app:layout_constraintVertical_bias="0.069" />
 
         <TextView
             android:id="@+id/textView4"
@@ -73,16 +52,19 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/shabnambold"
             android:gravity="center"
-            android:text="فراموش نکنید!"
+            android:text="@string/dontForget"
             android:textAlignment="textEnd"
             android:textColor="#ffa200"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@+id/textView"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="@+id/textView"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView2"
+            app:layout_constraintVertical_bias="0.034" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -108,7 +90,8 @@
             android:adjustViewBounds="true"
             android:cropToPadding="true"
             android:foreground="@drawable/light_shadow_bottom"
-            app:srcCompat="@drawable/segaro" />
+            app:srcCompat="@drawable/segaro"
+            tools:targetApi="m" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imageViewYousef"
@@ -120,10 +103,10 @@
             android:adjustViewBounds="true"
             android:cropToPadding="true"
             android:foreground="@drawable/light_shadow_bottom"
-            app:srcCompat="@drawable/yousef" />
+            app:srcCompat="@drawable/yousef"
+            tools:targetApi="m" />
 
     </LinearLayout>
-
 
     <LinearLayout
         android:id="@+id/linearLayout3"
@@ -143,7 +126,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/shabnammedium"
             android:gravity="center"
-            android:text="#سگارو"
+            android:text="@string/segaro"
             android:textAlignment="center"
             android:textColor="#7b7b7b"
             android:textSize="20sp" />
@@ -155,7 +138,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/shabnammedium"
             android:gravity="center"
-            android:text="#یوسف_قبادی"
+            android:text="@string/yousef"
             android:textColor="#7b7b7b"
             android:textSize="20sp" />
 
@@ -169,7 +152,7 @@
         android:layout_marginBottom="8sp"
         android:fontFamily="@font/shabnammedium"
         android:gravity="center"
-        android:text="اینترنت برای همه، یا هیچکس"
+        android:text="@string/slogan"
         android:textAlignment="center"
         android:textColor="#c4c4c4"
         android:textSize="20sp"

@@ -36,7 +36,7 @@
             android:layout_centerVertical="true"
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/shabnamlight"
-            android:text="لیست سیاه"
+            android:text="@string/blackList"
             android:textColor="@color/black"
             android:textSize="24sp" />
 
