@@ -28,7 +28,7 @@ It's leveraging `bepass-sdk` and a custom Go implementation of WireGuard, it's d
 - Gradle 8
 - Android Gradle Plugin (AGP) 8.1.2
 - NDK r26b (26.1.10909125)
-- Go 1.21
+- Go 1.22
 
 Follow the steps below to build the Oblivion:
 
