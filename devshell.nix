@@ -37,6 +37,6 @@ devshell.mkShell {
     android-sdk
     gradle
     jdk11
-    go_1_21
+    go_1_22
   ];
 }
