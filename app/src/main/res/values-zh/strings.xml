@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">遗忘</string>
+
     <string name="stateText">未连接</string>
     <string name="basedOnWarp">基于Warp</string>
     <string name="aboutApp">关于应用</string>

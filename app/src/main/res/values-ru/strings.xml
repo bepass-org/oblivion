@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">забвение</string>
+
     <string name="stateText">Не подключен</string>
     <string name="basedOnWarp">Основано на Warp</string>
     <string name="aboutApp">О приложении</string>

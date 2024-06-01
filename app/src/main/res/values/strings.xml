@@ -1,5 +1,5 @@
 <resources>
-  <string name="app_name">Oblivion</string>
+  <string name="app_name" translatable="false">Oblivion</string>
   <string name="stateText">Not Connected</string>
   <string name="basedOnWarp">Based on Warp</string>
   <string name="aboutApp">About the App</string>
