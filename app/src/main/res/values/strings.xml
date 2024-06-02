@@ -1,5 +1,5 @@
 <resources>
-  <string name="app_name">Oblivion</string>
+  <string name="app_name" translatable="false">Oblivion</string>
   <string name="stateText">Not Connected</string>
   <string name="basedOnWarp">Based on Warp</string>
   <string name="aboutApp">About the App</string>
@@ -40,6 +40,40 @@
   <string name="connecting">Connecting…</string>
   <string name="connected">Connected</string>
   <string-array name="countries">
+    <item>Austria</item>
+    <item>Belgium</item>
+    <item>Brazil</item>
+    <item>Bulgaria</item>
+    <item>Canada</item>
+    <item>Croatia</item>
+    <item>Czechia</item>
+    <item>Denmark</item>
+    <item>Estonia</item>
+    <item>Finland</item>
+    <item>France</item>
+    <item>Germany</item>
+    <item>Hungary</item>
+    <item>India</item>
+    <item>Ireland</item>
+    <item>Italy</item>
+    <item>Japan</item>
+    <item>Latvia</item>
+    <item>Netherlands</item>
+    <item>Norway</item>
+    <item>Poland</item>
+    <item>Portugal</item>
+    <item>Romania</item>
+    <item>Serbia</item>
+    <item>Singapore</item>
+    <item>Slovakia</item>
+    <item>Spain</item>
+    <item>Sweden</item>
+    <item>Switzerland</item>
+    <item>Ukraine</item>
+    <item>United Kingdom</item>
+    <item>United States</item>
+  </string-array>
+  <string-array name="englishCountries">
     <item>Austria</item>
     <item>Belgium</item>
     <item>Brazil</item>

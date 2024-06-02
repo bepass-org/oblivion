@@ -1,7 +1,10 @@
 package org.bepass.oblivion;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,7 +24,7 @@ public class SettingsActivity extends StateAwareBaseActivity {
     private Spinner country;
     private CheckBox.OnCheckedChangeListener psiphonListener;
     private CheckBox.OnCheckedChangeListener goolListener;
-
+    private Context context;
     private void setCheckBoxWithoutTriggeringListener(CheckBox checkBox, boolean isChecked, CheckBox.OnCheckedChangeListener listener) {
         checkBox.setOnCheckedChangeListener(null); // Temporarily detach the listener
         checkBox.setChecked(isChecked); // Set the checked state
@@ -32,8 +35,8 @@ public class SettingsActivity extends StateAwareBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-
-        fileManager = FileManager.getInstance(getApplicationContext());
+        context =  this;
+        fileManager = FileManager.getInstance(this);
 
         LinearLayout endpointLayout = findViewById(R.id.endpoint_layout);
         LinearLayout portLayout = findViewById(R.id.port_layout);
@@ -84,8 +87,8 @@ public class SettingsActivity extends StateAwareBaseActivity {
             @Override
             public void onItemSelected(AdapterView parent, View view, int position, long id) {
                 String name = parent.getItemAtPosition(position).toString();
-                String code = CountryUtils.getCountryCode(name);
-                fileManager.set("USERSETTING_country", code);
+                Pair<String, String> codeAndName = CountryUtils.getCountryCode(context, name);
+                fileManager.set("USERSETTING_country", codeAndName.first);
             }
 
             @Override
@@ -129,8 +132,10 @@ public class SettingsActivity extends StateAwareBaseActivity {
     }
 
     private int getIndexFromName(Spinner spinner, String name) {
+        String ccn = CountryUtils.getCountryName(name);
+        String newname = LocaleHelper.restoreText(this,ccn);
         for (int i = 0; i < spinner.getCount(); i++) {
-            if (spinner.getItemAtPosition(i).toString().equals(name)) {
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(newname)) {
                 return i;
             }
         }
@@ -146,8 +151,10 @@ public class SettingsActivity extends StateAwareBaseActivity {
         String countryCode = fileManager.getString("USERSETTING_country");
         int index = 0;
         if (!countryCode.isEmpty()) {
+            LocaleHelper.goEn(this);
             String countryName = CountryUtils.getCountryName(countryCode);
             index = getIndexFromName(country, countryName);
+            LocaleHelper.restoreLocale(this);
         }
         country.setSelection(index);
 
