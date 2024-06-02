@@ -1,5 +1,6 @@
 package org.bepass.oblivion;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -86,21 +87,8 @@ public class LocaleHandler {
                 return languageCode;
         }
     }
-
-//    private void restartActivity(Context context) {
-//        Log.d("BeforeRestart", fileManager.getString(
-//                SELECTED_LANGUAGE
-//        ));
-//        context.recre
-////        Intent intent = new Intent(context.getPackageManager().getLeanbackLaunchIntentForPackage(context.getPackageName()));
-////        intent
-////        context.startActivity(context.getPackageManager().getLaunchIntentForPackage(context.getPackageName()));
-////        System.exit(0);
-//    }
-
+    @SuppressLint("ObsoleteSdkInt")
     public void restartActivity(Context context) {
-        Log.d("BeforeRestart", fileManager.getString(SELECTED_LANGUAGE));
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             ((Activity) context).recreate();
         } else {
@@ -111,3 +99,4 @@ public class LocaleHandler {
         }
     }
 }
+
