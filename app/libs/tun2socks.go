@@ -40,6 +40,7 @@ type StartOptions struct {
 	Country        string
 	PsiphonEnabled bool
 	Gool           bool
+	DNS            string
 }
 
 var global StartOptions
@@ -115,6 +116,7 @@ func Start(opt *StartOptions) {
 
 	err := app.RunWarp(ctx, l, app.WarpOptions{
 		Bind:     netip.MustParseAddrPort(global.BindAddress),
+		DnsAddr:  netip.MustParseAddr(opt.DNS),
 		Endpoint: global.Endpoint,
 		License:  global.License,
 		Psiphon:  psiphonOpts,

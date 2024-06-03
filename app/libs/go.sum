@@ -25,6 +25,10 @@ github.com/armon/go-proxyproto v0.0.0-20180202201750-5b7edb60ff5f h1:SaJ6yqg936T
 github.com/armon/go-proxyproto v0.0.0-20180202201750-5b7edb60ff5f/go.mod h1:QmP9hvJ91BbJmGVGSbutW19IC0Q9phDCLGaomwTJbgU=
 github.com/bepass-org/warp-plus v1.2.3 h1:Ql9I74k3IgzQ+UEI0Za17O0o0+7vpmlTn0Uz90DIXIw=
 github.com/bepass-org/warp-plus v1.2.3/go.mod h1:uSRUbr1CcvFrEV69FTvuJFwpzEmwO8N4knb6+Zq3Ys4=
+github.com/bepass-org/warp-plus v1.2.4-0.20240603140428-115bbf414559 h1:2BzuNBkcvxj2J+XAw0eI3lJ/rfzjIcBhx34Q8GITAog=
+github.com/bepass-org/warp-plus v1.2.4-0.20240603140428-115bbf414559/go.mod h1:uSRUbr1CcvFrEV69FTvuJFwpzEmwO8N4knb6+Zq3Ys4=
+github.com/bepass-org/warp-plus v1.2.4-0.20240603141320-b3f8c9953e10 h1:5SGhg+n2ACNFh6xzSfEs8BR9qVW9ApSlQCpFuhWCyws=
+github.com/bepass-org/warp-plus v1.2.4-0.20240603141320-b3f8c9953e10/go.mod h1:uSRUbr1CcvFrEV69FTvuJFwpzEmwO8N4knb6+Zq3Ys4=
 github.com/bifurcation/mint v0.0.0-20180306135233-198357931e61 h1:BU+NxuoaYPIvvp8NNkNlLr8aA0utGyuunf4Q3LJ0bh0=
 github.com/bifurcation/mint v0.0.0-20180306135233-198357931e61/go.mod h1:zVt7zX3K/aDCk9Tj+VM7YymsX66ERvzCJzw8rFCX2JU=
 github.com/cespare/xxhash/v2 v2.2.0 h1:DC2CZ1Ep5Y4k3ZQ899DldepgrayRUGE6BBZ/cd9Cj44=
