@@ -34,7 +34,8 @@
       android:fontFamily="@font/shabnamlight"
       android:text="@string/aboutApp"
       android:textColor="@color/black"
-      android:textSize="32sp" />
+      android:textSize="32sp"
+        tools:ignore="RelativeOverlap" />
 
   </RelativeLayout>
 
@@ -49,7 +50,8 @@
       android:text='@string/aboutAppDesc'
       android:textAlignment="center"
       android:textColor="@color/black"
-      android:textSize="16sp" />
+      android:textSize="16sp"
+      tools:ignore="RtlCompat" />
 
   <RelativeLayout
     android:id="@+id/github_layout"

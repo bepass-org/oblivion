@@ -1,76 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  android:layout_width="match_parent"
-  android:layout_height="wrap_content"
-  android:background="@drawable/rounded_bottom_sheet"
-  android:gravity="center"
-  android:orientation="vertical">
-
-  <View
-    android:id="@+id/dividingCloser"
-    android:layout_width="64sp"
-    android:layout_height="5sp"
-    android:layout_marginTop="8sp"
-    android:background="@drawable/bottom_sheet_closer" />
-
-  <TextView
-    android:id="@+id/title"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="16sp"
-    android:fontFamily="@font/shabnam"
-    android:text="@string/editSheetEndpoint"
-    android:textColor="@color/black"
-    android:textSize="18sp" />
-
-  <EditText
-      android:id="@+id/edittext"
-      android:layout_width="match_parent"
-      android:layout_height="48sp"
-      android:layout_marginHorizontal="16sp"
-      android:layout_marginTop="12sp"
-      android:background="@drawable/edittext_back"
-      android:fontFamily="@font/shabnam"
-      android:lineSpacingExtra="4sp"
-      android:padding="12sp"
-      android:singleLine="true"
-      android:textAlignment="center"
-      android:textColor="@color/black"
-      android:textSize="15sp" />
-
-  <LinearLayout
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16sp"
-    android:layout_marginVertical="12sp"
-    android:orientation="horizontal">
+    android:fillViewport="true"
+    android:background="@drawable/rounded_bottom_sheet">
 
-    <Button
-      android:id="@+id/cancelButton"
-      android:layout_width="0sp"
+  <LinearLayout
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginEnd="8sp"
-      android:layout_weight="1"
-      android:background="@drawable/bottom_sheet_cancel"
-      android:fontFamily="@font/shabnam"
-      android:text="@string/cancel"
-      android:textColor="@color/black"
-      android:textSize="17sp" />
+      android:gravity="center"
+      android:orientation="vertical">
 
-    <Button
-      android:id="@+id/applyButton"
-      android:layout_width="0sp"
-      android:layout_height="wrap_content"
-      android:layout_marginEnd="8sp"
-      android:layout_weight="1"
-      android:background="@drawable/bottom_sheet_closer"
-      android:fontFamily="@font/shabnam"
-      android:text="@string/update"
-      android:textColor="@color/white"
-      android:textSize="17sp" />
+    <View
+        android:id="@+id/dividingCloser"
+        android:layout_width="64sp"
+        android:layout_height="5sp"
+        android:layout_marginTop="8sp"
+        android:background="@drawable/bottom_sheet_closer" />
 
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16sp"
+        android:fontFamily="@font/shabnam"
+        android:text="@string/editSheetEndpoint"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/edittext"
+        android:layout_width="match_parent"
+        android:layout_height="48sp"
+        android:layout_marginHorizontal="16sp"
+        android:layout_marginTop="12sp"
+        android:inputType="text"
+        android:background="@drawable/edittext_back"
+        android:fontFamily="@font/shabnam"
+        android:lineSpacingExtra="4sp"
+        android:padding="12sp"
+        android:singleLine="true"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="15sp" />
+
+    <LinearLayout
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16sp"
+        android:layout_marginVertical="12sp"
+        android:orientation="horizontal">
+
+      <Button
+          android:id="@+id/cancelButton"
+          style="?android:attr/buttonBarButtonStyle"
+          android:layout_width="0sp"
+          android:layout_height="wrap_content"
+          android:layout_marginEnd="8sp"
+          android:layout_weight="1"
+          android:background="@drawable/bottom_sheet_cancel"
+          android:fontFamily="@font/shabnam"
+          android:text="@string/cancel"
+          android:textColor="@color/black"
+          android:textSize="17sp" />
+
+      <Button
+          android:id="@+id/applyButton"
+          style="?android:attr/buttonBarButtonStyle"
+          android:layout_width="0sp"
+          android:layout_height="wrap_content"
+          android:layout_marginEnd="8sp"
+          android:layout_weight="1"
+          android:background="@drawable/bottom_sheet_closer"
+          android:fontFamily="@font/shabnam"
+          android:text="@string/update"
+          android:textColor="@color/white"
+          android:textSize="17sp" />
+
+    </LinearLayout>
   </LinearLayout>
-
-
-</LinearLayout>
+</ScrollView>

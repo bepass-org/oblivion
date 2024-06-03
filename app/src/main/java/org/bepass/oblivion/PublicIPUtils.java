@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -61,7 +62,7 @@ public class PublicIPUtils {
                     }
                     details.ip = jsonData.getString("ip");
                     details.country = jsonData.getString("country");
-                    details.flag = EmojiManager.getForAlias(jsonData.getString("country").toLowerCase()).getUnicode();
+                    details.flag = EmojiManager.getForAlias(jsonData.getString("country").toLowerCase(Locale.ROOT)).getUnicode();
                     handler.post(() -> callback.onDetailsReceived(details));
                     return;
                 } catch (Exception e) {
