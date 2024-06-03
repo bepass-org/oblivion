@@ -44,7 +44,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView"
-            app:layout_constraintVertical_bias="0.069" />
+            app:layout_constraintVertical_bias="0.069"
+            tools:ignore="RtlCompat" />
 
         <TextView
             android:id="@+id/textView4"
@@ -62,7 +63,8 @@
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView2"
-            app:layout_constraintVertical_bias="0.034" />
+            app:layout_constraintVertical_bias="0.034"
+            tools:ignore="RtlCompat"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -91,7 +93,8 @@
             android:cropToPadding="true"
             android:foreground="@drawable/light_shadow_bottom"
             app:srcCompat="@drawable/segaro"
-            tools:targetApi="m" />
+            tools:targetApi="m"
+            tools:ignore="UnusedAttribute" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imageViewYousef"
@@ -104,7 +107,8 @@
             android:cropToPadding="true"
             android:foreground="@drawable/light_shadow_bottom"
             app:srcCompat="@drawable/yousef"
-            tools:targetApi="m" />
+            tools:targetApi="m"
+            tools:ignore="UnusedAttribute" />
 
     </LinearLayout>
 

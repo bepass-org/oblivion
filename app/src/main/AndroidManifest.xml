@@ -98,7 +98,7 @@
         <activity
             android:name="org.bepass.oblivion.SettingsActivity"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".SplitTunnelActivity"

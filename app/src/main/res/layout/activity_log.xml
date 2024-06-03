@@ -37,7 +37,8 @@
       android:fontFamily="@font/shabnamlight"
       android:text="@string/logApp"
       android:textColor="@color/black"
-      android:textSize="32sp" />
+      android:textSize="32sp"
+        tools:ignore="RelativeOverlap" />
 
   </RelativeLayout>
 

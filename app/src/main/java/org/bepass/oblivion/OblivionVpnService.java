@@ -37,6 +37,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -285,6 +286,11 @@ public class OblivionVpnService extends VpnService {
     }
 
     private void start() {
+        // If there's an existing running service, revoke it first
+        if (lastKnownState != ConnectionState.DISCONNECTED) {
+            onRevoke();
+        }
+
         fileManager = FileManager.getInstance(this);
 
         setLastKnownState(ConnectionState.CONNECTING);
@@ -367,6 +373,7 @@ public class OblivionVpnService extends VpnService {
     public void onRevoke() {
         setLastKnownState(ConnectionState.DISCONNECTED);
         Log.i(TAG, "Stopping VPN");
+        // Stop foreground service and notification
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             if (notificationManager != null) {
@@ -379,11 +386,13 @@ public class OblivionVpnService extends VpnService {
             e.printStackTrace();
         }
 
+        // Release the wake lock if held
         if (wLock != null && wLock.isHeld()) {
             wLock.release();
             wLock = null;
         }
 
+        // Close the VPN interface
         if (mInterface != null) {
             try {
                 mInterface.close();
@@ -392,8 +401,24 @@ public class OblivionVpnService extends VpnService {
             }
         }
 
+        // Stop Tun2socks
         Tun2socks.stop();
+
+        // Shutdown executor service
+        if (executorService instanceof ExecutorService) {
+            ((ExecutorService) executorService).shutdownNow();
+        }
+
+        // Ensure all tasks are completed or terminated
+        try {
+            if (!((ExecutorService) executorService).awaitTermination(1, TimeUnit.SECONDS)) {
+                Log.e(TAG, "Executor service did not terminate in the specified time.");
+            }
+        } catch (InterruptedException e) {
+            Log.e(TAG, "Executor service termination interrupted.", e);
+        }
     }
+
 
     private void publishConnectionState(ConnectionState state) {
         if (!connectionStateObservers.isEmpty()) {
