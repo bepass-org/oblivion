@@ -180,27 +180,27 @@ public class OblivionVpnService extends VpnService {
 
     public static boolean pingOverHTTP(String bindAddress) {
         System.out.println("Pinging");
-        Map<String, Integer> result = splitHostAndPort(bindAddress);
-        if (result == null) {
-            throw new RuntimeException("Could not split host and port of " + bindAddress);
-        }
-        String socksHost = result.keySet().iterator().next();
-        int socksPort = result.values().iterator().next();
-        Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(socksHost, socksPort));
-        OkHttpClient client = new OkHttpClient.Builder()
-                .proxy(proxy)
-                .connectTimeout(5, TimeUnit.SECONDS) // 5 seconds connection timeout
-                .readTimeout(5, TimeUnit.SECONDS) // 5 seconds read timeout
-                .build();
-        Request request = new Request.Builder()
-                .url("https://1.1.1.1")
-                .build();
-        try (Response response = client.newCall(request).execute()) {
-            return response.isSuccessful();
-        } catch (IOException e) {
-            //e.printStackTrace();
-            return false;
-        }
+       Map<String, Integer> result = splitHostAndPort(bindAddress);
+       if (result == null) {
+           throw new RuntimeException("Could not split host and port of " + bindAddress);
+       }
+       String socksHost = result.keySet().iterator().next();
+       int socksPort = result.values().iterator().next();
+       Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(socksHost, socksPort));
+       OkHttpClient client = new OkHttpClient.Builder()
+               .proxy(proxy)
+               .connectTimeout(5, TimeUnit.SECONDS) // 5 seconds connection timeout
+               .readTimeout(5, TimeUnit.SECONDS) // 5 seconds read timeout
+               .build();
+       Request request = new Request.Builder()
+               .url("https://www.gstatic.com/generate_204")
+               .build();
+       try (Response response = client.newCall(request).execute()) {
+           return response.isSuccessful();
+       } catch (IOException e) {
+           //e.printStackTrace();
+           return false;
+       }
     }
 
 
@@ -392,7 +392,7 @@ public class OblivionVpnService extends VpnService {
             }
         }
 
-        executorService.execute(Tun2socks::stop);
+        Tun2socks.stop();
     }
 
     private void publishConnectionState(ConnectionState state) {
@@ -515,6 +515,7 @@ public class OblivionVpnService extends VpnService {
         so.setEndpoint(endpoint);
         so.setBindAddress(bindAddress);
         so.setLicense(license);
+        so.setDNS("1.1.1.1");
 
         if (enablePsiphon && !enableGool) {
             so.setPsiphonEnabled(true);
