@@ -38,7 +38,8 @@
             android:fontFamily="@font/shabnamlight"
             android:text="@string/blackList"
             android:textColor="@color/black"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            tools:ignore="RelativeOverlap" />
 
     </RelativeLayout>
 

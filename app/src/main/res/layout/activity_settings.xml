@@ -37,7 +37,8 @@
       android:fontFamily="@font/shabnamlight"
       android:text="@string/settingsText"
       android:textColor="@color/black"
-      android:textSize="24sp" />
+      android:textSize="24sp"
+      tools:ignore="RelativeOverlap" />
 
   </RelativeLayout>
 
@@ -240,7 +241,7 @@
 
 
           <LinearLayout
-              android:layout_width="115dp"
+              android:layout_width="0dp"
               android:layout_height="wrap_content"
               android:layout_weight="2">
 
@@ -305,7 +306,7 @@
           android:gravity="end">
 
           <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
           >
@@ -371,7 +372,7 @@
 
           <Spinner
             android:id="@+id/country"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
@@ -486,7 +487,7 @@
           android:layout_height="wrap_content">
 
           <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
           >
