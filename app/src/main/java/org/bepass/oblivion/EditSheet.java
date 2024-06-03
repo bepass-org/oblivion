@@ -27,7 +27,7 @@ public class EditSheet {
         this.context = context;
         fileManager = FileManager.getInstance(context);
 
-        this.title = context.getString(R.string.editSheetEndpoint).replace("Endpoint",title);
+        this.title = context.getString(R.string.editSheetEndpoint, title); // context.getString(R.string.editSheetEndpoint, title
         this.sharedPrefKey = sharedPrefKey;
 
         this.sheetsCallBack = sheetsCallBack;

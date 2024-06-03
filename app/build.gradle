@@ -33,12 +33,8 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    buildFeatures {
-        compose true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion '1.4.3'
-    }
+
+
     packagingOptions {
         resources.excludes.add("META-INF/*")
     }
@@ -54,7 +50,10 @@ configurations {
 }
 
 dependencies {
-    implementation 'androidx.activity:activity-compose:1.9.0'
+
+    //not include source.jar
+    implementation fileTree(dir: 'libs', include: ['*.aar'])
+
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
@@ -63,5 +62,4 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'com.vdurmont:emoji-java:5.1.1'
-    implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'])
 }

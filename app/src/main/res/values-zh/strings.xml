@@ -33,7 +33,7 @@
     <string name="licenseTextDesc">如果您有许可证（每个许可证都会加倍）</string>
     <string name="goolText">Gool</string>
     <string name="goolTextDesc">激活Warp中的Warp</string>
-    <string name="editSheetEndpoint">更改端点值</string>
+    <string name="editSheetEndpoint">更改%s</string>
     <string name="cancel">取消</string>
     <string name="update">更新</string>
     <string name="notConnected">未连接</string>

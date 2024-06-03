@@ -33,7 +33,7 @@
     <string name="licenseTextDesc">اگر لایسنس دارید (هر لایسنس 2x می‌شود)</string>
     <string name="goolText">گول</string>
     <string name="goolTextDesc">فعالسازی Warp In Warp</string>
-    <string name="editSheetEndpoint">تغییر مقدار Endpoint</string>
+    <string name="editSheetEndpoint">تغییر مقدار %s</string>
     <string name="cancel">انصراف</string>
     <string name="update">بروزرسانی</string>
     <string name="notConnected">متصل نیستید</string>

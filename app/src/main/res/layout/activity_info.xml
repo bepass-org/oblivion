@@ -42,12 +42,11 @@
       android:id="@+id/about"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_gravity="end"
+      android:textAlignment="center"
       android:layout_marginTop="16dp"
       android:fontFamily="@font/shabnammedium"
       android:paddingHorizontal="12dp"
       android:text='@string/aboutAppDesc'
-      android:textAlignment="center"
       android:textColor="@color/black"
       android:textSize="16sp" />
 

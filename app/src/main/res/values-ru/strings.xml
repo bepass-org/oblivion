@@ -33,7 +33,7 @@
     <string name="licenseTextDesc">Если у вас есть лицензия (каждая лицензия удваивается)</string>
     <string name="goolText">Gool</string>
     <string name="goolTextDesc">Активировать Warp в Warp</string>
-    <string name="editSheetEndpoint">Изменить значение конечной точки</string>
+    <string name="editSheetEndpoint">Изменять %s</string>
     <string name="cancel">Отмена</string>
     <string name="update">Обновить</string>
     <string name="notConnected">Не подключено</string>

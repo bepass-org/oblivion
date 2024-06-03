@@ -33,7 +33,7 @@
   <string name="licenseTextDesc">If you have a license (each license is doubled)</string>
   <string name="goolText">Gool</string>
   <string name="goolTextDesc">Activate Warp In Warp</string>
-  <string name="editSheetEndpoint">Change Endpoint Value</string>
+  <string name="editSheetEndpoint">Change %s</string>
   <string name="cancel">Cancel</string>
   <string name="update">Update</string>
   <string name="notConnected">Not Connected</string>
