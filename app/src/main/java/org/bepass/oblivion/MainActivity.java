@@ -1,9 +1,9 @@
 package org.bepass.oblivion;
 
+import static org.bepass.oblivion.OblivionVpnService.startVpnService;
 import static org.bepass.oblivion.OblivionVpnService.stopVpnService;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,12 +11,9 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PowerManager;
-import android.provider.Settings;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -28,7 +25,6 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -43,12 +39,6 @@ public class MainActivity extends StateAwareBaseActivity {
     private long backPressedTime;
     private Toast backToast;
     private LocaleHandler localeHandler;
-    private final ActivityResultLauncher<Intent> batteryOptimizationLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                // Do nothing, as no return value is expected
-            });
-
     private final Handler handler = new Handler();
 
     @Override
@@ -70,11 +60,6 @@ public class MainActivity extends StateAwareBaseActivity {
         FloatingActionButton floatingActionButton = findViewById(R.id.floatingActionButton);
         floatingActionButton.setOnClickListener(v -> localeHandler.showLanguageSelectionDialog(()->
                 localeHandler.restartActivity(this)));
-        if (!isIgnoringBatteryOptimizations()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestIgnoreBatteryOptimizations();
-            }
-        }
         // Views
         ImageView infoIcon = findViewById(R.id.info_icon);
         ImageView logIcon = findViewById(R.id.bug_icon);
@@ -119,7 +104,7 @@ public class MainActivity extends StateAwareBaseActivity {
             }
             // Start the VPN service if it's disconnected
             if (lastKnownConnectionState.isDisconnected()) {
-                OblivionVpnService.startVpnService(this);
+                startVpnService(this);
             }
             // To check is Internet Connection is available
             handler.postDelayed(new Runnable() {
@@ -188,29 +173,6 @@ public class MainActivity extends StateAwareBaseActivity {
     private void checkInternetConnectionAndDisconnectVPN() {
         if (!isConnectedToInternet()) {
             stopVpnService(this);
-        }
-    }
-    private boolean isIgnoringBatteryOptimizations() {
-        String packageName = getPackageName();
-        PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
-        if (pm != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                return pm.isIgnoringBatteryOptimizations(packageName);
-            }
-        }
-        return false;
-    }
-    @SuppressLint("BatteryLife")
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private void requestIgnoreBatteryOptimizations() {
-        try {
-            Intent intent = new Intent();
-            String packageName = getPackageName();
-            intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-            intent.setData(Uri.parse("package:" + packageName));
-            batteryOptimizationLauncher.launch(intent);
-        } catch (Exception e) {
-            Toast.makeText(this, "Unable to request ignore battery optimizations", Toast.LENGTH_SHORT).show();
         }
     }
     protected void cleanOrMigrateSettings() {

@@ -373,51 +373,65 @@ public class OblivionVpnService extends VpnService {
     public void onRevoke() {
         setLastKnownState(ConnectionState.DISCONNECTED);
         Log.i(TAG, "Stopping VPN");
+
         // Stop foreground service and notification
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            if (notificationManager != null) {
-                notificationManager.deleteNotificationChannel("oblivion");
-            }
-        }
         try {
             stopForeground(true);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationManager notificationManager = getSystemService(NotificationManager.class);
+                if (notificationManager != null) {
+                    notificationManager.deleteNotificationChannel("oblivion");
+                }
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error stopping foreground service and notification", e);
         }
 
         // Release the wake lock if held
-        if (wLock != null && wLock.isHeld()) {
-            wLock.release();
-            wLock = null;
+        try {
+            if (wLock != null && wLock.isHeld()) {
+                wLock.release();
+                wLock = null;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error releasing wake lock", e);
         }
 
         // Close the VPN interface
-        if (mInterface != null) {
-            try {
+        try {
+            if (mInterface != null) {
                 mInterface.close();
-            } catch (IOException e) {
-                Log.e(TAG, "Error closing the VPN interface", e);
             }
+        } catch (IOException e) {
+            Log.e(TAG, "Error closing the VPN interface", e);
         }
 
         // Stop Tun2socks
-        Tun2socks.stop();
+        try {
+            Tun2socks.stop();
+        } catch (Exception e) {
+            Log.e(TAG, "Error stopping Tun2socks", e);
+        }
 
         // Shutdown executor service
         if (executorService instanceof ExecutorService) {
-            ((ExecutorService) executorService).shutdownNow();
+            ExecutorService service = (ExecutorService) executorService;
+            service.shutdown(); // Attempt to gracefully shutdown
+            try {
+                // Wait a certain amount of time for tasks to complete
+                if (!service.awaitTermination(500, TimeUnit.MILLISECONDS)) {
+                    service.shutdownNow(); // Forcefully terminate if tasks are not completed
+                }
+            } catch (InterruptedException e) {
+                service.shutdownNow(); // Forcefully terminate if interrupted
+                Thread.currentThread().interrupt(); // Restore interrupted status
+                Log.e(TAG, "Executor service termination interrupted", e);
+            }
         }
 
-        // Ensure all tasks are completed or terminated
-        try {
-            if (!((ExecutorService) executorService).awaitTermination(1, TimeUnit.SECONDS)) {
-                Log.e(TAG, "Executor service did not terminate in the specified time.");
-            }
-        } catch (InterruptedException e) {
-            Log.e(TAG, "Executor service termination interrupted.", e);
-        }
+        Log.i(TAG, "VPN stopped successfully");
     }
+
 
 
     private void publishConnectionState(ConnectionState state) {

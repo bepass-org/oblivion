@@ -39,6 +39,10 @@
   <string name="notConnected">Not Connected</string>
   <string name="connecting">Connecting…</string>
   <string name="connected">Connected</string>
+  <string name="batteryOpL">Disable Battery optimization</string>
+  <string name="batteryOpLText">Disabling battery optimization for better experience</string>
+  <string name="dialBtText"> To ensure the app works properly, please disable battery optimization for this app. </string>
+  <string name="goToSettings"> Go to Settings </string>
   <string-array name="countries">
     <item>Austria</item>
     <item>Belgium</item>
