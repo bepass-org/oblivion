@@ -39,6 +39,10 @@
     <string name="notConnected">متصل نیستید</string>
     <string name="connecting">در حال اتصال…</string>
     <string name="connected">اتصال برقرار شد</string>
+    <string name="batteryOpL">غیرفعال‌سازی بهینه‌سازی باتری</string>
+    <string name="batteryOpLText">غیرفعال‌سازی بهینه‌سازی باتری برای تجربه بهتر</string>
+    <string name="dialBtText">برای اطمینان از عملکرد صحیح برنامه، لطفاً بهینه‌سازی باتری برای این برنامه را غیرفعال کنید.</string>
+    <string name="goToSettings">به تنظیمات بروید</string>
     <string-array name="countries">
         <item>اتریش</item>
         <item>بلژیک</item>
