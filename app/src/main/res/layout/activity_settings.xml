@@ -58,6 +58,53 @@
       android:orientation="vertical">
 
       <LinearLayout
+          android:id="@+id/battery_optimization_layout"
+          android:layout_width="match_parent"
+          android:layout_height="80dp"
+          android:background="?android:selectableItemBackground"
+          android:gravity="center"
+          android:paddingHorizontal="16dp"
+          android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end">
+
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:fontFamily="@font/shabnam"
+              android:minWidth="100dp"
+              android:text="@string/batteryOpL"
+              android:textAlignment="viewEnd"
+              android:textColor="@color/black"
+              android:textSize="20sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/shabnam"
+            android:text="@string/batteryOpLText"
+            android:textColor="#9A9A9A"
+            android:textSize="16sp" />
+
+      </LinearLayout>
+      <LinearLayout
+          android:id="@+id/battery_opt_line"
+          android:layout_width="match_parent"
+          android:layout_height="10dp"
+          android:gravity="center"
+          android:orientation="vertical"
+          >
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+      </LinearLayout>
+      <LinearLayout
         android:id="@+id/endpoint_layout"
         android:layout_width="match_parent"
         android:paddingHorizontal="16dp"

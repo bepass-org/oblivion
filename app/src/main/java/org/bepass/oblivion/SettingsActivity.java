@@ -1,9 +1,11 @@
 package org.bepass.oblivion;
 
+import static org.bepass.oblivion.BatteryOptimizationKt.isBatteryOptimizationEnabled;
+import static org.bepass.oblivion.BatteryOptimizationKt.showBatteryOptimizationDialog;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.AdapterView;
@@ -38,6 +40,16 @@ public class SettingsActivity extends StateAwareBaseActivity {
         context =  this;
         fileManager = FileManager.getInstance(this);
 
+        LinearLayout batteryOptLayout = findViewById(R.id.battery_optimization_layout);
+        LinearLayout batteryOptLine = findViewById(R.id.battery_opt_line);
+        if(isBatteryOptimizationEnabled(this)){
+            batteryOptLayout.setOnClickListener(view -> {
+                showBatteryOptimizationDialog(this);
+            });
+        }else{
+            batteryOptLayout.setVisibility(View.GONE);
+            batteryOptLine.setVisibility(View.GONE);
+        }
         LinearLayout endpointLayout = findViewById(R.id.endpoint_layout);
         LinearLayout portLayout = findViewById(R.id.port_layout);
         LinearLayout splitTunnelLayout = findViewById(R.id.split_tunnel_layout);
