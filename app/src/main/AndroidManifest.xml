@@ -33,6 +33,7 @@
         android:banner="@mipmap/tv_banner"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:name=".base.ApplicationLoader"
         tools:replace="android:supportsRtl"
         android:screenOrientation="portrait"
         android:enableOnBackInvokedCallback="true"
