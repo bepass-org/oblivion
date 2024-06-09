@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 
+import androidx.appcompat.app.AppCompatDelegate;
+
 /**
  * ApplicationLoader is a custom Application class that extends the Android Application class.
  * It is designed to provide a centralized context reference throughout the application.
@@ -25,6 +27,7 @@ public class ApplicationLoader extends Application {
     public void onCreate() {
         super.onCreate();
         context = getApplicationContext();
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
     }
 
     /**
