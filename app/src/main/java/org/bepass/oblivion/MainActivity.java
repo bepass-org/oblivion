@@ -41,6 +41,12 @@ public class MainActivity extends StateAwareBaseActivity {
     private LocaleHandler localeHandler;
     private final Handler handler = new Handler();
 
+    public static void start(Context context) {
+        Intent starter = new Intent(context, MainActivity.class);
+        starter.putExtra("origin", context.getClass().getSimpleName());
+        context.startActivity(starter);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +64,7 @@ public class MainActivity extends StateAwareBaseActivity {
 
         // Handle language change based on floatingActionButton value
         FloatingActionButton floatingActionButton = findViewById(R.id.floatingActionButton);
-        floatingActionButton.setOnClickListener(v -> localeHandler.showLanguageSelectionDialog(()->
+        floatingActionButton.setOnClickListener(v -> localeHandler.showLanguageSelectionDialog(() ->
                 localeHandler.restartActivity(this)));
         // Views
         ImageView infoIcon = findViewById(R.id.info_icon);
@@ -108,14 +114,14 @@ public class MainActivity extends StateAwareBaseActivity {
             }
             // To check is Internet Connection is available
             handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(!lastKnownConnectionState.isDisconnected()) {
-                            checkInternetConnectionAndDisconnectVPN();
-                            handler.postDelayed(this, 3000); // Check every 3 seconds
-                        }
+                @Override
+                public void run() {
+                    if (!lastKnownConnectionState.isDisconnected()) {
+                        checkInternetConnectionAndDisconnectVPN();
+                        handler.postDelayed(this, 3000); // Check every 3 seconds
                     }
-                }, 5000); // Start checking after 5 seconds
+                }
+            }, 5000); // Start checking after 5 seconds
         });
 
 
@@ -175,6 +181,7 @@ public class MainActivity extends StateAwareBaseActivity {
             stopVpnService(this);
         }
     }
+
     protected void cleanOrMigrateSettings() {
         // Get the global FileManager instance
         FileManager fileManager = FileManager.getInstance(getApplicationContext());
@@ -233,7 +240,7 @@ public class MainActivity extends StateAwareBaseActivity {
                 ipProgressBar.setVisibility(View.GONE);
                 pIPUtils.getIPDetails((details) -> {
                     if (details.ip != null) {
-                        String ipString = details.ip+ " " + details.flag;
+                        String ipString = details.ip + " " + details.flag;
                         publicIP.setText(ipString);
                         publicIP.setVisibility(View.VISIBLE);
                     }

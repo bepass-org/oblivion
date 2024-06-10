@@ -8,30 +8,60 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-@SuppressLint("CustomSplashScreen")
-public class SplashScreenActivity extends AppCompatActivity implements View.OnClickListener {
+import org.bepass.oblivion.base.BaseActivity;
+import org.bepass.oblivion.databinding.ActivitySplashScreenBinding;
 
+/**
+ * A simple splash screen activity that shows a splash screen for a short duration before navigating
+ * to the main activity. This class extends {@link BaseActivity} and uses data binding.
+ */
+@SuppressLint("CustomSplashScreen")
+public class SplashScreenActivity extends BaseActivity<ActivitySplashScreenBinding> {
+
+    /**
+     * Returns the layout resource ID for the splash screen activity.
+     *
+     * @return The layout resource ID.
+     */
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_splash_screen;
+    }
+
+    /**
+     * Called when the activity is first created. This method sets up the splash screen and
+     * schedules the transition to the main activity.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down
+     *                           then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Initialize the LocaleHandler and set the locale
-        LocaleHandler localeHandler = new LocaleHandler(this);
-        setContentView(R.layout.activity_splash_screen);
-        final int SHORT_SPLASH_DISPLAY_LENGTH = 1000; // 1 second
-        findViewById(R.id.splashScreen).setOnClickListener(this);
+        binding.setHandler(new ClickHandler());
+        // 1 second
+        int SHORT_SPLASH_DISPLAY_LENGTH = 1000;
         new Handler().postDelayed(() -> {
-            // Create an Intent that will start the Main Activity.
-            Intent mainIntent = new Intent(SplashScreenActivity.this, MainActivity.class);
-            SplashScreenActivity.this.startActivity(mainIntent);
-            SplashScreenActivity.this.finish();
+            MainActivity.start(this);
+            finish();
         }, SHORT_SPLASH_DISPLAY_LENGTH);
     }
 
-    @Override
-    public void onClick(View v) {
-        // If the user clicks on the splash screen, move to the MainActivity immediately
-        Intent mainIntent = new Intent(SplashScreenActivity.this, MainActivity.class);
-        SplashScreenActivity.this.startActivity(mainIntent);
-        SplashScreenActivity.this.finish();
+    /**
+     * A click handler for handling user interactions with the splash screen.
+     */
+    public class ClickHandler {
+
+        /**
+         * Called when the root view is pressed. This method immediately navigates to the main activity
+         * and finishes the splash screen activity.
+         *
+         * @param view The view that was clicked.
+         */
+        public void OnRootPressed(View view) {
+            MainActivity.start(SplashScreenActivity.this);
+            finish();
+        }
     }
+
 }
