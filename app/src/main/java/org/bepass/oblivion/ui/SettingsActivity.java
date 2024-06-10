@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.ui;
 
 import static org.bepass.oblivion.BatteryOptimizationKt.isBatteryOptimizationEnabled;
 import static org.bepass.oblivion.BatteryOptimizationKt.showBatteryOptimizationDialog;
@@ -17,6 +17,16 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
+
+import org.bepass.oblivion.ConnectionState;
+import org.bepass.oblivion.CountryUtils;
+import org.bepass.oblivion.EditSheet;
+import org.bepass.oblivion.FileManager;
+import org.bepass.oblivion.LocaleHelper;
+import org.bepass.oblivion.OblivionVpnService;
+import org.bepass.oblivion.R;
+import org.bepass.oblivion.SheetsCallBack;
+import org.bepass.oblivion.base.StateAwareBaseActivity;
 
 public class SettingsActivity extends StateAwareBaseActivity {
     private FileManager fileManager;

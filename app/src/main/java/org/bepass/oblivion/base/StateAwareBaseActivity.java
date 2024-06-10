@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.base;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -8,6 +8,9 @@ import android.os.IBinder;
 import android.os.Messenger;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import org.bepass.oblivion.ConnectionState;
+import org.bepass.oblivion.OblivionVpnService;
 
 
 /**

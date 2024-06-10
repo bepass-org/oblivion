@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.ui;
 
 import static org.bepass.oblivion.OblivionVpnService.startVpnService;
 import static org.bepass.oblivion.OblivionVpnService.stopVpnService;
@@ -27,6 +27,15 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.bepass.oblivion.ConnectionState;
+import org.bepass.oblivion.FileManager;
+import org.bepass.oblivion.LocaleHandler;
+import org.bepass.oblivion.OblivionVpnService;
+import org.bepass.oblivion.PublicIPUtils;
+import org.bepass.oblivion.R;
+import org.bepass.oblivion.base.StateAwareBaseActivity;
+import org.bepass.oblivion.TouchAwareSwitch;
 
 import java.util.HashSet;
 import java.util.Set;

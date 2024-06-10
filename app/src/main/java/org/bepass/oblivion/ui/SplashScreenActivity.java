@@ -1,13 +1,11 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.ui;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import org.bepass.oblivion.R;
 import org.bepass.oblivion.base.BaseActivity;
 import org.bepass.oblivion.databinding.ActivitySplashScreenBinding;
 

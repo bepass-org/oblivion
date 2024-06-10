@@ -6,7 +6,7 @@
   android:layout_height="match_parent"
   android:background="@drawable/background_gradient"
   android:orientation="vertical"
-  tools:context="org.bepass.oblivion.InfoActivity">
+  tools:context="org.bepass.oblivion.ui.InfoActivity">
 
   <RelativeLayout
     android:id="@+id/top_bar"

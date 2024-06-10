@@ -7,7 +7,7 @@
 
         <variable
             name="handler"
-            type="org.bepass.oblivion.SplashScreenActivity.ClickHandler" />
+            type="org.bepass.oblivion.ui.SplashScreenActivity.ClickHandler" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
