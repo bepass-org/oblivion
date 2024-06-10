@@ -1,17 +1,26 @@
 package org.bepass.oblivion;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.button.MaterialButton;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Deque;
 
 public class LogActivity extends AppCompatActivity {
 
@@ -27,11 +36,15 @@ public class LogActivity extends AppCompatActivity {
         setContentView(R.layout.activity_log);
 
         ImageView back = findViewById(R.id.back);
+        Button copyToClip = findViewById(R.id.copytoclip);
         logs = findViewById(R.id.logs);
         logScrollView = findViewById(R.id.logScrollView);
 
         setupScrollListener();
         back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
+
+        copyToClip.setOnClickListener(v -> copyLast100LinesToClipboard());
+
         logUpdater = new Runnable() {
             @Override
             public void run() {
@@ -80,5 +93,25 @@ public class LogActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void copyLast100LinesToClipboard() {
+        String logText = logs.getText().toString();
+        String[] logLines = logText.split("\n");
+        int totalLines = logLines.length;
+
+        // Use Deque to efficiently get the last 100 lines
+        Deque<String> last100Lines = new ArrayDeque<>(100);
+        last100Lines.addAll(Arrays.asList(logLines).subList(Math.max(0, totalLines - 100), totalLines));
+
+        StringBuilder sb = new StringBuilder();
+        for (String line : last100Lines) {
+            sb.append(line).append("\n");
+        }
+
+        String last100Log = sb.toString();
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("Log", last100Log);
+        clipboard.setPrimaryClip(clip);
     }
 }

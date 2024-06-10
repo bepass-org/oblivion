@@ -43,6 +43,7 @@
     <string name="batteryOpLText">Отключение оптимизации батареи для лучшего опыта</string>
     <string name="dialBtText">Чтобы приложение работало правильно, отключите оптимизацию батареи для этого приложения.</string>
     <string name="goToSettings">Перейти к настройкам</string>
+    <string name="copytoclip">Скопировать лог в буфер обмена</string>
     <string-array name="countries">
         <item>Австрия</item>
         <item>Бельгия</item>
