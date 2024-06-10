@@ -15,10 +15,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -26,15 +22,12 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import org.bepass.oblivion.ConnectionState;
 import org.bepass.oblivion.FileManager;
 import org.bepass.oblivion.LocaleHandler;
 import org.bepass.oblivion.OblivionVpnService;
 import org.bepass.oblivion.PublicIPUtils;
 import org.bepass.oblivion.R;
-import org.bepass.oblivion.TouchAwareSwitch;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
 import org.bepass.oblivion.databinding.ActivityMainBinding;
 
