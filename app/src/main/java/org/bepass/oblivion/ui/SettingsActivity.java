@@ -48,7 +48,6 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
         fileManager = FileManager.getInstance(this);
 
         if(isBatteryOptimizationEnabled(this)){
