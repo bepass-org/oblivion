@@ -43,6 +43,7 @@
     <string name="batteryOpLText">为了更好的体验，关闭电池优化</string>
     <string name="dialBtText">为了确保应用程序正常运行，请为此应用程序关闭电池优化。</string>
     <string name="goToSettings">前往设置</string>
+    <string name="copytoclip">复制日志到剪贴板</string>
     <string-array name="countries">
         <item>奥地利</item>
         <item>比利时</item>
