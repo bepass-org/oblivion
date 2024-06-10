@@ -48,7 +48,7 @@ public class MainActivity extends StateAwareBaseActivity {
         cleanOrMigrateSettings();
 
         // Get the global PublicIPUtils instance
-        pIPUtils = PublicIPUtils.getInstance(getApplicationContext());
+        pIPUtils = PublicIPUtils.getInstance();
 
         // Initialize the LocaleHandler and set the locale
         localeHandler = new LocaleHandler(this);
