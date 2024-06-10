@@ -21,8 +21,6 @@ import org.bepass.oblivion.databinding.ActivitySplitTunnelBinding;
 
 
 public class SplitTunnelActivity extends StateAwareBaseActivity<ActivitySplitTunnelBinding> {
-    private RecyclerView appsRecycler;
-    private CircularProgressIndicator progress;
 
     @Override
     protected int getLayoutResourceId() {
@@ -32,23 +30,14 @@ public class SplitTunnelActivity extends StateAwareBaseActivity<ActivitySplitTun
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Sets the contents from the layout
-        setContentView(R.layout.activity_split_tunnel);
-
-        // Find UI elements and assign them to vars
-        ImageView back = findViewById(R.id.back);
-        appsRecycler = findViewById(R.id.appsRecycler);
-        progress = findViewById(R.id.progress);
-
         // Handles the back button behaviour
-        back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
+        binding.back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
 
         // Set up the app list
         BypassListAppsAdapter bypassListAppsAdapter = new BypassListAppsAdapter(this, loading -> {
-                appsRecycler.setVisibility(loading ? View.INVISIBLE : View.VISIBLE);
-                if (loading) progress.show();
-                else progress.hide();
+            binding.appsRecycler.setVisibility(loading ? View.INVISIBLE : View.VISIBLE);
+                if (loading) binding.progress.show();
+                else binding.progress.hide();
         });
 
         // Signal the need to restart the VPN service on app selection change
@@ -70,7 +59,7 @@ public class SplitTunnelActivity extends StateAwareBaseActivity<ActivitySplitTun
             }
         });
 
-        appsRecycler.setAdapter(new ConcatAdapter(optionsAdapter, bypassListAppsAdapter));
+        binding.appsRecycler.setAdapter(new ConcatAdapter(optionsAdapter, bypassListAppsAdapter));
     }
 
     @Override
