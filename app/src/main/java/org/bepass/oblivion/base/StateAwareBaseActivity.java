@@ -4,10 +4,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Messenger;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 
 import org.bepass.oblivion.ConnectionState;
 import org.bepass.oblivion.OblivionVpnService;
@@ -16,11 +20,26 @@ import org.bepass.oblivion.OblivionVpnService;
 /**
  * Those activities that inherit this class observe connection state by default and have access to lastKnownConnectionState variable.
  */
-public abstract class StateAwareBaseActivity extends AppCompatActivity {
+public abstract class StateAwareBaseActivity<B extends ViewDataBinding>  extends AppCompatActivity {
     protected ConnectionState lastKnownConnectionState = ConnectionState.DISCONNECTED;
     private static boolean requireRestartVpnService = false;
+    protected B binding;
     private Messenger serviceMessenger;
     private boolean isBound;
+
+    protected abstract int getLayoutResourceId();
+
+    /**
+     * Called when the activity is starting.
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
+     * @see AppCompatActivity#onCreate(Bundle)
+     */
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Inflates the layout and initializes the binding object
+        binding = DataBindingUtil.setContentView(this, getLayoutResourceId());
+    }
 
     public static boolean getRequireRestartVpnService() {
         return requireRestartVpnService;

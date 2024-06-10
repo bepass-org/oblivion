@@ -36,15 +36,12 @@ import org.bepass.oblivion.PublicIPUtils;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.TouchAwareSwitch;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
+import org.bepass.oblivion.databinding.ActivityMainBinding;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class MainActivity extends StateAwareBaseActivity {
-    private TouchAwareSwitch switchButton;
-    private TextView stateText, publicIP;
-    private ProgressBar ipProgressBar;
-    private PublicIPUtils pIPUtils;
+public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     private long backPressedTime;
     private Toast backToast;
     private LocaleHandler localeHandler;
@@ -57,50 +54,37 @@ public class MainActivity extends StateAwareBaseActivity {
     }
 
     @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_main;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         cleanOrMigrateSettings();
-
-        // Get the global PublicIPUtils instance
-        pIPUtils = PublicIPUtils.getInstance();
-
+        setupUI();
         // Initialize the LocaleHandler and set the locale
         localeHandler = new LocaleHandler(this);
 
-        // Set the layout of the main activity
-        setContentView(R.layout.activity_main);
+        setupVPNConnection();
+        // Request permission to create push notifications
+        requestNotificationPermission();
 
-        // Handle language change based on floatingActionButton value
-        FloatingActionButton floatingActionButton = findViewById(R.id.floatingActionButton);
-        floatingActionButton.setOnClickListener(v -> localeHandler.showLanguageSelectionDialog(() ->
-                localeHandler.restartActivity(this)));
-        // Views
-        ImageView infoIcon = findViewById(R.id.info_icon);
-        ImageView logIcon = findViewById(R.id.bug_icon);
-        ImageView settingsIcon = findViewById(R.id.setting_icon);
+        // Set the behaviour of the back button
+        handleBackPress();
+    }
 
-        FrameLayout switchButtonFrame = findViewById(R.id.switch_button_frame);
-        switchButton = findViewById(R.id.switch_button);
-        stateText = findViewById(R.id.state_text);
-        publicIP = findViewById(R.id.publicIP);
-        ipProgressBar = findViewById(R.id.ipProgressBar);
+    private void setupVPNConnection() {
+        ActivityResultLauncher<Intent> vpnPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(), result -> {
+                    if (result.getResultCode() != RESULT_OK) {
+                        Toast.makeText(this, "Really!?", Toast.LENGTH_LONG).show();
+                    }
+                    binding.switchButton.setChecked(false);
+                });
 
-        // Set listeners
-        infoIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, InfoActivity.class)));
-        logIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, LogActivity.class)));
-        settingsIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, SettingsActivity.class)));
-        switchButtonFrame.setOnClickListener(v -> switchButton.toggle());
-
-        // Request for VPN creation
-        ActivityResultLauncher<Intent> vpnPermissionLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() != RESULT_OK) {
-                Toast.makeText(this, "Really!?", Toast.LENGTH_LONG).show();
-            }
-            switchButton.setChecked(false);
-        });
-        // Listener for toggle switch
-        switchButton.setOnCheckedChangeListener((view, isChecked) -> {
+        binding.switchButton.setOnCheckedChangeListener((view, isChecked) -> {
             if (!isChecked) {
                 if (!lastKnownConnectionState.isDisconnected()) {
                     stopVpnService(this);
@@ -112,55 +96,66 @@ public class MainActivity extends StateAwareBaseActivity {
                 vpnPermissionLauncher.launch(vpnIntent);
                 return;
             }
-            // Handle the case when the VPN is in the connecting state and the user clicks to abort
             if (lastKnownConnectionState.isConnecting()) {
                 stopVpnService(this);
                 return;
             }
-            // Start the VPN service if it's disconnected
             if (lastKnownConnectionState.isDisconnected()) {
                 startVpnService(this);
             }
-            // To check is Internet Connection is available
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (!lastKnownConnectionState.isDisconnected()) {
-                        checkInternetConnectionAndDisconnectVPN();
-                        handler.postDelayed(this, 3000); // Check every 3 seconds
-                    }
-                }
-            }, 5000); // Start checking after 5 seconds
+            monitorInternetConnection();
         });
+    }
 
-
-        // Request permission to create push notifications
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ActivityResultLauncher<String> pushNotificationPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (!isGranted) {
-                    Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
-                }
-            });
-            pushNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-        }
-
-        // Set the behaviour of the back button
+    private void handleBackPress() {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                // Custom back pressed logic here
                 if (backPressedTime + 2000 > System.currentTimeMillis()) {
                     if (backToast != null) backToast.cancel();
-                    finish(); // or super.handleOnBackPressed() if you want to keep default behavior alongside
+                    finish();
                 } else {
                     if (backToast != null)
-                        backToast.cancel(); // Cancel the existing toast to avoid stacking
+                        backToast.cancel();
                     backToast = Toast.makeText(MainActivity.this, "برای خروج، دوباره بازگشت را فشار دهید.", Toast.LENGTH_SHORT);
                     backToast.show();
                 }
                 backPressedTime = System.currentTimeMillis();
             }
         });
+    }
+
+    private void requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityResultLauncher<String> pushNotificationPermissionLauncher = registerForActivityResult(
+                    new ActivityResultContracts.RequestPermission(), isGranted -> {
+                        if (!isGranted) {
+                            Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
+                        }
+                    });
+            pushNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+        }
+    }
+
+    private void setupUI() {
+        binding.floatingActionButton.setOnClickListener(v -> localeHandler.showLanguageSelectionDialog(() ->
+                localeHandler.restartActivity(this)));
+        binding.infoIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, InfoActivity.class)));
+        binding.bugIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, LogActivity.class)));
+        binding.settingIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, SettingsActivity.class)));
+        binding.switchButtonFrame.setOnClickListener(v -> binding.switchButton.toggle());
+    }
+
+    private void monitorInternetConnection() {
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!lastKnownConnectionState.isDisconnected()) {
+                    checkInternetConnectionAndDisconnectVPN();
+                    handler.postDelayed(this, 3000); // Check every 3 seconds
+                }
+            }
+        }, 5000); // Start checking after 5 seconds
     }
 
     // Check internet connectivity
@@ -229,32 +224,44 @@ public class MainActivity extends StateAwareBaseActivity {
     public void onConnectionStateChange(ConnectionState state) {
         switch (state) {
             case DISCONNECTED:
-                publicIP.setVisibility(View.GONE);
-                stateText.setText(R.string.notConnected);
-                ipProgressBar.setVisibility(View.GONE);
-                switchButton.setEnabled(true);
-                switchButton.setChecked(false, false);
+                updateUIForDisconnectedState();
                 break;
             case CONNECTING:
-                stateText.setText(R.string.connecting);
-                publicIP.setVisibility(View.GONE);
-                ipProgressBar.setVisibility(View.VISIBLE);
-                switchButton.setChecked(true, false);
-                switchButton.setEnabled(true);
+                updateUIForConnectingState();
                 break;
             case CONNECTED:
-                switchButton.setEnabled(true);
-                stateText.setText(R.string.connected);
-                switchButton.setChecked(true, false);
-                ipProgressBar.setVisibility(View.GONE);
-                pIPUtils.getIPDetails((details) -> {
-                    if (details.ip != null) {
-                        String ipString = details.ip + " " + details.flag;
-                        publicIP.setText(ipString);
-                        publicIP.setVisibility(View.VISIBLE);
-                    }
-                });
+                updateUIForConnectedState();
                 break;
         }
+    }
+
+    private void updateUIForDisconnectedState() {
+        binding.publicIP.setVisibility(View.GONE);
+        binding.stateText.setText(R.string.notConnected);
+        binding.ipProgressBar.setVisibility(View.GONE);
+        binding.switchButton.setEnabled(true);
+        binding.switchButton.setChecked(false, false);
+    }
+
+    private void updateUIForConnectingState() {
+        binding.stateText.setText(R.string.connecting);
+        binding.publicIP.setVisibility(View.GONE);
+        binding.ipProgressBar.setVisibility(View.VISIBLE);
+        binding.switchButton.setChecked(true, false);
+        binding.switchButton.setEnabled(true);
+    }
+
+    private void updateUIForConnectedState() {
+        binding.switchButton.setEnabled(true);
+        binding.stateText.setText(R.string.connected);
+        binding.switchButton.setChecked(true, false);
+        binding.ipProgressBar.setVisibility(View.GONE);
+        PublicIPUtils.getInstance().getIPDetails((details) -> {
+            if (details.ip != null) {
+                String ipString = details.ip + " " + details.flag;
+                binding.publicIP.setText(ipString);
+                binding.publicIP.setVisibility(View.VISIBLE);
+            }
+        });
     }
 }

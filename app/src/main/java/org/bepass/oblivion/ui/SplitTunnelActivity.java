@@ -17,11 +17,17 @@ import org.bepass.oblivion.R;
 import org.bepass.oblivion.SplitTunnelMode;
 import org.bepass.oblivion.SplitTunnelOptionsAdapter;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
+import org.bepass.oblivion.databinding.ActivitySplitTunnelBinding;
 
 
-public class SplitTunnelActivity extends StateAwareBaseActivity {
+public class SplitTunnelActivity extends StateAwareBaseActivity<ActivitySplitTunnelBinding> {
     private RecyclerView appsRecycler;
     private CircularProgressIndicator progress;
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_split_tunnel;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

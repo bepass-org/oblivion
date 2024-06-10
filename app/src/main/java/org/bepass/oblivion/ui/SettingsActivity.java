@@ -27,8 +27,9 @@ import org.bepass.oblivion.OblivionVpnService;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.SheetsCallBack;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
+import org.bepass.oblivion.databinding.ActivitySettingsBinding;
 
-public class SettingsActivity extends StateAwareBaseActivity {
+public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBinding> {
     private FileManager fileManager;
     private LinearLayout countryLayout;
     private TextView endpoint, port, license;
@@ -41,6 +42,11 @@ public class SettingsActivity extends StateAwareBaseActivity {
         checkBox.setOnCheckedChangeListener(null); // Temporarily detach the listener
         checkBox.setChecked(isChecked); // Set the checked state
         checkBox.setOnCheckedChangeListener(listener); // Reattach the listener
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_settings;
     }
 
     @Override
