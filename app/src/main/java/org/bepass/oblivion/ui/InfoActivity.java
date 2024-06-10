@@ -9,26 +9,26 @@ import android.widget.RelativeLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.bepass.oblivion.R;
+import org.bepass.oblivion.base.BaseActivity;
+import org.bepass.oblivion.databinding.ActivityInfoBinding;
 
-public class InfoActivity extends AppCompatActivity {
+public class InfoActivity extends BaseActivity<ActivityInfoBinding> {
 
-    ImageView back;
-    RelativeLayout github;
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_info;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_info);
 
-        back = findViewById(R.id.back);
-        github = findViewById(R.id.github_layout);
-
-        github.setOnClickListener(v -> {
+        binding.githubLayout.setOnClickListener(v -> {
             Uri uri = Uri.parse("https://github.com/bepass-org/oblivion");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         });
 
-        back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
+        binding.back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
     }
 }
