@@ -3,6 +3,7 @@ package org.bepass.oblivion.ui;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -10,30 +11,31 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.bepass.oblivion.R;
+import org.bepass.oblivion.base.BaseActivity;
+import org.bepass.oblivion.databinding.ActivityLogBinding;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class LogActivity extends AppCompatActivity {
+public class LogActivity extends BaseActivity<ActivityLogBinding> {
 
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private TextView logs;
-    private ScrollView logScrollView;
     private boolean isUserScrollingUp = false;
     private Runnable logUpdater;
 
     @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_log;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_log);
 
-        ImageView back = findViewById(R.id.back);
-        logs = findViewById(R.id.logs);
-        logScrollView = findViewById(R.id.logScrollView);
 
         setupScrollListener();
-        back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
+        binding.back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         logUpdater = new Runnable() {
             @Override
             public void run() {
@@ -44,9 +46,9 @@ public class LogActivity extends AppCompatActivity {
     }
 
     private void setupScrollListener() {
-        logScrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
-            int scrollY = logScrollView.getScrollY();
-            int maxScrollY = logs.getHeight() - logScrollView.getHeight();
+        binding.logScrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
+            int scrollY = binding.logScrollView.getScrollY();
+            int maxScrollY = binding.logs.getHeight() - binding.logScrollView.getHeight();
             isUserScrollingUp = scrollY < maxScrollY;
         });
     }
@@ -74,13 +76,13 @@ public class LogActivity extends AppCompatActivity {
 
             String finalLog = sb.toString();
             runOnUiThread(() -> {
-                logs.setText(finalLog);
+                binding.logs.setText(finalLog);
                 if (!isUserScrollingUp) {
-                    logScrollView.post(() -> logScrollView.fullScroll(ScrollView.FOCUS_DOWN));
+                    binding.logScrollView.post(() -> binding.logScrollView.fullScroll(ScrollView.FOCUS_DOWN));
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "readLogsFromFile: ",e );
         }
     }
 }
