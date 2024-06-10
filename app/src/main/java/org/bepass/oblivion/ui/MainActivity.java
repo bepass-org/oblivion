@@ -34,8 +34,8 @@ import org.bepass.oblivion.LocaleHandler;
 import org.bepass.oblivion.OblivionVpnService;
 import org.bepass.oblivion.PublicIPUtils;
 import org.bepass.oblivion.R;
-import org.bepass.oblivion.base.StateAwareBaseActivity;
 import org.bepass.oblivion.TouchAwareSwitch;
+import org.bepass.oblivion.base.StateAwareBaseActivity;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -221,12 +221,12 @@ public class MainActivity extends StateAwareBaseActivity {
 
     @NonNull
     @Override
-    String getKey() {
+    public String getKey() {
         return "mainActivity";
     }
 
     @Override
-    void onConnectionStateChange(ConnectionState state) {
+    public void onConnectionStateChange(ConnectionState state) {
         switch (state) {
             case DISCONNECTED:
                 publicIP.setVisibility(View.GONE);

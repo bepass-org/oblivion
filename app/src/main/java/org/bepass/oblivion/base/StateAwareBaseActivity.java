@@ -45,9 +45,9 @@ public abstract class StateAwareBaseActivity extends AppCompatActivity {
         }
     };
 
-    abstract String getKey();
+    protected abstract String getKey();
 
-    abstract void onConnectionStateChange(ConnectionState state);
+    protected abstract void onConnectionStateChange(ConnectionState state);
 
     private void observeConnectionStatus() {
         if (!isBound) return;

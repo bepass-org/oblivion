@@ -195,10 +195,10 @@ public class SettingsActivity extends StateAwareBaseActivity {
     }
 
     @Override
-    String getKey() {
+    public String getKey() {
         return "settingsActivity";
     }
 
     @Override
-    void onConnectionStateChange(ConnectionState state) {}
+    public void onConnectionStateChange(ConnectionState state) {}
 }

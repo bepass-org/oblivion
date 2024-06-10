@@ -68,9 +68,9 @@ public class SplitTunnelActivity extends StateAwareBaseActivity {
     }
 
     @Override
-    void onConnectionStateChange(ConnectionState state) { }
+    public void onConnectionStateChange(ConnectionState state) { }
 
     @NonNull
     @Override
-    String getKey() { return "splitTunnelActivity"; }
+    public String getKey() { return "splitTunnelActivity"; }
 }
