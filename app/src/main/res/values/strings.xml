@@ -43,7 +43,8 @@
   <string name="batteryOpLText">Disabling battery optimization for better experience</string>
   <string name="dialBtText"> To ensure the app works properly, please disable battery optimization for this app. </string>
   <string name="goToSettings"> Go to Settings </string>
-  <string-array name="countries">
+    <string name="copytoclip">Copy log to clipboard</string>
+    <string-array name="countries">
     <item>Austria</item>
     <item>Belgium</item>
     <item>Brazil</item>
