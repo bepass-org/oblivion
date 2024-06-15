@@ -365,16 +365,18 @@ public class OblivionVpnService extends VpnService {
             return START_NOT_STICKY;
         }
 
-        if (action.equals(FLAG_VPN_START)) {
-            start();
-            return START_STICKY;
-        }
+        switch (action) {
+            case FLAG_VPN_START:
+                start();
+                return START_STICKY;
 
-        if (action.equals(FLAG_VPN_STOP)) {
-            onRevoke();
-            return START_NOT_STICKY;
+            case FLAG_VPN_STOP:
+                onRevoke();
+                return START_NOT_STICKY;
+
+            default:
+                return START_NOT_STICKY;
         }
-        return START_NOT_STICKY;
     }
 
     @Override
