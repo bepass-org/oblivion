@@ -12,10 +12,10 @@
     <string name="yousef">#Yousef_Ghobadi</string>
     <string name="slogan">互联网为所有人，或者无人</string>
     <string name="blackList">黑名单</string>
-    <string name="disabledR">已禁用</string>
-    <string name="disabledRText">在禁用模式下，所有应用的流量都通过VPN。</string>
-    <string name="enabledR">已启用</string>
-    <string name="enabledRText">在启用模式下，所选应用的流量不会经过VPN。</string>
+    <string name="disabledR">全局模式</string>
+    <string name="disabledRText">在全局模式下，所有应用的流量都通过VPN。</string>
+    <string name="enabledR">绕行模式</string>
+    <string name="enabledRText">在绕行模式下，所选应用的流量不会经过VPN。</string>
     <string name="showSystemAppsText">显示系统应用</string>
     <string name="settingsText">设置</string>
     <string name="endpointText">端点</string>
@@ -23,8 +23,8 @@
     <string name="portTunText">隧道端口</string>
     <string name="portTunTextDesc">指定应用程序的隧道端口</string>
     <string name="blackListTextDesc">指定不应使用VPN的应用程序</string>
-    <string name="connectFromLanText">从局域网连接</string>
-    <string name="connectFromLanTextDesc">连接其他网络设备的能力</string>
+    <string name="connectFromLanText">允许来自局域网的连接</string>
+    <string name="connectFromLanTextDesc">允许局域网中的其他设备使用此代理</string>
     <string name="psiphonText">赛风</string>
     <string name="psiphonTextDesc">激活赛风</string>
     <string name="chooseText">选择国家</string>
@@ -32,7 +32,7 @@
     <string name="licenseText">许可证</string>
     <string name="licenseTextDesc">如果您有许可证（每个许可证都会加倍）</string>
     <string name="goolText">Gool</string>
-    <string name="goolTextDesc">激活Warp中的Warp</string>
+    <string name="goolTextDesc">激活Warp中的Warp（通过Warp连接Warp）</string>
     <string name="editSheetEndpoint">更改端点值</string>
     <string name="cancel">取消</string>
     <string name="update">更新</string>
