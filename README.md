@@ -6,6 +6,8 @@ Oblivion provides secure, optimized internet access through a user-friendly Andr
 
 It's leveraging `bepass-sdk` and a custom Go implementation of WireGuard, it's designed for fast and private online experiences.
 
+![oblivion3.jpg](media/oblivion3.jpg)
+
 ## Features
 
 - **Secure VPN**: Custom WireGuard implementation in Go.
