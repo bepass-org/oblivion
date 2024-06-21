@@ -571,6 +571,7 @@ public class OblivionVpnService extends VpnService {
         if (endpoint.equals("engage.cloudflareclient.com:2408")) {
             endpoint = "";
         }
+        int endpointType = fileManager.getInt("USERSETTING_endpoint_type");
 
         String license = fileManager.getString("USERSETTING_license", "").trim();
         boolean enablePsiphon = fileManager.getBoolean("USERSETTING_psiphon", false);
@@ -584,6 +585,7 @@ public class OblivionVpnService extends VpnService {
         so.setBindAddress(bindAddress);
         so.setLicense(license);
         so.setDNS("1.1.1.1");
+        so.setEndpointType(endpointType);
 
         if (enablePsiphon && !enableGool) {
             so.setPsiphonEnabled(true);
