@@ -45,6 +45,7 @@
   <string name="goToSettings"> Go to Settings </string>
     <string name="copytoclip">Copy log to clipboard</string>
   <string name="endpointTypeText">Endpoint Type</string>
+  <string name="endpointTypeTextDesc">Used to find the endpoint IP</string>
   <string-array name="countries">
     <item>Austria</item>
     <item>Belgium</item>

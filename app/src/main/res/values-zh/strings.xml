@@ -45,6 +45,7 @@
     <string name="goToSettings">前往设置</string>
     <string name="copytoclip">复制日志到剪贴板</string>
     <string name="endpointTypeText">端点类型</string>
+    <string name="endpointTypeTextDesc">用于查找终点IP</string>
     <string-array name="countries">
         <item>奥地利</item>
         <item>比利时</item>

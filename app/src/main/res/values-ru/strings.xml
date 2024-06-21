@@ -45,6 +45,7 @@
     <string name="goToSettings">Перейти к настройкам</string>
     <string name="copytoclip">Скопировать лог в буфер обмена</string>
     <string name="endpointTypeText">Тип конечной точки</string>
+    <string name="endpointTypeTextDesc">Поиск конечного IP</string>
     <string-array name="countries">
         <item>Австрия</item>
         <item>Бельгия</item>

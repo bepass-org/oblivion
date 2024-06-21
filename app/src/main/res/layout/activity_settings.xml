@@ -115,15 +115,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="end"
-            android:orientation="horizontal">
+            android:gravity="end">
 
           <Spinner
               android:id="@+id/endpoint_type"
               android:entries="@array/endpointType"
               android:layout_width="0dp"
-              android:layout_weight="2"
-              android:layout_height="80dp"/>
+              android:layout_height="wrap_content"
+              android:layout_weight="1" />
 
           <TextView
               android:layout_width="wrap_content"
@@ -142,7 +141,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:fontFamily="@font/shabnam"
-            android:text="@string/endpointTextDesc"
+            android:text="@string/endpointTypeTextDesc"
             android:textColor="#9A9A9A"
             android:textSize="16sp" />
       </LinearLayout>
