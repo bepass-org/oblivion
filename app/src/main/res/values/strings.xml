@@ -44,7 +44,8 @@
   <string name="dialBtText"> To ensure the app works properly, please disable battery optimization for this app. </string>
   <string name="goToSettings"> Go to Settings </string>
     <string name="copytoclip">Copy log to clipboard</string>
-    <string-array name="countries">
+  <string name="endpointTypeText">Endpoint Type</string>
+  <string-array name="countries">
     <item>Austria</item>
     <item>Belgium</item>
     <item>Brazil</item>
@@ -111,5 +112,10 @@
     <item>Ukraine</item>
     <item>United Kingdom</item>
     <item>United States</item>
+  </string-array>
+  <string-array name="endpointType">
+    <item>Auto</item>
+    <item>IPv4</item>
+    <item>IPv6</item>
   </string-array>
 </resources>

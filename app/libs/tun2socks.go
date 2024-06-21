@@ -41,6 +41,7 @@ type StartOptions struct {
 	PsiphonEnabled bool
 	Gool           bool
 	DNS            string
+	EndpointType   int
 }
 
 var global StartOptions
@@ -101,9 +102,18 @@ func Start(opt *StartOptions) {
 	var scanOpts *wiresocks.ScanOptions
 	if global.Endpoint == "" {
 		scanOpts = &wiresocks.ScanOptions{
-			V4:     true,
-			V6:     true,
+			V4:     false,
+			V6:     false,
 			MaxRTT: 1500 * time.Millisecond,
+		}
+		switch global.EndpointType {
+		case 0:
+			scanOpts.V4 = true
+			scanOpts.V6 = true
+		case 1:
+			scanOpts.V4 = true
+		case 2:
+			scanOpts.V6 = true
 		}
 	}
 

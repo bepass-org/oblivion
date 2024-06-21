@@ -20,10 +20,10 @@ import androidx.activity.OnBackPressedCallback;
 
 public class SettingsActivity extends StateAwareBaseActivity {
     private FileManager fileManager;
-    private LinearLayout countryLayout;
+    private LinearLayout countryLayout, endpointTypeLayout;
     private TextView endpoint, port, license;
     private CheckBox psiphon, lan, gool;
-    private Spinner country;
+    private Spinner country, endpointType;
     private CheckBox.OnCheckedChangeListener psiphonListener;
     private CheckBox.OnCheckedChangeListener goolListener;
     private Context context;
@@ -56,6 +56,7 @@ public class SettingsActivity extends StateAwareBaseActivity {
         LinearLayout lanLayout = findViewById(R.id.lan_layout);
         LinearLayout psiphonLayout = findViewById(R.id.psiphon_layout);
         countryLayout = findViewById(R.id.country_layout);
+        endpointTypeLayout = findViewById(R.id.endpoint_type_layout);
         LinearLayout licenseLayout = findViewById(R.id.license_layout);
         LinearLayout goolLayout = findViewById(R.id.gool_layout);
 
@@ -63,6 +64,7 @@ public class SettingsActivity extends StateAwareBaseActivity {
         port = findViewById(R.id.port);
         country = findViewById(R.id.country);
         license = findViewById(R.id.license);
+        endpointType = findViewById(R.id.endpoint_type);
 
         psiphon = findViewById(R.id.psiphon);
         lan = findViewById(R.id.lan);
@@ -108,6 +110,21 @@ public class SettingsActivity extends StateAwareBaseActivity {
         });
 
         splitTunnelLayout.setOnClickListener(v -> startActivity(new Intent(this, SplitTunnelActivity.class)));
+
+        ArrayAdapter<CharSequence> endpointTypeAdapter = ArrayAdapter.createFromResource(this, R.array.endpointType, R.layout.endpoint_type_item_layout);
+        endpointTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        endpointType.setAdapter(endpointTypeAdapter);
+        endpointType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                fileManager.set("USERSETTING_endpoint_type", position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         // Set Current Values
         settingBasicValuesFromSPF();
@@ -170,6 +187,7 @@ public class SettingsActivity extends StateAwareBaseActivity {
         }
         country.setSelection(index);
 
+        endpointType.setSelection(fileManager.getInt("USERSETTING_endpoint_type"));
         psiphon.setChecked(fileManager.getBoolean("USERSETTING_psiphon"));
         lan.setChecked(fileManager.getBoolean("USERSETTING_lan"));
         gool.setChecked(fileManager.getBoolean("USERSETTING_gool"));

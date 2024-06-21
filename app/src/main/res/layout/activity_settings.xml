@@ -105,6 +105,48 @@
             android:background="@android:color/darker_gray" />
       </LinearLayout>
       <LinearLayout
+          android:id="@+id/endpoint_type_layout"
+          android:layout_width="match_parent"
+          android:paddingHorizontal="16dp"
+          android:background="?selectableItemBackground"
+          android:layout_height="80dp"
+          android:gravity="center"
+          android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:orientation="horizontal">
+
+          <Spinner
+              android:id="@+id/endpoint_type"
+              android:entries="@array/endpointType"
+              android:layout_width="0dp"
+              android:layout_weight="2"
+              android:layout_height="80dp"/>
+
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:fontFamily="@font/shabnam"
+              android:minWidth="100dp"
+              android:text="@string/endpointTypeText"
+              android:textAlignment="viewEnd"
+              android:textColor="@color/black"
+              android:textSize="20sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/shabnam"
+            android:text="@string/endpointTextDesc"
+            android:textColor="#9A9A9A"
+            android:textSize="16sp" />
+      </LinearLayout>
+      <LinearLayout
         android:id="@+id/endpoint_layout"
         android:layout_width="match_parent"
         android:paddingHorizontal="16dp"
