@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -74,8 +75,10 @@ public class OblivionVpnService extends VpnService {
             handler.postDelayed(this, 2000); // Poll every 2 seconds
         }
     };
-
+    // For JNI Calling in a new threa
     private final Executor executorService = Executors.newSingleThreadExecutor();
+    // For PingHTTPTestConnection to don't busy-waiting
+    private ScheduledExecutorService scheduler;
     private Notification notification;
     private ParcelFileDescriptor mInterface;
     private String bindAddress;
@@ -226,28 +229,46 @@ public class OblivionVpnService extends VpnService {
         return fileManager.getStringSet("splitTunnelApps", new HashSet<>());
     }
 
+
     private void performConnectionTest(String bindAddress, ConnectionStateChangeListener changeListener) {
         if (changeListener == null) {
             return;
         }
 
-        long startTime = System.currentTimeMillis();
+        scheduler = Executors.newScheduledThreadPool(1);
 
-        while (System.currentTimeMillis() - startTime < 60 * 1000) { // 1 minute
-            boolean result = pingOverHTTP(bindAddress);
-            if (result) {
-                changeListener.onChange(ConnectionState.CONNECTED);
+        final long startTime = System.currentTimeMillis();
+        final long timeout = 60 * 1000; // 1 minute
+
+        Runnable pingTask = () -> {
+            if (System.currentTimeMillis() - startTime >= timeout) {
+                changeListener.onChange(ConnectionState.DISCONNECTED);
+                stopForegroundService();
+                scheduler.shutdown();
                 return;
             }
 
-            try {
-                Thread.sleep(1000); // Sleep before retrying
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
+            boolean result = pingOverHTTP(bindAddress);
+            if (result) {
+                changeListener.onChange(ConnectionState.CONNECTED);
+                scheduler.shutdown();
+            }
+        };
+
+
+        // Schedule the ping task to run with a fixed delay of 1 second
+        scheduler.scheduleWithFixedDelay(pingTask, 0, 1, TimeUnit.SECONDS);
+    }
+
+    private void stopForegroundService() {
+        stopForeground(true);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager != null) {
+            notificationManager.cancel(1);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                notificationManager.deleteNotificationChannel("oblivion");
             }
         }
-        changeListener.onChange(ConnectionState.DISCONNECTED);
     }
 
     private String getBindAddress() {
@@ -307,7 +328,7 @@ public class OblivionVpnService extends VpnService {
         if (wLock == null) {
             wLock = ((PowerManager) getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "oblivion:vpn");
             wLock.setReferenceCounted(false);
-            wLock.acquire();
+            wLock.acquire(3*60*1000L /*3 minutes*/);
         }
 
         executorService.execute(() -> {
@@ -326,6 +347,9 @@ public class OblivionVpnService extends VpnService {
                     onRevoke();
                 }
                 setLastKnownState(state);
+                // Re-create the notification when the connection state changes
+                createNotification();
+                startForeground(1, notification); // Start foreground again after connection
             });
         });
     }
@@ -341,16 +365,18 @@ public class OblivionVpnService extends VpnService {
             return START_NOT_STICKY;
         }
 
-        if (action.equals(FLAG_VPN_START)) {
-            start();
-            return START_STICKY;
-        }
+        switch (action) {
+            case FLAG_VPN_START:
+                start();
+                return START_STICKY;
 
-        if (action.equals(FLAG_VPN_STOP)) {
-            onRevoke();
-            return START_NOT_STICKY;
+            case FLAG_VPN_STOP:
+                onRevoke();
+                return START_NOT_STICKY;
+
+            default:
+                return START_NOT_STICKY;
         }
-        return START_NOT_STICKY;
     }
 
     @Override
@@ -374,18 +400,7 @@ public class OblivionVpnService extends VpnService {
         setLastKnownState(ConnectionState.DISCONNECTED);
         Log.i(TAG, "Stopping VPN");
 
-        // Stop foreground service and notification
-        try {
-            stopForeground(true);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationManager notificationManager = getSystemService(NotificationManager.class);
-                if (notificationManager != null) {
-                    notificationManager.deleteNotificationChannel("oblivion");
-                }
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error stopping foreground service and notification", e);
-        }
+        stopForegroundService();
 
         // Release the wake lock if held
         try {
@@ -429,10 +444,24 @@ public class OblivionVpnService extends VpnService {
             }
         }
 
+        // Shutdown scheduler if it is running
+        shutdownScheduler();
         Log.i(TAG, "VPN stopped successfully");
     }
-
-
+    private void shutdownScheduler() {
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdown();
+            try {
+                if (!scheduler.awaitTermination(500, TimeUnit.MILLISECONDS)) {
+                    scheduler.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                scheduler.shutdownNow();
+                Thread.currentThread().interrupt();
+                Log.e(TAG, "Scheduler termination interrupted", e);
+            }
+        }
+    }
 
     private void publishConnectionState(ConnectionState state) {
         if (!connectionStateObservers.isEmpty()) {
