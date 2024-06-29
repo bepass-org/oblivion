@@ -26,6 +26,8 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
+import org.bepass.oblivion.ui.MainActivity;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;

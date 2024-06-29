@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.component;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

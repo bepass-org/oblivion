@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.ui;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -14,6 +14,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
+
+import org.bepass.oblivion.R;
 
 import java.io.BufferedReader;
 import java.io.IOException;
