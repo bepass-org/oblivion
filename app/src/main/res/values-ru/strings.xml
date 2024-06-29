@@ -4,7 +4,7 @@
     <string name="basedOnWarp">Основано на Warp</string>
     <string name="aboutApp">О приложении</string>
     <string name="aboutAppDesc">"Это приложение предназначено для свободного доступа к интернету, и любое коммерческое использование запрещено.\n\n\n Интернет для всех или ни для кого!"</string>
-    <string name="appVersion">Версия приложения: 2</string>
+    <string name="appVersion">Версия приложения: 4</string>
     <string name="logApp">Журнал приложения</string>
     <string name="means" formatted="true">Означает \"неведение, незнание\"</string>
     <string name="dontForget">Не забудьте!</string>
@@ -43,6 +43,7 @@
     <string name="batteryOpLText">Отключение оптимизации батареи для лучшего опыта</string>
     <string name="dialBtText">Чтобы приложение работало правильно, отключите оптимизацию батареи для этого приложения.</string>
     <string name="goToSettings">Перейти к настройкам</string>
+    <string name="copytoclip">Скопировать лог в буфер обмена</string>
     <string-array name="countries">
         <item>Австрия</item>
         <item>Бельгия</item>
