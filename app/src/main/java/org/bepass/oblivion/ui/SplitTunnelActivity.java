@@ -7,10 +7,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ConcatAdapter;
 
 import org.bepass.oblivion.BypassListAppsAdapter;
-import org.bepass.oblivion.ConnectionState;
+import org.bepass.oblivion.enums.ConnectionState;
 import org.bepass.oblivion.utils.FileManager;
 import org.bepass.oblivion.R;
-import org.bepass.oblivion.SplitTunnelMode;
+import org.bepass.oblivion.enums.SplitTunnelMode;
 import org.bepass.oblivion.SplitTunnelOptionsAdapter;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
 import org.bepass.oblivion.databinding.ActivitySplitTunnelBinding;

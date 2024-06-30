@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.enums;
 
 import org.bepass.oblivion.utils.FileManager;
 

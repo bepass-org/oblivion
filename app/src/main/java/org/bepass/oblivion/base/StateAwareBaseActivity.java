@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 
-import org.bepass.oblivion.ConnectionState;
+import org.bepass.oblivion.enums.ConnectionState;
 import org.bepass.oblivion.service.OblivionVpnService;
 
 

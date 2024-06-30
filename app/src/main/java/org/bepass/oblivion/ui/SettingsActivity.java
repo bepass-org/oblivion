@@ -14,7 +14,7 @@ import android.widget.Spinner;
 
 import androidx.activity.OnBackPressedCallback;
 
-import org.bepass.oblivion.ConnectionState;
+import org.bepass.oblivion.enums.ConnectionState;
 import org.bepass.oblivion.utils.CountryUtils;
 import org.bepass.oblivion.EditSheet;
 import org.bepass.oblivion.utils.FileManager;

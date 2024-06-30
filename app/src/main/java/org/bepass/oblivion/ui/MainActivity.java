@@ -22,7 +22,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
-import org.bepass.oblivion.ConnectionState;
+import org.bepass.oblivion.enums.ConnectionState;
 import org.bepass.oblivion.utils.FileManager;
 import org.bepass.oblivion.utils.LocaleHandler;
 import org.bepass.oblivion.service.OblivionVpnService;
