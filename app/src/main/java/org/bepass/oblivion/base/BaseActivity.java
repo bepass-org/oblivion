@@ -1,6 +1,7 @@
 package org.bepass.oblivion.base;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResult;
@@ -8,6 +9,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
+
+import org.bepass.oblivion.utils.ColorUtils;
+import org.bepass.oblivion.utils.SystemUtils;
 
 /**
  * BaseActivity is an abstract class serving as a base for activities in an Android application.
@@ -40,5 +44,10 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
         super.onCreate(savedInstanceState);
         // Inflates the layout and initializes the binding object
         binding = DataBindingUtil.setContentView(this, getLayoutResourceId());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            SystemUtils.setStatusBarColor(
+                    this, getStatusBarColor(), ColorUtils.isColorDark(getStatusBarColor())
+            );
+        }
     }
 }
