@@ -1,7 +1,7 @@
 package org.bepass.oblivion.ui;
 
-import static org.bepass.oblivion.BatteryOptimizationKt.isBatteryOptimizationEnabled;
-import static org.bepass.oblivion.BatteryOptimizationKt.showBatteryOptimizationDialog;
+import static org.bepass.oblivion.utils.BatteryOptimizationKt.isBatteryOptimizationEnabled;
+import static org.bepass.oblivion.utils.BatteryOptimizationKt.showBatteryOptimizationDialog;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,7 +21,7 @@ import org.bepass.oblivion.utils.FileManager;
 import org.bepass.oblivion.utils.LocaleHelper;
 import org.bepass.oblivion.service.OblivionVpnService;
 import org.bepass.oblivion.R;
-import org.bepass.oblivion.SheetsCallBack;
+import org.bepass.oblivion.interfaces.SheetsCallBack;
 import org.bepass.oblivion.base.ApplicationLoader;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
 import org.bepass.oblivion.databinding.ActivitySettingsBinding;

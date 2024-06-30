@@ -27,7 +27,7 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
 import org.bepass.oblivion.ConnectionState;
-import org.bepass.oblivion.ConnectionStateChangeListener;
+import org.bepass.oblivion.interfaces.ConnectionStateChangeListener;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.SplitTunnelMode;
 import org.bepass.oblivion.ui.MainActivity;
