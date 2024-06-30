@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
+import org.bepass.oblivion.utils.FileManager;
+
 public class SplitTunnelOptionsAdapter extends RecyclerView.Adapter<SplitTunnelOptionsAdapter.ViewHolder> {
 
     private final OnSettingsChanged settingsCallback;

@@ -23,10 +23,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
 import org.bepass.oblivion.ConnectionState;
-import org.bepass.oblivion.FileManager;
-import org.bepass.oblivion.LocaleHandler;
+import org.bepass.oblivion.utils.FileManager;
+import org.bepass.oblivion.utils.LocaleHandler;
 import org.bepass.oblivion.OblivionVpnService;
-import org.bepass.oblivion.PublicIPUtils;
+import org.bepass.oblivion.utils.PublicIPUtils;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
 import org.bepass.oblivion.databinding.ActivityMainBinding;

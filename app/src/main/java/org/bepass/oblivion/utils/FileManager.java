@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;

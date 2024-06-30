@@ -2,17 +2,13 @@ package org.bepass.oblivion.ui;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ConcatAdapter;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import org.bepass.oblivion.BypassListAppsAdapter;
 import org.bepass.oblivion.ConnectionState;
-import org.bepass.oblivion.FileManager;
+import org.bepass.oblivion.utils.FileManager;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.SplitTunnelMode;
 import org.bepass.oblivion.SplitTunnelOptionsAdapter;

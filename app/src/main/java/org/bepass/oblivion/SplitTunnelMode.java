@@ -1,5 +1,7 @@
 package org.bepass.oblivion;
 
+import org.bepass.oblivion.utils.FileManager;
+
 public enum SplitTunnelMode {
     DISABLED,
     BLACKLIST;
