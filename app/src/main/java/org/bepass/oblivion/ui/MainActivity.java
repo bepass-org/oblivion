@@ -53,7 +53,7 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
 
     @Override
     protected int getStatusBarColor() {
-        return 0;
+        return R.color.status_bar_color;
     }
 
     @Override

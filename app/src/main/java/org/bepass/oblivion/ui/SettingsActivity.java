@@ -43,7 +43,7 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
 
     @Override
     protected int getStatusBarColor() {
-        return 0;
+        return R.color.status_bar_color;
     }
 
     @Override

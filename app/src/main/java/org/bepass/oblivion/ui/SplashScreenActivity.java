@@ -28,7 +28,7 @@ public class SplashScreenActivity extends BaseActivity<ActivitySplashScreenBindi
 
     @Override
     protected int getStatusBarColor() {
-        return 0;
+        return R.color.status_bar_color;
     }
 
     /**
