@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/background_gradient"
+        android:background="@color/background"
         android:orientation="vertical"
         tools:context=".ui.SplitTunnelActivity">
 
@@ -43,7 +43,7 @@
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/shabnamlight"
                 android:text="@string/blackList"
-                android:textColor="@color/black"
+                android:textColor="@color/text_color"
                 android:textSize="24sp"
                 tools:ignore="RelativeOverlap" />
 
@@ -69,8 +69,7 @@
             android:layout_height="wrap_content"
             android:indeterminate="true"
             android:indeterminateOnly="true"
-
-            app:indicatorColor="#E4AB53"
+            app:indicatorColor="@color/primary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

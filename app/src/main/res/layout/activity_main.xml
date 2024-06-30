@@ -22,8 +22,8 @@
         android:clickable="true"
         android:focusable="true"
         android:src="@drawable/ic_translate"
-        android:tint="#ffffff"
-        app:backgroundTint="#ffa200"
+        android:tint="@color/white"
+        app:backgroundTint="@color/primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -103,9 +103,9 @@
           android:id="@+id/switch_button"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-          app:sb_background="#D7D7D7"
+          app:sb_background="@color/gray"
           app:sb_border_width="3dp"
-          app:sb_checked_color="#FFA200"
+          app:sb_checked_color="@drawable/button"
           app:sb_show_indicator="false" />
     </FrameLayout>
 
@@ -116,7 +116,7 @@
         android:layout_marginTop="96dp"
         android:fontFamily="@font/shabnammedium"
         android:text="@string/stateText"
-        android:textColor="@color/black"
+        android:textColor="@color/subtitle_color"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -143,7 +143,7 @@
         android:layout_width="36dp"
         android:layout_height="wrap_content"
         android:indeterminate="true"
-        android:indeterminateTint="#FFA200"
+        android:indeterminateTint="@color/primary"
         android:layout_centerHorizontal="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -155,7 +155,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/shabnambold"
         android:text="@string/app_name"
-        android:textColor="@color/black"
+        android:textColor="@color/text_color"
         android:textAllCaps="true"
         android:textSize="48sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -171,7 +171,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/shabnammedium"
         android:text="@string/basedOnWarp"
-        android:textColor="#FFA200"
+        android:textColor="@color/primary"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.492"

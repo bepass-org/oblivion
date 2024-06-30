@@ -15,7 +15,7 @@
         android:onClick="@{handler::OnRootPressed}"
         android:layout_height="match_parent"
         android:id="@+id/splashScreen"
-        android:background="@drawable/background_gradient">
+        android:background="@color/background">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout3"
@@ -33,6 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:text="@string/app_name"
+                android:textColor="@color/text_color"
                 android:textAllCaps="true"
                 android:textSize="48sp"
                 android:textStyle="bold"
@@ -44,6 +45,7 @@
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
                 android:fontFamily="@font/shabnammedium"
                 android:gravity="center"
                 android:text="@string/means"
@@ -64,7 +66,7 @@
                 android:gravity="center"
                 android:text="@string/dontForget"
                 android:textAlignment="textEnd"
-                android:textColor="#ffa200"
+                android:textColor="@color/primary"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -100,7 +102,6 @@
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
                 android:cropToPadding="true"
-                android:foreground="@drawable/light_shadow_bottom"
                 app:srcCompat="@drawable/segaro"
                 tools:targetApi="m"
                 tools:ignore="UnusedAttribute" />
@@ -114,7 +115,6 @@
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
                 android:cropToPadding="true"
-                android:foreground="@drawable/light_shadow_bottom"
                 app:srcCompat="@drawable/yousef"
                 tools:targetApi="m"
                 tools:ignore="UnusedAttribute" />
@@ -141,7 +141,7 @@
                 android:gravity="center"
                 android:text="@string/segaro"
                 android:textAlignment="center"
-                android:textColor="#7b7b7b"
+                android:textColor="@color/subtitle_color"
                 android:textSize="20sp" />
 
             <TextView
@@ -152,7 +152,7 @@
                 android:fontFamily="@font/shabnammedium"
                 android:gravity="center"
                 android:text="@string/yousef"
-                android:textColor="#7b7b7b"
+                android:textColor="@color/subtitle_color"
                 android:textSize="20sp" />
 
         </LinearLayout>
@@ -167,7 +167,7 @@
             android:gravity="center"
             android:text="@string/slogan"
             android:textAlignment="center"
-            android:textColor="#c4c4c4"
+            android:textColor="@color/subtitle_color"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"

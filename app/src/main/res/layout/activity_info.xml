@@ -10,7 +10,7 @@
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:background="@drawable/background_gradient"
+      android:background="@color/background"
       android:orientation="vertical"
       tools:context="org.bepass.oblivion.ui.InfoActivity">
 
@@ -39,7 +39,7 @@
           android:layout_marginEnd="16dp"
           android:fontFamily="@font/shabnamlight"
           android:text="@string/aboutApp"
-          android:textColor="@color/black"
+          android:textColor="@color/text_color"
           android:textSize="32sp"
           tools:ignore="RelativeOverlap" />
 
@@ -55,7 +55,7 @@
         android:paddingHorizontal="12dp"
         android:text='@string/aboutAppDesc'
         android:textAlignment="center"
-        android:textColor="@color/black"
+        android:textColor="@color/subtitle_color"
         android:textSize="16sp"
         tools:ignore="RtlCompat" />
 
@@ -110,7 +110,7 @@
         android:fontFamily="@font/shabnam"
         android:gravity="center"
         android:text="@string/appVersion"
-        android:textColor="@color/black"
+        android:textColor="@color/subtitle_color"
         android:textSize="14sp" />
 
 
