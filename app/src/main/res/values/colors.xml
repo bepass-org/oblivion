@@ -4,6 +4,7 @@
 
     <color name="black">#5E5E5E</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="dark">#1C202C</color>
 
     <color name="background">#FFFFFFFF</color>
     <color name="text_color">#1C202C</color>

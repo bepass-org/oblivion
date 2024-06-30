@@ -30,6 +30,7 @@ import org.bepass.oblivion.utils.PublicIPUtils;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
 import org.bepass.oblivion.databinding.ActivityMainBinding;
+import org.bepass.oblivion.utils.ThemeHelper;
 
 import java.util.HashSet;
 import java.util.Set;

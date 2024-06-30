@@ -52,13 +52,9 @@ public class ThemeHelper {
         return instance;
     }
 
-    /**
-     * Initializes the theme based on saved preferences.
-     *
-     * @param context the application context
-     */
-    public void init(Context context) {
-        int themeMode = FileManager.getInstance(context).getInt(FileManager.KeyHolder.DARK_MODE);
+
+    public void init() {
+        int themeMode = FileManager.getInstance(ApplicationLoader.getAppCtx()).getInt(FileManager.KeyHolder.DARK_MODE);
         currentTheme = Theme.fromNightMode(themeMode);
         applyTheme();
     }
@@ -77,6 +73,7 @@ public class ThemeHelper {
      */
     public void select(Theme theme) {
         currentTheme = theme;
+        FileManager.getInstance(ApplicationLoader.getAppCtx()).set(FileManager.KeyHolder.DARK_MODE , theme.nightMode);
         applyTheme();
     }
 

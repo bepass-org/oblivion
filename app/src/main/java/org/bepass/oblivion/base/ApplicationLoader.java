@@ -30,7 +30,8 @@ public class ApplicationLoader extends Application {
     public void onCreate() {
         super.onCreate();
         context = getApplicationContext();
-        ThemeHelper.getInstance().init(this);
+        ThemeHelper.getInstance().init();
+        ThemeHelper.getInstance().select(ThemeHelper.Theme.DARK);
     }
 
     /**

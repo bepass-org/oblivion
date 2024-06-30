@@ -10,7 +10,7 @@
   <androidx.constraintlayout.widget.ConstraintLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:background="@drawable/background_gradient"
+      android:background="@color/background"
       tools:context="org.bepass.oblivion.ui.MainActivity">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -105,7 +105,7 @@
           android:layout_height="match_parent"
           app:sb_background="@color/gray"
           app:sb_border_width="3dp"
-          app:sb_checked_color="@drawable/button"
+          app:sb_checked_color="@color/primary"
           app:sb_show_indicator="false" />
     </FrameLayout>
 
@@ -130,7 +130,7 @@
         android:fontFamily="@font/emoji"
         android:visibility="invisible"
         android:textStyle="bold"
-        android:textColor="@color/black"
+        android:textColor="@color/subtitle_color"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
