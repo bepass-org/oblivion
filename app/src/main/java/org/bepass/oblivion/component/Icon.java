@@ -44,12 +44,14 @@ public class Icon extends AppCompatImageView {
 
     private void setupAttrs(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Icon, defStyleAttr, 0);
-        int color = a.getColor(R.styleable.Icon_icon_color, 0);
-        if (color != 0) {
-            setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        try {
+            int color = a.getColor(R.styleable.Icon_icon_color, 0);
+            if (color != 0) {
+                setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+            }
+        }  finally {
+            a.recycle();
         }
-        invalidate();
-        a.recycle();
     }
 
     public void setColor(int color) {
