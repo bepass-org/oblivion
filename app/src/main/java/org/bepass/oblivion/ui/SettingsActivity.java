@@ -42,6 +42,11 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
     }
 
     @Override
+    protected int getStatusBarColor() {
+        return 0;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         fileManager = FileManager.getInstance(this);

@@ -24,6 +24,11 @@ public class SplitTunnelActivity extends StateAwareBaseActivity<ActivitySplitTun
     }
 
     @Override
+    protected int getStatusBarColor() {
+        return 0;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Handles the back button behaviour
