@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.vdurmont.emoji.EmojiManager;
 
-import org.bepass.oblivion.IPDetails;
+import org.bepass.oblivion.model.IPDetails;
 import org.bepass.oblivion.base.ApplicationLoader;
 import org.json.JSONObject;
 
