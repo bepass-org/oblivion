@@ -37,14 +37,27 @@ public class ThemeHelper {
         }
     }
 
-    private static Theme currentTheme = Theme.LIGHT;
+    private static ThemeHelper instance;
+    private Theme currentTheme = Theme.LIGHT;
+
+    // Private constructor to prevent instantiation
+    private ThemeHelper() {
+    }
+
+    // Method to get the single instance of ThemeHelper
+    public static synchronized ThemeHelper getInstance() {
+        if (instance == null) {
+            instance = new ThemeHelper();
+        }
+        return instance;
+    }
 
     /**
      * Initializes the theme based on saved preferences.
      *
      * @param context the application context
      */
-    public static void init(Context context) {
+    public void init(Context context) {
         int themeMode = FileManager.getInstance(context).getInt(FileManager.KeyHolder.DARK_MODE);
         currentTheme = Theme.fromNightMode(themeMode);
         applyTheme();
@@ -53,7 +66,7 @@ public class ThemeHelper {
     /**
      * Applies the current theme.
      */
-    public static void applyTheme() {
+    public void applyTheme() {
         AppCompatDelegate.setDefaultNightMode(currentTheme.getNightMode());
     }
 
@@ -62,7 +75,7 @@ public class ThemeHelper {
      *
      * @param theme the theme to be applied
      */
-    public static void select(Theme theme) {
+    public void select(Theme theme) {
         currentTheme = theme;
         applyTheme();
     }
@@ -72,7 +85,7 @@ public class ThemeHelper {
      *
      * @return the current theme
      */
-    public static Theme getCurrentTheme() {
+    public Theme getCurrentTheme() {
         return currentTheme;
     }
 }
