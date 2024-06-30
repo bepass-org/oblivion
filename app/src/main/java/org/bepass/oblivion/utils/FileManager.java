@@ -13,6 +13,9 @@ public class FileManager {
     private static FileManager instance;
     private final SharedPreferences sharedPreferences;
 
+    public static class KeyHolder {
+        public static String DARK_MODE = "setting_dark_mode";
+    }
     /**
      * Private constructor to enforce singleton pattern.
      *
