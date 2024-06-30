@@ -33,6 +33,7 @@
         android:banner="@mipmap/tv_banner"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:name=".base.ApplicationLoader"
         tools:replace="android:supportsRtl"
         android:screenOrientation="portrait"
         android:enableOnBackInvokedCallback="true"
@@ -41,7 +42,7 @@
         tools:ignore="DiscouragedApi">
 
         <service
-            android:name=".OblivionVpnService"
+            android:name=".service.OblivionVpnService"
             android:enabled="true"
             android:exported="false"
             android:permission="android.permission.BIND_VPN_SERVICE"
@@ -57,7 +58,7 @@
         </service>
 
         <service
-            android:name=".QuickStartService"
+            android:name=".service.QuickStartService"
             android:exported="true"
             android:label="Oblivion"
             android:icon="@drawable/vpn_off"
@@ -69,7 +70,7 @@
             </intent-filter>
 
     </service>
-        <activity android:name="org.bepass.oblivion.SplashScreenActivity"
+        <activity android:name="org.bepass.oblivion.ui.SplashScreenActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -78,7 +79,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="org.bepass.oblivion.MainActivity"
+            android:name="org.bepass.oblivion.ui.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.OblivionUI">
             <intent-filter>
@@ -88,20 +89,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="org.bepass.oblivion.InfoActivity"
+            android:name="org.bepass.oblivion.ui.InfoActivity"
             android:exported="false" />
 
         <activity
-            android:name="org.bepass.oblivion.LogActivity"
+            android:name="org.bepass.oblivion.ui.LogActivity"
             android:exported="false" />
 
         <activity
-            android:name="org.bepass.oblivion.SettingsActivity"
+            android:name="org.bepass.oblivion.ui.SettingsActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".SplitTunnelActivity"
+            android:name=".ui.SplitTunnelActivity"
             android:exported="false" />
     </application>
 

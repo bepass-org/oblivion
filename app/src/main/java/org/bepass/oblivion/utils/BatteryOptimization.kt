@@ -1,4 +1,4 @@
-package org.bepass.oblivion
+package org.bepass.oblivion.utils
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -11,6 +11,7 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.TextView
+import org.bepass.oblivion.R
 
 /**
  * Checks if the app is running in restricted background mode.

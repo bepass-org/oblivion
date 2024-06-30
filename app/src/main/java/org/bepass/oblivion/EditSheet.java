@@ -7,6 +7,9 @@ import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
+import org.bepass.oblivion.interfaces.SheetsCallBack;
+import org.bepass.oblivion.utils.FileManager;
+
 public class EditSheet {
 
     FileManager fileManager;

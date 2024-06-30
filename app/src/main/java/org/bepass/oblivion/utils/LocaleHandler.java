@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.utils;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -10,7 +10,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.util.DisplayMetrics;
-import android.util.Log;
 
 import java.util.Locale;
 

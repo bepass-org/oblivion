@@ -6,6 +6,7 @@
     android:background="@drawable/rounded_bottom_sheet">
 
   <LinearLayout
+      android:background="@color/background"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:gravity="center"
@@ -14,7 +15,7 @@
     <View
         android:id="@+id/dividingCloser"
         android:layout_width="64sp"
-        android:layout_height="5sp"
+        android:layout_height="5dp"
         android:layout_marginTop="8sp"
         android:background="@drawable/bottom_sheet_closer" />
 
@@ -25,7 +26,7 @@
         android:layout_marginTop="16sp"
         android:fontFamily="@font/shabnam"
         android:text="@string/editSheetEndpoint"
-        android:textColor="@color/black"
+        android:textColor="@color/text_color"
         android:textSize="18sp" />
 
     <EditText
@@ -41,7 +42,7 @@
         android:padding="12sp"
         android:singleLine="true"
         android:textAlignment="center"
-        android:textColor="@color/black"
+        android:textColor="@color/text_color"
         android:textSize="15sp" />
 
     <LinearLayout
@@ -60,9 +61,9 @@
           android:layout_marginEnd="8sp"
           android:layout_weight="1"
           android:background="@drawable/bottom_sheet_cancel"
-          android:fontFamily="@font/shabnam"
+          android:fontFamily="@font/shabnambold"
           android:text="@string/cancel"
-          android:textColor="@color/black"
+          android:textColor="@color/text_color"
           android:textSize="17sp" />
 
       <Button
@@ -73,7 +74,7 @@
           android:layout_marginEnd="8sp"
           android:layout_weight="1"
           android:background="@drawable/bottom_sheet_closer"
-          android:fontFamily="@font/shabnam"
+          android:fontFamily="@font/shabnambold"
           android:text="@string/update"
           android:textColor="@color/white"
           android:textSize="17sp" />

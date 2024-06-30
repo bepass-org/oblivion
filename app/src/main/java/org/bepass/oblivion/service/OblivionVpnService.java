@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.service;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED;
 
@@ -25,6 +25,13 @@ import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
+
+import org.bepass.oblivion.enums.ConnectionState;
+import org.bepass.oblivion.interfaces.ConnectionStateChangeListener;
+import org.bepass.oblivion.R;
+import org.bepass.oblivion.enums.SplitTunnelMode;
+import org.bepass.oblivion.ui.MainActivity;
+import org.bepass.oblivion.utils.FileManager;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
