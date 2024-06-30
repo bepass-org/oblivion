@@ -5,8 +5,8 @@
     <color name="black">#5E5E5E</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="background">#FFFFFFFF</color>
-    <color name="text_color">#1C202C</color>
+    <color name="background">#1C202C</color>
+    <color name="text_color">#FFFFFFFF</color>
     <color name="subtitle_color">#7B8D9D</color>
     <color name="button_color">#ffa200</color>
     <color name="gray">#D7D7D7</color>
