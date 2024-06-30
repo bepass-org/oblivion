@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.service;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -13,6 +13,8 @@ import android.service.quicksettings.TileService;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+
+import org.bepass.oblivion.R;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class QuickStartService extends TileService {

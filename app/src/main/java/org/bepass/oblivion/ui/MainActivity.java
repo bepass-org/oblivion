@@ -1,7 +1,7 @@
 package org.bepass.oblivion.ui;
 
-import static org.bepass.oblivion.OblivionVpnService.startVpnService;
-import static org.bepass.oblivion.OblivionVpnService.stopVpnService;
+import static org.bepass.oblivion.service.OblivionVpnService.startVpnService;
+import static org.bepass.oblivion.service.OblivionVpnService.stopVpnService;
 
 import android.Manifest;
 import android.content.Context;
@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import org.bepass.oblivion.ConnectionState;
 import org.bepass.oblivion.utils.FileManager;
 import org.bepass.oblivion.utils.LocaleHandler;
-import org.bepass.oblivion.OblivionVpnService;
+import org.bepass.oblivion.service.OblivionVpnService;
 import org.bepass.oblivion.utils.PublicIPUtils;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.base.StateAwareBaseActivity;

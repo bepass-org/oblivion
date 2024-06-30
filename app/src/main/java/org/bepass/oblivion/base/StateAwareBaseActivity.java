@@ -14,7 +14,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 
 import org.bepass.oblivion.ConnectionState;
-import org.bepass.oblivion.OblivionVpnService;
+import org.bepass.oblivion.service.OblivionVpnService;
 
 
 /**

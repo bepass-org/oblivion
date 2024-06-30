@@ -19,7 +19,7 @@ import org.bepass.oblivion.utils.CountryUtils;
 import org.bepass.oblivion.EditSheet;
 import org.bepass.oblivion.utils.FileManager;
 import org.bepass.oblivion.utils.LocaleHelper;
-import org.bepass.oblivion.OblivionVpnService;
+import org.bepass.oblivion.service.OblivionVpnService;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.SheetsCallBack;
 import org.bepass.oblivion.base.ApplicationLoader;
