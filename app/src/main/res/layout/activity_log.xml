@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_gradient"
-    tools:context="org.bepass.oblivion.LogActivity">
+    tools:context="org.bepass.oblivion.ui.LogActivity">
 
   <RelativeLayout
       android:id="@+id/top_bar"
@@ -19,8 +19,8 @@
 
     <ImageView
         android:id="@+id/back"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:background="?selectableItemBackgroundBorderless"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"

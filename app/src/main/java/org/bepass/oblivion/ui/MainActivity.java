@@ -1,7 +1,7 @@
 package org.bepass.oblivion.ui;
 
-import static org.bepass.oblivion.OblivionVpnService.startVpnService;
-import static org.bepass.oblivion.OblivionVpnService.stopVpnService;
+import static org.bepass.oblivion.service.OblivionVpnService.startVpnService;
+import static org.bepass.oblivion.service.OblivionVpnService.stopVpnService;
 
 import android.Manifest;
 import android.content.Context;
@@ -22,14 +22,15 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
-import org.bepass.oblivion.ConnectionState;
-import org.bepass.oblivion.FileManager;
-import org.bepass.oblivion.LocaleHandler;
-import org.bepass.oblivion.OblivionVpnService;
-import org.bepass.oblivion.PublicIPUtils;
+import org.bepass.oblivion.enums.ConnectionState;
+import org.bepass.oblivion.utils.FileManager;
+import org.bepass.oblivion.utils.LocaleHandler;
+import org.bepass.oblivion.service.OblivionVpnService;
+import org.bepass.oblivion.utils.PublicIPUtils;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
 import org.bepass.oblivion.databinding.ActivityMainBinding;
+import org.bepass.oblivion.utils.ThemeHelper;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -49,6 +50,11 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     @Override
     protected int getLayoutResourceId() {
         return R.layout.activity_main;
+    }
+
+    @Override
+    protected int getStatusBarColor() {
+        return R.color.status_bar_color;
     }
 
     @Override

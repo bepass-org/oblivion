@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,6 +13,9 @@ public class FileManager {
     private static FileManager instance;
     private final SharedPreferences sharedPreferences;
 
+    public static class KeyHolder {
+        public static String DARK_MODE = "setting_dark_mode";
+    }
     /**
      * Private constructor to enforce singleton pattern.
      *

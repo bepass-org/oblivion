@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.enums;
 
 public enum ConnectionState {
     CONNECTING, CONNECTED, DISCONNECTED;

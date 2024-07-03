@@ -10,7 +10,7 @@
   <androidx.constraintlayout.widget.ConstraintLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:background="@drawable/background_gradient"
+      android:background="@color/background"
       tools:context="org.bepass.oblivion.ui.SettingsActivity">
 
     <RelativeLayout
@@ -22,16 +22,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-      <ImageView
+      <org.bepass.oblivion.component.Icon
           android:id="@+id/back"
-          android:layout_width="36dp"
-          android:layout_height="36dp"
+          android:layout_width="24dp"
+          android:layout_height="24dp"
           android:background="?selectableItemBackgroundBorderless"
           android:layout_alignParentStart="true"
           android:layout_centerVertical="true"
           android:layout_marginStart="16dp"
           android:src="@drawable/ic_back"
-          app:tint="#000000" />
+          app:tint="@color/icon_color" />
 
       <TextView
           android:layout_width="wrap_content"
@@ -41,7 +41,7 @@
           android:layout_marginEnd="16dp"
           android:fontFamily="@font/shabnamlight"
           android:text="@string/settingsText"
-          android:textColor="@color/black"
+          android:textColor="@color/text_color"
           android:textSize="24sp"
           tools:ignore="RelativeOverlap" />
 
@@ -83,7 +83,7 @@
                 android:minWidth="100dp"
                 android:text="@string/batteryOpL"
                 android:textAlignment="viewEnd"
-                android:textColor="@color/black"
+                android:textColor="@color/text_color"
                 android:textSize="20sp" />
           </LinearLayout>
 
@@ -93,7 +93,7 @@
               android:layout_marginTop="4dp"
               android:fontFamily="@font/shabnam"
               android:text="@string/batteryOpLText"
-              android:textColor="#9A9A9A"
+              android:textColor="@color/subtitle_color"
               android:textSize="16sp" />
 
         </LinearLayout>
@@ -132,7 +132,7 @@
                 android:layout_weight="2"
                 android:fontFamily="@font/shabnammedium"
                 android:text="engage.cloudflareclient.com:2048"
-                android:textColor="#E4AB53"
+                android:textColor="@color/primary"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:textSize="20sp" />
@@ -144,7 +144,7 @@
                 android:minWidth="100dp"
                 android:text="@string/endpointText"
                 android:textAlignment="viewEnd"
-                android:textColor="@color/black"
+                android:textColor="@color/text_color"
                 android:textSize="20sp" />
 
           </LinearLayout>
@@ -155,7 +155,7 @@
               android:layout_marginTop="4dp"
               android:fontFamily="@font/shabnam"
               android:text="@string/endpointTextDesc"
-              android:textColor="#9A9A9A"
+              android:textColor="@color/subtitle_color"
               android:textSize="16sp" />
         </LinearLayout>
 
@@ -191,10 +191,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:fontFamily="@font/shabnammedium"
-                android:text="8086"
+                android:textColor="@color/primary"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:textColor="#E4AB53"
                 android:textSize="20sp" />
 
             <TextView
@@ -204,7 +203,7 @@
                 android:minWidth="100dp"
                 android:text="@string/portTunText"
                 android:textAlignment="viewEnd"
-                android:textColor="@color/black"
+                android:textColor="@color/text_color"
                 android:textSize="20sp" />
 
           </LinearLayout>
@@ -215,7 +214,7 @@
               android:layout_marginTop="4dp"
               android:fontFamily="@font/shabnam"
               android:text="@string/portTunTextDesc"
-              android:textColor="#9A9A9A"
+              android:textColor="@color/subtitle_color"
               android:textSize="16sp" />
 
         </LinearLayout>
@@ -253,7 +252,7 @@
                 android:minWidth="100dp"
                 android:text="@string/blackList"
                 android:textAlignment="viewEnd"
-                android:textColor="@color/black"
+                android:textColor="@color/text_color"
                 android:textSize="20sp" />
           </LinearLayout>
 
@@ -263,7 +262,7 @@
               android:layout_marginTop="4dp"
               android:fontFamily="@font/shabnam"
               android:text="@string/blackListTextDesc"
-              android:textColor="#9A9A9A"
+              android:textColor="@color/subtitle_color"
               android:textSize="16sp" />
 
         </LinearLayout>
@@ -318,7 +317,7 @@
                 android:minWidth="100dp"
                 android:text="@string/connectFromLanText"
                 android:textAlignment="viewEnd"
-                android:textColor="@color/black"
+                android:textColor="@color/text_color"
                 android:textSize="20sp" />
           </LinearLayout>
 
@@ -328,7 +327,7 @@
               android:layout_marginTop="4dp"
               android:fontFamily="@font/shabnam"
               android:text="@string/connectFromLanTextDesc"
-              android:textColor="#9A9A9A"
+              android:textColor="@color/subtitle_color"
               android:textSize="16sp" />
 
         </LinearLayout>
@@ -382,7 +381,7 @@
                 android:minWidth="100dp"
                 android:text="@string/psiphonText"
                 android:textAlignment="viewEnd"
-                android:textColor="@color/black"
+                android:textColor="@color/text_color"
                 android:textSize="20sp" />
 
           </LinearLayout>
@@ -393,7 +392,7 @@
               android:layout_marginTop="4dp"
               android:fontFamily="@font/shabnam"
               android:text="@string/psiphonTextDesc"
-              android:textColor="#9A9A9A"
+              android:textColor="@color/subtitle_color"
               android:textSize="16sp" />
 
         </LinearLayout>
@@ -438,7 +437,7 @@
                 android:minWidth="100dp"
                 android:text="@string/chooseText"
                 android:textAlignment="viewEnd"
-                android:textColor="@color/black"
+                android:textColor="@color/text_color"
                 android:textSize="20sp" />
 
           </LinearLayout>
@@ -449,7 +448,7 @@
               android:layout_marginTop="4dp"
               android:fontFamily="@font/shabnam"
               android:text="@string/chooseTextDesc"
-              android:textColor="#9A9A9A"
+              android:textColor="@color/subtitle_color"
               android:textSize="16sp" />
 
         </LinearLayout>
@@ -489,7 +488,7 @@
                 android:text="ADSNjIOV56899QQ"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:textColor="#E4AB53"
+                android:textColor="@color/primary"
                 android:textSize="20sp" />
 
             <TextView
@@ -499,7 +498,7 @@
                 android:minWidth="100dp"
                 android:text="@string/licenseText"
                 android:textAlignment="viewEnd"
-                android:textColor="@color/black"
+                android:textColor="@color/text_color"
                 android:textSize="20sp" />
 
           </LinearLayout>
@@ -510,7 +509,7 @@
               android:layout_marginTop="4dp"
               android:fontFamily="@font/shabnam"
               android:text="@string/licenseTextDesc"
-              android:textColor="#9A9A9A"
+              android:textColor="@color/subtitle_color"
               android:textSize="16sp" />
 
         </LinearLayout>
@@ -563,7 +562,7 @@
                 android:minWidth="100dp"
                 android:text="@string/goolText"
                 android:textAlignment="viewEnd"
-                android:textColor="@color/black"
+                android:textColor="@color/text_color"
                 android:textSize="20sp" />
 
           </LinearLayout>
@@ -574,7 +573,7 @@
               android:layout_marginTop="4dp"
               android:fontFamily="@font/shabnam"
               android:text="@string/goolTextDesc"
-              android:textColor="#9A9A9A"
+              android:textColor="@color/subtitle_color"
               android:textSize="16sp" />
 
         </LinearLayout>

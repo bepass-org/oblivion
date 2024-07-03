@@ -20,6 +20,11 @@ public class InfoActivity extends BaseActivity<ActivityInfoBinding> {
     }
 
     @Override
+    protected int getStatusBarColor() {
+        return R.color.status_bar_color;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

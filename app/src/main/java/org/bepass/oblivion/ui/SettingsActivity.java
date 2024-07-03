@@ -1,9 +1,8 @@
 package org.bepass.oblivion.ui;
 
-import static org.bepass.oblivion.BatteryOptimizationKt.isBatteryOptimizationEnabled;
-import static org.bepass.oblivion.BatteryOptimizationKt.showBatteryOptimizationDialog;
+import static org.bepass.oblivion.utils.BatteryOptimizationKt.isBatteryOptimizationEnabled;
+import static org.bepass.oblivion.utils.BatteryOptimizationKt.showBatteryOptimizationDialog;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Pair;
@@ -11,21 +10,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 
-import org.bepass.oblivion.ConnectionState;
-import org.bepass.oblivion.CountryUtils;
+import org.bepass.oblivion.enums.ConnectionState;
+import org.bepass.oblivion.utils.CountryUtils;
 import org.bepass.oblivion.EditSheet;
-import org.bepass.oblivion.FileManager;
-import org.bepass.oblivion.LocaleHelper;
-import org.bepass.oblivion.OblivionVpnService;
+import org.bepass.oblivion.utils.FileManager;
+import org.bepass.oblivion.utils.LocaleHelper;
+import org.bepass.oblivion.service.OblivionVpnService;
 import org.bepass.oblivion.R;
-import org.bepass.oblivion.SheetsCallBack;
+import org.bepass.oblivion.interfaces.SheetsCallBack;
 import org.bepass.oblivion.base.ApplicationLoader;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
 import org.bepass.oblivion.databinding.ActivitySettingsBinding;
@@ -43,6 +39,11 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
     @Override
     protected int getLayoutResourceId() {
         return R.layout.activity_settings;
+    }
+
+    @Override
+    protected int getStatusBarColor() {
+        return R.color.status_bar_color;
     }
 
     @Override

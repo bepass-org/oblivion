@@ -26,6 +26,11 @@ public class SplashScreenActivity extends BaseActivity<ActivitySplashScreenBindi
         return R.layout.activity_splash_screen;
     }
 
+    @Override
+    protected int getStatusBarColor() {
+        return R.color.status_bar_color;
+    }
+
     /**
      * Called when the activity is first created. This method sets up the splash screen and
      * schedules the transition to the main activity.

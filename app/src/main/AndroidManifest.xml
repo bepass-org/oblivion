@@ -42,7 +42,7 @@
         tools:ignore="DiscouragedApi">
 
         <service
-            android:name=".OblivionVpnService"
+            android:name=".service.OblivionVpnService"
             android:enabled="true"
             android:exported="false"
             android:permission="android.permission.BIND_VPN_SERVICE"
@@ -58,7 +58,7 @@
         </service>
 
         <service
-            android:name=".QuickStartService"
+            android:name=".service.QuickStartService"
             android:exported="true"
             android:label="Oblivion"
             android:icon="@drawable/vpn_off"

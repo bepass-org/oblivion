@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Messenger;
@@ -13,8 +14,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 
-import org.bepass.oblivion.ConnectionState;
-import org.bepass.oblivion.OblivionVpnService;
+import org.bepass.oblivion.enums.ConnectionState;
+import org.bepass.oblivion.service.OblivionVpnService;
+import org.bepass.oblivion.utils.ColorUtils;
+import org.bepass.oblivion.utils.SystemUtils;
 
 
 /**
@@ -29,6 +32,8 @@ public abstract class StateAwareBaseActivity<B extends ViewDataBinding>  extends
 
     protected abstract int getLayoutResourceId();
 
+    protected abstract int getStatusBarColor();
+
     /**
      * Called when the activity is starting.
      * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
@@ -39,6 +44,11 @@ public abstract class StateAwareBaseActivity<B extends ViewDataBinding>  extends
         super.onCreate(savedInstanceState);
         // Inflates the layout and initializes the binding object
         binding = DataBindingUtil.setContentView(this, getLayoutResourceId());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            SystemUtils.setStatusBarColor(
+                    this, getStatusBarColor(), ColorUtils.isColorDark(getStatusBarColor())
+            );
+        }
     }
 
     public static boolean getRequireRestartVpnService() {

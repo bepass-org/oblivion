@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.utils;
 
 import android.content.Context;
 import android.os.Handler;
@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.vdurmont.emoji.EmojiManager;
 
+import org.bepass.oblivion.model.IPDetails;
 import org.bepass.oblivion.base.ApplicationLoader;
 import org.json.JSONObject;
 
@@ -13,7 +14,6 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
