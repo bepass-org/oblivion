@@ -2,4 +2,141 @@
 <resources>
   <color name="black">#5E5E5E</color>
   <color name="white">#FFFFFFFF</color>
+
+  <color name="light_gradient_start">#FFFFFF</color>
+  <color name="light_gradient_end">#FCF6D4</color>
+
+  <color name="dark_gradient_start">#121212</color>
+  <color name="dark_gradient_end">#231500</color>
+
+
+  <color name="colorPrimary">#AD1457</color>
+  <color name="colorPrimaryDark">#880E4F</color>
+  <color name="colorAccent">#6DCA70</color>
+  <color name="colorSurface">#f2dde2</color>
+
+
+  <color name="purple_200">#FFBB86FC</color>
+  <color name="purple_500">#FF6200EE</color>
+  <color name="purple_700">#FF3700B3</color>
+  <color name="teal_200">#FF03DAC5</color>
+  <color name="teal_700">#FF018786</color>
+
+  <color name="orange">#ff5722</color>
+  <color name="red">#f8283c</color>
+  <color name="green">#00c853</color>
+  <color name="green2">#02893A</color>
+  <color name="lightBlack">#44000000</color>
+  <color name="amber">#FFC107</color>
+  <color name="light_gray">#EAEAEA</color>
+
+  <color name="dark_gray">#6d6d6d</color>
+
+
+  <color name="dark_blue1">#2B3862</color>
+  <color name="dark_blue2">#162345</color>
+
+
+
+  <color name="blue1">#2196F3</color>
+  <color name="blue2">#1E88E5</color>
+  <color name="blue3">#1976D2</color>
+  <color name="blue4">#1565C0</color>
+
+  <color name="textColor">#fff</color>
+  <color name="textBlack">#000</color>
+  <color name="backOverlay">#cdd1d5</color>
+
+  <color name="main_anim_green">#129b24</color>
+  <color name="trans">#00ffffff</color>
+
+  <color name="credit_backgrund">#454c54</color>
+  <color name="credit_text">#fff</color>
+
+
+
+
+
+
+  <color name="light_primary">#FFA200</color>
+  <color name="light_primary_dark">#C17B01</color>
+  <color name="light_onPrimary">#382400</color>
+  <color name="light_primaryContainer">#D2E4FF</color>
+  <color name="light_onPrimaryContainer">#001C37</color>
+  <color name="light_secondary">#5E5E5E</color>
+  <color name="light_onSecondary">#FFFFFF</color>
+  <color name="light_secondaryContainer">#D7E3F8</color>
+  <color name="light_onSecondaryContainer">#101C2B</color>
+  <color name="light_tertiary">#00687A</color>
+  <color name="light_onTertiary">#FFFFFF</color>
+  <color name="light_tertiaryContainer">#ACEDFF</color>
+  <color name="light_onTertiaryContainer">#001F26</color>
+  <color name="light_error">#BA1A1A</color>
+  <color name="light_errorContainer">#FFDAD6</color>
+  <color name="light_onError">#FFFFFF</color>
+  <color name="light_onErrorContainer">#410002</color>
+  <color name="light_background">#FDFCFF</color>
+  <color name="light_onBackground">#1A1C1E</color>
+  <color name="light_surface">#E9E8EC</color>
+  <color name="light_onSurface">#1A1C1E</color>
+  <color name="light_surfaceVariant">#DFE2EB</color>
+  <color name="light_onSurfaceVariant">#43474E</color>
+  <color name="light_outline">#73777F</color>
+  <color name="light_inverseOnSurface">#F1F0F4</color>
+  <color name="light_inverseSurface">#2F3033</color>
+  <color name="light_inversePrimary">#A0C9FF</color>
+  <color name="light_shadow">#000000</color>
+  <color name="light_surfaceTint">#0B61A4</color>
+  <color name="light_outlineVariant">#C3C6CF</color>
+  <color name="light_scrim">#000000</color>
+
+  <color name="light_success">#02893A</color>
+  <color name="light_onSuccess">#ffffff</color>
+  <color name="light_warning">#ff5722</color>
+  <color name="light_onWarning">#ffffff</color>
+
+  <color name="light_switch_circle">#fff</color>
+  <color name="light_switch_background">#BABABA</color>
+
+
+  <color name="dark_primary">#FFC45D</color>
+  <color name="dark_primary_dark">#D5A147</color>
+  <color name="dark_onPrimary">#3C2600</color>
+  <color name="dark_primaryContainer">#00497F</color>
+  <color name="dark_onPrimaryContainer">#D2E4FF</color>
+  <color name="dark_secondary">#BABABA</color>
+  <color name="dark_onSecondary">#253141</color>
+  <color name="dark_secondaryContainer">#3C4858</color>
+  <color name="dark_onSecondaryContainer">#D7E3F8</color>
+  <color name="dark_tertiary">#55D6F4</color>
+  <color name="dark_onTertiary">#003640</color>
+  <color name="dark_tertiaryContainer">#004E5C</color>
+  <color name="dark_onTertiaryContainer">#ACEDFF</color>
+  <color name="dark_error">#D56D6D</color>
+  <color name="dark_errorContainer">#93000A</color>
+  <color name="dark_onError">#3F0003</color>
+  <color name="dark_onErrorContainer">#FFDAD6</color>
+  <color name="dark_background">#1A1C1E</color>
+  <color name="dark_onBackground">#E3E2E6</color>
+  <color name="dark_surface">#25272A</color>
+  <color name="dark_onSurface">#E3E2E6</color>
+  <color name="dark_surfaceVariant">#43474E</color>
+  <color name="dark_onSurfaceVariant">#C3C6CF</color>
+  <color name="dark_outline">#8D9199</color>
+  <color name="dark_inverseOnSurface">#1A1C1E</color>
+  <color name="dark_inverseSurface">#E3E2E6</color>
+  <color name="dark_inversePrimary">#0B61A4</color>
+  <color name="dark_shadow">#000000</color>
+  <color name="dark_surfaceTint">#A0C9FF</color>
+  <color name="dark_outlineVariant">#43474E</color>
+  <color name="dark_scrim">#000000</color>
+
+  <color name="dark_success">#7adb8b</color>
+  <color name="dark_onSuccess">#003915</color>
+  <color name="dark_warning">#FF9E7F</color>
+  <color name="dark_onWarning">#661900</color>
+
+  <color name="dark_switch_circle">#fff</color>
+  <color name="dark_switch_background">#9D9D9D</color>
+
 </resources>

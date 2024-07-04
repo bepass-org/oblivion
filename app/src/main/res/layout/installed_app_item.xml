@@ -26,7 +26,7 @@
         android:padding="8dp"
         android:fontFamily="@font/shabnam"
         android:textStyle="bold"
-        android:textColor="#000"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/icon"
         app:layout_constraintEnd_toStartOf="@+id/checkBox"
@@ -44,6 +44,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

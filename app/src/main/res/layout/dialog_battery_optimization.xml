@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@drawable/background_gradient">
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/dialog_title"
@@ -15,7 +15,7 @@
         android:layout_marginTop="16dp"
         android:fontFamily="@font/shabnam"
         android:text="@string/batteryOpL"
-        android:textColor="@color/black"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -27,7 +27,7 @@
         android:layout_marginTop="8dp"
         android:fontFamily="@font/shabnam"
         android:text="@string/dialBtText"
-        android:textColor="@color/black"
+        android:textColor="?attr/colorSecondary"
         android:textSize="16sp" />
 
     <LinearLayout
@@ -35,30 +35,35 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:gravity="end"
+        android:gravity="center"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/dialog_button_negative"
-            style="?android:attr/buttonBarButtonStyle"
+            android:padding="13dp"
+            android:minWidth="150dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
+            android:background="@drawable/btn_gray"
+            app:backgroundTint="@null"
+            style="?android:attr/borderlessButtonStyle"
             android:fontFamily="@font/shabnam"
             android:text="@string/cancel"
-            android:textColor="@color/black" />
+            android:textColor="#000" />
 
         <Button
             android:id="@+id/dialog_button_positive"
-            style="?android:attr/buttonBarButtonStyle"
+            android:minWidth="150dp"
+            android:background="@drawable/btn_primary"
+            app:backgroundTint="@null"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:background="#FFA200"
             android:fontFamily="@font/shabnam"
             android:padding="13dp"
             android:text="@string/goToSettings"
-            android:textColor="@color/white" />
+            android:textColor="?attr/colorOnPrimary" />
     </LinearLayout>
 
 </LinearLayout>

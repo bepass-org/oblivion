@@ -16,9 +16,9 @@
       android:layout_marginBottom="24dp"
       android:clickable="true"
       android:focusable="true"
-      android:src="@drawable/ic_translate"
-      android:tint="#ffffff"
-      app:backgroundTint="#ffa200"
+      app:srcCompat="@drawable/ic_translate"
+      app:backgroundTint="?attr/colorPrimary"
+      app:tint="?attr/colorOnPrimary"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent" />
 
@@ -40,7 +40,7 @@
       android:layout_centerVertical="true"
       android:layout_marginStart="16dp"
       android:src="@drawable/ic_info"
-      app:tint="#000000" />
+      app:tint="?attr/colorSecondary" />
 
     <ImageView
       android:id="@+id/bug_icon"
@@ -52,7 +52,7 @@
       android:layout_marginEnd="14dp"
       android:layout_toStartOf="@id/setting_icon"
       android:src="@drawable/ic_bug"
-      app:tint="#555" />
+        app:tint="?attr/colorSecondary" />
 
     <ImageView
       android:id="@+id/setting_icon"
@@ -63,7 +63,7 @@
       android:layout_centerVertical="true"
       android:layout_marginEnd="16dp"
       android:src="@drawable/ic_settings"
-      app:tint="#000000" />
+      app:tint="?attr/colorSecondary" />
 
   </RelativeLayout>
 
@@ -98,9 +98,13 @@
           android:id="@+id/switch_button"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-          app:sb_background="#D7D7D7"
+
+          app:sb_background="?attr/colorSwitchBackground"
+          app:sb_button_color="?attr/colorSwitchCircle"
+          app:sb_uncheck_color="?attr/colorSwitchBackground"
+          app:sb_checkline_color="?attr/colorSwitchBackground"
+          app:sb_checked_color="?attr/colorPrimary"
           app:sb_border_width="3dp"
-          app:sb_checked_color="#FFA200"
           app:sb_show_indicator="false" />
   </FrameLayout>
 
@@ -111,7 +115,7 @@
       android:layout_marginTop="96dp"
       android:fontFamily="@font/shabnammedium"
       android:text="@string/stateText"
-      android:textColor="@color/black"
+      android:textColor="?attr/colorOnBackground"
       android:textSize="24sp"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
@@ -125,7 +129,7 @@
       android:fontFamily="@font/emoji"
       android:visibility="invisible"
       android:textStyle="bold"
-      android:textColor="@color/black"
+      android:textColor="?attr/colorOnBackground"
       android:textSize="18sp"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
@@ -150,7 +154,7 @@
     android:layout_height="60dp"
     android:fontFamily="@font/shabnambold"
     android:text="@string/app_name"
-    android:textColor="@color/black"
+    android:textColor="?attr/colorOnBackground"
     android:textAllCaps="true"
     android:textSize="48sp"
     app:layout_constraintBottom_toBottomOf="parent"
@@ -166,10 +170,9 @@
     android:layout_height="wrap_content"
     android:fontFamily="@font/shabnammedium"
     android:text="@string/basedOnWarp"
-    android:textColor="#FFA200"
+    android:textColor="?attr/colorPrimary"
     android:textSize="24sp"
     app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintHorizontal_bias="0.492"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@id/app_name_1" />
 

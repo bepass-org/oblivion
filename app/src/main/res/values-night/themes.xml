@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <style name="Theme.OblivionUI" parent="Theme.Material3.Dark.NoActionBar">
+    <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
+
+    <item name="windowActionBar">false</item>
+    <item name="windowNoTitle">true</item>
+
+    <item name="colorGradiantStart">@color/dark_gradient_start</item>
+    <item name="colorGradiantEnd">@color/dark_gradient_end</item>
+
+
+    <!-- Primary brand color. -->
+    <item name="colorPrimary">@color/dark_primary</item>
+    <item name="colorPrimaryDark">@color/dark_primary_dark</item>
+    <item name="colorOnPrimary">@color/dark_onPrimary</item>
+    <item name="colorPrimaryContainer">@color/dark_primaryContainer</item>
+    <item name="colorOnPrimaryContainer">@color/dark_onPrimaryContainer</item>
+    <item name="colorPrimarySurface">@color/dark_surface</item>
+    <item name="colorOnPrimarySurface">@color/dark_onSurface</item>
+    <item name="colorError">@color/dark_error</item>
+    <item name="colorOnError">@color/dark_onError</item>
+    <item name="colorSurface">@color/dark_surface</item>
+    <item name="colorOnSurface">@color/dark_onSurface</item>
+    <!-- Secondary brand color. -->
+    <item name="colorSecondary">@color/dark_secondary</item>
+    <item name="colorOnSecondary">@color/dark_onSecondary</item>
+    <item name="color2">#b1d449</item>
+    <item name="onColor2">#283500</item>
+    <item name="color3">#ffb1c4</item>
+    <item name="onColor3">#65002e</item>
+    <item name="color4">#57d6f6</item>
+    <item name="onColor4">#003641</item>
+    <item name="color5">#A6B0D1</item>
+    <item name="onColor5">#191919</item>
+    <!-- Status bar color. -->
+<!--    <item name="android:statusBarColor" >@color/dark_primary</item>-->
+
+    <item name="colorSuccess" >@color/dark_success</item>
+    <item name="colorOnSuccess" >@color/dark_onSuccess</item>
+
+    <item name="colorWarning" >@color/dark_warning</item>
+    <item name="colorOnWarning" >@color/dark_onWarning</item>
+
+    <item name="colorSwitchCircle" >@color/dark_switch_circle</item>
+    <item name="colorSwitchBackground" >@color/dark_switch_background</item>
+  </style>
+
+  <style name="CustomBottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+    <item name="android:windowIsFloating">false</item>
+    <item name="android:windowSoftInputMode">adjustResize</item>
+    <item name="bottomSheetStyle">@style/CustomBottomSheet</item>
+  </style>
+
+  <style name="CustomBottomSheet" parent="Widget.MaterialComponents.BottomSheet.Modal">` <item
+      name="backgroundTint">@android:color/transparent</item>
+  </style>
+
+    <style name="circleImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+</resources>

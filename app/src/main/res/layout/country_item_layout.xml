@@ -2,6 +2,7 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:paddingLeft="5dp"
+  android:paddingStart="5dp"
+  android:paddingEnd="5dp"
   android:textSize="18sp"
-  android:fontFamily="@font/shabnammedium" />
+  android:fontFamily="@font/shabnam" />

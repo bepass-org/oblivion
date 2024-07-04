@@ -1,8 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <style name="Theme.OblivionUI" parent="Theme.AppCompat.Light.NoActionBar">
+  <style name="Theme.OblivionUI" parent="Theme.Material3.Light.NoActionBar">
     <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
+
+    <item name="windowActionBar">false</item>
+    <item name="windowNoTitle">true</item>
+
+    <item name="colorGradiantStart">@color/light_gradient_start</item>
+    <item name="colorGradiantEnd">@color/light_gradient_end</item>
+
+
+    <!-- Primary brand color. -->
+    <item name="colorPrimary">@color/light_primary</item>
+    <item name="colorPrimaryDark">@color/light_primary_dark</item>
+    <item name="colorOnPrimary">@color/light_onPrimary</item>
+    <item name="colorPrimaryContainer">@color/light_primaryContainer</item>
+    <item name="colorOnPrimaryContainer">@color/light_onPrimaryContainer</item>
+    <item name="colorPrimarySurface">@color/light_surface</item>
+    <item name="colorOnPrimarySurface">@color/light_onSurface</item>
+    <item name="colorError">@color/light_error</item>
+    <item name="colorOnError">@color/light_onError</item>
+    <item name="colorSurface">@color/light_surface</item>
+    <item name="colorOnSurface">@color/light_onSurface</item>
+    <!-- Secondary brand color. -->
+    <item name="colorSecondary">@color/light_secondary</item>
+    <item name="colorOnSecondary">@color/light_onSecondary</item>
+    <item name="color2">#506600</item>
+    <item name="onColor2">#ffffff</item>
+    <item name="color3">#b0255b</item>
+    <item name="onColor3">#ffffff</item>
+    <item name="color4">#00687b</item>
+    <item name="onColor4">#ffffff</item>
+
+    <item name="color5">#42485e</item>
+    <item name="onColor5">#ffffff</item>
+    <!-- Status bar color. -->
+<!--    <item name="android:statusBarColor" >@color/light_primary</item>-->
+
+    <item name="colorSuccess" >@color/light_success</item>
+    <item name="colorOnSuccess" >@color/light_onSuccess</item>
+    <item name="colorWarning" >@color/light_warning</item>
+    <item name="colorOnWarning" >@color/light_onWarning</item>
+    <item name="colorSwitchCircle" >@color/light_switch_circle</item>
+    <item name="colorSwitchBackground" >@color/light_switch_background</item>
+
   </style>
 
   <style name="CustomBottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">

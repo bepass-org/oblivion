@@ -1,0 +1,29 @@
+
+<resources>
+
+    <attr name="colorSuccess" format="color" />
+    <attr name="colorOnSuccess" format="color" />
+    <attr name="colorSuccessContainer" format="color" />
+    <attr name="colorOnSuccessContainer" format="color" />
+    <attr name="harmonizeSuccess" format="boolean" />
+    <attr name="colorWarning" format="color" />
+    <attr name="colorOnWarning" format="color" />
+    <attr name="colorWarningContainer" format="color" />
+    <attr name="colorOnWarningContainer" format="color" />
+    <attr name="harmonizeWarning" format="boolean" />
+    <attr name="color2" format="color" />
+    <attr name="onColor2" format="color" />
+    <attr name="color3" format="color" />
+    <attr name="onColor3" format="color" />
+    <attr name="color4" format="color" />
+    <attr name="onColor4" format="color" />
+    <attr name="color5" format="color" />
+    <attr name="onColor5" format="color" />
+
+    <attr name="colorGradiantStart" format="color" />
+    <attr name="colorGradiantEnd" format="color" />
+
+    <attr name="colorSwitchCircle" format="color" />
+    <attr name="colorSwitchBackground" format="color" />
+
+</resources>

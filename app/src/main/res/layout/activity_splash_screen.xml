@@ -27,6 +27,7 @@
             android:textAllCaps="true"
             android:textSize="48sp"
             android:textStyle="bold"
+            android:textColor="?attr/colorOnBackground"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -40,6 +41,7 @@
             android:text="@string/means"
             android:textAlignment="textEnd"
             android:textSize="20sp"
+            android:textColor="?attr/colorSecondary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -55,7 +57,7 @@
             android:gravity="center"
             android:text="@string/dontForget"
             android:textAlignment="textEnd"
-            android:textColor="#ffa200"
+            android:textColor="?attr/colorPrimary"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -132,7 +134,7 @@
             android:gravity="center"
             android:text="@string/segaro"
             android:textAlignment="center"
-            android:textColor="#7b7b7b"
+            android:textColor="?attr/colorSecondary"
             android:textSize="20sp" />
 
         <TextView
@@ -143,7 +145,7 @@
             android:fontFamily="@font/shabnammedium"
             android:gravity="center"
             android:text="@string/yousef"
-            android:textColor="#7b7b7b"
+            android:textColor="?attr/colorSecondary"
             android:textSize="20sp" />
 
     </LinearLayout>
@@ -158,7 +160,7 @@
         android:gravity="center"
         android:text="@string/slogan"
         android:textAlignment="center"
-        android:textColor="#c4c4c4"
+        android:textColor="?attr/colorSecondary"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

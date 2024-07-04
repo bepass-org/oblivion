@@ -76,13 +76,13 @@ public class LocaleHandler {
     private String getLanguageName(String languageCode) {
         switch (languageCode) {
             case "fa":
-                return "Persian";
+                return "پارسی";
             case "en":
                 return "English";
             case "ru":
-                return "Russian";
+                return "Русский";
             case "zh":
-                return "Chinese";
+                return "中文";
             default:
                 return languageCode;
         }

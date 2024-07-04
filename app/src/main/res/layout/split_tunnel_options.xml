@@ -22,6 +22,7 @@
             android:layout_gravity="start"
             android:background="?android:selectableItemBackground"
             android:button="@null"
+            android:drawableTint="?attr/colorPrimary"
             android:drawableRight="?android:attr/listChoiceIndicatorSingle"
             android:layoutDirection="rtl"
             android:paddingLeft="20dp"
@@ -54,6 +55,7 @@
             android:layout_gravity="start"
             android:background="?android:selectableItemBackground"
             android:button="@null"
+            android:drawableTint="?attr/colorPrimary"
             android:drawableRight="?android:attr/listChoiceIndicatorSingle"
             android:layoutDirection="rtl"
             android:paddingLeft="20dp"
@@ -82,18 +84,20 @@
 
     </RadioGroup>
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
+    <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/showSystemApps"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:layout_marginStart="20dp"
         android:checked="false"
+        app:useMaterialThemeColors="true"
         android:fontFamily="@font/shabnam"
+        android:padding="4dp"
         android:text="@string/showSystemAppsText"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radioGroup"
-        app:switchPadding="4dp"
-        android:padding="4dp"/>
+         />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
