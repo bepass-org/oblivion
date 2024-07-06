@@ -1,12 +1,11 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.utils;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.util.Log;
 import android.util.Pair;
 
-import java.util.Arrays;
+import org.bepass.oblivion.R;
+
 import java.util.Locale;
 
 public class CountryUtils {
