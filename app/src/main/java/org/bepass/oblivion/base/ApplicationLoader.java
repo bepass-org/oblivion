@@ -31,7 +31,7 @@ public class ApplicationLoader extends Application {
         super.onCreate();
         context = getApplicationContext();
         ThemeHelper.getInstance().init();
-        ThemeHelper.getInstance().select(ThemeHelper.Theme.DARK);
+        ThemeHelper.getInstance().applyTheme();
     }
 
     /**
