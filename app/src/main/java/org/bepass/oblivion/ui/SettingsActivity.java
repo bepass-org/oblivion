@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.Spinner;
 
 import androidx.activity.OnBackPressedCallback;
@@ -25,11 +26,13 @@ import org.bepass.oblivion.interfaces.SheetsCallBack;
 import org.bepass.oblivion.base.ApplicationLoader;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
 import org.bepass.oblivion.databinding.ActivitySettingsBinding;
+import org.bepass.oblivion.utils.ThemeHelper;
 
 public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBinding> {
     private FileManager fileManager;
     private CheckBox.OnCheckedChangeListener psiphonListener;
     private CheckBox.OnCheckedChangeListener goolListener;
+
     private void setCheckBoxWithoutTriggeringListener(CheckBox checkBox, boolean isChecked, CheckBox.OnCheckedChangeListener listener) {
         checkBox.setOnCheckedChangeListener(null); // Temporarily detach the listener
         checkBox.setChecked(isChecked); // Set the checked state
@@ -51,11 +54,11 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         super.onCreate(savedInstanceState);
         fileManager = FileManager.getInstance(this);
 
-        if(isBatteryOptimizationEnabled(this)){
+        if (isBatteryOptimizationEnabled(this)) {
             binding.batteryOptimizationLayout.setOnClickListener(view -> {
                 showBatteryOptimizationDialog(this);
             });
-        }else{
+        } else {
             binding.batteryOptimizationLayout.setVisibility(View.GONE);
             binding.batteryOptLine.setVisibility(View.GONE);
         }
@@ -96,7 +99,8 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
             }
 
             @Override
-            public void onNothingSelected(AdapterView parent) {}
+            public void onNothingSelected(AdapterView parent) {
+            }
         });
 
         binding.splitTunnelLayout.setOnClickListener(v -> startActivity(new Intent(this, SplitTunnelActivity.class)));
@@ -129,7 +133,17 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
                 binding.country.setEnabled(false);
             }
         };
-
+        binding.checkBoxDarkMode.setChecked(ThemeHelper.getInstance().getCurrentTheme() == ThemeHelper.Theme.DARK);
+        binding.checkBoxDarkMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    ThemeHelper.getInstance().select(ThemeHelper.Theme.DARK);
+                } else {
+                    ThemeHelper.getInstance().select(ThemeHelper.Theme.LIGHT);
+                }
+            }
+        });
         // Set the listeners to the checkboxes
         binding.psiphon.setOnCheckedChangeListener(psiphonListener);
         binding.gool.setOnCheckedChangeListener(goolListener);
@@ -137,7 +151,7 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
 
     private int getIndexFromName(Spinner spinner, String name) {
         String ccn = CountryUtils.getCountryName(name);
-        String newname = LocaleHelper.restoreText(this,ccn);
+        String newname = LocaleHelper.restoreText(this, ccn);
         for (int i = 0; i < spinner.getCount(); i++) {
             if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(newname)) {
                 return i;
@@ -182,5 +196,6 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
     }
 
     @Override
-    public void onConnectionStateChange(ConnectionState state) {}
+    public void onConnectionStateChange(ConnectionState state) {
+    }
 }

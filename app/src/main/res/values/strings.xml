@@ -44,6 +44,8 @@
   <string name="dialBtText"> To ensure the app works properly, please disable battery optimization for this app. </string>
   <string name="goToSettings"> Go to Settings </string>
   <string name="copytoclip">Copy log to clipboard</string>
+    <string name="turn_on_dark_mode">Turn on dark mode</string>
+  <string name="turn_on_dark_mode_desc">turn on dark mode</string>
   <string-array name="countries">
     <item>Austria</item>
     <item>Belgium</item>
