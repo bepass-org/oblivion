@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.model;
 
 public class IPDetails {
     public String ip;
