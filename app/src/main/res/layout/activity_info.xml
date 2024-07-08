@@ -33,31 +33,29 @@
           app:tint="@color/icon_color"  />
 
       <TextView
+          style="@style/title_17px_medium"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_alignParentEnd="true"
           android:layout_centerVertical="true"
           android:layout_marginEnd="16dp"
-          android:fontFamily="@font/shabnamlight"
           android:text="@string/aboutApp"
           android:textColor="@color/text_color"
-          android:textSize="32sp"
           tools:ignore="RelativeOverlap" />
 
     </RelativeLayout>
 
     <TextView
+        style="@style/regular_text_15px_regular"
         android:id="@+id/about"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginTop="16dp"
-        android:fontFamily="@font/shabnammedium"
         android:paddingHorizontal="12dp"
         android:text='@string/aboutAppDesc'
         android:textAlignment="center"
         android:textColor="@color/subtitle_color"
-        android:textSize="16sp"
         tools:ignore="RtlCompat" />
 
     <RelativeLayout
@@ -82,37 +80,34 @@
           app:tint="@color/black" />
 
       <TextView
+          style="@style/subtitle_14px_regular"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_centerInParent="true"
           android:layout_toEndOf="@id/github_image"
-          android:fontFamily="@font/shabnam"
-          android:text="Github"
-          android:textColor="@color/black"
-          android:textSize="14sp" />
+          android:text="@string/github"
+          android:textColor="@color/black"/>
 
       <TextView
+          style="@style/subtitle_14px_medium"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_alignParentEnd="true"
           android:layout_centerVertical="true"
           android:layout_marginEnd="16dp"
-          android:fontFamily="@font/shabnambold"
-          android:text="BePass/Oblivion"
-          android:textColor="@color/black"
-          android:textSize="14sp" />
+          android:text="@string/bepass_oblivion"
+          android:textColor="@color/black"  />
 
     </RelativeLayout>
 
     <TextView
+        style="@style/caption_13px_medium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:fontFamily="@font/shabnam"
         android:gravity="center"
         android:text="@string/appVersion"
-        android:textColor="@color/subtitle_color"
-        android:textSize="14sp" />
+        android:textColor="@color/subtitle_color"/>
 
 
   </LinearLayout>

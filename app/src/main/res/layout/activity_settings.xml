@@ -3,648 +3,624 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-  <data>
+    <data>
 
-  </data>
+    </data>
 
-  <androidx.constraintlayout.widget.ConstraintLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:background="@color/background"
-      tools:context="org.bepass.oblivion.ui.SettingsActivity">
-
-    <RelativeLayout
-        android:id="@+id/top_bar"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:background="@color/background"
+        tools:context="org.bepass.oblivion.ui.SettingsActivity">
 
-      <org.bepass.oblivion.component.Icon
-          android:id="@+id/back"
-          android:layout_width="24dp"
-          android:layout_height="24dp"
-          android:background="?selectableItemBackgroundBorderless"
-          android:layout_alignParentStart="true"
-          android:layout_centerVertical="true"
-          android:layout_marginStart="16dp"
-          android:src="@drawable/ic_back"
-          app:tint="@color/icon_color" />
-
-      <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_alignParentEnd="true"
-          android:layout_centerVertical="true"
-          android:layout_marginEnd="16dp"
-          android:fontFamily="@font/shabnamlight"
-          android:text="@string/settingsText"
-          android:textColor="@color/text_color"
-          android:textSize="24sp"
-          tools:ignore="RelativeOverlap" />
-
-    </RelativeLayout>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:paddingVertical="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/top_bar">
-
-      <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:orientation="vertical">
-
-        <LinearLayout
-            android:id="@+id/battery_optimization_layout"
+        <RelativeLayout
+            android:id="@+id/top_bar"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="?android:selectableItemBackground"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:orientation="vertical">
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
+            <org.bepass.oblivion.component.Icon
+                android:id="@+id/back"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_back"
+                app:tint="@color/icon_color" />
 
             <TextView
+                style="@style/title_17px_medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/batteryOpL"
-                android:textAlignment="viewEnd"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="16dp"
+                android:text="@string/settingsText"
                 android:textColor="@color/text_color"
-                android:textSize="20sp" />
-          </LinearLayout>
+                tools:ignore="RelativeOverlap" />
 
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/batteryOpLText"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
+        </RelativeLayout>
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/battery_opt_line"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/endpoint_layout"
-            android:layout_width="match_parent"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-            <TextView
-                android:id="@+id/endpoint"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:fontFamily="@font/shabnammedium"
-                android:text="engage.cloudflareclient.com:2048"
-                android:textColor="@color/primary"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:textSize="20sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/endpointText"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/endpointTextDesc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/port_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-            <TextView
-                android:id="@+id/port"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:fontFamily="@font/shabnammedium"
-                android:textColor="@color/primary"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:textSize="20sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/portTunText"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/portTunTextDesc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/split_tunnel_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="?android:selectableItemBackground"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:orientation="vertical">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/blackList"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/blackListTextDesc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/txt_dark_mode"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:paddingVertical="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/top_bar">
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2">
+                android:orientation="vertical">
 
-              <CheckBox
-                  android:id="@+id/check_box_dark_mode"
-                  android:layout_width="50dp"
-                  android:layout_height="38dp"
-                  android:layout_marginStart="10dp"
-                  android:buttonTint="@color/checkbox_tint"
-                  android:scaleX="1.5"
-                  android:scaleY="1.5"
-                  android:translationX="5dp" />
+                <LinearLayout
+                    android:id="@+id/battery_optimization_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?android:selectableItemBackground"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end">
+
+                        <TextView
+                            style="@style/headline_16px_medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:minWidth="100dp"
+                            android:text="@string/batteryOpL"
+                            android:textAlignment="viewEnd"
+                            android:textColor="@color/text_color" />
+                    </LinearLayout>
+
+                    <TextView
+                        style="@style/subtitle_13px_regular"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/batteryOpLText"
+                        android:textColor="@color/subtitle_color" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/battery_opt_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/endpoint_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end">
+
+                        <TextView
+                            style="@style/headline_15px_medium"
+                            android:id="@+id/endpoint"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="engage.cloudflareclient.com:2048"
+                            android:textColor="@color/primary"  />
+
+                        <TextView
+                            style="@style/headline_16px_medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:minWidth="100dp"
+                            android:text="@string/endpointText"
+                            android:textAlignment="viewEnd"
+                            android:textColor="@color/text_color" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        style="@style/subtitle_13px_regular"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/endpointTextDesc"
+                        android:textColor="@color/subtitle_color" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/port_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end">
+
+                        <TextView
+                            style="@style/headline_15px_medium"
+                            android:id="@+id/port"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:textColor="@color/primary"  />
+
+                        <TextView
+                            style="@style/headline_16px_medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:minWidth="100dp"
+                            android:text="@string/portTunText"
+                            android:textAlignment="viewEnd"
+                            android:textColor="@color/text_color" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        style="@style/subtitle_13px_regular"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/portTunTextDesc"
+                        android:textColor="@color/subtitle_color" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/split_tunnel_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?android:selectableItemBackground"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end">
+
+                        <TextView
+                            style="@style/headline_16px_medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:minWidth="100dp"
+                            android:text="@string/blackList"
+                            android:textAlignment="viewEnd"
+                            android:textColor="@color/text_color" />
+                    </LinearLayout>
+
+                    <TextView
+                        style="@style/subtitle_13px_regular"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/blackListTextDesc"
+                        android:textColor="@color/subtitle_color" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/txt_dark_mode"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end">
+
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2">
+
+                            <CheckBox
+                                android:id="@+id/check_box_dark_mode"
+                                android:layout_width="50dp"
+                                android:layout_height="38dp"
+                                android:layout_marginStart="10dp"
+                                android:buttonTint="@color/checkbox_tint"
+                                android:scaleX="1.5"
+                                android:scaleY="1.5"
+                                android:translationX="5dp" />
+                        </LinearLayout>
+
+                        <TextView
+                            style="@style/headline_16px_medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:minWidth="100dp"
+                            android:text="@string/turn_on_dark_mode"
+                            android:textAlignment="viewEnd"
+                            android:textColor="@color/text_color" />
+                    </LinearLayout>
+
+                    <TextView
+                        style="@style/subtitle_13px_regular"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/turn_on_dark_mode_desc"
+                        android:textColor="@color/subtitle_color" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lan_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end">
+
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2">
+
+                            <CheckBox
+                                android:id="@+id/lan"
+                                android:layout_width="50dp"
+                                android:layout_height="38dp"
+                                android:layout_marginStart="10dp"
+                                android:buttonTint="@color/checkbox_tint"
+                                android:scaleX="1.5"
+                                android:scaleY="1.5"
+                                android:translationX="5dp" />
+                        </LinearLayout>
+
+                        <TextView
+                            style="@style/headline_16px_medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:minWidth="100dp"
+                            android:text="@string/connectFromLanText"
+                            android:textAlignment="viewEnd"
+                            android:textColor="@color/text_color" />
+                    </LinearLayout>
+
+                    <TextView
+                        style="@style/subtitle_13px_regular"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/connectFromLanTextDesc"
+                        android:textColor="@color/subtitle_color" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/psiphon_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2">
+
+                            <CheckBox
+                                android:id="@+id/psiphon"
+                                android:layout_width="50dp"
+                                android:layout_height="38dp"
+                                android:layout_marginStart="10dp"
+                                android:buttonTint="@color/checkbox_tint"
+                                android:scaleX="1.5"
+                                android:scaleY="1.5"
+                                android:translationX="5dp" />
+                        </LinearLayout>
+
+                        <TextView
+                            style="@style/headline_16px_medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:minWidth="100dp"
+                            android:text="@string/psiphonText"
+                            android:textAlignment="viewEnd"
+                            android:textColor="@color/text_color" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        style="@style/subtitle_13px_regular"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/psiphonTextDesc"
+                        android:textColor="@color/subtitle_color" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/country_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end">
+
+                        <Spinner
+                            android:id="@+id/country"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <TextView
+                            style="@style/headline_16px_medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="40dp"
+                            android:minWidth="100dp"
+                            android:text="@string/chooseText"
+                            android:textAlignment="viewEnd"
+                            android:textColor="@color/text_color" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        style="@style/subtitle_13px_regular"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/chooseTextDesc"
+                        android:textColor="@color/subtitle_color" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/license_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end">
+
+                        <TextView
+                            style="@style/headline_15px_medium"
+                            android:id="@+id/license"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="ADSNjIOV56899QQ"
+                            android:textColor="@color/primary"  />
+
+                        <TextView
+                            style="@style/headline_16px_medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:minWidth="100dp"
+                            android:text="@string/licenseText"
+                            android:textAlignment="viewEnd"
+                            android:textColor="@color/text_color" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        style="@style/subtitle_13px_regular"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/licenseTextDesc"
+                        android:textColor="@color/subtitle_color" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/gool_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2">
+
+                            <CheckBox
+                                android:id="@+id/gool"
+                                android:layout_width="50dp"
+                                android:layout_height="38dp"
+                                android:layout_marginStart="10dp"
+                                android:buttonTint="@color/checkbox_tint"
+                                android:scaleX="1.5"
+                                android:scaleY="1.5"
+                                android:translationX="5dp" />
+                        </LinearLayout>
+
+                        <TextView
+                            style="@style/headline_16px_medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:minWidth="100dp"
+                            android:text="@string/goolText"
+                            android:textAlignment="viewEnd"
+                            android:textColor="@color/text_color" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        style="@style/subtitle_13px_regular"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/goolTextDesc"
+                        android:textColor="@color/subtitle_color" />
+
+                </LinearLayout>
             </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/turn_on_dark_mode"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/turn_on_dark_mode_desc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/lan_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
+        </ScrollView>
 
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2">
-
-              <CheckBox
-                  android:id="@+id/lan"
-                  android:layout_width="50dp"
-                  android:layout_height="38dp"
-                  android:layout_marginStart="10dp"
-                  android:buttonTint="@color/checkbox_tint"
-                  android:scaleX="1.5"
-                  android:scaleY="1.5"
-                  android:translationX="5dp" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/connectFromLanText"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/connectFromLanTextDesc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/psiphon_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2">
-
-              <CheckBox
-                  android:id="@+id/psiphon"
-                  android:layout_width="50dp"
-                  android:layout_height="38dp"
-                  android:scaleX="1.5"
-                  android:scaleY="1.5"
-                  android:layout_marginStart="10dp"
-                  android:buttonTint="@color/checkbox_tint"
-                  android:translationX="5dp" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/psiphonText"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/psiphonTextDesc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/country_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-            <Spinner
-                android:id="@+id/country"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/chooseText"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/chooseTextDesc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/license_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-            <TextView
-                android:id="@+id/license"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:fontFamily="@font/shabnammedium"
-                android:text="ADSNjIOV56899QQ"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:textColor="@color/primary"
-                android:textSize="20sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/licenseText"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/licenseTextDesc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/gool_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2">
-
-              <CheckBox
-                  android:id="@+id/gool"
-                  android:layout_width="50dp"
-                  android:layout_height="38dp"
-                  android:scaleX="1.5"
-                  android:scaleY="1.5"
-                  android:layout_marginStart="10dp"
-                  android:buttonTint="@color/checkbox_tint"
-                  android:translationX="5dp" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/goolText"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/goolTextDesc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-
-        </LinearLayout>
-      </LinearLayout>
-    </ScrollView>
-
-
-  </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

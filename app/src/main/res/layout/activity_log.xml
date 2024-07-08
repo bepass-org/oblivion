@@ -34,15 +34,14 @@
           android:src="@drawable/ic_back" />
 
       <TextView
+          style="@style/title_17px_medium"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_alignParentEnd="true"
           android:layout_centerVertical="true"
           android:layout_marginEnd="16dp"
-          android:fontFamily="@font/shabnamlight"
           android:text="@string/logApp"
           android:textColor="@color/text_color"
-          android:textSize="32sp"
           tools:ignore="RelativeOverlap" />
     </RelativeLayout>
 
@@ -58,12 +57,12 @@
         app:layout_constraintStart_toStartOf="parent">
 
       <TextView
+          style="@style/caption_12px_regular"
           android:id="@+id/logs"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:textColor="@color/subtitle_color"
-          android:text="Start Logging Here.."
-          android:textSize="11sp" />
+          android:text="@string/start_logging_here" />
     </ScrollView>
 
     <Button
@@ -71,10 +70,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/primary"
-        android:fontFamily="@font/shabnam"
+        style="@style/subtitle_14px_medium"
         android:text="@string/copytoclip"
         android:textColor="@color/white"
-        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

@@ -1,7 +1,6 @@
 <!-- spinner_item_layout.xml -->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="match_parent"
-  android:layout_height="wrap_content"
-  android:paddingLeft="5dp"
-  android:textSize="18sp"
-  android:fontFamily="@font/shabnammedium" />
+    style="@style/regular_text_16px_regular"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="5dp" />

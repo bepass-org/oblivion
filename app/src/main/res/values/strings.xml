@@ -46,7 +46,10 @@
   <string name="copytoclip">Copy log to clipboard</string>
     <string name="turn_on_dark_mode">Turn on dark mode</string>
   <string name="turn_on_dark_mode_desc">turn on dark mode</string>
-  <string-array name="countries">
+    <string name="github">Github</string>
+  <string name="bepass_oblivion">BePass/Oblivion</string>
+    <string name="start_logging_here">Start Logging Here..</string>
+    <string-array name="countries">
     <item>Austria</item>
     <item>Belgium</item>
     <item>Brazil</item>
