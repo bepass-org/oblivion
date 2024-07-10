@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="title_28_med" parent="@android:style/TextAppearance.Small">
+        <item name="android:fontFamily">@font/bold</item>
+        <item name="fontFamily">@font/bold</item>
+        <item name="fontStyle">normal</item>
+        <item name="android:fontWeight" tools:targetApi="o">700</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:lineHeight" tools:targetApi="p">33sp</item>
+    </style>
+
+    <style name="title_20_med" parent="@android:style/TextAppearance.Small">
+        <item name="android:fontFamily">@font/bold</item>
+        <item name="fontFamily">@font/bold</item>
+        <item name="fontStyle">normal</item>
+        <item name="android:fontWeight" tools:targetApi="o">700</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:lineHeight" tools:targetApi="p">23sp</item>
+    </style>
+
+    <style name="title_17_med" parent="@android:style/TextAppearance.Small">
+        <item name="android:fontFamily">@font/bold</item>
+        <item name="fontFamily">@font/bold</item>
+        <item name="fontStyle">normal</item>
+        <item name="android:fontWeight" tools:targetApi="o">700</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:lineHeight" tools:targetApi="p">20sp</item>
+    </style>
+
+    <style name="headline_17_reg" parent="@android:style/TextAppearance.Small">
+        <item name="android:fontFamily">@font/regular</item>
+        <item name="fontFamily">@font/regular</item>
+        <item name="android:fontWeight" tools:targetApi="o">400</item>
+        <item name="fontStyle">normal</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:lineHeight" tools:targetApi="p">19sp</item>
+    </style>
+
+    <style name="headline_16_med" parent="@android:style/TextAppearance.Small">
+        <item name="android:fontFamily">@font/bold</item>
+        <item name="fontFamily">@font/bold</item>
+        <item name="fontStyle">normal</item>
+        <item name="android:fontWeight" tools:targetApi="o">700</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:lineHeight" tools:targetApi="p">19sp</item>
+    </style>
+
+
+    <style name="headline_15_med" parent="@android:style/TextAppearance.Small">
+        <item name="android:fontFamily">@font/bold</item>
+        <item name="fontFamily">@font/bold</item>
+        <item name="fontStyle">normal</item>
+        <item name="android:fontWeight" tools:targetApi="o">700</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:lineHeight" tools:targetApi="p">19sp</item>
+    </style>
+
+    <style name="text_16_reg" parent="@android:style/TextAppearance.Small">
+        <item name="android:fontFamily">@font/regular</item>
+        <item name="fontFamily">@font/regular</item>
+        <item name="android:fontWeight" tools:targetApi="o">400</item>
+        <item name="fontStyle">normal</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:lineHeight" tools:targetApi="p">19sp</item>
+    </style>
+
+    <style name="text_15_reg" parent="@android:style/TextAppearance.Small">
+        <item name="android:fontFamily">@font/regular</item>
+        <item name="fontFamily">@font/regular</item>
+        <item name="android:fontWeight" tools:targetApi="o">400</item>
+        <item name="fontStyle">normal</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:lineHeight" tools:targetApi="p">19sp</item>
+    </style>
+
+    <style name="subtitle_14_reg" parent="@android:style/TextAppearance.Small">
+        <item name="android:fontFamily">@font/regular</item>
+        <item name="fontFamily">@font/regular</item>
+        <item name="android:fontWeight" tools:targetApi="o">400</item>
+        <item name="fontStyle">normal</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineHeight" tools:targetApi="p">19sp</item>
+    </style>
+
+    <style name="subtitle_14_med" parent="@android:style/TextAppearance.Small">
+        <item name="android:fontFamily">@font/bold</item>
+        <item name="fontFamily">@font/bold</item>
+        <item name="fontStyle">normal</item>
+        <item name="android:fontWeight" tools:targetApi="o">700</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineHeight" tools:targetApi="p">19sp</item>
+    </style>
+
+    <style name="subtitle_13_reg" parent="@android:style/TextAppearance.Small">
+        <item name="android:fontFamily">@font/regular</item>
+        <item name="fontFamily">@font/regular</item>
+        <item name="android:fontWeight" tools:targetApi="o">400</item>
+        <item name="fontStyle">normal</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:lineHeight" tools:targetApi="p">19sp</item>
+    </style>
+
+    <style name="caption_13_med" parent="@android:style/TextAppearance.Small">
+        <item name="android:fontFamily">@font/bold</item>
+        <item name="fontFamily">@font/bold</item>
+        <item name="fontStyle">normal</item>
+        <item name="android:fontWeight" tools:targetApi="o">700</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:lineHeight" tools:targetApi="p">19sp</item>
+    </style>
+
+    <style name="caption_12_reg" parent="@android:style/TextAppearance.Small">
+        <item name="android:fontFamily">@font/regular</item>
+        <item name="fontFamily">@font/regular</item>
+        <item name="android:fontWeight" tools:targetApi="o">400</item>
+        <item name="fontStyle">normal</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:lineHeight" tools:targetApi="p">19sp</item>
+    </style>
+
+    <style name="caption_11_reg" parent="@android:style/TextAppearance.Small">
+        <item name="android:fontFamily">@font/regular</item>
+        <item name="fontFamily">@font/regular</item>
+        <item name="android:fontWeight" tools:targetApi="o">400</item>
+        <item name="fontStyle">normal</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:lineHeight" tools:targetApi="p">19sp</item>
+    </style>
+
+    <style name="caption_11_med" parent="@android:style/TextAppearance.Small">
+        <item name="android:fontFamily">@font/bold</item>
+        <item name="fontFamily">@font/bold</item>
+        <item name="fontStyle">normal</item>
+        <item name="android:fontWeight" tools:targetApi="o">700</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:lineHeight" tools:targetApi="p">19sp</item>
+    </style>
+</resources>
