@@ -17,6 +17,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <RadioButton
+            style="@style/subtitle_14_med"
             android:id="@+id/disabled"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,41 +25,37 @@
             android:background="?android:selectableItemBackground"
             android:button="@null"
             android:drawableRight="?android:attr/listChoiceIndicatorSingle"
-            android:fontFamily="@font/shabnam"
             android:layoutDirection="rtl"
             android:paddingLeft="20dp"
             android:paddingTop="10dp"
-            android:textColor="@color/text_color"
             android:paddingRight="20dp"
             android:paddingBottom="10dp"
             android:text="@string/disabledR"
             android:textAlignment="textStart"
-            android:textSize="14sp" />
+            android:textColor="@color/text_color"  />
 
         <TextView
+            style="@style/subtitle_13_reg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:fontFamily="@font/shabnam"
             android:layoutDirection="rtl"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:paddingBottom="10dp"
             android:text="@string/disabledRText"
-            android:textColor="@color/subtitle_color"
             android:textAlignment="textStart"
-            android:textSize="14sp" />
+            android:textColor="@color/subtitle_color" />
 
         <RadioButton
+            style="@style/subtitle_14_med"
             android:id="@+id/blacklist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:background="?android:selectableItemBackground"
             android:button="@null"
-            android:textColor="@color/text_color"
             android:drawableRight="?android:attr/listChoiceIndicatorSingle"
-            android:fontFamily="@font/shabnam"
             android:layoutDirection="rtl"
             android:paddingLeft="20dp"
             android:paddingTop="10dp"
@@ -66,22 +63,21 @@
             android:paddingBottom="10dp"
             android:text="@string/enabledR"
             android:textAlignment="textStart"
-            android:textSize="14sp" />
+            android:textColor="@color/text_color" />
 
 
         <TextView
+            style="@style/subtitle_13_reg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:fontFamily="@font/shabnam"
             android:layoutDirection="rtl"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:textColor="@color/subtitle_color"
             android:paddingBottom="10dp"
             android:text="@string/enabledRText"
             android:textAlignment="textStart"
-            android:textSize="14sp" />
+            android:textColor="@color/subtitle_color"  />
 
 
     </RadioGroup>
@@ -92,10 +88,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:checked="false"
-        android:textColor="@color/text_color"
-        android:fontFamily="@font/shabnam"
+        style="@style/subtitle_14_med"
         android:padding="4dp"
         android:text="@string/showSystemAppsText"
+        android:textColor="@color/text_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radioGroup"
         app:switchPadding="4dp" />

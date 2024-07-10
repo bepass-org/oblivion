@@ -11,11 +11,11 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:onClick="@{handler::OnRootPressed}"
-        android:layout_height="match_parent"
         android:id="@+id/splashScreen"
-        android:background="@color/background">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background"
+        android:onClick="@{handler::OnRootPressed}">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout3"
@@ -29,28 +29,26 @@
 
             <TextView
                 android:id="@+id/textView"
+                style="@style/title_28_med"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:text="@string/app_name"
-                android:textColor="@color/text_color"
                 android:textAllCaps="true"
-                android:textSize="48sp"
-                android:textStyle="bold"
+                android:textColor="@color/text_color"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                style="@style/title_17_med"
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_color"
-                android:fontFamily="@font/shabnammedium"
                 android:gravity="center"
                 android:text="@string/means"
                 android:textAlignment="textEnd"
-                android:textSize="20sp"
+                android:textColor="@color/text_color"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -59,16 +57,14 @@
                 tools:ignore="RtlCompat" />
 
             <TextView
+                style="@style/title_17_med"
                 android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnambold"
                 android:gravity="center"
                 android:text="@string/dontForget"
                 android:textAlignment="textEnd"
                 android:textColor="@color/primary"
-                android:textSize="20sp"
-                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.498"
@@ -76,6 +72,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView2"
                 app:layout_constraintVertical_bias="0.034"
                 tools:ignore="RtlCompat" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -103,8 +100,8 @@
                 android:adjustViewBounds="true"
                 android:cropToPadding="true"
                 app:srcCompat="@drawable/segaro"
-                tools:targetApi="m"
-                tools:ignore="UnusedAttribute" />
+                tools:ignore="UnusedAttribute"
+                tools:targetApi="m" />
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imageViewYousef"
@@ -116,8 +113,8 @@
                 android:adjustViewBounds="true"
                 android:cropToPadding="true"
                 app:srcCompat="@drawable/yousef"
-                tools:targetApi="m"
-                tools:ignore="UnusedAttribute" />
+                tools:ignore="UnusedAttribute"
+                tools:targetApi="m" />
 
         </LinearLayout>
 
@@ -133,43 +130,39 @@
             app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
 
             <TextView
+                style="@style/text_16_reg"
                 android:id="@+id/textView8"
                 android:layout_width="0sp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:fontFamily="@font/shabnammedium"
                 android:gravity="center"
                 android:text="@string/segaro"
                 android:textAlignment="center"
-                android:textColor="@color/subtitle_color"
-                android:textSize="20sp" />
+                android:textColor="@color/subtitle_color" />
 
             <TextView
+                style="@style/text_16_reg"
                 android:id="@+id/textView9"
                 android:layout_width="0sp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:fontFamily="@font/shabnammedium"
                 android:gravity="center"
                 android:text="@string/yousef"
-                android:textColor="@color/subtitle_color"
-                android:textSize="20sp" />
+                android:textColor="@color/subtitle_color" />
 
         </LinearLayout>
 
         <TextView
+            style="@style/subtitle_14_med"
             android:id="@+id/textView5"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="20sp"
             android:layout_marginBottom="8sp"
-            android:fontFamily="@font/shabnammedium"
             android:gravity="center"
             android:text="@string/slogan"
             android:textAlignment="center"
             android:textColor="@color/subtitle_color"
-            android:textSize="20sp"
-            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

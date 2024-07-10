@@ -33,15 +33,14 @@
           app:tint="@color/icon_color"  />
 
       <TextView
+          style="@style/title_17_med"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_alignParentEnd="true"
           android:layout_centerVertical="true"
           android:layout_marginEnd="16dp"
-          android:fontFamily="@font/shabnamlight"
           android:text="@string/aboutApp"
           android:textColor="@color/text_color"
-          android:textSize="32sp"
           tools:ignore="RelativeOverlap" />
 
     </RelativeLayout>

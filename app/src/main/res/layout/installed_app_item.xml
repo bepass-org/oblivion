@@ -18,16 +18,15 @@
         />
 
     <TextView
+        style="@style/subtitle_14_med"
         android:id="@+id/appNameTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="1"
         android:padding="8dp"
-        android:fontFamily="@font/shabnam"
         android:textStyle="bold"
         android:textColor="@color/text_color"
-        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/icon"
         app:layout_constraintEnd_toStartOf="@+id/checkBox"
         app:layout_constraintStart_toEndOf="@+id/icon"

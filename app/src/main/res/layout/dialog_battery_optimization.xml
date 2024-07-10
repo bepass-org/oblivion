@@ -8,27 +8,25 @@
     android:background="@color/background">
 
     <TextView
+        style="@style/title_17_med"
         android:id="@+id/dialog_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
-        android:fontFamily="@font/shabnam"
         android:text="@string/batteryOpL"
         android:textColor="@color/text_color"
-        android:textSize="20sp"
         android:textStyle="bold" />
 
     <TextView
+        style="@style/subtitle_14_reg"
         android:id="@+id/dialog_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="8dp"
-        android:fontFamily="@font/shabnam"
         android:text="@string/dialBtText"
-        android:textColor="@color/subtitle_color"
-        android:textSize="16sp" />
+        android:textColor="@color/subtitle_color"  />
 
     <LinearLayout
         style="?android:attr/buttonBarStyle"
@@ -40,26 +38,24 @@
         android:orientation="horizontal">
 
         <Button
+            style="@style/subtitle_14_med"
             android:id="@+id/dialog_button_negative"
-            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="match_parent"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackground"
-            android:fontFamily="@font/shabnambold"
             android:text="@string/cancel"
             android:textColor="@color/text_color" />
 
         <Button
+            style="@style/subtitle_14_med"
             android:id="@+id/dialog_button_positive"
-            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="match_parent"
             android:layout_marginStart="8dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:background="#FFA200"
-            android:fontFamily="@font/shabnambold"
+            android:background="@drawable/bottom_sheet_closer"
             android:text="@string/goToSettings"
             android:textColor="@color/white" />
     </LinearLayout>

@@ -20,6 +20,7 @@
         android:background="@drawable/bottom_sheet_closer" />
 
     <TextView
+        style="@style/headline_15_med"
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -30,6 +31,7 @@
         android:textSize="18sp" />
 
     <EditText
+        style="@style/text_15_reg"
         android:id="@+id/edittext"
         android:layout_width="match_parent"
         android:layout_height="48sp"
@@ -37,13 +39,11 @@
         android:layout_marginTop="12sp"
         android:inputType="text"
         android:background="@drawable/edittext_back"
-        android:fontFamily="@font/shabnam"
         android:lineSpacingExtra="4sp"
         android:padding="12sp"
         android:singleLine="true"
         android:textAlignment="center"
-        android:textColor="@color/text_color"
-        android:textSize="15sp" />
+        android:textColor="@color/text_color"  />
 
     <LinearLayout
         style="?android:attr/buttonBarStyle"
@@ -55,29 +55,25 @@
 
       <Button
           android:id="@+id/cancelButton"
-          style="?android:attr/buttonBarButtonStyle"
+          style="@style/subtitle_14_med"
           android:layout_width="0sp"
           android:layout_height="wrap_content"
           android:layout_marginEnd="8sp"
           android:layout_weight="1"
-          android:background="@drawable/bottom_sheet_cancel"
-          android:fontFamily="@font/shabnambold"
+          android:background="?attr/selectableItemBackground"
           android:text="@string/cancel"
-          android:textColor="@color/text_color"
-          android:textSize="17sp" />
+          android:textColor="@color/text_color"  />
 
       <Button
+          style="@style/subtitle_14_med"
           android:id="@+id/applyButton"
-          style="?android:attr/buttonBarButtonStyle"
           android:layout_width="0sp"
           android:layout_height="wrap_content"
           android:layout_marginEnd="8sp"
           android:layout_weight="1"
           android:background="@drawable/bottom_sheet_closer"
-          android:fontFamily="@font/shabnambold"
           android:text="@string/update"
-          android:textColor="@color/white"
-          android:textSize="17sp" />
+          android:textColor="@color/white"  />
 
     </LinearLayout>
   </LinearLayout>
