@@ -133,6 +133,12 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
                 binding.country.setEnabled(false);
             }
         };
+        binding.txtDarkMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.checkBoxDarkMode.setChecked(!binding.checkBoxDarkMode.isChecked());
+            }
+        });
         binding.checkBoxDarkMode.setChecked(ThemeHelper.getInstance().getCurrentTheme() == ThemeHelper.Theme.DARK);
         binding.checkBoxDarkMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

@@ -45,12 +45,10 @@ public class LogActivity extends BaseActivity<ActivityLogBinding> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_log);
 
-        setupScrollListener();
         binding.back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
-
         binding.copytoclip.setOnClickListener(v -> copyLast100LinesToClipboard());
+        setupScrollListener();
 
         logUpdater = new Runnable() {
             @Override
