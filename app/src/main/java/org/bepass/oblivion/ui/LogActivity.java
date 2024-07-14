@@ -1,4 +1,4 @@
-package org.bepass.oblivion;
+package org.bepass.oblivion.ui;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -15,6 +15,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
 
+import org.bepass.oblivion.R;
+import org.bepass.oblivion.base.BaseActivity;
+import org.bepass.oblivion.databinding.ActivityLogBinding;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,28 +26,29 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
 
-public class LogActivity extends AppCompatActivity {
+public class LogActivity extends BaseActivity<ActivityLogBinding> {
 
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private TextView logs;
-    private ScrollView logScrollView;
     private boolean isUserScrollingUp = false;
     private Runnable logUpdater;
 
     @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_log;
+    }
+
+    @Override
+    protected int getStatusBarColor() {
+        return R.color.status_bar_color;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_log);
 
-        ImageView back = findViewById(R.id.back);
-        Button copyToClip = findViewById(R.id.copytoclip);
-        logs = findViewById(R.id.logs);
-        logScrollView = findViewById(R.id.logScrollView);
-
+        binding.back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
+        binding.copytoclip.setOnClickListener(v -> copyLast100LinesToClipboard());
         setupScrollListener();
-        back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
-
-        copyToClip.setOnClickListener(v -> copyLast100LinesToClipboard());
 
         logUpdater = new Runnable() {
             @Override
@@ -55,9 +60,9 @@ public class LogActivity extends AppCompatActivity {
     }
 
     private void setupScrollListener() {
-        logScrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
-            int scrollY = logScrollView.getScrollY();
-            int maxScrollY = logs.getHeight() - logScrollView.getHeight();
+        binding.logScrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
+            int scrollY = binding.logScrollView.getScrollY();
+            int maxScrollY = binding.logs.getHeight() - binding.logScrollView.getHeight();
             isUserScrollingUp = scrollY < maxScrollY;
         });
     }
@@ -85,9 +90,9 @@ public class LogActivity extends AppCompatActivity {
 
             String finalLog = sb.toString();
             runOnUiThread(() -> {
-                logs.setText(finalLog);
+                binding.logs.setText(finalLog);
                 if (!isUserScrollingUp) {
-                    logScrollView.post(() -> logScrollView.fullScroll(ScrollView.FOCUS_DOWN));
+                    binding.logScrollView.post(() -> binding.logScrollView.fullScroll(ScrollView.FOCUS_DOWN));
                 }
             });
         } catch (IOException e) {
@@ -96,7 +101,7 @@ public class LogActivity extends AppCompatActivity {
     }
 
     private void copyLast100LinesToClipboard() {
-        String logText = logs.getText().toString();
+        String logText = binding.logs.getText().toString();
         String[] logLines = logText.split("\n");
         int totalLines = logLines.length;
 

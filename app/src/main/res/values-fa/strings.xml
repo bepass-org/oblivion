@@ -44,6 +44,8 @@
     <string name="dialBtText">برای اطمینان از عملکرد صحیح برنامه، لطفاً بهینه‌سازی باتری برای این برنامه را غیرفعال کنید.</string>
     <string name="goToSettings">به تنظیمات بروید</string>
     <string name="copytoclip">کپی کردن لاگ به کلیپ‌بورد</string>
+    <string name="turn_on_dark_mode">Turn on dark mode</string>
+    <string name="turn_on_dark_mode_desc">turn on dark mode</string>
     <string-array name="countries">
         <item>اتریش</item>
         <item>بلژیک</item>
