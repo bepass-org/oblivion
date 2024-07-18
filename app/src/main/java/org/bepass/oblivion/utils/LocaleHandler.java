@@ -17,9 +17,20 @@ public class LocaleHandler {
     private final Context context;
     private final LocaleListCompat configuredLocales;
 
+    private static final String DEFAULT_LOCALE = "fa";
+    private static final String IS_SET_DEFAULT_LOCALE = "is_set_default_locale";
+
     public LocaleHandler(Context context) {
         this.context = context;
-        configuredLocales = LocaleConfigXKt.getConfiguredLocales(context);
+        this.configuredLocales = LocaleConfigXKt.getConfiguredLocales(context);
+    }
+
+    public void setPersianAsDefaultLocaleIfNeeds() {
+        FileManager fileManager = FileManager.getInstance(context);
+        if (!fileManager.getBoolean(IS_SET_DEFAULT_LOCALE)) {
+            AppCompatDelegate.setApplicationLocales(LocaleListCompat.create(configuredLocales.getFirstMatch(new String[] { DEFAULT_LOCALE })));
+            fileManager.set(IS_SET_DEFAULT_LOCALE, true);
+        }
     }
 
     public void showLanguageSelectionDialog() {
