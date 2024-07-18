@@ -80,4 +80,5 @@
         <item>بریتانیا</item>
         <item>ایالات متحده</item>
     </string-array>
+    <string name="select_language">انتخاب زبان</string>
 </resources>

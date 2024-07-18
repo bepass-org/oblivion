@@ -80,5 +80,6 @@
         <item>英国</item>
         <item>美国</item>
     </string-array>
+    <string name="select_language">选择语言</string>
 
 </resources>
