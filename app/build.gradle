@@ -18,6 +18,9 @@ android {
             useSupportLibrary true
         }
     }
+    androidResources {
+        generateLocaleConfig true
+    }
     buildFeatures {
         dataBinding = true
     }
