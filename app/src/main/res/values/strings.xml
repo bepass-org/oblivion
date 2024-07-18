@@ -44,10 +44,10 @@
     <string name="dialBtText"> To ensure the app works properly, please disable battery optimization for this app. </string>
     <string name="goToSettings"> Go to Settings </string>
     <string name="copytoclip">Copy log to clipboard</string>
+    <string name="turn_on_dark_mode_desc">apply the dark theme</string>
     <string name="endpointTypeText">Endpoint Type</string>
     <string name="endpointTypeTextDesc">Used to find the endpoint IP</string>
-    <string name="turn_on_dark_mode">Turn on dark mode</string>
-    <string name="turn_on_dark_mode_desc">turn on dark mode</string>
+    <string name="turn_on_dark_mode">Dark mode</string>
     <string name="select_language">Select Language</string>
     <string-array name="countries">
         <item>Austria</item>
