@@ -30,7 +30,6 @@ import org.bepass.oblivion.utils.PublicIPUtils;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
 import org.bepass.oblivion.databinding.ActivityMainBinding;
-import org.bepass.oblivion.utils.ThemeHelper;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -137,8 +136,7 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     }
 
     private void setupUI() {
-        binding.floatingActionButton.setOnClickListener(v -> localeHandler.showLanguageSelectionDialog(() ->
-                localeHandler.restartActivity(this)));
+        binding.floatingActionButton.setOnClickListener(v -> localeHandler.showLanguageSelectionDialog());
         binding.infoIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, InfoActivity.class)));
         binding.bugIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, LogActivity.class)));
         binding.settingIcon.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, SettingsActivity.class)));

@@ -44,6 +44,8 @@
     <string name="dialBtText">为了确保应用程序正常运行，请为此应用程序关闭电池优化。</string>
     <string name="goToSettings">前往设置</string>
     <string name="copytoclip">复制日志到剪贴板</string>
+    <string name="turn_on_dark_mode">深色模式</string>
+    <string name="turn_on_dark_mode_desc">申请 深色模式</string>
     <string name="endpointTypeText">端点类型</string>
     <string name="endpointTypeTextDesc">用于查找终点IP</string>
     <string-array name="countries">
@@ -80,5 +82,6 @@
         <item>英国</item>
         <item>美国</item>
     </string-array>
+    <string name="select_language">选择语言</string>
 
 </resources>

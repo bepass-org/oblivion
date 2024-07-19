@@ -8,6 +8,7 @@ import android.view.View;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.base.BaseActivity;
 import org.bepass.oblivion.databinding.ActivitySplashScreenBinding;
+import org.bepass.oblivion.utils.LocaleHandler;
 
 /**
  * A simple splash screen activity that shows a splash screen for a short duration before navigating
@@ -41,10 +42,16 @@ public class SplashScreenActivity extends BaseActivity<ActivitySplashScreenBindi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LocaleHandler localeHandler = new LocaleHandler(this);
+        localeHandler.setPersianAsDefaultLocaleIfNeeds();
         binding.setHandler(new ClickHandler());
         // 1 second
         int SHORT_SPLASH_DISPLAY_LENGTH = 1000;
         new Handler().postDelayed(() -> {
+            // First locale change to persian cause activity recreation
+            // with this check we can sure we don't do start twice
+            if (isDestroyed()) return;
+
             MainActivity.start(this);
             finish();
         }, SHORT_SPLASH_DISPLAY_LENGTH);
