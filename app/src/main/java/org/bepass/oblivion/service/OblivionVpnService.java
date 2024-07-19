@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.ParcelFileDescriptor;
@@ -79,7 +80,9 @@ public class OblivionVpnService extends VpnService {
                     e.printStackTrace();
                 }
             }
-            handler.postDelayed(this, 2000); // Poll every 2 seconds
+            // Adding jitter to avoid exact timing
+            long jitter = (long) (Math.random() * 500); // Random delay between 0 to 500ms
+            handler.postDelayed(this, 2000 + jitter); // Poll every ~2 seconds with some jitter
         }
     };
     // For JNI Calling in a new threa
@@ -96,14 +99,13 @@ public class OblivionVpnService extends VpnService {
     public static synchronized void startVpnService(Context context) {
         Intent intent = new Intent(context, OblivionVpnService.class);
         intent.setAction(OblivionVpnService.FLAG_VPN_START);
-        ContextCompat.startForegroundService(context, intent);
+        context.startService(intent); // Use startService instead of startForegroundService
     }
-
 
     public static synchronized void stopVpnService(Context context) {
         Intent intent = new Intent(context, OblivionVpnService.class);
         intent.setAction(OblivionVpnService.FLAG_VPN_STOP);
-        ContextCompat.startForegroundService(context, intent);
+        context.stopService(intent);  // Use stopService instead of stopForegroundService
     }
     public static void registerConnectionStateObserver(String key, Messenger serviceMessenger, ConnectionStateChangeListener observer) {
         // Create a message for the service
@@ -147,32 +149,43 @@ public class OblivionVpnService extends VpnService {
         String host;
         int port = -1; // Default port value if not specified
 
-        // Check if the host part is an IPv6 address (enclosed in square brackets)
-        if (hostPort.startsWith("[")) {
-            int closingBracketIndex = hostPort.indexOf(']');
-            if (closingBracketIndex > 0) {
-                host = hostPort.substring(1, closingBracketIndex);
-                if (hostPort.length() > closingBracketIndex + 1 && hostPort.charAt(closingBracketIndex + 1) == ':') {
-                    // There's a port number after the closing bracket
-                    port = Integer.parseInt(hostPort.substring(closingBracketIndex + 2));
+        try {
+            // Check if the host part is an IPv6 address (enclosed in square brackets)
+            if (hostPort.startsWith("[")) {
+                int closingBracketIndex = hostPort.indexOf(']');
+                if (closingBracketIndex > 0) {
+                    host = hostPort.substring(1, closingBracketIndex);
+                    if (hostPort.length() > closingBracketIndex + 1 && hostPort.charAt(closingBracketIndex + 1) == ':') {
+                        // There's a port number after the closing bracket
+                        String portStr = hostPort.substring(closingBracketIndex + 2);
+                        if (!portStr.isEmpty()) {
+                            port = Integer.parseInt(portStr);
+                        }
+                    }
+                } else {
+                    throw new IllegalArgumentException("Invalid IPv6 address format");
                 }
             } else {
-                throw new IllegalArgumentException("Invalid IPv6 address format");
+                // Handle IPv4 or hostname (split at the last colon)
+                int lastColonIndex = hostPort.lastIndexOf(':');
+                if (lastColonIndex > 0) {
+                    host = hostPort.substring(0, lastColonIndex);
+                    String portStr = hostPort.substring(lastColonIndex + 1);
+                    if (!portStr.isEmpty()) {
+                        port = Integer.parseInt(portStr);
+                    }
+                } else {
+                    host = hostPort; // No port specified
+                }
             }
-        } else {
-            // Handle IPv4 or hostname (split at the last colon)
-            int lastColonIndex = hostPort.lastIndexOf(':');
-            if (lastColonIndex > 0) {
-                host = hostPort.substring(0, lastColonIndex);
-                port = Integer.parseInt(hostPort.substring(lastColonIndex + 1));
-            } else {
-                host = hostPort; // No port specified
-            }
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid port number format in: " + hostPort, e);
         }
 
         result.put(host, port);
         return result;
     }
+
 
     private static int findFreePort() {
         try (ServerSocket socket = new ServerSocket(0)) {
@@ -221,6 +234,9 @@ public class OblivionVpnService extends VpnService {
             return "exception";
         }
         int socksPort = result.values().iterator().next();
+        if (socksPort == -1) {
+            return "false"; // Consider no port specified as not in use
+        }
         try {
             // ServerSocket try to open a LOCAL port
             new ServerSocket(socksPort).close();
@@ -231,6 +247,7 @@ public class OblivionVpnService extends VpnService {
             return "true";
         }
     }
+
 
     private Set<String> getSplitTunnelApps() {
         return fileManager.getStringSet("splitTunnelApps", new HashSet<>());
@@ -281,16 +298,18 @@ public class OblivionVpnService extends VpnService {
     private String getBindAddress() {
         String port = fileManager.getString("USERSETTING_port");
         boolean enableLan = fileManager.getBoolean("USERSETTING_lan");
-        if (OblivionVpnService.isLocalPortInUse("127.0.0.1:" + port).equals("true")) {
+        String bindAddress = "127.0.0.1:" + port;
+
+        if (isLocalPortInUse(bindAddress).equals("true")) {
             port = String.valueOf(findFreePort());
         }
-        String Bind = "";
-        Bind += "127.0.0.1:" + port;
+        String bind = "127.0.0.1:" + port;
         if (enableLan) {
-            Bind = "0.0.0.0:" + port;
+            bind = "0.0.0.0:" + port;
         }
-        return Bind;
+        return bind;
     }
+
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -596,6 +615,7 @@ public class OblivionVpnService extends VpnService {
 
         if (enablePsiphon && !enableGool) {
             so.setPsiphonEnabled(true);
+            Log.d("chossen country",country);
             so.setCountry(country);
         }
 
@@ -612,32 +632,36 @@ public class OblivionVpnService extends VpnService {
         private final WeakReference<OblivionVpnService> serviceRef;
 
         IncomingHandler(OblivionVpnService service) {
+            super(Looper.getMainLooper()); // Ensure the handler runs on the main thread
             serviceRef = new WeakReference<>(service);
         }
 
         @Override
         public void handleMessage(@NonNull Message msg) {
-            final Message message = new Message();
-            message.copyFrom(msg);
             OblivionVpnService service = serviceRef.get();
             if (service == null) return;
+
             switch (msg.what) {
                 case MSG_CONNECTION_STATE_SUBSCRIBE: {
-                    String key = message.getData().getString("key");
-                    if (key == null)
-                        throw new RuntimeException("No key was provided for the connection state observer");
-                    if (service.connectionStateObservers.containsKey(key)) {
-                        //Already subscribed
+                    String key = msg.getData().getString("key");
+                    if (key == null) {
+                        Log.e("IncomingHandler", "No key was provided for the connection state observer");
                         return;
                     }
-                    service.addConnectionStateObserver(key, message.replyTo);
+                    if (service.connectionStateObservers.containsKey(key)) {
+                        // Already subscribed
+                        return;
+                    }
+                    service.addConnectionStateObserver(key, msg.replyTo);
                     service.publishConnectionStateTo(key, service.lastKnownState);
                     break;
                 }
                 case MSG_CONNECTION_STATE_UNSUBSCRIBE: {
-                    String key = message.getData().getString("key");
-                    if (key == null)
-                        throw new RuntimeException("No observer was specified to unregister");
+                    String key = msg.getData().getString("key");
+                    if (key == null) {
+                        Log.e("IncomingHandler", "No observer was specified to unregister");
+                        return;
+                    }
                     service.removeConnectionStateObserver(key);
                     break;
                 }
@@ -647,4 +671,5 @@ public class OblivionVpnService extends VpnService {
             }
         }
     }
+
 }

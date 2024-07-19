@@ -30,11 +30,11 @@ public class SystemUtils {
         Window window = activity.getWindow();
         View decorView = window.getDecorView();
         int flags = decorView.getSystemUiVisibility();
-        if (!isDark) {
-            // Make status bar icons dark (e.g., for light background)
+        if (isDark) {
+            // Make status bar icons dark (e.g., for dark background)
             flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
         } else {
-            // Make status bar icons light (e.g., for dark background)
+            // Make status bar icons light (e.g., for light background)
             flags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
         }
         decorView.setSystemUiVisibility(flags);

@@ -28,48 +28,44 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAdapter.ViewHolder> {
+
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private final FileManager fm;
+    private final FileManager fileManager;
     private final LoadListener loadListener;
     private List<AppInfo> appList = new ArrayList<>();
     private OnAppSelectListener onAppSelectListener;
 
-
     public BypassListAppsAdapter(Context context, LoadListener loadListener) {
-        fm = FileManager.getInstance(context);
+        this.fileManager = FileManager.getInstance(context);
         this.loadListener = loadListener;
-        if (loadListener != null)
-            loadListener.onLoad(true);
-        executor.submit(() -> {
-            //Querying installed apps is pretty expensive. Offload it to a worker thread.
-            this.appList = getInstalledApps(context, false);
-            //Post the result to the main looper.
-            handler.post(this::notifyDataSetChanged);
-            handler.post(() -> {
-                if (loadListener != null)
-                    loadListener.onLoad(false);
-            });
-        });
-
+        loadApps(context, false);
     }
 
+    private void loadApps(Context context, boolean shouldShowSystemApps) {
+        if (loadListener != null) loadListener.onLoad(true);
+        executor.submit(() -> {
+            appList = getInstalledApps(context, shouldShowSystemApps);
+            handler.post(() -> {
+                notifyDataSetChanged();
+                if (loadListener != null) loadListener.onLoad(false);
+            });
+        });
+    }
 
-    private static List<AppInfo> getInstalledApps(Context context, boolean shouldShowSystemApps) {
-        FileManager fm = FileManager.getInstance(context);
-        Set<String> selectedApps = fm.getStringSet("splitTunnelApps", new HashSet<>());
-
-        final PackageManager pm = context.getPackageManager();
-        List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+    private List<AppInfo> getInstalledApps(Context context, boolean shouldShowSystemApps) {
+        Set<String> selectedApps = fileManager.getStringSet("splitTunnelApps", new HashSet<>());
+        PackageManager packageManager = context.getPackageManager();
+        List<ApplicationInfo> packages = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
         List<AppInfo> appList = new ArrayList<>(packages.size());
+
         for (ApplicationInfo packageInfo : packages) {
-            if ((packageInfo.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM && !shouldShowSystemApps)
-                continue;
-            if (packageInfo.packageName.equals(context.getPackageName()))
-                continue;
+            if (!shouldShowSystemApps && (packageInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) continue;
+            if (packageInfo.packageName.equals(context.getPackageName())) continue;
+
             appList.add(new AppInfo(
-                    packageInfo.loadLabel(pm).toString(),
-                    () -> packageInfo.loadIcon(pm),
+                    packageInfo.loadLabel(packageManager).toString(),
+                    () -> packageInfo.loadIcon(packageManager),
                     packageInfo.packageName,
                     selectedApps.contains(packageInfo.packageName)
             ));
@@ -78,15 +74,7 @@ public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAd
     }
 
     public void setShouldShowSystemApps(Context context, boolean shouldShowSystemApps) {
-        if (loadListener != null) loadListener.onLoad(true);
-        executor.submit(() -> {
-            appList = getInstalledApps(context, shouldShowSystemApps);
-            handler.post(this::notifyDataSetChanged);
-            handler.post(() -> {
-                if (loadListener != null) loadListener.onLoad(false);
-            });
-        });
-
+        loadApps(context, shouldShowSystemApps);
     }
 
     public void setOnAppSelectListener(OnAppSelectListener onAppSelectListener) {
@@ -110,18 +98,19 @@ public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAd
         holder.itemView.setOnClickListener(v -> {
             appInfo.isSelected = !appInfo.isSelected;
             notifyItemChanged(position);
-            Set<String> newSet = new HashSet<>(fm.getStringSet("splitTunnelApps", new HashSet<>()));
+
+            Set<String> newSet = new HashSet<>(fileManager.getStringSet("splitTunnelApps", new HashSet<>()));
             if (appInfo.isSelected) {
                 newSet.add(appInfo.packageName);
             } else {
                 newSet.remove(appInfo.packageName);
             }
-            fm.set("splitTunnelApps", newSet);
+            fileManager.set("splitTunnelApps", newSet);
+
             if (onAppSelectListener != null)
                 onAppSelectListener.onSelect(appInfo.packageName, appInfo.isSelected);
         });
     }
-
 
     @Override
     public int getItemCount() {
@@ -155,14 +144,14 @@ public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAd
         IconLoader iconLoader;
         boolean isSelected;
 
-        AppInfo(String name, IconLoader iconLoader, String packageName, boolean isSelected) {
-            this.appName = name;
+        AppInfo(String appName, IconLoader iconLoader, String packageName, boolean isSelected) {
+            this.appName = appName;
             this.packageName = packageName;
             this.iconLoader = iconLoader;
             this.isSelected = isSelected;
         }
 
-        private interface IconLoader {
+        interface IconLoader {
             Drawable load();
         }
     }

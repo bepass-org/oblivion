@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/background">
-
+    android:background="@color/background"
+    android:fitsSystemWindows="true">
 
     <RadioGroup
         android:id="@+id/radioGroup"
@@ -33,7 +33,9 @@
             android:paddingBottom="10dp"
             android:text="@string/disabledR"
             android:textAlignment="textStart"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:focusable="true"
+            android:nextFocusDown="@id/blacklist" />
 
         <TextView
             android:layout_width="match_parent"
@@ -66,8 +68,10 @@
             android:paddingBottom="10dp"
             android:text="@string/enabledR"
             android:textAlignment="textStart"
-            android:textSize="14sp" />
-
+            android:textSize="14sp"
+            android:focusable="true"
+            android:nextFocusUp="@id/disabled"
+            android:nextFocusDown="@id/showSystemApps" />
 
         <TextView
             android:layout_width="match_parent"
@@ -82,8 +86,6 @@
             android:text="@string/enabledRText"
             android:textAlignment="textStart"
             android:textSize="14sp" />
-
-
     </RadioGroup>
 
     <com.google.android.material.switchmaterial.SwitchMaterial
@@ -96,9 +98,9 @@
         android:fontFamily="@font/shabnam"
         android:padding="4dp"
         android:text="@string/showSystemAppsText"
+        android:focusable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radioGroup"
-        app:switchPadding="4dp" />
-
-
+        app:switchPadding="4dp"
+        android:nextFocusUp="@id/blacklist" />
 </androidx.constraintlayout.widget.ConstraintLayout>

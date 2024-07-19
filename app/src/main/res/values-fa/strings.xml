@@ -46,6 +46,14 @@
     <string name="copytoclip">کپی کردن لاگ به کلیپ‌بورد</string>
     <string name="turn_on_dark_mode">حالت تاریک</string>
     <string name="turn_on_dark_mode_desc">اعمال کردن تم تاریک</string>
+    <string name="endpointTypeText">نوع نقطه اندپوینت</string>
+    <string name="endpointTypeTextDesc">برای یافتن IP نقطه اندپوینت استفاده می‌شود</string>
+    <string name="copied_to_clipboard">کپی شد به کلیپ بورد</string>
+    <string name="title">عنوان</string>
+    <string name="content">اندپوینت</string>
+    <string name="save">ذخیره</string>
+    <string name="saved_endpoints">نقاط دسترسی ذخیره شده</string>
+    <string name="select_language">انتخاب زبان</string>
     <string-array name="countries">
         <item>اتریش</item>
         <item>بلژیک</item>
@@ -80,7 +88,4 @@
         <item>بریتانیا</item>
         <item>ایالات متحده</item>
     </string-array>
-    <string name="select_language">انتخاب زبان</string>
-    <string name="endpointTypeText">نوع Endpoint</string>
-    <string name="endpointTypeTextDesc">مورد استفاده برای endpoint IP</string>
 </resources>

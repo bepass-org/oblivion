@@ -7,13 +7,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.widget.Toast;
 
@@ -30,7 +25,8 @@ import org.bepass.oblivion.utils.PublicIPUtils;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
 import org.bepass.oblivion.databinding.ActivityMainBinding;
-
+import org.bepass.oblivion.utils.ThemeHelper;
+import org.bepass.oblivion.utils.NetworkUtils;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,7 +34,6 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     private long backPressedTime;
     private Toast backToast;
     private LocaleHandler localeHandler;
-    private final Handler handler = new Handler();
 
     public static void start(Context context) {
         Intent starter = new Intent(context, MainActivity.class);
@@ -55,10 +50,14 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     protected int getStatusBarColor() {
         return R.color.status_bar_color;
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Initialize the LocaleHandler and set the locale
+        localeHandler = new LocaleHandler(this);
+
         super.onCreate(savedInstanceState);
+        // Update background based on current theme
+        ThemeHelper.getInstance().updateActivityBackground(binding.getRoot());
 
         cleanOrMigrateSettings();
         setupUI();
@@ -101,7 +100,7 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
             if (lastKnownConnectionState.isDisconnected()) {
                 startVpnService(this);
             }
-            monitorInternetConnection();
+            NetworkUtils.monitorInternetConnection(lastKnownConnectionState,this);
         });
     }
 
@@ -143,45 +142,7 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
         binding.switchButtonFrame.setOnClickListener(v -> binding.switchButton.toggle());
     }
 
-    private void monitorInternetConnection() {
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!lastKnownConnectionState.isDisconnected()) {
-                    checkInternetConnectionAndDisconnectVPN();
-                    handler.postDelayed(this, 3000); // Check every 3 seconds
-                }
-            }
-        }, 5000); // Start checking after 5 seconds
-    }
 
-    // Check internet connectivity
-    private boolean isConnectedToInternet() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Network activeNetwork = connectivityManager.getActiveNetwork();
-                if (activeNetwork != null) {
-                    NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork);
-                    return networkCapabilities != null &&
-                            (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                                    networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
-                }
-            } else {
-                // For API levels below 23, use the deprecated method
-                NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-                return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-            }
-        }
-        return false;
-    }
-
-    // Periodically check internet connection and disconnect VPN if not connected
-    private void checkInternetConnectionAndDisconnectVPN() {
-        if (!isConnectedToInternet()) {
-            stopVpnService(this);
-        }
-    }
 
     protected void cleanOrMigrateSettings() {
         // Get the global FileManager instance

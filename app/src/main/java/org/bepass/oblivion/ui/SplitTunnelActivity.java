@@ -14,6 +14,7 @@ import org.bepass.oblivion.enums.SplitTunnelMode;
 import org.bepass.oblivion.SplitTunnelOptionsAdapter;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
 import org.bepass.oblivion.databinding.ActivitySplitTunnelBinding;
+import org.bepass.oblivion.utils.ThemeHelper;
 
 
 public class SplitTunnelActivity extends StateAwareBaseActivity<ActivitySplitTunnelBinding> {
@@ -31,6 +32,9 @@ public class SplitTunnelActivity extends StateAwareBaseActivity<ActivitySplitTun
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Update background based on current theme
+        ThemeHelper.getInstance().updateActivityBackground(binding.getRoot());
+
         // Handles the back button behaviour
         binding.back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
 
