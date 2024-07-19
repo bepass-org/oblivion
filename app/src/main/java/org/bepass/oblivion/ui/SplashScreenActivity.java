@@ -8,6 +8,8 @@ import android.view.View;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.base.BaseActivity;
 import org.bepass.oblivion.databinding.ActivitySplashScreenBinding;
+import org.bepass.oblivion.utils.LocaleHandler;
+import org.bepass.oblivion.utils.ThemeHelper;
 
 /**
  * A simple splash screen activity that shows a splash screen for a short duration before navigating
@@ -15,7 +17,7 @@ import org.bepass.oblivion.databinding.ActivitySplashScreenBinding;
  */
 @SuppressLint("CustomSplashScreen")
 public class SplashScreenActivity extends BaseActivity<ActivitySplashScreenBinding> {
-
+    private LocaleHandler locale;
     /**
      * Returns the layout resource ID for the splash screen activity.
      *
@@ -40,7 +42,12 @@ public class SplashScreenActivity extends BaseActivity<ActivitySplashScreenBindi
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Initialize the LocaleHandler and set the locale
+        locale = new LocaleHandler(this);
         super.onCreate(savedInstanceState);
+        // Update background based on current theme
+        ThemeHelper.getInstance().updateActivityBackground(binding.getRoot());
+
         binding.setHandler(new ClickHandler());
         // 1 second
         int SHORT_SPLASH_DISPLAY_LENGTH = 1000;

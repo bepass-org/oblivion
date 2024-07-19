@@ -26,9 +26,10 @@ public class LocaleHandler {
         setLocale(); // Ensure the locale is set when the handler is created
     }
 
-    public void setLocale() {
+    public Context setLocale() {
         String language = fileManager.getString(SELECTED_LANGUAGE, DEFAULT_LANGUAGE);
         setLanguage(language);
+        return null;
     }
 
     private void setLanguage(String language) {

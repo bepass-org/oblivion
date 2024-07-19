@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true"
+    android:background="@drawable/rounded_bottom_sheet"
+    app:chainUseRtl="false"
+    app:guidelineUseRtl="false">
+
+    <LinearLayout
+        android:background="@color/background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <View
+            android:id="@+id/dividingCloser"
+            android:layout_width="64sp"
+            android:layout_height="5dp"
+            android:layout_marginTop="8sp"
+            android:background="@drawable/bottom_sheet_closer" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16sp"
+            android:fontFamily="@font/shabnam"
+            android:text="@string/editSheetEndpoint"
+            android:textColor="@color/text_color"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <!-- LinearLayout to hold title and content in one line -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16sp"
+            android:layout_marginTop="16sp"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:gravity="center_vertical">
+
+            <EditText
+                android:id="@+id/titleEditText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="text"
+                android:background="@drawable/edittext_back"
+                android:fontFamily="@font/shabnam"
+                android:lineSpacingExtra="4sp"
+                android:padding="9dp"
+                android:layout_marginEnd="5sp"
+                android:singleLine="true"
+                android:textAlignment="center"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                android:hint="@string/title" />
+
+            <EditText
+                android:id="@+id/contentEditText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:inputType="text"
+                android:background="@drawable/edittext_back"
+                android:fontFamily="@font/shabnam"
+                android:lineSpacingExtra="4sp"
+                android:padding="9dp"
+                android:singleLine="true"
+                android:textAlignment="center"
+                android:textColor="@color/text_color"
+                android:textSize="16sp"
+                android:hint="@string/content" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16sp"
+            android:layout_marginTop="16sp"
+            android:background="@drawable/button"
+            android:fontFamily="@font/shabnambold"
+            android:text="@string/save"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24sp"
+            android:fontFamily="@font/shabnam"
+            android:text="@string/saved_endpoints"
+            android:textColor="@color/text_color"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16sp"
+            android:layout_marginVertical="12sp"
+            android:background="@color/background" />
+    </LinearLayout>
+</ScrollView>

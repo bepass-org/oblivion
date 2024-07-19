@@ -11,7 +11,8 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:background="@color/background"
-      tools:context="org.bepass.oblivion.ui.SettingsActivity">
+      tools:context="org.bepass.oblivion.ui.SettingsActivity"
+      android:fitsSystemWindows="true">
 
     <RelativeLayout
         android:id="@+id/top_bar"
@@ -31,7 +32,9 @@
           android:layout_centerVertical="true"
           android:layout_marginStart="16dp"
           android:src="@drawable/ic_back"
-          app:tint="@color/icon_color" />
+          app:tint="@color/icon_color"
+          android:focusable="true"
+          android:nextFocusDown="@id/endpoint_type_layout" />
 
       <TextView
           android:layout_width="wrap_content"
@@ -43,7 +46,9 @@
           android:text="@string/settingsText"
           android:textColor="@color/text_color"
           android:textSize="24sp"
-          tools:ignore="RelativeOverlap" />
+          tools:ignore="RelativeOverlap"
+          android:focusable="true"
+          android:nextFocusDown="@id/battery_optimization_layout"/>
 
     </RelativeLayout>
 
@@ -61,43 +66,43 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:orientation="vertical">
-
-        <LinearLayout
-            android:id="@+id/battery_optimization_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="?android:selectableItemBackground"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:orientation="vertical">
-
           <LinearLayout
+              android:id="@+id/battery_optimization_layout"
               android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
+              android:layout_height="80dp"
+              android:background="?android:selectableItemBackground"
+              android:gravity="center"
+              android:paddingHorizontal="16dp"
+              android:orientation="vertical"
+              android:focusable="true"
+              android:nextFocusDown="@id/endpoint_type_layout">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end">
+
+              <TextView
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:fontFamily="@font/shabnam"
+                  android:minWidth="100dp"
+                  android:text="@string/batteryOpL"
+                  android:textAlignment="viewEnd"
+                  android:textColor="@color/text_color"
+                  android:textSize="20sp" />
+            </LinearLayout>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/batteryOpL"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
+                android:text="@string/batteryOpLText"
+                android:textColor="@color/subtitle_color"
+                android:textSize="16sp" />
+
           </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/batteryOpLText"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-
-        </LinearLayout>
-
         <LinearLayout
             android:id="@+id/battery_opt_line"
             android:layout_width="match_parent"
@@ -117,7 +122,10 @@
             android:background="?selectableItemBackground"
             android:layout_height="80dp"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/endpoint_layout"
+            android:nextFocusLeft="@id/endpoint_type">
           <LinearLayout
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
@@ -128,7 +136,9 @@
                 android:entries="@array/endpointType"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:focusable="true"
+                android:nextFocusDown="@id/endpoint_layout"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -137,7 +147,7 @@
                 android:minWidth="100dp"
                 android:text="@string/endpointTypeText"
                 android:textAlignment="viewEnd"
-                android:textColor="@color/black"
+                android:textColor="@color/text_color"
                 android:textSize="20sp" />
 
           </LinearLayout>
@@ -158,7 +168,9 @@
             android:background="?selectableItemBackground"
             android:layout_height="80dp"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/port_layout">
 
           <LinearLayout
               android:layout_width="match_parent"
@@ -218,7 +230,9 @@
             android:gravity="center"
             android:paddingHorizontal="16dp"
             android:background="?selectableItemBackground"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/split_tunnel_layout">
 
           <LinearLayout
               android:layout_width="match_parent"
@@ -278,7 +292,9 @@
             android:background="?android:selectableItemBackground"
             android:gravity="center"
             android:paddingHorizontal="16dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/txt_dark_mode">
 
           <LinearLayout
               android:layout_width="match_parent"
@@ -326,7 +342,9 @@
             android:gravity="center"
             android:paddingHorizontal="16dp"
             android:background="?selectableItemBackground"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/lan_layout">
 
           <LinearLayout
               android:layout_width="match_parent"
@@ -391,7 +409,9 @@
             android:gravity="center"
             android:paddingHorizontal="16dp"
             android:background="?selectableItemBackground"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/psiphon_layout">
 
           <LinearLayout
               android:layout_width="match_parent"
@@ -456,7 +476,9 @@
             android:gravity="center"
             android:paddingHorizontal="16dp"
             android:background="?selectableItemBackground"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/country_layout">
 
           <LinearLayout
               android:layout_width="match_parent"
@@ -521,7 +543,10 @@
             android:gravity="center"
             android:paddingHorizontal="16dp"
             android:background="?selectableItemBackground"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/license_layout"
+            android:nextFocusLeft="@id/country">
 
           <LinearLayout
               android:layout_width="match_parent"
@@ -532,7 +557,9 @@
                 android:id="@+id/country"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:focusable="true"
+                android:nextFocusDown="@id/license_layout"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -577,7 +604,9 @@
             android:gravity="center"
             android:paddingHorizontal="16dp"
             android:background="?selectableItemBackground"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/gool_layout">
 
           <LinearLayout
               android:layout_width="match_parent"
@@ -638,7 +667,9 @@
             android:gravity="center"
             android:paddingHorizontal="16dp"
             android:background="?selectableItemBackground"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusUp="@id/license_layout">
 
           <LinearLayout
               android:layout_width="match_parent"

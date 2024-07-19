@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -8,22 +7,17 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission
-        android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED"
-        android:minSdkVersion="34" />
-   <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-<!--    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />-->
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED"/>
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />
         </intent>
     </queries>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -69,7 +63,8 @@
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
 
-    </service>
+        </service>
+
         <activity android:name="org.bepass.oblivion.ui.SplashScreenActivity"
             android:exported="true">
             <intent-filter>
@@ -85,25 +80,20 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
             </intent-filter>
         </activity>
         <activity
             android:name="org.bepass.oblivion.ui.InfoActivity"
             android:exported="false" />
-
         <activity
             android:name="org.bepass.oblivion.ui.LogActivity"
             android:exported="false" />
-
         <activity
             android:name="org.bepass.oblivion.ui.SettingsActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".ui.SplitTunnelActivity"
             android:exported="false" />
     </application>
-
 </manifest>

@@ -43,7 +43,8 @@
         android:singleLine="true"
         android:textAlignment="center"
         android:textColor="@color/text_color"
-        android:textSize="15sp" />
+        android:textSize="15sp"
+        android:nextFocusDown="@+id/cancelButton" />
 
     <LinearLayout
         style="?android:attr/buttonBarStyle"
@@ -64,7 +65,10 @@
           android:fontFamily="@font/shabnambold"
           android:text="@string/cancel"
           android:textColor="@color/text_color"
-          android:textSize="17sp" />
+          android:textSize="17sp"
+          android:focusable="true"
+          android:nextFocusRight="@+id/applyButton"
+          android:nextFocusUp="@+id/edittext" />
 
       <Button
           android:id="@+id/applyButton"
@@ -77,7 +81,10 @@
           android:fontFamily="@font/shabnambold"
           android:text="@string/update"
           android:textColor="@color/white"
-          android:textSize="17sp" />
+          android:textSize="17sp"
+          android:focusable="true"
+          android:nextFocusLeft="@+id/cancelButton"
+          android:nextFocusUp="@+id/edittext" />
 
     </LinearLayout>
   </LinearLayout>

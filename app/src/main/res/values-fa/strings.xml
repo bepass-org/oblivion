@@ -44,8 +44,15 @@
     <string name="dialBtText">برای اطمینان از عملکرد صحیح برنامه، لطفاً بهینه‌سازی باتری برای این برنامه را غیرفعال کنید.</string>
     <string name="goToSettings">به تنظیمات بروید</string>
     <string name="copytoclip">کپی کردن لاگ به کلیپ‌بورد</string>
-    <string name="turn_on_dark_mode">Turn on dark mode</string>
-    <string name="turn_on_dark_mode_desc">turn on dark mode</string>
+    <string name="endpointTypeText">نوع نقطه اندپوینت</string>
+    <string name="endpointTypeTextDesc">برای یافتن IP نقطه اندپوینت استفاده می‌شود</string>
+    <string name="turn_on_dark_mode">فعال کردن حالت تاریک</string>
+    <string name="turn_on_dark_mode_desc">فعال کردن حالت تاریک</string>
+    <string name="copied_to_clipboard">کپی شد به کلیپ بورد</string>
+    <string name="title">عنوان</string>
+    <string name="content">اندپوینت</string>
+    <string name="save">ذخیره</string>
+    <string name="saved_endpoints">نقاط دسترسی ذخیره شده</string>
     <string-array name="countries">
         <item>اتریش</item>
         <item>بلژیک</item>

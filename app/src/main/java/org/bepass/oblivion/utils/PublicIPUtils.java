@@ -74,7 +74,12 @@ public class PublicIPUtils {
             while (System.currentTimeMillis() - startTime < TIMEOUT_MILLIS) { // 30 seconds
                 Log.d(TAG, "Attempting to fetch IP details");
                 try {
-                    int socksPort = Integer.parseInt(fm.getString("USERSETTING_port"));
+                    String portString = fm.getString("USERSETTING_port");
+                    if (portString == null || portString.isEmpty()) {
+                        throw new IllegalStateException("USERSETTING_port is not set in FileManager");
+                    }
+
+                    int socksPort = Integer.parseInt(portString);
                     Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("localhost", socksPort));
 
                     OkHttpClient client = new OkHttpClient.Builder()

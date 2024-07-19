@@ -5,6 +5,7 @@ import static org.bepass.oblivion.utils.BatteryOptimizationKt.showBatteryOptimiz
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,7 +15,9 @@ import android.widget.CompoundButton;
 import android.widget.Spinner;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AppCompatDelegate;
 
+import org.bepass.oblivion.EndpointsBottomSheet;
 import org.bepass.oblivion.enums.ConnectionState;
 import org.bepass.oblivion.utils.CountryUtils;
 import org.bepass.oblivion.EditSheet;
@@ -52,6 +55,9 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Update background based on current theme
+        ThemeHelper.getInstance().updateActivityBackground(binding.getRoot());
+
         fileManager = FileManager.getInstance(this);
 
         if (isBatteryOptimizationEnabled(this)) {
@@ -62,7 +68,6 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
             binding.batteryOptimizationLayout.setVisibility(View.GONE);
             binding.batteryOptLine.setVisibility(View.GONE);
         }
-
 
         binding.back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
 
@@ -81,8 +86,16 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         });
 
         SheetsCallBack sheetsCallBack = this::settingBasicValuesFromSPF;
-        // Listen to Changes
-        binding.endpointLayout.setOnClickListener(v -> (new EditSheet(this, getString(R.string.endpointText), "endpoint", sheetsCallBack)).start());
+        // Listen for endpoint changes and update USERSETTING_endpoint
+        binding.endpointLayout.setOnClickListener(v -> {
+            EndpointsBottomSheet bottomSheet = new EndpointsBottomSheet();
+            bottomSheet.setEndpointSelectionListener(content -> {
+                fileManager.set("USERSETTING_endpoint", content);
+                binding.endpoint.setText(content); // Update UI with selected endpoint content
+            });
+            bottomSheet.show(getSupportFragmentManager(), bottomSheet.getTag());
+        });
+
         binding.portLayout.setOnClickListener(v -> (new EditSheet(this, getString(R.string.portTunText), "port", sheetsCallBack)).start());
         binding.licenseLayout.setOnClickListener(v -> (new EditSheet(this, getString(R.string.licenseText), "license", sheetsCallBack)).start());
 
@@ -143,18 +156,14 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         binding.checkBoxDarkMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    ThemeHelper.getInstance().select(ThemeHelper.Theme.DARK);
-                } else {
-                    ThemeHelper.getInstance().select(ThemeHelper.Theme.LIGHT);
-                }
+                 AppCompatDelegate.setDefaultNightMode( isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
             }
         });
+
         // Set the listeners to the checkboxes
         binding.psiphon.setOnCheckedChangeListener(psiphonListener);
         binding.gool.setOnCheckedChangeListener(goolListener);
     }
-
     private int getIndexFromName(Spinner spinner, String name) {
         String ccn = CountryUtils.getCountryName(name);
         String newname = LocaleHelper.restoreText(this, ccn);

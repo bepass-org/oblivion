@@ -46,6 +46,13 @@
     <string name="copytoclip">复制日志到剪贴板</string>
     <string name="endpointTypeText">端点类型</string>
     <string name="endpointTypeTextDesc">用于查找终点IP</string>
+    <string name="turn_on_dark_mode">开启深色模式</string>
+    <string name="turn_on_dark_mode_desc">开启深色模式</string>
+    <string name="copied_to_clipboard">复制到剪贴板</string>
+    <string name="title">标题</string>
+    <string name="content">端点</string>
+    <string name="save">保存</string>
+    <string name="saved_endpoints">已保存的端点</string>
     <string-array name="countries">
         <item>奥地利</item>
         <item>比利时</item>

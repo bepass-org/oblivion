@@ -6,18 +6,16 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.widget.Button;
-import android.widget.ImageView;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.material.button.MaterialButton;
+import android.widget.Toast;
 
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.base.BaseActivity;
 import org.bepass.oblivion.databinding.ActivityLogBinding;
+import org.bepass.oblivion.utils.ThemeHelper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -45,6 +43,8 @@ public class LogActivity extends BaseActivity<ActivityLogBinding> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Update background based on current theme
+        ThemeHelper.getInstance().updateActivityBackground(binding.getRoot());
 
         binding.back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         binding.copytoclip.setOnClickListener(v -> copyLast100LinesToClipboard());
@@ -118,5 +118,17 @@ public class LogActivity extends BaseActivity<ActivityLogBinding> {
         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("Log", last100Log);
         clipboard.setPrimaryClip(clip);
+
+        showCopiedToClipboardToast();
+    }
+
+    private void showCopiedToClipboardToast() {
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(R.layout.toast, findViewById(R.id.toast_layout));
+
+        Toast toast = new Toast(getApplicationContext());
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.show();
     }
 }

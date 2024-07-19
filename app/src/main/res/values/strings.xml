@@ -48,6 +48,11 @@
   <string name="endpointTypeTextDesc">Used to find the endpoint IP</string>
   <string name="turn_on_dark_mode">Turn on dark mode</string>
   <string name="turn_on_dark_mode_desc">turn on dark mode</string>
+  <string name="copied_to_clipboard">Copied to clipboard</string>
+  <string name="title">Title</string>
+  <string name="content">Endpoint</string>
+  <string name="save">Save</string>
+  <string name="saved_endpoints">Saved Endpoints</string>
   <string-array name="countries">
     <item>Austria</item>
     <item>Belgium</item>
