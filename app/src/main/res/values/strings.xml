@@ -1,124 +1,125 @@
 <resources>
-  <string name="app_name" translatable="false">Oblivion</string>
-  <string name="stateText">Not Connected</string>
-  <string name="basedOnWarp">Based on Warp</string>
-  <string name="aboutApp">About the App</string>
-  <string name="aboutAppDesc">"This application is designed to access the internet freely, and any commercial use of it is prohibited.\n\n\n Internet for all, or no one! "</string>
-  <string name="appVersion">App Version: 4</string>
-  <string name="logApp">App Log</string>
-  <string name="means" formatted="true">Means \"unawareness, ignorance\"</string>
-  <string name="dontForget">Don\'t Forget!</string>
-  <string name="segaro">#Segaro</string>
-  <string name="yousef">#Yousef_Ghobadi</string>
-  <string name="slogan">Internet for All, or No One</string>
-  <string name="blackList">Blacklist</string>
-  <string name="disabledR">Disabled</string>
-  <string name="disabledRText">In disabled mode, traffic of all apps passes through VPN.</string>
-  <string name="enabledR">Enabled</string>
-  <string name="enabledRText">In enabled mode, traffic of selected apps does not pass through VPN.</string>
-  <string name="showSystemAppsText">Show System Apps</string>
-  <string name="settingsText">Settings</string>
-  <string name="endpointText">Endpoint</string>
-  <string name="endpointTextDesc">Combination of IP or domain name, along with port</string>
-  <string name="portTunText">Tunnel Port</string>
-  <string name="portTunTextDesc">Specify the tunnel port for the app</string>
-  <string name="blackListTextDesc">Specify which apps should not use VPN</string>
-  <string name="connectFromLanText">Connect from LAN</string>
-  <string name="connectFromLanTextDesc">Ability to connect other network devices</string>
-  <string name="psiphonText">Psiphon</string>
-  <string name="psiphonTextDesc">Activate Psiphon</string>
-  <string name="chooseText">Choose Country</string>
-  <string name="chooseTextDesc">Country to connect to the internet from</string>
-  <string name="licenseText">License</string>
-  <string name="licenseTextDesc">If you have a license (each license is doubled)</string>
-  <string name="goolText">Gool</string>
-  <string name="goolTextDesc">Activate Warp In Warp</string>
-  <string name="editSheetEndpoint">Change Endpoint Value</string>
-  <string name="cancel">Cancel</string>
-  <string name="update">Update</string>
-  <string name="notConnected">Not Connected</string>
-  <string name="connecting">Connecting…</string>
-  <string name="connected">Connected</string>
-  <string name="batteryOpL">Disable Battery optimization</string>
-  <string name="batteryOpLText">Disabling battery optimization for better experience</string>
-  <string name="dialBtText"> To ensure the app works properly, please disable battery optimization for this app. </string>
-  <string name="goToSettings"> Go to Settings </string>
-  <string name="copytoclip">Copy log to clipboard</string>
-  <string name="endpointTypeText">Endpoint Type</string>
-  <string name="endpointTypeTextDesc">Used to find the endpoint IP</string>
-  <string name="turn_on_dark_mode">Turn on dark mode</string>
-  <string name="turn_on_dark_mode_desc">turn on dark mode</string>
-  <string-array name="countries">
-    <item>Austria</item>
-    <item>Belgium</item>
-    <item>Brazil</item>
-    <item>Bulgaria</item>
-    <item>Canada</item>
-    <item>Croatia</item>
-    <item>Czechia</item>
-    <item>Denmark</item>
-    <item>Estonia</item>
-    <item>Finland</item>
-    <item>France</item>
-    <item>Germany</item>
-    <item>Hungary</item>
-    <item>India</item>
-    <item>Ireland</item>
-    <item>Italy</item>
-    <item>Japan</item>
-    <item>Latvia</item>
-    <item>Netherlands</item>
-    <item>Norway</item>
-    <item>Poland</item>
-    <item>Portugal</item>
-    <item>Romania</item>
-    <item>Serbia</item>
-    <item>Singapore</item>
-    <item>Slovakia</item>
-    <item>Spain</item>
-    <item>Sweden</item>
-    <item>Switzerland</item>
-    <item>Ukraine</item>
-    <item>United Kingdom</item>
-    <item>United States</item>
-  </string-array>
-  <string-array name="englishCountries">
-    <item>Austria</item>
-    <item>Belgium</item>
-    <item>Brazil</item>
-    <item>Bulgaria</item>
-    <item>Canada</item>
-    <item>Croatia</item>
-    <item>Czechia</item>
-    <item>Denmark</item>
-    <item>Estonia</item>
-    <item>Finland</item>
-    <item>France</item>
-    <item>Germany</item>
-    <item>Hungary</item>
-    <item>India</item>
-    <item>Ireland</item>
-    <item>Italy</item>
-    <item>Japan</item>
-    <item>Latvia</item>
-    <item>Netherlands</item>
-    <item>Norway</item>
-    <item>Poland</item>
-    <item>Portugal</item>
-    <item>Romania</item>
-    <item>Serbia</item>
-    <item>Singapore</item>
-    <item>Slovakia</item>
-    <item>Spain</item>
-    <item>Sweden</item>
-    <item>Switzerland</item>
-    <item>Ukraine</item>
-    <item>United Kingdom</item>
-    <item>United States</item>
-  </string-array>
-  <string-array name="endpointType">
-    <item>Auto</item>
-    <item>IPv4</item>
-    <item>IPv6</item>
-  </string-array>
+    <string name="app_name" translatable="false">Oblivion</string>
+    <string name="stateText">Not Connected</string>
+    <string name="basedOnWarp">Based on Warp</string>
+    <string name="aboutApp">About the App</string>
+    <string name="aboutAppDesc">"This application is designed to access the internet freely, and any commercial use of it is prohibited.\n\n\n Internet for all, or no one! "</string>
+    <string name="appVersion">App Version: 4</string>
+    <string name="logApp">App Log</string>
+    <string name="means" formatted="true">Means \"unawareness, ignorance\"</string>
+    <string name="dontForget">Don\'t Forget!</string>
+    <string name="segaro">#Segaro</string>
+    <string name="yousef">#Yousef_Ghobadi</string>
+    <string name="slogan">Internet for All, or No One</string>
+    <string name="blackList">Blacklist</string>
+    <string name="disabledR">Disabled</string>
+    <string name="disabledRText">In disabled mode, traffic of all apps passes through VPN.</string>
+    <string name="enabledR">Enabled</string>
+    <string name="enabledRText">In enabled mode, traffic of selected apps does not pass through VPN.</string>
+    <string name="showSystemAppsText">Show System Apps</string>
+    <string name="settingsText">Settings</string>
+    <string name="endpointText">Endpoint</string>
+    <string name="endpointTextDesc">Combination of IP or domain name, along with port</string>
+    <string name="portTunText">Tunnel Port</string>
+    <string name="portTunTextDesc">Specify the tunnel port for the app</string>
+    <string name="blackListTextDesc">Specify which apps should not use VPN</string>
+    <string name="connectFromLanText">Connect from LAN</string>
+    <string name="connectFromLanTextDesc">Ability to connect other network devices</string>
+    <string name="psiphonText">Psiphon</string>
+    <string name="psiphonTextDesc">Activate Psiphon</string>
+    <string name="chooseText">Choose Country</string>
+    <string name="chooseTextDesc">Country to connect to the internet from</string>
+    <string name="licenseText">License</string>
+    <string name="licenseTextDesc">If you have a license (each license is doubled)</string>
+    <string name="goolText">Gool</string>
+    <string name="goolTextDesc">Activate Warp In Warp</string>
+    <string name="editSheetEndpoint">Change Endpoint Value</string>
+    <string name="cancel">Cancel</string>
+    <string name="update">Update</string>
+    <string name="notConnected">Not Connected</string>
+    <string name="connecting">Connecting…</string>
+    <string name="connected">Connected</string>
+    <string name="batteryOpL">Disable Battery optimization</string>
+    <string name="batteryOpLText">Disabling battery optimization for better experience</string>
+    <string name="dialBtText"> To ensure the app works properly, please disable battery optimization for this app. </string>
+    <string name="goToSettings"> Go to Settings </string>
+    <string name="copytoclip">Copy log to clipboard</string>
+    <string name="turn_on_dark_mode_desc">apply the dark theme</string>
+    <string name="endpointTypeText">Endpoint Type</string>
+    <string name="endpointTypeTextDesc">Used to find the endpoint IP</string>
+    <string name="turn_on_dark_mode">Dark mode</string>
+    <string name="select_language">Select Language</string>
+    <string-array name="countries">
+        <item>Austria</item>
+        <item>Belgium</item>
+        <item>Brazil</item>
+        <item>Bulgaria</item>
+        <item>Canada</item>
+        <item>Croatia</item>
+        <item>Czechia</item>
+        <item>Denmark</item>
+        <item>Estonia</item>
+        <item>Finland</item>
+        <item>France</item>
+        <item>Germany</item>
+        <item>Hungary</item>
+        <item>India</item>
+        <item>Ireland</item>
+        <item>Italy</item>
+        <item>Japan</item>
+        <item>Latvia</item>
+        <item>Netherlands</item>
+        <item>Norway</item>
+        <item>Poland</item>
+        <item>Portugal</item>
+        <item>Romania</item>
+        <item>Serbia</item>
+        <item>Singapore</item>
+        <item>Slovakia</item>
+        <item>Spain</item>
+        <item>Sweden</item>
+        <item>Switzerland</item>
+        <item>Ukraine</item>
+        <item>United Kingdom</item>
+        <item>United States</item>
+    </string-array>
+    <string-array name="englishCountries">
+        <item>Austria</item>
+        <item>Belgium</item>
+        <item>Brazil</item>
+        <item>Bulgaria</item>
+        <item>Canada</item>
+        <item>Croatia</item>
+        <item>Czechia</item>
+        <item>Denmark</item>
+        <item>Estonia</item>
+        <item>Finland</item>
+        <item>France</item>
+        <item>Germany</item>
+        <item>Hungary</item>
+        <item>India</item>
+        <item>Ireland</item>
+        <item>Italy</item>
+        <item>Japan</item>
+        <item>Latvia</item>
+        <item>Netherlands</item>
+        <item>Norway</item>
+        <item>Poland</item>
+        <item>Portugal</item>
+        <item>Romania</item>
+        <item>Serbia</item>
+        <item>Singapore</item>
+        <item>Slovakia</item>
+        <item>Spain</item>
+        <item>Sweden</item>
+        <item>Switzerland</item>
+        <item>Ukraine</item>
+        <item>United Kingdom</item>
+        <item>United States</item>
+    </string-array>
+    <string-array name="endpointType">
+        <item>Auto</item>
+        <item>IPv4</item>
+        <item>IPv6</item>
+    </string-array>
 </resources>

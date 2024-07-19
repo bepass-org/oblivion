@@ -18,6 +18,9 @@ android {
             useSupportLibrary true
         }
     }
+    androidResources {
+        generateLocaleConfig true
+    }
     buildFeatures {
         dataBinding = true
     }
@@ -59,5 +62,6 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'com.vdurmont:emoji-java:5.1.1'
+    implementation 'com.github.erfansn:locale-config-x:1.0.1'
     implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'])
 }

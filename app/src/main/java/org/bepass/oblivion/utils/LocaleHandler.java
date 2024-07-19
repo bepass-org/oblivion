@@ -1,101 +1,54 @@
 package org.bepass.oblivion.utils;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.os.Build;
-import android.util.DisplayMetrics;
+
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.os.LocaleListCompat;
+
+import com.github.erfansn.localeconfigx.LocaleConfigXKt;
+
+import org.bepass.oblivion.R;
 
 import java.util.Locale;
+import java.util.Objects;
 
 public class LocaleHandler {
-    private static final String SELECTED_LANGUAGE = "SelectedLanguage";
-    private static final String DEFAULT_LANGUAGE = "fa";
-    private static final String[] AVAILABLE_LANGUAGES = {"fa", "en", "ru", "zh"};
     private final Context context;
-    private final FileManager fileManager;
+    private final LocaleListCompat configuredLocales;
+
+    private static final String DEFAULT_LOCALE = "fa";
+    private static final String IS_SET_DEFAULT_LOCALE = "is_set_default_locale";
 
     public LocaleHandler(Context context) {
         this.context = context;
-        fileManager = FileManager.getInstance(context);
-        setLocale(); // Ensure the locale is set when the handler is created
+        this.configuredLocales = LocaleConfigXKt.getConfiguredLocales(context);
     }
 
-    public void setLocale() {
-        String language = fileManager.getString(SELECTED_LANGUAGE, DEFAULT_LANGUAGE);
-        setLanguage(language);
+    public void setPersianAsDefaultLocaleIfNeeds() {
+        FileManager fileManager = FileManager.getInstance(context);
+        if (!fileManager.getBoolean(IS_SET_DEFAULT_LOCALE)) {
+            AppCompatDelegate.setApplicationLocales(LocaleListCompat.create(configuredLocales.getFirstMatch(new String[] { DEFAULT_LOCALE })));
+            fileManager.set(IS_SET_DEFAULT_LOCALE, true);
+        }
     }
 
-    private void setLanguage(String language) {
-        Locale locale = new Locale(language);
-        Locale.setDefault(locale);
-
-        Resources resources = context.getResources();
-        Configuration configuration = resources.getConfiguration();
-        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
-
-        configuration.setLocale(locale);
-
-        resources.updateConfiguration(configuration, displayMetrics);
-    }
-
-    public void showLanguageSelectionDialog(Runnable onLanguageSelected) {
+    public void showLanguageSelectionDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Select Language")
-                .setItems(getAvailableLanguagesNames(), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int which) {
-                        String selectedLanguage = AVAILABLE_LANGUAGES[which];
-                        saveSelectedLanguage(selectedLanguage);
-                        setLanguage(selectedLanguage);
-                        onLanguageSelected.run(); // Run the callback
-                    }
+        builder.setTitle(R.string.select_language)
+                .setItems(getAvailableLanguagesNames(), (dialogInterface, which) -> {
+                    Locale selectedLocale = configuredLocales.get(which);
+                    LocaleListCompat desiredLocales = LocaleListCompat.create(selectedLocale);
+                    AppCompatDelegate.setApplicationLocales(desiredLocales);
                 })
                 .show();
     }
 
-
-    private void saveSelectedLanguage(String language) {
-        fileManager.set(SELECTED_LANGUAGE, language);
-    }
-
     private String[] getAvailableLanguagesNames() {
-        String[] languageNames = new String[AVAILABLE_LANGUAGES.length];
-        for (int i = 0; i < AVAILABLE_LANGUAGES.length; i++) {
-            languageNames[i] = getLanguageName(AVAILABLE_LANGUAGES[i]);
+        String[] languageNames = new String[configuredLocales.size()];
+        for (int index = 0; index < configuredLocales.size(); index++) {
+            languageNames[index] = Objects.requireNonNull(configuredLocales.get(index)).getDisplayName();
         }
         return languageNames;
     }
-
-    private String getLanguageName(String languageCode) {
-        switch (languageCode) {
-            case "fa":
-                return "Persian";
-            case "en":
-                return "English";
-            case "ru":
-                return "Russian";
-            case "zh":
-                return "Chinese";
-            default:
-                return languageCode;
-        }
-    }
-    @SuppressLint("ObsoleteSdkInt")
-    public void restartActivity(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            ((Activity) context).recreate();
-        } else {
-            Intent intent = ((Activity) context).getIntent();
-            context.startActivity(intent);
-            ((Activity) context).finish();
-            context.startActivity(intent);
-        }
-    }
 }
-

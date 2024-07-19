@@ -44,8 +44,8 @@
     <string name="dialBtText">Чтобы приложение работало правильно, отключите оптимизацию батареи для этого приложения.</string>
     <string name="goToSettings">Перейти к настройкам</string>
     <string name="copytoclip">Скопировать лог в буфер обмена</string>
-    <string name="turn_on_dark_mode">Turn on dark mode</string>
-    <string name="turn_on_dark_mode_desc">turn on dark mode</string>
+    <string name="turn_on_dark_mode">темный режим</string>
+    <string name="turn_on_dark_mode_desc">Применить темную тему</string>
     <string-array name="countries">
         <item>Австрия</item>
         <item>Бельгия</item>
@@ -80,4 +80,7 @@
         <item>Великобритания</item>
         <item>Соединенные Штаты</item>
     </string-array>
+    <string name="endpointTypeText">Тип конечной точки</string>
+    <string name="endpointTypeTextDesc">Используется для определения IP-адреса конечной точки.</string>
+    <string name="select_language">Выберите язык</string>
 </resources>
