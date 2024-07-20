@@ -4,6 +4,7 @@ import static org.bepass.oblivion.utils.BatteryOptimizationKt.isBatteryOptimizat
 import static org.bepass.oblivion.utils.BatteryOptimizationKt.showBatteryOptimizationDialog;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
@@ -30,6 +31,9 @@ import org.bepass.oblivion.base.ApplicationLoader;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
 import org.bepass.oblivion.databinding.ActivitySettingsBinding;
 import org.bepass.oblivion.utils.ThemeHelper;
+
+import java.io.File;
+import java.util.Objects;
 
 public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBinding> {
     private FileManager fileManager;
@@ -163,6 +167,58 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         // Set the listeners to the checkboxes
         binding.psiphon.setOnCheckedChangeListener(psiphonListener);
         binding.gool.setOnCheckedChangeListener(goolListener);
+        binding.resetAppLayout.setOnClickListener(v->resetAppData());
+    }
+    private void resetAppData() {
+        // Clear all stored preferences
+        clearSharedPreferences();
+
+        // Clear cache directory
+        try {
+            File cacheDir = getCacheDir();
+            deleteDir(cacheDir);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Clear files directory
+        try {
+            File filesDir = getFilesDir();
+            deleteDir(filesDir);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Restart the activity to apply the changes
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
+    }
+
+    // Helper method to clear all SharedPreferences
+    private void clearSharedPreferences() {
+        SharedPreferences preferences = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.clear();
+        editor.apply();
+    }
+
+    // Helper method to delete a directory and its contents
+    private boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < Objects.requireNonNull(children).length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+            return dir.delete();
+        } else if (dir != null && dir.isFile()) {
+            return dir.delete();
+        } else {
+            return false;
+        }
     }
     private int getIndexFromName(Spinner spinner, String name) {
         String ccn = CountryUtils.getCountryName(name);

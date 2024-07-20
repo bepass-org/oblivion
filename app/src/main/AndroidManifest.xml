@@ -33,6 +33,7 @@
         android:screenOrientation="portrait"
         android:enableOnBackInvokedCallback="true"
         android:theme="@style/Theme.OblivionUI"
+        android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="tiramisu"
         tools:ignore="DiscouragedApi">
 

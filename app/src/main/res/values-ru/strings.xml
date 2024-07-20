@@ -54,6 +54,8 @@
     <string name="save">Сохранить</string>
     <string name="saved_endpoints">Сохраненные точки доступа</string>
     <string name="select_language">Выберите язык</string>
+    <string name="resetAppTextDesc">Сбросить настройки приложения на умолчания</string>
+    <string name="resetAppText">Сброс</string>
     <string-array name="countries">
         <item>Австрия</item>
         <item>Бельгия</item>

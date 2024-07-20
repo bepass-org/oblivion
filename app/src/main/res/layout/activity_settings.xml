@@ -713,6 +713,65 @@
               android:textSize="16sp" />
 
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+          <View
+              android:layout_width="match_parent"
+              android:layout_height="1dp"
+              android:background="@android:color/darker_gray" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/reset_app_layout"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="?android:selectableItemBackground"
+            android:gravity="center"
+            android:paddingHorizontal="16dp"
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/txt_dark_mode">
+
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="end">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/shabnam"
+                android:minWidth="100dp"
+                android:text="@string/resetAppText"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/text_color"
+                android:textSize="20sp" />
+          </LinearLayout>
+
+          <TextView
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="4dp"
+              android:fontFamily="@font/shabnam"
+              android:text="@string/resetAppTextDesc"
+              android:textColor="@color/subtitle_color"
+              android:textSize="16sp" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+          <View
+              android:layout_width="match_parent"
+              android:layout_height="1dp"
+              android:background="@android:color/darker_gray" />
+        </LinearLayout>
       </LinearLayout>
     </ScrollView>
 

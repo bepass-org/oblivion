@@ -87,5 +87,36 @@
         android:focusable="true"
         android:nextFocusUp="@id/logScrollView" />
 
+    <FrameLayout
+        android:id="@+id/progress_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.5"
+        android:visibility="gone">
+
+      <ProgressBar
+          android:id="@+id/progressBar"
+          android:layout_width="100dp"
+          android:layout_height="100dp"
+          android:indeterminate="true"
+          android:layout_gravity="center"
+          style="@style/CustomProgressBar"/>
+
+      <TextView
+          android:id="@+id/loadingText"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:text="Getting ISP..."
+          android:textColor="@android:color/white"
+          android:textSize="16sp"
+          android:padding="8dp"/>
+    </FrameLayout>
+
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

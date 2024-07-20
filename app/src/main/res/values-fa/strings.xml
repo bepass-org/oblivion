@@ -54,6 +54,8 @@
     <string name="save">ذخیره</string>
     <string name="saved_endpoints">نقاط دسترسی ذخیره شده</string>
     <string name="select_language">انتخاب زبان</string>
+    <string name="resetAppTextDesc">بازنشانی برنامه به تنظیمات پیش‌فرض</string>
+    <string name="resetAppText">بازنشانی</string>
     <string-array name="countries">
         <item>اتریش</item>
         <item>بلژیک</item>

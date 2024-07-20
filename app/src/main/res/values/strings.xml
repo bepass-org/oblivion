@@ -54,6 +54,8 @@
   <string name="save">Save</string>
   <string name="saved_endpoints">Saved Endpoints</string>
   <string name="select_language">Select Language</string>
+  <string name="resetAppTextDesc">Reset app to defaults</string>
+  <string name="resetAppText">Reset</string>
   <string-array name="countries">
     <item>Austria</item>
     <item>Belgium</item>
