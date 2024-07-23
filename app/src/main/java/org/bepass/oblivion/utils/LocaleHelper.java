@@ -3,6 +3,7 @@ package org.bepass.oblivion.utils;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Build;
 
 import org.bepass.oblivion.R;
 
@@ -14,7 +15,9 @@ public class LocaleHelper {
     public static void goEn(Context context) {
         Resources resources = context.getResources();
         Configuration configuration = resources.getConfiguration();
-        originalLocale = configuration.locale; // Save the original locale
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            originalLocale = configuration.getLocales().get(0); // Save the original locale
+        }
 
         // Change locale to English
         configuration.setLocale(new Locale("en"));
@@ -31,6 +34,7 @@ public class LocaleHelper {
             resources.updateConfiguration(configuration, resources.getDisplayMetrics());
         }
     }
+
     public static String restoreText(Context context, String text) {
         if (originalLocale != null) {
             Resources resources = context.getResources();

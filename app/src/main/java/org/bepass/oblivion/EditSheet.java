@@ -28,7 +28,6 @@ public class EditSheet {
 
     public EditSheet(Context context, String title, String sharedPrefKey, SheetsCallBack sheetsCallBack) {
         this.context = context;
-        fileManager = FileManager.getInstance(context);
 
         this.title = context.getString(R.string.editSheetEndpoint).replace("Endpoint",title);
         this.sharedPrefKey = sharedPrefKey;
@@ -61,11 +60,11 @@ public class EditSheet {
         }
 
         titleView.setText(title);
-        value.setText(fileManager.getString("USERSETTING_" + sharedPrefKey));
+        value.setText(FileManager.getString("USERSETTING_" + sharedPrefKey));
 
         cancel.setOnClickListener(v -> sheet.cancel());
         apply.setOnClickListener(v -> {
-            fileManager.set("USERSETTING_" + sharedPrefKey, value.getText().toString());
+            FileManager.set("USERSETTING_" + sharedPrefKey, value.getText().toString());
             sheet.cancel();
         });
 

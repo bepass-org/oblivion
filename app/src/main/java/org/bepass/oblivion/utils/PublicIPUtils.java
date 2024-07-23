@@ -28,7 +28,6 @@ import okhttp3.Response;
 public class PublicIPUtils {
     private static final String TAG = "PublicIPUtils";
     private static PublicIPUtils instance;
-    private final FileManager fm;
     private static final int TIMEOUT_SECONDS = 5;
     private static final int RETRY_DELAY_MILLIS = 1000;
     private static final int TIMEOUT_MILLIS = 30 * 1000;
@@ -41,7 +40,6 @@ public class PublicIPUtils {
      * @param context The application context.
      */
     private PublicIPUtils(Context context) {
-        this.fm = FileManager.getInstance(context);
         this.scheduler = Executors.newSingleThreadScheduledExecutor();
     }
 
@@ -74,7 +72,7 @@ public class PublicIPUtils {
             while (System.currentTimeMillis() - startTime < TIMEOUT_MILLIS) { // 30 seconds
                 Log.d(TAG, "Attempting to fetch IP details");
                 try {
-                    String portString = fm.getString("USERSETTING_port");
+                    String portString = FileManager.getString("USERSETTING_port");
                     if (portString == null || portString.isEmpty()) {
                         throw new IllegalStateException("USERSETTING_port is not set in FileManager");
                     }

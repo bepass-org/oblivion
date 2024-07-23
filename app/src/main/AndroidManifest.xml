@@ -46,6 +46,7 @@
             android:process=":vpn_background">
             <intent-filter>
                 <action android:name="android.net.VpnService" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
 
             <meta-data

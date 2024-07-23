@@ -322,7 +322,71 @@
               android:textSize="16sp" />
 
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:gravity="center"
+            android:orientation="vertical">
 
+          <View
+              android:layout_width="match_parent"
+              android:layout_height="1dp"
+              android:background="@android:color/darker_gray" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/proxy_mode_layout"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:gravity="center"
+            android:paddingHorizontal="16dp"
+            android:background="?selectableItemBackground"
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/lan_layout">
+
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="end">
+
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2">
+
+              <CheckBox
+                  android:id="@+id/proxyMode"
+                  android:layout_width="50dp"
+                  android:layout_height="38dp"
+                  android:layout_marginStart="10dp"
+                  android:buttonTint="@color/checkbox_tint"
+                  android:scaleX="1.5"
+                  android:scaleY="1.5"
+                  android:translationX="5dp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/shabnam"
+                android:minWidth="100dp"
+                android:text="@string/proxy_mode"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/text_color"
+                android:textSize="20sp" />
+          </LinearLayout>
+
+          <TextView
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="4dp"
+              android:fontFamily="@font/shabnam"
+              android:text="@string/running_in_proxy_mode_not_vpn"
+              android:textColor="@color/subtitle_color"
+              android:textSize="16sp" />
+
+        </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="10dp"

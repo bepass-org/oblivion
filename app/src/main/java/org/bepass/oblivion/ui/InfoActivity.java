@@ -1,11 +1,8 @@
     package org.bepass.oblivion.ui;
 
     import android.content.Intent;
-    import android.graphics.Color;
     import android.net.Uri;
-    import android.os.Build;
     import android.os.Bundle;
-    import android.view.View;
 
     import org.bepass.oblivion.R;
     import org.bepass.oblivion.base.BaseActivity;

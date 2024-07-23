@@ -55,7 +55,7 @@ public class SplitTunnelActivity extends StateAwareBaseActivity<ActivitySplitTun
             @Override
             public void splitTunnelMode(SplitTunnelMode mode) {
                 StateAwareBaseActivity.setRequireRestartVpnService(true);
-                FileManager.getInstance(SplitTunnelActivity.this).set("splitTunnelMode", mode.toString());
+                FileManager.set("splitTunnelMode", mode.toString());
             }
 
             @Override

@@ -6,10 +6,10 @@ public enum SplitTunnelMode {
     DISABLED,
     BLACKLIST;
 
-    public static SplitTunnelMode getSplitTunnelMode(FileManager fm) {
+    public static SplitTunnelMode getSplitTunnelMode() {
         SplitTunnelMode splitTunnelMode;
         try {
-            splitTunnelMode = SplitTunnelMode.valueOf(fm.getString("splitTunnelMode", SplitTunnelMode.DISABLED.toString()));
+            splitTunnelMode = SplitTunnelMode.valueOf(FileManager.getString("splitTunnelMode", SplitTunnelMode.DISABLED.toString()));
         } catch (Exception e) {
             splitTunnelMode = SplitTunnelMode.DISABLED;
         }

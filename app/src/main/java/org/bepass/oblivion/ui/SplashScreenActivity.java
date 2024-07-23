@@ -17,7 +17,6 @@ import org.bepass.oblivion.utils.ThemeHelper;
  */
 @SuppressLint("CustomSplashScreen")
 public class SplashScreenActivity extends BaseActivity<ActivitySplashScreenBinding> {
-    private LocaleHandler locale;
     /**
      * Returns the layout resource ID for the splash screen activity.
      *

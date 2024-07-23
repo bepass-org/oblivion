@@ -2,10 +2,8 @@ package org.bepass.oblivion.utils;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatDelegate;
@@ -58,7 +56,9 @@ public class ThemeHelper {
     }
 
     public void init() {
-        int themeMode = FileManager.getInstance(ApplicationLoader.getAppCtx()).getInt(FileManager.KeyHolder.DARK_MODE);
+        // Initialize the current theme from settings
+        FileManager.initialize(ApplicationLoader.getAppCtx());
+        int themeMode = FileManager.getInt(FileManager.KeyHolder.DARK_MODE);
         currentTheme = Theme.fromNightMode(themeMode);
         applyTheme();
     }
@@ -69,17 +69,17 @@ public class ThemeHelper {
 
     public void select(Theme theme) {
         currentTheme = theme;
-        FileManager.getInstance(ApplicationLoader.getAppCtx()).set(FileManager.KeyHolder.DARK_MODE, theme.nightMode);
+        FileManager.set(FileManager.KeyHolder.DARK_MODE, theme.nightMode);
         applyTheme();
     }
 
-    public void oppositeTheme() {
-        if (currentTheme == Theme.DARK) {
-            select(Theme.LIGHT);
-        } else {
-            select(Theme.DARK);
-        }
-    }
+    //    public void oppositeTheme() {
+    //        if (currentTheme == Theme.DARK) {
+    //            select(Theme.LIGHT);
+    //        } else {
+    //            select(Theme.DARK);
+    //        }
+    //    }
 
     public Theme getCurrentTheme() {
         return currentTheme;
@@ -94,31 +94,20 @@ public class ThemeHelper {
     }
 
     public void updateActivityBackground(View view) {
-        updateSystemTheme();
-        configureStatusBar(view.getContext() instanceof Activity ? (Activity) view.getContext() : null);
+        // Apply theme-based background
         Drawable backgroundDrawable = getBackgroundDrawable(view.getContext());
         if (backgroundDrawable != null) {
             view.setBackground(backgroundDrawable);
         }
-    }
 
-    private void updateSystemTheme() {
-        int nightModeFlags = ApplicationLoader.getAppCtx().getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
-            select(Theme.DARK);
-        } else {
-            select(Theme.LIGHT);
-        }
+        // Configure status bar based on theme
+        configureStatusBar(view.getContext() instanceof Activity ? (Activity) view.getContext() : null);
     }
-
     private void configureStatusBar(Activity activity) {
         if (activity == null) return;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            activity.getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-        }
+
+        activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+        activity.getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
     }
 }

@@ -1,5 +1,6 @@
 package org.bepass.oblivion;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -31,13 +32,11 @@ public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAd
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private final FileManager fileManager;
     private final LoadListener loadListener;
     private List<AppInfo> appList = new ArrayList<>();
     private OnAppSelectListener onAppSelectListener;
 
     public BypassListAppsAdapter(Context context, LoadListener loadListener) {
-        this.fileManager = FileManager.getInstance(context);
         this.loadListener = loadListener;
         loadApps(context, false);
     }
@@ -54,9 +53,9 @@ public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAd
     }
 
     private List<AppInfo> getInstalledApps(Context context, boolean shouldShowSystemApps) {
-        Set<String> selectedApps = fileManager.getStringSet("splitTunnelApps", new HashSet<>());
+        Set<String> selectedApps = FileManager.getStringSet("splitTunnelApps", new HashSet<>());
         PackageManager packageManager = context.getPackageManager();
-        List<ApplicationInfo> packages = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
+        @SuppressLint("QueryPermissionsNeeded") List<ApplicationInfo> packages = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
         List<AppInfo> appList = new ArrayList<>(packages.size());
 
         for (ApplicationInfo packageInfo : packages) {
@@ -99,13 +98,13 @@ public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAd
             appInfo.isSelected = !appInfo.isSelected;
             notifyItemChanged(position);
 
-            Set<String> newSet = new HashSet<>(fileManager.getStringSet("splitTunnelApps", new HashSet<>()));
+            Set<String> newSet = new HashSet<>(FileManager.getStringSet("splitTunnelApps", new HashSet<>()));
             if (appInfo.isSelected) {
                 newSet.add(appInfo.packageName);
             } else {
                 newSet.remove(appInfo.packageName);
             }
-            fileManager.set("splitTunnelApps", newSet);
+            FileManager.set("splitTunnelApps", newSet);
 
             if (onAppSelectListener != null)
                 onAppSelectListener.onSelect(appInfo.packageName, appInfo.isSelected);

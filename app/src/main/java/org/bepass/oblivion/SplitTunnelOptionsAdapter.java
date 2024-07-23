@@ -18,12 +18,9 @@ public class SplitTunnelOptionsAdapter extends RecyclerView.Adapter<SplitTunnelO
 
     private final OnSettingsChanged settingsCallback;
 
-    private final FileManager fm;
-
 
     public SplitTunnelOptionsAdapter(Context context, OnSettingsChanged settingsCallback) {
         this.settingsCallback = settingsCallback;
-        fm = FileManager.getInstance(context);
     }
 
 
@@ -36,7 +33,7 @@ public class SplitTunnelOptionsAdapter extends RecyclerView.Adapter<SplitTunnelO
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        SplitTunnelMode stm = SplitTunnelMode.getSplitTunnelMode(fm);
+        SplitTunnelMode stm = SplitTunnelMode.getSplitTunnelMode();
         switch (stm) {
             case DISABLED:
                 holder.disabled.setChecked(true);
@@ -49,13 +46,13 @@ public class SplitTunnelOptionsAdapter extends RecyclerView.Adapter<SplitTunnelO
         holder.disabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 settingsCallback.splitTunnelMode(SplitTunnelMode.DISABLED);
-                fm.set("splitTunnelMode", SplitTunnelMode.DISABLED.toString());
+                FileManager.set("splitTunnelMode", SplitTunnelMode.DISABLED.toString());
             }
         });
         holder.blacklist.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 settingsCallback.splitTunnelMode(SplitTunnelMode.BLACKLIST);
-                fm.set("splitTunnelMode", SplitTunnelMode.BLACKLIST.toString());
+                FileManager.set("splitTunnelMode", SplitTunnelMode.BLACKLIST.toString());
             }
 
         });

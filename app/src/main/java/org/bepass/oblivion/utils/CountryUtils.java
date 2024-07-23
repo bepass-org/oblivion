@@ -2,43 +2,50 @@ package org.bepass.oblivion.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.util.Pair;
 
 import org.bepass.oblivion.R;
 
 import java.util.Locale;
 
+import kotlin.Triple;
+
 public class CountryUtils {
-    public static Pair<String, String> getCountryCode(Context context, String name){
+
+    public static Triple<String, String, Integer> getCountryCode(Context context, String name) {
         Resources resources = context.getResources();
 
+        // Retrieve the list of country names in the current locale and the English names
         String[] translatedNames = resources.getStringArray(R.array.countries);
-        // Change locale to English
-        LocaleHelper.goEn(context);
+        String[] englishNames = resources.getStringArray(R.array.englishCountries);
+        // First, check if the incoming name is in English and find the index directly
+        for (int i = 0; i < englishNames.length; i++) {
+            if (englishNames[i].equalsIgnoreCase(name)) {
+                // Return the corresponding English name, the original name, and the index
+                String countryCode = getCoCo(name);
+                return new Triple<>(countryCode, englishNames[i], i);
+            }
+        }
 
-        // Translate the incoming country name to English
-        Pair<String, String> countryCodeAndName = translateToEnglish(context, name, translatedNames);
+        // If not found in English, translate the incoming country name to English
+        Triple<String, String, Integer> countryCodeAndName = translateToEnglish(name, translatedNames, englishNames);
 
-        // Get the ISO country code using the translated name
-        String countryCode = getCoCo(countryCodeAndName.first);
+        // Get the ISO country code using the translated English name
+        String countryCode = getCoCo(countryCodeAndName.component1());
 
-        // Restore the original locale
-        LocaleHelper.restoreLocale(context);
-        // Return the pair of country code and full country name
-        return new Pair<>(countryCode, countryCodeAndName.second);
+        // Return the triple of country code, full country name, and index
+        return new Triple<>(countryCode, countryCodeAndName.component2(), countryCodeAndName.component3());
     }
 
-    private static Pair<String, String> translateToEnglish(Context context, String name, String[] translatedNames) {
-        Resources resources = context.getResources();
-        String[] englishNames = resources.getStringArray(R.array.englishCountries);
+    private static Triple<String, String, Integer> translateToEnglish(String name, String[] translatedNames, String[] englishNames) {
         for (int i = 0; i < translatedNames.length; i++) {
             if (translatedNames[i].equalsIgnoreCase(name)) {
-                return new Pair<>(englishNames[i], translatedNames[i]);
+                // Return the corresponding English name, the original translated name, and the index
+                return new Triple<>(englishNames[i], translatedNames[i], i);
             }
         }
 
         // If translation not found, return the original name
-        return new Pair<>(name, name);
+        return new Triple<>(name, name, 0);
     }
 
     private static String getCoCo(String name) {
@@ -49,10 +56,5 @@ public class CountryUtils {
             }
         }
         return "";
-    }
-
-    public static String getCountryName(String code) {
-        Locale locale = new Locale("en", code); // Set the language to English
-        return locale.getDisplayCountry(Locale.ENGLISH);
     }
 }

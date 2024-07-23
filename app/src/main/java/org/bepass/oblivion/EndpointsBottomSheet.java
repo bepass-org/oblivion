@@ -20,14 +20,12 @@ import java.util.List;
 import java.util.Set;
 
 public class EndpointsBottomSheet extends BottomSheetDialogFragment {
-    private FileManager fileManager;
     private List<Endpoint> endpointsList;
     public EndpointSelectionListener selectionListener;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.bottom_sheet_endpoints, container, false);
-        fileManager = FileManager.getInstance(getContext());
 
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         endpointsList = new ArrayList<>();
@@ -41,7 +39,7 @@ public class EndpointsBottomSheet extends BottomSheetDialogFragment {
     }
 
     private void loadEndpoints() {
-        Set<String> savedEndpoints = fileManager.getStringSet("saved_endpoints", new HashSet<>());
+        Set<String> savedEndpoints = FileManager.getStringSet("saved_endpoints", new HashSet<>());
         for (String endpoint : savedEndpoints) {
             String[] parts = endpoint.split("::");
             if (parts.length == 2) {

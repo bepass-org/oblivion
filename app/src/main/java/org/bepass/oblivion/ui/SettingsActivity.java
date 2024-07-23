@@ -4,16 +4,13 @@ import static org.bepass.oblivion.utils.BatteryOptimizationKt.isBatteryOptimizat
 import static org.bepass.oblivion.utils.BatteryOptimizationKt.showBatteryOptimizationDialog;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.Spinner;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -23,7 +20,6 @@ import org.bepass.oblivion.enums.ConnectionState;
 import org.bepass.oblivion.utils.CountryUtils;
 import org.bepass.oblivion.EditSheet;
 import org.bepass.oblivion.utils.FileManager;
-import org.bepass.oblivion.utils.LocaleHelper;
 import org.bepass.oblivion.service.OblivionVpnService;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.interfaces.SheetsCallBack;
@@ -35,10 +31,12 @@ import org.bepass.oblivion.utils.ThemeHelper;
 import java.io.File;
 import java.util.Objects;
 
+import kotlin.Triple;
+
 public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBinding> {
-    private FileManager fileManager;
     private CheckBox.OnCheckedChangeListener psiphonListener;
     private CheckBox.OnCheckedChangeListener goolListener;
+    private CompoundButton.OnCheckedChangeListener proxyModeListener;
 
     private void setCheckBoxWithoutTriggeringListener(CheckBox checkBox, boolean isChecked, CheckBox.OnCheckedChangeListener listener) {
         checkBox.setOnCheckedChangeListener(null); // Temporarily detach the listener
@@ -61,8 +59,8 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         super.onCreate(savedInstanceState);
         // Update background based on current theme
         ThemeHelper.getInstance().updateActivityBackground(binding.getRoot());
-
-        fileManager = FileManager.getInstance(this);
+        // Set Current Values
+        settingBasicValuesFromSPF();
 
         if (isBatteryOptimizationEnabled(this)) {
             binding.batteryOptimizationLayout.setOnClickListener(view -> {
@@ -90,12 +88,12 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         });
 
         SheetsCallBack sheetsCallBack = this::settingBasicValuesFromSPF;
-        // Listen for endpoint changes and update USERSETTING_endpoint
+
         binding.endpointLayout.setOnClickListener(v -> {
             EndpointsBottomSheet bottomSheet = new EndpointsBottomSheet();
             bottomSheet.setEndpointSelectionListener(content -> {
-                fileManager.set("USERSETTING_endpoint", content);
-                binding.endpoint.setText(content); // Update UI with selected endpoint content
+                FileManager.set("USERSETTING_endpoint", content);
+                binding.endpoint.setText(content);
             });
             bottomSheet.show(getSupportFragmentManager(), bottomSheet.getTag());
         });
@@ -109,101 +107,92 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
 
         binding.country.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String name = parent.getItemAtPosition(position).toString();
-                Pair<String, String> codeAndName = CountryUtils.getCountryCode(ApplicationLoader.getAppCtx(), name);
-                fileManager.set("USERSETTING_country", codeAndName.first);
+                Triple<String, String, Integer> codeAndName = CountryUtils.getCountryCode(ApplicationLoader.getAppCtx(), name);
+                FileManager.set("USERSETTING_country", codeAndName.getFirst());
+                FileManager.set("USERSETTING_country_index", position); // Save the selected country index
             }
 
             @Override
-            public void onNothingSelected(AdapterView parent) {
+            public void onNothingSelected(AdapterView<?> parent) {
             }
         });
 
         binding.splitTunnelLayout.setOnClickListener(v -> startActivity(new Intent(this, SplitTunnelActivity.class)));
 
-        // Set Current Values
-        settingBasicValuesFromSPF();
-
         binding.goolLayout.setOnClickListener(v -> binding.gool.setChecked(!binding.gool.isChecked()));
         binding.lanLayout.setOnClickListener(v -> binding.lan.setChecked(!binding.lan.isChecked()));
         binding.psiphonLayout.setOnClickListener(v -> binding.psiphon.setChecked(!binding.psiphon.isChecked()));
 
-        binding.lan.setOnCheckedChangeListener((buttonView, isChecked) -> fileManager.set("USERSETTING_lan", isChecked));
-        // Initialize the listeners
+        binding.lan.setOnCheckedChangeListener((buttonView, isChecked) -> FileManager.set("USERSETTING_lan", isChecked));
+
         psiphonListener = (buttonView, isChecked) -> {
-            fileManager.set("USERSETTING_psiphon", isChecked);
+            FileManager.set("USERSETTING_psiphon", isChecked);
             if (isChecked && binding.gool.isChecked()) {
                 setCheckBoxWithoutTriggeringListener(binding.gool, false, goolListener);
-                fileManager.set("USERSETTING_gool", false);
+                FileManager.set("USERSETTING_gool", false);
             }
             binding.countryLayout.setAlpha(isChecked ? 1f : 0.2f);
             binding.country.setEnabled(isChecked);
         };
 
         goolListener = (buttonView, isChecked) -> {
-            fileManager.set("USERSETTING_gool", isChecked);
+            FileManager.set("USERSETTING_gool", isChecked);
             if (isChecked && binding.psiphon.isChecked()) {
                 setCheckBoxWithoutTriggeringListener(binding.psiphon, false, psiphonListener);
-                fileManager.set("USERSETTING_psiphon", false);
+                FileManager.set("USERSETTING_psiphon", false);
                 binding.countryLayout.setAlpha(0.2f);
                 binding.country.setEnabled(false);
             }
         };
-        binding.txtDarkMode.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                binding.checkBoxDarkMode.setChecked(!binding.checkBoxDarkMode.isChecked());
-            }
-        });
+
+        proxyModeListener = (buttonView, isChecked) -> FileManager.set("USERSETTING_proxymode", isChecked);
+
+        binding.txtDarkMode.setOnClickListener(view -> binding.checkBoxDarkMode.setChecked(!binding.checkBoxDarkMode.isChecked()));
+
+        // Set the initial state of the checkbox based on the current theme
         binding.checkBoxDarkMode.setChecked(ThemeHelper.getInstance().getCurrentTheme() == ThemeHelper.Theme.DARK);
-        binding.checkBoxDarkMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                 AppCompatDelegate.setDefaultNightMode( isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
-            }
+        // Set up the listener to change the theme when the checkbox is toggled
+        binding.checkBoxDarkMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            // Determine the new theme based on the checkbox state
+            ThemeHelper.Theme newTheme = isChecked ? ThemeHelper.Theme.DARK : ThemeHelper.Theme.LIGHT;
+
+            // Use ThemeHelper to apply the new theme
+            ThemeHelper.getInstance().select(newTheme);
         });
 
-        // Set the listeners to the checkboxes
         binding.psiphon.setOnCheckedChangeListener(psiphonListener);
         binding.gool.setOnCheckedChangeListener(goolListener);
-        binding.resetAppLayout.setOnClickListener(v->resetAppData());
+        binding.resetAppLayout.setOnClickListener(v -> resetAppData());
+        binding.proxyModeLayout.setOnClickListener(v -> binding.proxyMode.performClick());
+        binding.proxyMode.setOnCheckedChangeListener(proxyModeListener);
     }
+
     private void resetAppData() {
-        // Clear all stored preferences
         clearSharedPreferences();
 
-        // Clear cache directory
         try {
-            File cacheDir = getCacheDir();
-            deleteDir(cacheDir);
+            deleteDir(getCacheDir());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        // Clear files directory
         try {
-            File filesDir = getFilesDir();
-            deleteDir(filesDir);
+            deleteDir(getFilesDir());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        // Restart the activity to apply the changes
-        Intent intent = getIntent();
+        Intent intent = new Intent(this, MainActivity.class);
         finish();
         startActivity(intent);
     }
 
-    // Helper method to clear all SharedPreferences
     private void clearSharedPreferences() {
-        SharedPreferences preferences = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.clear();
-        editor.apply();
+        FileManager.resetToDefault();
     }
 
-    // Helper method to delete a directory and its contents
     private boolean deleteDir(File dir) {
         if (dir != null && dir.isDirectory()) {
             String[] children = dir.list();
@@ -220,38 +209,31 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
             return false;
         }
     }
-    private int getIndexFromName(Spinner spinner, String name) {
-        String ccn = CountryUtils.getCountryName(name);
-        String newname = LocaleHelper.restoreText(this, ccn);
-        for (int i = 0; i < spinner.getCount(); i++) {
-            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(newname)) {
-                return i;
+
+    private void settingBasicValuesFromSPF() {
+        binding.endpoint.setText(FileManager.getString("USERSETTING_endpoint"));
+        binding.port.setText(FileManager.getString("USERSETTING_port"));
+        binding.license.setText(FileManager.getString("USERSETTING_license"));
+
+        String countryCode = FileManager.getString("USERSETTING_country");
+        if (!countryCode.isEmpty()) {
+            int index = FileManager.getInt("USERSETTING_country_index");
+            if (index != 0) {
+                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.countries, R.layout.country_item_layout);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                binding.country.post(new Runnable() {
+                    public void run() {
+                        binding.country.setAdapter(adapter);
+                        binding.country.setSelection(index);
+                    }
+                });
             }
         }
 
-        return 0;
-    }
-
-    private void settingBasicValuesFromSPF() {
-        binding.endpoint.setText(fileManager.getString("USERSETTING_endpoint"));
-        binding.port.setText(fileManager.getString("USERSETTING_port"));
-        binding.license.setText(fileManager.getString("USERSETTING_license"));
-
-        String countryCode = fileManager.getString("USERSETTING_country");
-        int index = 0;
-        if (!countryCode.isEmpty()) {
-            LocaleHelper.goEn(this);
-            String countryName = CountryUtils.getCountryName(countryCode);
-            index = getIndexFromName(binding.country, countryName);
-            LocaleHelper.restoreLocale(this);
-        }
-        binding.country.setSelection(index);
-
-        binding.psiphon.setChecked(fileManager.getBoolean("USERSETTING_psiphon"));
-        binding.lan.setChecked(fileManager.getBoolean("USERSETTING_lan"));
-        binding.gool.setChecked(fileManager.getBoolean("USERSETTING_gool"));
-
-
+        binding.psiphon.setChecked(FileManager.getBoolean("USERSETTING_psiphon"));
+        binding.lan.setChecked(FileManager.getBoolean("USERSETTING_lan"));
+        binding.gool.setChecked(FileManager.getBoolean("USERSETTING_gool"));
+        binding.proxyMode.setChecked(FileManager.getBoolean("USERSETTING_proxymode"));
         if (!binding.psiphon.isChecked()) {
             binding.countryLayout.setAlpha(0.2f);
             binding.country.setEnabled(false);

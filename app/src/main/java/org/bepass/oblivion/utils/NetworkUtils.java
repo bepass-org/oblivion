@@ -1,4 +1,5 @@
 package org.bepass.oblivion.utils;
+
 import static org.bepass.oblivion.service.OblivionVpnService.stopVpnService;
 
 import android.content.Context;
