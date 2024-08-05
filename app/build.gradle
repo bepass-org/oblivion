@@ -65,3 +65,21 @@ dependencies {
     implementation 'com.github.erfansn:locale-config-x:1.0.1'
     implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'])
 }
+
+tasks.register("preBuildTun2SocksAar", Exec) {
+    workingDir "../tun2socks"
+    commandLine "go", "run", "golang.org/x/mobile/cmd/gomobile", "init"
+}
+tasks.register("buildTun2SocksAar", Exec) {
+    doFirst {
+        File myDir = new File("$projectDir/libs")
+        if (!myDir.exists()) {
+            myDir.mkdirs()
+        }
+    }
+
+    workingDir "../tun2socks"
+    commandLine "go", "run", "golang.org/x/mobile/cmd/gomobile", "bind", "-ldflags=-w -s", "-target=android", "-androidapi=$android.defaultConfig.minSdk", "-o=$projectDir/libs/tun2socks.aar", "."
+    dependsOn(preBuildTun2SocksAar)
+}
+preBuild.dependsOn(buildTun2SocksAar)
