@@ -17,34 +17,19 @@ It's leveraging `bepass-sdk` and a custom Go implementation of WireGuard, it's d
 ## Quick Start
 
 1. **Download**: Grab the APK from our [Releases](https://github.com/bepass-org/oblivion/releases) page or [Google play store](https://play.google.com/store/apps/details?id=org.bepass.oblivion) and install it.
-<a href="https://play.google.com/store/apps/details?id=org.bepass.oblivion">
-<img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" width="165" height="64" />
-</a>
+   <a href="https://play.google.com/store/apps/details?id=org.bepass.oblivion">
+   <img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" width="165" height="64" />
+   </a>
 
 2. **Connect**: Launch Oblivion and hit the switch button.
 
 ## Building the Project
 
 ### Prerequisites
-- Java 17
-- Gradle 8
-- Android Gradle Plugin (AGP) 8.1.2
 - NDK r26b (26.1.10909125)
 - Go 1.22
 
-Follow the steps below to build the Oblivion:
-
-### Building Go libraries
-Open the Terminal tab at the bottom of Android Studio.
-
-Navigate to the libs directory:
-
-```bash
-cd app/libs
-go run golang.org/x/mobile/cmd/gomobile init
-go run golang.org/x/mobile/cmd/gomobile bind -ldflags="-w -s" -target=android -androidapi=21 -o=tun2socks.aar .
-```
-### Generate Signed Bundle/APK:
+### Follow the steps below to build the Oblivion:
 - In Android Studio, navigate to "Build" in the menu bar.
 - Select "Generate Signed Bundle/APK..."
 - Choose "APK" and proceed.
