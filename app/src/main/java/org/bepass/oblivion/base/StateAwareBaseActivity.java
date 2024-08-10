@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Messenger;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,11 +20,12 @@ import org.bepass.oblivion.service.OblivionVpnService;
 import org.bepass.oblivion.utils.ColorUtils;
 import org.bepass.oblivion.utils.SystemUtils;
 
-
 /**
- * Those activities that inherit this class observe connection state by default and have access to lastKnownConnectionState variable.
+ * Activities inheriting from this class observe connection state by default and have access to lastKnownConnectionState variable.
  */
-public abstract class StateAwareBaseActivity<B extends ViewDataBinding>  extends AppCompatActivity {
+public abstract class StateAwareBaseActivity<B extends ViewDataBinding> extends AppCompatActivity {
+    private static final String TAG = "StateAwareBaseActivity";
+
     protected ConnectionState lastKnownConnectionState = ConnectionState.DISCONNECTED;
     private static boolean requireRestartVpnService = false;
     protected B binding;
@@ -34,15 +36,9 @@ public abstract class StateAwareBaseActivity<B extends ViewDataBinding>  extends
 
     protected abstract int getStatusBarColor();
 
-    /**
-     * Called when the activity is starting.
-     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
-     * @see AppCompatActivity#onCreate(Bundle)
-     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Inflates the layout and initializes the binding object
         binding = DataBindingUtil.setContentView(this, getLayoutResourceId());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             SystemUtils.setStatusBarColor(
@@ -55,8 +51,8 @@ public abstract class StateAwareBaseActivity<B extends ViewDataBinding>  extends
         return requireRestartVpnService;
     }
 
-     public static void setRequireRestartVpnService(boolean b) {
-         StateAwareBaseActivity.requireRestartVpnService = b;
+    public static void setRequireRestartVpnService(boolean b) {
+        StateAwareBaseActivity.requireRestartVpnService = b;
     }
 
     private final ServiceConnection connection = new ServiceConnection() {
@@ -78,8 +74,12 @@ public abstract class StateAwareBaseActivity<B extends ViewDataBinding>  extends
 
     protected abstract void onConnectionStateChange(ConnectionState state);
 
-    private void observeConnectionStatus() {
-        if (!isBound) return;
+    public void observeConnectionStatus() {
+        if (!isBound || serviceMessenger == null) {
+            Log.w(TAG, "Service is not bound or messenger is null");
+            return;
+        }
+
         OblivionVpnService.registerConnectionStateObserver(getKey(), serviceMessenger, state -> {
             if (lastKnownConnectionState == state) return;
             lastKnownConnectionState = state;
@@ -88,21 +88,23 @@ public abstract class StateAwareBaseActivity<B extends ViewDataBinding>  extends
     }
 
     private void unsubscribeConnectionStatus() {
-        if (!isBound) return;
+        if (!isBound || serviceMessenger == null) {
+            Log.w(TAG, "Service is not bound or messenger is null");
+            return;
+        }
+
         OblivionVpnService.unregisterConnectionStateObserver(getKey(), serviceMessenger);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        // Bind to the service
         bindService(new Intent(this, OblivionVpnService.class), connection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        // Unbind from the service
         if (isBound) {
             unsubscribeConnectionStatus();
             unbindService(connection);

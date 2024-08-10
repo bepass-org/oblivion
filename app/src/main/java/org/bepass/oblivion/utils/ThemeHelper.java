@@ -1,13 +1,19 @@
 package org.bepass.oblivion.utils;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
 
+import org.bepass.oblivion.R;
 import org.bepass.oblivion.base.ApplicationLoader;
+
 public class ThemeHelper {
 
-    // Enum to define theme constants
     public enum Theme {
         LIGHT(AppCompatDelegate.MODE_NIGHT_NO),
         DARK(AppCompatDelegate.MODE_NIGHT_YES),
@@ -26,7 +32,6 @@ public class ThemeHelper {
             return nightMode;
         }
 
-        // Get Theme by night mode value
         public static Theme fromNightMode(@AppCompatDelegate.NightMode int nightMode) {
             for (Theme theme : values()) {
                 if (theme.getNightMode() == nightMode) {
@@ -40,11 +45,9 @@ public class ThemeHelper {
     private static ThemeHelper instance;
     private Theme currentTheme = Theme.LIGHT;
 
-    // Private constructor to prevent instantiation
     private ThemeHelper() {
     }
 
-    // Method to get the single instance of ThemeHelper
     public static synchronized ThemeHelper getInstance() {
         if (instance == null) {
             instance = new ThemeHelper();
@@ -52,37 +55,59 @@ public class ThemeHelper {
         return instance;
     }
 
-
     public void init() {
-        int themeMode = FileManager.getInstance(ApplicationLoader.getAppCtx()).getInt(FileManager.KeyHolder.DARK_MODE);
+        // Initialize the current theme from settings
+        FileManager.initialize(ApplicationLoader.getAppCtx());
+        int themeMode = FileManager.getInt(FileManager.KeyHolder.DARK_MODE);
         currentTheme = Theme.fromNightMode(themeMode);
         applyTheme();
     }
 
-    /**
-     * Applies the current theme.
-     */
     public void applyTheme() {
         AppCompatDelegate.setDefaultNightMode(currentTheme.getNightMode());
     }
 
-    /**
-     * Sets the selected theme and applies it.
-     *
-     * @param theme the theme to be applied
-     */
     public void select(Theme theme) {
         currentTheme = theme;
-        FileManager.getInstance(ApplicationLoader.getAppCtx()).set(FileManager.KeyHolder.DARK_MODE , theme.nightMode);
+        FileManager.set(FileManager.KeyHolder.DARK_MODE, theme.nightMode);
         applyTheme();
     }
 
-    /**
-     * Retrieves the current theme.
-     *
-     * @return the current theme
-     */
+    //    public void oppositeTheme() {
+    //        if (currentTheme == Theme.DARK) {
+    //            select(Theme.LIGHT);
+    //        } else {
+    //            select(Theme.DARK);
+    //        }
+    //    }
+
     public Theme getCurrentTheme() {
         return currentTheme;
+    }
+
+    public Drawable getBackgroundDrawable(Context context) {
+        if (currentTheme == Theme.LIGHT) {
+            return ContextCompat.getDrawable(context, R.drawable.background_gradient);
+        } else {
+            return ContextCompat.getDrawable(context, R.color.background);
+        }
+    }
+
+    public void updateActivityBackground(View view) {
+        // Apply theme-based background
+        Drawable backgroundDrawable = getBackgroundDrawable(view.getContext());
+        if (backgroundDrawable != null) {
+            view.setBackground(backgroundDrawable);
+        }
+
+        // Configure status bar based on theme
+        configureStatusBar(view.getContext() instanceof Activity ? (Activity) view.getContext() : null);
+    }
+    private void configureStatusBar(Activity activity) {
+        if (activity == null) return;
+
+        activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+        activity.getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
     }
 }

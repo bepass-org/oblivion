@@ -6,18 +6,19 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.widget.Button;
-import android.widget.ImageView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.material.button.MaterialButton;
+import android.widget.Toast;
 
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.base.BaseActivity;
 import org.bepass.oblivion.databinding.ActivityLogBinding;
+import org.bepass.oblivion.utils.ISPUtils;
+import org.bepass.oblivion.utils.ThemeHelper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,6 +32,7 @@ public class LogActivity extends BaseActivity<ActivityLogBinding> {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private boolean isUserScrollingUp = false;
     private Runnable logUpdater;
+    private FrameLayout progressBar;
 
     @Override
     protected int getLayoutResourceId() {
@@ -45,7 +47,11 @@ public class LogActivity extends BaseActivity<ActivityLogBinding> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Update background based on current theme
+        ThemeHelper.getInstance().updateActivityBackground(binding.getRoot());
 
+        // Initialize the ProgressBar
+        progressBar = findViewById(R.id.progress_container);
         binding.back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         binding.copytoclip.setOnClickListener(v -> copyLast100LinesToClipboard());
         setupScrollListener();
@@ -101,22 +107,61 @@ public class LogActivity extends BaseActivity<ActivityLogBinding> {
     }
 
     private void copyLast100LinesToClipboard() {
-        String logText = binding.logs.getText().toString();
-        String[] logLines = logText.split("\n");
-        int totalLines = logLines.length;
+        // Show progress bar
+        progressBar.setVisibility(View.VISIBLE);
 
-        // Use Deque to efficiently get the last 100 lines
-        Deque<String> last100Lines = new ArrayDeque<>(100);
-        last100Lines.addAll(Arrays.asList(logLines).subList(Math.max(0, totalLines - 100), totalLines));
+        ISPUtils.fetchISPInfo(new ISPUtils.ISPCallback() {
+            @Override
+            public void onISPInfoReceived(String isp) {
+                runOnUiThread(() -> {
+                    // Hide progress bar
+                    progressBar.setVisibility(View.GONE);
 
-        StringBuilder sb = new StringBuilder();
-        for (String line : last100Lines) {
-            sb.append(line).append("\n");
-        }
+                    String logText = binding.logs.getText().toString();
+                    String[] logLines = logText.split("\n");
+                    int totalLines = logLines.length;
 
-        String last100Log = sb.toString();
-        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText("Log", last100Log);
-        clipboard.setPrimaryClip(clip);
+                    // Use Deque to efficiently get the last 100 lines
+                    Deque<String> last100Lines = new ArrayDeque<>(100);
+                    last100Lines.addAll(Arrays.asList(logLines).subList(Math.max(0, totalLines - 100), totalLines));
+
+                    StringBuilder sb = new StringBuilder();
+                    for (String line : last100Lines) {
+                        sb.append(line).append("\n");
+                    }
+
+                    // Add ISP information
+                    sb.append("\n=====\nISP: ").append(isp).append("\n");
+
+                    String last100Log = sb.toString();
+                    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("Log", last100Log);
+                    clipboard.setPrimaryClip(clip);
+
+                    showCopiedToClipboardToast();
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                runOnUiThread(() -> {
+                    // Hide progress bar
+                    progressBar.setVisibility(View.GONE);
+
+                    e.printStackTrace();
+                    Toast.makeText(LogActivity.this, "Error fetching ISP information.", Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+    }
+
+    private void showCopiedToClipboardToast() {
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(R.layout.toast, findViewById(R.id.toast_layout));
+
+        Toast toast = new Toast(getApplicationContext());
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.show();
     }
 }

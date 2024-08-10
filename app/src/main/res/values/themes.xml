@@ -5,6 +5,18 @@
     <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
   </style>
 
+  <!-- Light theme -->
+  <style name="Theme.OblivionUI.Light" parent="Theme.AppCompat.Light">
+    <item name="android:windowBackground">@drawable/background_gradient</item>
+    <item name="android:background">@drawable/background_gradient</item>
+  </style>
+
+  <!-- Dark theme -->
+  <style name="Theme.MyApp.Dark" parent="Theme.AppCompat.DayNight">
+    <item name="android:windowBackground">@color/background</item>
+    <item name="android:background">@color/background</item>
+  </style>
+
   <style name="CustomBottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
     <item name="android:windowIsFloating">false</item>
     <item name="android:windowSoftInputMode">adjustResize</item>

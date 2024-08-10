@@ -44,8 +44,20 @@
     <string name="dialBtText">Чтобы приложение работало правильно, отключите оптимизацию батареи для этого приложения.</string>
     <string name="goToSettings">Перейти к настройкам</string>
     <string name="copytoclip">Скопировать лог в буфер обмена</string>
-    <string name="turn_on_dark_mode">темный режим</string>
-    <string name="turn_on_dark_mode_desc">Применить темную тему</string>
+    <string name="endpointTypeText">Тип конечной точки</string>
+    <string name="endpointTypeTextDesc">Используется для нахождения IP конечной точки</string>
+    <string name="turn_on_dark_mode">Включить темный режим</string>
+    <string name="turn_on_dark_mode_desc">включить темный режим</string>
+    <string name="copied_to_clipboard">Скопировано в буфер обмена</string>
+    <string name="title">Заголовок</string>
+    <string name="content">Конечная точка</string>
+    <string name="save">Сохранить</string>
+    <string name="saved_endpoints">Сохраненные точки доступа</string>
+    <string name="select_language">Выберите язык</string>
+    <string name="resetAppTextDesc">Сбросить настройки приложения на умолчания</string>
+    <string name="resetAppText">Сброс</string>
+    <string name="proxy_mode">Режим прокси</string>
+    <string name="running_in_proxy_mode_not_vpn">Работает в режиме прокси, а не VPN</string>
     <string-array name="countries">
         <item>Австрия</item>
         <item>Бельгия</item>
@@ -80,7 +92,4 @@
         <item>Великобритания</item>
         <item>Соединенные Штаты</item>
     </string-array>
-    <string name="endpointTypeText">Тип конечной точки</string>
-    <string name="endpointTypeTextDesc">Используется для определения IP-адреса конечной точки.</string>
-    <string name="select_language">Выберите язык</string>
 </resources>

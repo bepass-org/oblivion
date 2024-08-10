@@ -11,7 +11,8 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:background="@color/background"
-      tools:context="org.bepass.oblivion.ui.LogActivity">
+      tools:context="org.bepass.oblivion.ui.LogActivity"
+      android:fitsSystemWindows="true">
 
     <RelativeLayout
         android:id="@+id/top_bar"
@@ -31,7 +32,9 @@
           android:layout_centerVertical="true"
           android:layout_marginStart="16dp"
           app:icon_color="@color/icon_color"
-          android:src="@drawable/ic_back" />
+          android:src="@drawable/ic_back"
+          android:focusable="true"
+          android:nextFocusDown="@id/logScrollView" />
 
       <TextView
           android:layout_width="wrap_content"
@@ -55,7 +58,10 @@
         app:layout_constraintTop_toBottomOf="@id/top_bar"
         app:layout_constraintBottom_toTopOf="@id/copytoclip"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        android:focusable="true"
+        android:nextFocusUp="@id/back"
+        android:nextFocusDown="@id/copytoclip">
 
       <TextView
           android:id="@+id/logs"
@@ -77,7 +83,40 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:focusable="true"
+        android:nextFocusUp="@id/logScrollView" />
+
+    <FrameLayout
+        android:id="@+id/progress_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.5"
+        android:visibility="gone">
+
+      <ProgressBar
+          android:id="@+id/progressBar"
+          android:layout_width="100dp"
+          android:layout_height="100dp"
+          android:indeterminate="true"
+          android:layout_gravity="center"
+          style="@style/CustomProgressBar"/>
+
+      <TextView
+          android:id="@+id/loadingText"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:text="Getting ISP..."
+          android:textColor="@android:color/white"
+          android:textSize="16sp"
+          android:padding="8dp"/>
+    </FrameLayout>
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
