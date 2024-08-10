@@ -12,8 +12,8 @@
         android:layout_height="match_parent"
         android:background="@color/background"
         android:orientation="vertical"
-        tools:context=".ui.SplitTunnelActivity">
-
+        tools:context=".ui.SplitTunnelActivity"
+        android:fitsSystemWindows="true">
 
         <RelativeLayout
             android:id="@+id/top_bar"
@@ -34,7 +34,9 @@
                 android:layout_marginStart="16dp"
                 android:src="@drawable/ic_back"
                 app:icon_color="@color/icon_color"
-                app:tint="@color/icon_color" />
+                app:tint="@color/icon_color"
+                android:focusable="true"
+                android:nextFocusDown="@id/appsRecycler" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -46,7 +48,9 @@
                 android:text="@string/blackList"
                 android:textColor="@color/text_color"
                 android:textSize="24sp"
-                tools:ignore="RelativeOverlap" />
+                tools:ignore="RelativeOverlap"
+                android:focusable="true"
+                android:nextFocusDown="@id/appsRecycler" />
 
         </RelativeLayout>
 
@@ -62,7 +66,10 @@
             app:layout_constraintTop_toBottomOf="@+id/top_bar"
             tools:itemCount="20"
             tools:listitem="@layout/installed_app_item"
-            tools:visibility="visible" />
+            tools:visibility="visible"
+            android:focusable="true"
+            android:nextFocusUp="@id/top_bar"
+            android:nextFocusDown="@id/progress" />
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/progress"
@@ -74,7 +81,9 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:focusable="true"
+            android:nextFocusUp="@id/appsRecycler" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -1,67 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@color/background">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:id="@+id/dialog_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/shabnam"
-        android:text="@string/batteryOpL"
-        android:textColor="@color/text_color"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/dialog_message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/shabnam"
-        android:text="@string/dialBtText"
-        android:textColor="@color/subtitle_color"
-        android:textSize="16sp" />
+    <data>
+        <!-- Define any variables if needed -->
+    </data>
 
     <LinearLayout
-        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:weightSum="2"
-        android:gravity="end"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@color/background">
 
-        <Button
-            android:id="@+id/dialog_button_negative"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
+        <TextView
+            android:id="@+id/dialog_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:fontFamily="@font/shabnambold"
-            android:text="@string/cancel"
-            android:textColor="@color/text_color" />
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/shabnam"
+            android:text="@string/batteryOpL"
+            android:textColor="@color/text_color"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:focusable="true" />
 
-        <Button
-            android:id="@+id/dialog_button_positive"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
+        <TextView
+            android:id="@+id/dialog_message"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#FFA200"
-            android:fontFamily="@font/shabnambold"
-            android:text="@string/goToSettings"
-            android:textColor="@color/white" />
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/shabnam"
+            android:text="@string/dialBtText"
+            android:textColor="@color/subtitle_color"
+            android:textSize="16sp"
+            android:focusable="true" />
+
+        <LinearLayout
+            style="?android:attr/buttonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:weightSum="2"
+            android:gravity="end"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/dialog_button_negative"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:fontFamily="@font/shabnambold"
+                android:text="@string/cancel"
+                android:textColor="@color/text_color"
+                android:focusable="true" />
+
+            <Button
+                android:id="@+id/dialog_button_positive"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:background="#FFA200"
+                android:fontFamily="@font/shabnambold"
+                android:text="@string/goToSettings"
+                android:textColor="@color/white"
+                android:focusable="true" />
+        </LinearLayout>
+
     </LinearLayout>
-
-</LinearLayout>
+</layout>

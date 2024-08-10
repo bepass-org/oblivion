@@ -15,7 +15,8 @@
         android:onClick="@{handler::OnRootPressed}"
         android:layout_height="match_parent"
         android:id="@+id/splashScreen"
-        android:background="@color/background">
+        android:background="@color/background"
+        android:fitsSystemWindows="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout3"

@@ -12,7 +12,8 @@
       android:layout_height="match_parent"
       android:background="@color/background"
       android:orientation="vertical"
-      tools:context="org.bepass.oblivion.ui.InfoActivity">
+      tools:context="org.bepass.oblivion.ui.InfoActivity"
+      android:fitsSystemWindows="true">
 
     <RelativeLayout
         android:id="@+id/top_bar"
@@ -28,9 +29,11 @@
           android:layout_alignParentStart="true"
           android:layout_centerVertical="true"
           android:layout_marginStart="16dp"
+          android:contentDescription="back"
           android:src="@drawable/ic_back"
           app:icon_color="@color/icon_color"
-          app:tint="@color/icon_color"  />
+          app:tint="@color/icon_color"
+          android:focusable="true"/>
 
       <TextView
           android:layout_width="wrap_content"
@@ -46,19 +49,30 @@
 
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/about"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
         android:layout_marginTop="16dp"
-        android:fontFamily="@font/shabnammedium"
-        android:paddingHorizontal="12dp"
-        android:text='@string/aboutAppDesc'
-        android:textAlignment="center"
-        android:textColor="@color/subtitle_color"
-        android:textSize="16sp"
-        tools:ignore="RtlCompat" />
+        android:paddingHorizontal="12dp">
+
+      <TextView
+          android:id="@+id/about"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:fontFamily="@font/shabnammedium"
+          android:text='@string/aboutAppDesc'
+          android:textAlignment="center"
+          android:textColor="@color/subtitle_color"
+          android:textSize="16sp"
+          tools:ignore="RtlCompat"
+          android:focusable="true"
+          app:layout_constraintLeft_toLeftOf="parent"
+          app:layout_constraintRight_toRightOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"
+          android:layout_margin="16dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <RelativeLayout
         android:id="@+id/github_layout"
@@ -68,7 +82,8 @@
         android:layout_marginTop="32dp"
         android:background="@drawable/about_item"
         android:gravity="center"
-        android:paddingVertical="8dp">
+        android:paddingVertical="8dp"
+        android:focusable="true">
 
       <ImageView
           android:id="@+id/github_image"
@@ -79,7 +94,8 @@
           android:layout_marginStart="8dp"
           android:layout_marginEnd="8dp"
           android:src="@drawable/ic_github"
-          app:tint="@color/black" />
+          app:tint="@color/black"
+          android:focusable="true"/>
 
       <TextView
           android:layout_width="wrap_content"
@@ -98,7 +114,7 @@
           android:layout_centerVertical="true"
           android:layout_marginEnd="16dp"
           android:fontFamily="@font/shabnambold"
-          android:text="BePass/Oblivion"
+          android:text="Bepass/Oblivion"
           android:textColor="@color/black"
           android:textSize="14sp" />
 
@@ -113,7 +129,6 @@
         android:text="@string/appVersion"
         android:textColor="@color/subtitle_color"
         android:textSize="14sp" />
-
 
   </LinearLayout>
 </layout>

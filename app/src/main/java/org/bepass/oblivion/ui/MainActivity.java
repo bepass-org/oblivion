@@ -6,14 +6,9 @@ import static org.bepass.oblivion.service.OblivionVpnService.stopVpnService;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -30,15 +25,16 @@ import org.bepass.oblivion.utils.PublicIPUtils;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
 import org.bepass.oblivion.databinding.ActivityMainBinding;
+import org.bepass.oblivion.utils.ThemeHelper;
+import org.bepass.oblivion.utils.NetworkUtils;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Locale;
 
 public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     private long backPressedTime;
     private Toast backToast;
     private LocaleHandler localeHandler;
-    private final Handler handler = new Handler();
+    private ActivityResultLauncher<Intent> vpnPermissionLauncher;
 
     public static void start(Context context) {
         Intent starter = new Intent(context, MainActivity.class);
@@ -58,51 +54,52 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        cleanOrMigrateSettings();
-        setupUI();
         // Initialize the LocaleHandler and set the locale
         localeHandler = new LocaleHandler(this);
 
+        FileManager.initialize(this);
+        super.onCreate(savedInstanceState);
+        // Update background based on current theme
+        ThemeHelper.getInstance().updateActivityBackground(binding.getRoot());
+        FileManager.cleanOrMigrateSettings(binding.getRoot().getContext());
+        setupUI();
         setupVPNConnection();
-        // Request permission to create push notifications
         requestNotificationPermission();
-
-        // Set the behaviour of the back button
         handleBackPress();
     }
 
     private void setupVPNConnection() {
-        ActivityResultLauncher<Intent> vpnPermissionLauncher = registerForActivityResult(
+        vpnPermissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), result -> {
-                    if (result.getResultCode() != RESULT_OK) {
-                        Toast.makeText(this, "Really!?", Toast.LENGTH_LONG).show();
+                    if (result.getResultCode() == RESULT_OK) {
+                        handleVpnSwitch(binding.switchButton.isChecked());
+                    } else {
+                        Toast.makeText(this, "Permission required to start VPN", Toast.LENGTH_LONG).show();
+                        binding.switchButton.setChecked(false);
                     }
-                    binding.switchButton.setChecked(false);
                 });
 
-        binding.switchButton.setOnCheckedChangeListener((view, isChecked) -> {
-            if (!isChecked) {
-                if (!lastKnownConnectionState.isDisconnected()) {
-                    stopVpnService(this);
-                }
-                return;
-            }
-            Intent vpnIntent = OblivionVpnService.prepare(this);
-            if (vpnIntent != null) {
-                vpnPermissionLauncher.launch(vpnIntent);
-                return;
-            }
-            if (lastKnownConnectionState.isConnecting()) {
-                stopVpnService(this);
-                return;
-            }
+        binding.switchButton.setOnCheckedChangeListener((view, isChecked) -> handleVpnSwitch(isChecked));
+    }
+
+    private void handleVpnSwitch(boolean enableVpn) {
+        if (enableVpn) {
             if (lastKnownConnectionState.isDisconnected()) {
-                startVpnService(this);
+                Intent vpnIntent = OblivionVpnService.prepare(this);
+                if (vpnIntent != null) {
+                    vpnPermissionLauncher.launch(vpnIntent);
+                } else {
+                    startVpnService(binding.getRoot().getContext());
+                }
+                NetworkUtils.monitorInternetConnection(lastKnownConnectionState, this);
+            } else if (lastKnownConnectionState.isConnecting()) {
+                stopVpnService(binding.getRoot().getContext());
             }
-            monitorInternetConnection();
-        });
+        } else {
+            if (!lastKnownConnectionState.isDisconnected()) {
+                stopVpnService(this);
+            }
+        }
     }
 
     private void handleBackPress() {
@@ -113,8 +110,7 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
                     if (backToast != null) backToast.cancel();
                     finish();
                 } else {
-                    if (backToast != null)
-                        backToast.cancel();
+                    if (backToast != null) backToast.cancel();
                     backToast = Toast.makeText(MainActivity.this, "برای خروج، دوباره بازگشت را فشار دهید.", Toast.LENGTH_SHORT);
                     backToast.show();
                 }
@@ -143,74 +139,6 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
         binding.switchButtonFrame.setOnClickListener(v -> binding.switchButton.toggle());
     }
 
-    private void monitorInternetConnection() {
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!lastKnownConnectionState.isDisconnected()) {
-                    checkInternetConnectionAndDisconnectVPN();
-                    handler.postDelayed(this, 3000); // Check every 3 seconds
-                }
-            }
-        }, 5000); // Start checking after 5 seconds
-    }
-
-    // Check internet connectivity
-    private boolean isConnectedToInternet() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Network activeNetwork = connectivityManager.getActiveNetwork();
-                if (activeNetwork != null) {
-                    NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork);
-                    return networkCapabilities != null &&
-                            (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                                    networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
-                }
-            } else {
-                // For API levels below 23, use the deprecated method
-                NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-                return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-            }
-        }
-        return false;
-    }
-
-    // Periodically check internet connection and disconnect VPN if not connected
-    private void checkInternetConnectionAndDisconnectVPN() {
-        if (!isConnectedToInternet()) {
-            stopVpnService(this);
-        }
-    }
-
-    protected void cleanOrMigrateSettings() {
-        // Get the global FileManager instance
-        FileManager fileManager = FileManager.getInstance(getApplicationContext());
-
-        if (!fileManager.getBoolean("isFirstValueInit")) {
-            fileManager.set("USERSETTING_endpoint", "engage.cloudflareclient.com:2408");
-            fileManager.set("USERSETTING_port", "8086");
-            fileManager.set("USERSETTING_gool", false);
-            fileManager.set("USERSETTING_psiphon", false);
-            fileManager.set("USERSETTING_lan", false);
-            fileManager.set("isFirstValueInit", true);
-        }
-
-        // Check which split mode apps have been uninstalled and remove them from the list in settings
-        Set<String> splitApps = fileManager.getStringSet("splitTunnelApps", new HashSet<>());
-        Set<String> shouldKeep = new HashSet<>();
-        final PackageManager pm = getApplicationContext().getPackageManager();
-        for (String packageName : splitApps) {
-            try {
-                pm.getPackageInfo(packageName, PackageManager.GET_META_DATA);
-            } catch (PackageManager.NameNotFoundException ignored) {
-                continue;
-            }
-            shouldKeep.add(packageName);
-        }
-        fileManager.set("splitTunnelApps", shouldKeep);
-    }
-
     @NonNull
     @Override
     public String getKey() {
@@ -218,18 +146,27 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        observeConnectionStatus();
+    }
+
+    @Override
     public void onConnectionStateChange(ConnectionState state) {
-        switch (state) {
-            case DISCONNECTED:
-                updateUIForDisconnectedState();
-                break;
-            case CONNECTING:
-                updateUIForConnectingState();
-                break;
-            case CONNECTED:
-                updateUIForConnectedState();
-                break;
-        }
+        runOnUiThread(() -> {
+            Log.d("MainActivity", "Connection state changed to: " + state);
+            switch (state) {
+                case DISCONNECTED:
+                    updateUIForDisconnectedState();
+                    break;
+                case CONNECTING:
+                    updateUIForConnectingState();
+                    break;
+                case CONNECTED:
+                    updateUIForConnectedState();
+                    break;
+            }
+        });
     }
 
     private void updateUIForDisconnectedState() {
@@ -250,7 +187,11 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
 
     private void updateUIForConnectedState() {
         binding.switchButton.setEnabled(true);
-        binding.stateText.setText(R.string.connected);
+        if (FileManager.getBoolean("USERSETTING_proxymode")) {
+            binding.stateText.setText(String.format(Locale.getDefault(), "socks5 %s on 127.0.0.1:%s", getString(R.string.connected), FileManager.getString("USERSETTING_port")));
+        } else {
+            binding.stateText.setText(R.string.connected);
+        }
         binding.switchButton.setChecked(true, false);
         binding.ipProgressBar.setVisibility(View.GONE);
         PublicIPUtils.getInstance().getIPDetails((details) -> {

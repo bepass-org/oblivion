@@ -26,10 +26,9 @@ public class LocaleHandler {
     }
 
     public void setPersianAsDefaultLocaleIfNeeds() {
-        FileManager fileManager = FileManager.getInstance(context);
-        if (!fileManager.getBoolean(IS_SET_DEFAULT_LOCALE)) {
+        if (!FileManager.getBoolean(IS_SET_DEFAULT_LOCALE)) {
             AppCompatDelegate.setApplicationLocales(LocaleListCompat.create(configuredLocales.getFirstMatch(new String[] { DEFAULT_LOCALE })));
-            fileManager.set(IS_SET_DEFAULT_LOCALE, true);
+            FileManager.set(IS_SET_DEFAULT_LOCALE, true);
         }
     }
 

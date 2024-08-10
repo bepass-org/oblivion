@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/background"
-        tools:context="org.bepass.oblivion.ui.MainActivity">
+        tools:context="org.bepass.oblivion.ui.MainActivity"
+        android:fitsSystemWindows="true">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/floatingActionButton"
@@ -20,6 +21,7 @@
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
             android:clickable="true"
+            android:contentDescription="Connect button"
             android:focusable="true"
             android:src="@drawable/ic_translate"
             android:tint="@color/white"
@@ -45,7 +47,9 @@
                 android:layout_centerVertical="true"
                 android:layout_marginStart="20dp"
                 android:background="?selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_info"/>
+                android:src="@drawable/ic_info"
+                android:clickable="true"
+                android:focusable="true" />
 
             <org.bepass.oblivion.component.Icon
                 android:id="@+id/bug_icon"
@@ -56,7 +60,9 @@
                 app:icon_color="@color/icon_color"
                 android:layout_toStartOf="@id/setting_icon"
                 android:background="?selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_bug"/>
+                android:src="@drawable/ic_bug"
+                android:clickable="true"
+                android:focusable="true" />
 
             <org.bepass.oblivion.component.Icon
                 android:id="@+id/setting_icon"
@@ -67,10 +73,10 @@
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="20dp"
                 android:background="?selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_settings"/>
-
+                android:src="@drawable/ic_settings"
+                android:clickable="true"
+                android:focusable="true" />
         </RelativeLayout>
-
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -81,15 +87,12 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/top_bar">
-
-
         </LinearLayout>
 
         <FrameLayout
             android:id="@+id/switch_button_frame"
             android:layout_width="160dp"
             android:layout_height="75dp"
-            android:layout_centerInParent="true"
             android:background="@drawable/switch_ripple"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -105,7 +108,9 @@
                 app:sb_background="@color/gray"
                 app:sb_border_width="3dp"
                 app:sb_checked_color="@color/primary"
-                app:sb_show_indicator="false" />
+                app:sb_show_indicator="false"
+                android:clickable="true"
+                android:focusable="true" />
         </FrameLayout>
 
         <TextView
@@ -139,7 +144,6 @@
             android:id="@+id/ipProgressBar"
             android:layout_width="36dp"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:layout_marginTop="24dp"
             android:indeterminate="true"
             android:indeterminateTint="@color/primary"
@@ -176,7 +180,6 @@
             app:layout_constraintHorizontal_bias="0.492"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/app_name_1" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
