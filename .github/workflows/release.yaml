@@ -41,18 +41,11 @@ jobs:
           ndk-version: r26b
           link-to-sdk: true
 
-      - name: Install Gomobile and Build native parts
-        run: |
-          for d in $ANDROID_NDK_HOME/../26*; do
-            ANDROID_NDK_HOME=$d
-          done
-          cd app/libs
-          go run golang.org/x/mobile/cmd/gomobile init
-          go run golang.org/x/mobile/cmd/gomobile bind -ldflags="-w -s" -target=android -androidapi=21 -o=tun2socks.aar .
-          cd ../..
-
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
+
+      - name: Build Tun2Socks AAR
+        run: ./gradlew buildTun2SocksAar
 
       # Run Build Project
       - name: Build gradle project
@@ -60,15 +53,14 @@ jobs:
 
       # Build APKs
       - name: Build Release APK
-        run: |
-          ./gradlew assembleRelease
+        run: ./gradlew assembleRelease
 
       # Upload build aar to Artifacts
       - name: Upload build aar to Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: "tun2socks"
-          path: app/libs/*.aar
+          path: app/libs/tun2socks.aar
 
       # Upload APK artifact
       - name: Upload files to Artifacts
