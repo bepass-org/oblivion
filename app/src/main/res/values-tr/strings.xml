@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stateText">Bağlı Değil</string>
+    <string name="basedOnWarp">Warp\'a Dayalı</string>
+    <string name="aboutApp">Uygulama Hakkında</string>
+    <string name="aboutAppDesc">"Bu uygulama internete özgürce erişim sağlamak için tasarlanmıştır ve ticari kullanımı yasaktır.\n\n\n İnternet herkes için ya da hiç kimse için!"</string>
+    <string name="appVersion">Uygulama Sürümü: 4</string>
+    <string name="logApp">Uygulama Günlüğü</string>
+    <string name="means" formatted="true">"bilgisizlik, cehalet" anlamına gelir</string>
+    <string name="dontForget">Unutma!</string>
+    <string name="segaro">#Segaro</string>
+    <string name="yousef">#Yousef_Ghobadi</string>
+    <string name="slogan">İnternet Herkes İçin, Ya Da Hiç Kimse İçin</string>
+    <string name="blackList">Kara Liste</string>
+    <string name="disabledR">Devre Dışı</string>
+    <string name="disabledRText">Devre dışı modda, tüm uygulamaların trafiği VPN üzerinden geçer.</string>
+    <string name="enabledR">Etkin</string>
+    <string name="enabledRText">Etkin modda, seçilen uygulamaların trafiği VPN üzerinden geçmez.</string>
+    <string name="showSystemAppsText">Sistem Uygulamalarını Göster</string>
+    <string name="settingsText">Ayarlar</string>
+    <string name="endpointText">Uç Nokta</string>
+    <string name="endpointTextDesc">IP veya alan adı ile birlikte port kombinasyonu</string>
+    <string name="portTunText">Tünel Portu</string>
+    <string name="portTunTextDesc">Uygulama için tünel portunu belirleyin</string>
+    <string name="blackListTextDesc">Hangi uygulamaların VPN kullanmayacağını belirleyin</string>
+    <string name="connectFromLanText">LAN\'dan Bağlan</string>
+    <string name="connectFromLanTextDesc">Diğer ağ cihazlarına bağlanma yeteneği</string>
+    <string name="psiphonText">Psiphon</string>
+    <string name="psiphonTextDesc">Psiphon\'u Etkinleştir</string>
+    <string name="chooseText">Ülke Seç</string>
+    <string name="chooseTextDesc">İnternete bağlanmak için ülke seçimi</string>
+    <string name="licenseText">Lisans</string>
+    <string name="licenseTextDesc">Bir lisansınız varsa (her lisans iki katına çıkar)</string>
+    <string name="goolText">Gool</string>
+    <string name="goolTextDesc">Warp İçinde Warp\'ı Etkinleştir</string>
+    <string name="editSheetEndpoint">Uç Nokta Değerini Değiştir</string>
+    <string name="cancel">İptal</string>
+    <string name="update">Güncelle</string>
+    <string name="notConnected">Bağlı Değil</string>
+    <string name="connecting">Bağlanıyor…</string>
+    <string name="connected">Bağlandı</string>
+    <string name="batteryOpL">Pil Optimizasyonunu Devre Dışı Bırak</string>
+    <string name="batteryOpLText">Daha iyi bir deneyim için pil optimizasyonunu devre dışı bırakma</string>
+    <string name="dialBtText">Uygulamanın düzgün çalışmasını sağlamak için, lütfen bu uygulama için pil optimizasyonunu devre dışı bırakın.</string>
+    <string name="goToSettings">Ayarlar\'a Git</string>
+    <string name="copytoclip">Günlüğü panoya kopyala</string>
+    <string name="endpointTypeText">Uç Nokta Türü</string>
+    <string name="endpointTypeTextDesc">Uç nokta IP\'sini bulmak için kullanılır</string>
+    <string name="turn_on_dark_mode">Karanlık Modu Aç</string>
+    <string name="turn_on_dark_mode_desc">karanlık modu aç</string>
+    <string name="copied_to_clipboard">Panoya kopyalandı</string>
+    <string name="title">Başlık</string>
+    <string name="content">Uç Nokta</string>
+    <string name="save">Kaydet</string>
+    <string name="saved_endpoints">Kaydedilen Uç Noktalar</string>
+    <string name="select_language">Dil Seçin</string>
+    <string name="resetAppTextDesc">Uygulamayı varsayılana sıfırla</string>
+    <string name="resetAppText">Sıfırla</string>
+    <string name="proxy_mode">Proxy Modu</string>
+    <string name="running_in_proxy_mode_not_vpn">Proxy modunda çalışıyor, VPN değil</string>
+    <string-array name="countries">
+        <item>Avusturya</item>
+        <item>Belçika</item>
+        <item>Brezilya</item>
+        <item>Bulgaristan</item>
+        <item>Kanada</item>
+        <item>Hırvatistan</item>
+        <item>Çekya</item>
+        <item>Danimarka</item>
+        <item>Estonya</item>
+        <item>Finlandiya</item>
+        <item>Fransa</item>
+        <item>Almanya</item>
+        <item>Macaristan</item>
+        <item>Hindistan</item>
+        <item>İrlanda</item>
+        <item>İtalya</item>
+        <item>Japonya</item>
+        <item>Letonya</item>
+        <item>Hollanda</item>
+        <item>Norveç</item>
+        <item>Polonya</item>
+        <item>Portekiz</item>
+        <item>Romanya</item>
+        <item>Sırbistan</item>
+        <item>Singapur</item>
+        <item>Slovakya</item>
+        <item>İspanya</item>
+        <item>İsveç</item>
+        <item>İsviçre</item>
+        <item>Ukrayna</item>
+        <item>Birleşik Krallık</item>
+        <item>Birleşik Devletler</item>
+    </string-array>
+</resources>
