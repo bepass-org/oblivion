@@ -502,6 +502,7 @@ public class OblivionVpnService extends VpnService {
     }
 
     private String getNotificationText() {
+        FileManager.initialize(this);
         boolean usePsiphon = FileManager.getBoolean("USERSETTING_psiphon");
         boolean useWarp = FileManager.getBoolean("USERSETTING_gool");
         boolean proxyMode = FileManager.getBoolean("USERSETTING_proxymode");
@@ -521,6 +522,7 @@ public class OblivionVpnService extends VpnService {
     }
 
     private void createNotification() {
+        FileManager.initialize(this);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         NotificationChannelCompat notificationChannel = new NotificationChannelCompat.Builder(
                 "vpn_service", NotificationManagerCompat.IMPORTANCE_DEFAULT)
@@ -557,11 +559,9 @@ public class OblivionVpnService extends VpnService {
     }
 
     private void configure() throws Exception {
+        FileManager.initialize(this);
         boolean proxyModeEnabled = FileManager.getBoolean("USERSETTING_proxymode");
-
         if (proxyModeEnabled) {
-            // Syncing FileManager
-
             // Proxy mode logic
             StartOptions so = new StartOptions();
             so.setPath(getApplicationContext().getFilesDir().getAbsolutePath());
