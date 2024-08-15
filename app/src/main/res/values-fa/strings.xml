@@ -92,4 +92,5 @@
         <item>بریتانیا</item>
         <item>ایالات متحده</item>
     </string-array>
+    <string name="search_app">جستجو</string>
 </resources>

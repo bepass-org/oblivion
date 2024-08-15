@@ -92,4 +92,5 @@
         <item>Великобритания</item>
         <item>Соединенные Штаты</item>
     </string-array>
+    <string name="search_app">Поиск</string>
 </resources>

@@ -92,4 +92,5 @@
         <item>Birleşik Krallık</item>
         <item>Birleşik Devletler</item>
     </string-array>
+    <string name="search_app">Aramak</string>
 </resources>

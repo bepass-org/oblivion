@@ -92,5 +92,6 @@
         <item>美国</item>
     </string-array>
     <string name="select_language">选择语言</string>
+    <string name="search_app">搜索</string>
 
 </resources>
