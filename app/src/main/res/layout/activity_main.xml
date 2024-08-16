@@ -135,6 +135,7 @@
             android:textColor="@color/subtitle_color"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:textAlignment="center"
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
