@@ -1,13 +1,11 @@
 package org.bepass.oblivion.utils;
 
-import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
 import com.vdurmont.emoji.EmojiManager;
 
 import org.bepass.oblivion.model.IPDetails;
-import org.bepass.oblivion.base.ApplicationLoader;
 import org.json.JSONObject;
 
 import java.net.InetSocketAddress;
@@ -36,10 +34,8 @@ public class PublicIPUtils {
 
     /**
      * Private constructor to enforce singleton pattern.
-     *
-     * @param context The application context.
      */
-    private PublicIPUtils(Context context) {
+    private PublicIPUtils() {
         this.scheduler = Executors.newSingleThreadScheduledExecutor();
     }
 
@@ -50,7 +46,7 @@ public class PublicIPUtils {
      */
     public static synchronized PublicIPUtils getInstance() {
         if (instance == null) {
-            instance = new PublicIPUtils(ApplicationLoader.getAppCtx());
+            instance = new PublicIPUtils();
         }
         return instance;
     }
