@@ -188,7 +188,7 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     private void updateUIForConnectedState() {
         binding.switchButton.setEnabled(true);
         if (FileManager.getBoolean("USERSETTING_proxymode")) {
-            binding.stateText.setText(String.format(Locale.getDefault(), "socks5 %s on 127.0.0.1:%s", getString(R.string.connected), FileManager.getString("USERSETTING_port")));
+            binding.stateText.setText(String.format(Locale.getDefault(), "%s\nsocks5 on 127.0.0.1:%s", getString(R.string.connected), FileManager.getString("USERSETTING_port")));
         } else {
             binding.stateText.setText(R.string.connected);
         }
