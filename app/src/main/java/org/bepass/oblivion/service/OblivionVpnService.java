@@ -95,14 +95,13 @@ public class OblivionVpnService extends VpnService {
     private static PowerManager.WakeLock wLock;
     private static ConnectionState lastKnownState = ConnectionState.DISCONNECTED;
     public static synchronized void startVpnService(Context context) {
-        FileManager.initialize(context);
-        Intent intent = new Intent(context.getApplicationContext(), OblivionVpnService.class);
+        Intent intent = new Intent(context, OblivionVpnService.class);
         intent.setAction(OblivionVpnService.FLAG_VPN_START);
         context.startService(intent);
     }
 
     public static synchronized void stopVpnService(Context context) {
-        Intent intent = new Intent(context.getApplicationContext(), OblivionVpnService.class);
+        Intent intent = new Intent(context, OblivionVpnService.class);
         intent.setAction(OblivionVpnService.FLAG_VPN_STOP);
         context.startService(intent);
 
@@ -502,7 +501,6 @@ public class OblivionVpnService extends VpnService {
     }
 
     private String getNotificationText() {
-        FileManager.initialize(this);
         boolean usePsiphon = FileManager.getBoolean("USERSETTING_psiphon");
         boolean useWarp = FileManager.getBoolean("USERSETTING_gool");
         boolean proxyMode = FileManager.getBoolean("USERSETTING_proxymode");
@@ -522,7 +520,6 @@ public class OblivionVpnService extends VpnService {
     }
 
     private void createNotification() {
-        FileManager.initialize(this);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         NotificationChannelCompat notificationChannel = new NotificationChannelCompat.Builder(
                 "vpn_service", NotificationManagerCompat.IMPORTANCE_DEFAULT)
@@ -559,7 +556,6 @@ public class OblivionVpnService extends VpnService {
     }
 
     private void configure() throws Exception {
-        FileManager.initialize(this);
         boolean proxyModeEnabled = FileManager.getBoolean("USERSETTING_proxymode");
         if (proxyModeEnabled) {
             // Proxy mode logic

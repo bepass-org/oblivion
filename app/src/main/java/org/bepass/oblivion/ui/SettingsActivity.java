@@ -109,7 +109,7 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String name = parent.getItemAtPosition(position).toString();
-                Triple<String, String, Integer> codeAndName = CountryUtils.getCountryCode(ApplicationLoader.getAppCtx(), name);
+                Triple<String, String, Integer> codeAndName = CountryUtils.getCountryCode(getApplicationContext(), name);
                 FileManager.set("USERSETTING_country", codeAndName.getFirst());
                 FileManager.set("USERSETTING_country_index", position); // Save the selected country index
             }
@@ -170,46 +170,12 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
     }
 
     private void resetAppData() {
-        clearSharedPreferences();
-
-        try {
-            deleteDir(getCacheDir());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            deleteDir(getFilesDir());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        FileManager.resetToDefault();
+        FileManager.cleanOrMigrateSettings(this);
         Intent intent = new Intent(this, MainActivity.class);
         finish();
         startActivity(intent);
     }
-
-    private void clearSharedPreferences() {
-        FileManager.resetToDefault();
-    }
-
-    private boolean deleteDir(File dir) {
-        if (dir != null && dir.isDirectory()) {
-            String[] children = dir.list();
-            for (int i = 0; i < Objects.requireNonNull(children).length; i++) {
-                boolean success = deleteDir(new File(dir, children[i]));
-                if (!success) {
-                    return false;
-                }
-            }
-            return dir.delete();
-        } else if (dir != null && dir.isFile()) {
-            return dir.delete();
-        } else {
-            return false;
-        }
-    }
-
     private void settingBasicValuesFromSPF() {
         binding.endpoint.setText(FileManager.getString("USERSETTING_endpoint"));
         binding.port.setText(FileManager.getString("USERSETTING_port"));

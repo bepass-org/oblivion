@@ -6,8 +6,10 @@ import android.os.Handler;
 import android.view.View;
 
 import org.bepass.oblivion.R;
+import org.bepass.oblivion.base.ApplicationLoader;
 import org.bepass.oblivion.base.BaseActivity;
 import org.bepass.oblivion.databinding.ActivitySplashScreenBinding;
+import org.bepass.oblivion.utils.FileManager;
 import org.bepass.oblivion.utils.LocaleHandler;
 import org.bepass.oblivion.utils.ThemeHelper;
 

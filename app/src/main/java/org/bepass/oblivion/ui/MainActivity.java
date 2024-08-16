@@ -54,14 +54,13 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         // Initialize the LocaleHandler and set the locale
         localeHandler = new LocaleHandler(this);
-
-        FileManager.initialize(this);
-        super.onCreate(savedInstanceState);
         // Update background based on current theme
         ThemeHelper.getInstance().updateActivityBackground(binding.getRoot());
-        FileManager.cleanOrMigrateSettings(binding.getRoot().getContext());
+        FileManager.cleanOrMigrateSettings(this); // Pass this context
         setupUI();
         setupVPNConnection();
         requestNotificationPermission();
@@ -83,21 +82,22 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     }
 
     private void handleVpnSwitch(boolean enableVpn) {
+        FileManager.initialize(this);
         if (enableVpn) {
             if (lastKnownConnectionState.isDisconnected()) {
                 Intent vpnIntent = OblivionVpnService.prepare(this);
                 if (vpnIntent != null) {
                     vpnPermissionLauncher.launch(vpnIntent);
                 } else {
-                    startVpnService(binding.getRoot().getContext());
+                    startVpnService(this); // Use this context
                 }
                 NetworkUtils.monitorInternetConnection(lastKnownConnectionState, this);
             } else if (lastKnownConnectionState.isConnecting()) {
-                stopVpnService(binding.getRoot().getContext());
+                stopVpnService(this); // Use this context
             }
         } else {
             if (!lastKnownConnectionState.isDisconnected()) {
-                stopVpnService(this);
+                stopVpnService(this); // Use this context
             }
         }
     }

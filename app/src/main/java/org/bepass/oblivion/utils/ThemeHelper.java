@@ -56,8 +56,6 @@ public class ThemeHelper {
     }
 
     public void init() {
-        // Initialize the current theme from settings
-        FileManager.initialize(ApplicationLoader.getAppCtx());
         int themeMode = FileManager.getInt(FileManager.KeyHolder.DARK_MODE);
         currentTheme = Theme.fromNightMode(themeMode);
         applyTheme();

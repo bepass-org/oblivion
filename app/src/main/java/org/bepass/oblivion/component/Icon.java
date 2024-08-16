@@ -11,9 +11,9 @@ import android.view.MotionEvent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.core.content.ContextCompat;
 
 import org.bepass.oblivion.R;
-import org.bepass.oblivion.utils.LocalController;
 
 import java.io.File;
 
@@ -52,13 +52,6 @@ public class Icon extends AppCompatImageView {
         }  finally {
             a.recycle();
         }
-    }
-
-    public void setColor(int color) {
-        if (color != 0) {
-            setColorFilter(LocalController.getColor(color), PorterDuff.Mode.SRC_ATOP);
-        }
-        invalidate();
     }
 
     @SuppressLint("ClickableViewAccessibility")
