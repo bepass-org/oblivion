@@ -35,16 +35,21 @@ public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAd
     private final LoadListener loadListener;
     private List<AppInfo> appList = new ArrayList<>();
     private OnAppSelectListener onAppSelectListener;
+    private String filterString = "";
+    private Context context;
+    private boolean shouldShowSystemApps;
 
     public BypassListAppsAdapter(Context context, LoadListener loadListener) {
+        this.context = context;
         this.loadListener = loadListener;
-        loadApps(context, false);
+        shouldShowSystemApps = false;
+        loadApps();
     }
 
-    private void loadApps(Context context, boolean shouldShowSystemApps) {
-        if (loadListener != null) loadListener.onLoad(true);
+    private void loadApps() {
+        if (this.loadListener != null) this.loadListener.onLoad(true);
         executor.submit(() -> {
-            appList = getInstalledApps(context, shouldShowSystemApps);
+            appList = getInstalledApps(context, shouldShowSystemApps, filterString);
             handler.post(() -> {
                 notifyDataSetChanged();
                 if (loadListener != null) loadListener.onLoad(false);
@@ -52,7 +57,7 @@ public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAd
         });
     }
 
-    private List<AppInfo> getInstalledApps(Context context, boolean shouldShowSystemApps) {
+    private List<AppInfo> getInstalledApps(Context context, boolean shouldShowSystemApps, String filterStr) {
         Set<String> selectedApps = FileManager.getStringSet("splitTunnelApps", new HashSet<>());
         PackageManager packageManager = context.getPackageManager();
         @SuppressLint("QueryPermissionsNeeded") List<ApplicationInfo> packages = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
@@ -62,18 +67,21 @@ public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAd
             if (!shouldShowSystemApps && (packageInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) continue;
             if (packageInfo.packageName.equals(context.getPackageName())) continue;
 
-            appList.add(new AppInfo(
-                    packageInfo.loadLabel(packageManager).toString(),
-                    () -> packageInfo.loadIcon(packageManager),
-                    packageInfo.packageName,
-                    selectedApps.contains(packageInfo.packageName)
-            ));
+            if (filterStr.isEmpty() || packageInfo.loadLabel(packageManager).toString().toLowerCase().contains(filterStr.toLowerCase())) {
+                appList.add(new AppInfo(
+                        packageInfo.loadLabel(packageManager).toString(),
+                        () -> packageInfo.loadIcon(packageManager),
+                        packageInfo.packageName,
+                        selectedApps.contains(packageInfo.packageName)
+                ));
+            }
         }
         return appList;
     }
 
-    public void setShouldShowSystemApps(Context context, boolean shouldShowSystemApps) {
-        loadApps(context, shouldShowSystemApps);
+    public void setShouldShowSystemApps(boolean shouldShowSystemApps) {
+        this.shouldShowSystemApps = shouldShowSystemApps;
+        loadApps();
     }
 
     public void setOnAppSelectListener(OnAppSelectListener onAppSelectListener) {
@@ -122,6 +130,11 @@ public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAd
 
     public interface OnAppSelectListener {
         void onSelect(String packageName, boolean selected);
+    }
+
+    public void setFilterString(String filterString) {
+        this.filterString = filterString;
+        loadApps();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

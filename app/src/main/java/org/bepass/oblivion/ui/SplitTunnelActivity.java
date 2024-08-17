@@ -1,6 +1,8 @@
 package org.bepass.oblivion.ui;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -18,6 +20,7 @@ import org.bepass.oblivion.utils.ThemeHelper;
 
 
 public class SplitTunnelActivity extends StateAwareBaseActivity<ActivitySplitTunnelBinding> {
+    BypassListAppsAdapter bypassListAppsAdapter;
 
     @Override
     protected int getLayoutResourceId() {
@@ -39,7 +42,7 @@ public class SplitTunnelActivity extends StateAwareBaseActivity<ActivitySplitTun
         binding.back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
 
         // Set up the app list
-        BypassListAppsAdapter bypassListAppsAdapter = new BypassListAppsAdapter(this, loading -> {
+        bypassListAppsAdapter = new BypassListAppsAdapter(this, loading -> {
             binding.appsRecycler.setVisibility(loading ? View.INVISIBLE : View.VISIBLE);
                 if (loading) binding.progress.show();
                 else binding.progress.hide();
@@ -60,11 +63,32 @@ public class SplitTunnelActivity extends StateAwareBaseActivity<ActivitySplitTun
 
             @Override
             public void shouldShowSystemApps(boolean show) {
-                bypassListAppsAdapter.setShouldShowSystemApps(SplitTunnelActivity.this, show);
+                bypassListAppsAdapter.setShouldShowSystemApps(show);
             }
         });
 
         binding.appsRecycler.setAdapter(new ConcatAdapter(optionsAdapter, bypassListAppsAdapter));
+
+        binding.filterListEditText.addTextChangedListener(getTextWatcher());
+    }
+
+    private @NonNull TextWatcher getTextWatcher() {
+        return new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (bypassListAppsAdapter != null) {
+                    bypassListAppsAdapter.setFilterString(s.toString());
+                }
+            }
+        };
     }
 
     @Override
