@@ -188,8 +188,18 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     private void updateUIForConnectedState() {
         binding.switchButton.setEnabled(true);
         if (FileManager.getBoolean("USERSETTING_proxymode")) {
-            binding.stateText.setText(String.format(Locale.getDefault(), "%s\nsocks5 on 127.0.0.1:%s", getString(R.string.connected), FileManager.getString("USERSETTING_port")));
-        } else {
+            if (FileManager.getBoolean("USERSETTING_lan")) {
+                String lanIP;
+                try {
+                    lanIP = NetworkUtils.getLocalIpAddress(this);
+                    binding.stateText.setText(String.format(Locale.getDefault(), "%s\n socks5 over LAN on\n %s:%s", getString(R.string.connected), lanIP, FileManager.getString("USERSETTING_port")));
+                } catch (Exception e) {
+                    binding.stateText.setText(String.format(Locale.getDefault(), "%s\n socks5 over LAN on\n 127.0.0.1:%s", getString(R.string.connected), FileManager.getString("USERSETTING_port")));
+                }
+            } else {
+                binding.stateText.setText(String.format(Locale.getDefault(), "%s\nsocks5 on 127.0.0.1:%s", getString(R.string.connected), FileManager.getString("USERSETTING_port")));
+            }
+        }else {
             binding.stateText.setText(R.string.connected);
         }
         binding.switchButton.setChecked(true, false);

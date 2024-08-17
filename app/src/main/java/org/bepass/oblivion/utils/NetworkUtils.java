@@ -7,10 +7,15 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
 
 import org.bepass.oblivion.enums.ConnectionState;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Locale;
 
 public class NetworkUtils {
 
@@ -53,4 +58,54 @@ public class NetworkUtils {
         }
         return false;
     }
+    public static String getLocalIpAddress(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+
+        if (activeNetwork != null && activeNetwork.isConnected()) {
+            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+                // Get IP Address from Wi-Fi
+                WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
+                return String.format(Locale.US,"%d.%d.%d.%d",
+                        (ipAddress & 0xff),
+                        (ipAddress >> 8 & 0xff),
+                        (ipAddress >> 16 & 0xff),
+                        (ipAddress >> 24 & 0xff));
+            } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+                // Get IP Address from Mobile Data using InetAddress
+                try {
+                    InetAddress ip = InetAddress.getByName("google.com");
+                    return ip.getHostAddress();
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // For devices running Android Marshmallow or higher
+            NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
+            if (capabilities != null && capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                // Get IP Address from Wi-Fi
+                WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
+                return String.format(Locale.US,"%d.%d.%d.%d",
+                        (ipAddress & 0xff),
+                        (ipAddress >> 8 & 0xff),
+                        (ipAddress >> 16 & 0xff),
+                        (ipAddress >> 24 & 0xff));
+            } else if (capabilities != null && capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                // Get IP Address from Mobile Data using InetAddress
+                try {
+                    InetAddress ip = InetAddress.getByName("google.com");
+                    return ip.getHostAddress();
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return null; // Return null if no connection is available
+    }
+
+
 }
