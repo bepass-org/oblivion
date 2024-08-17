@@ -11,7 +11,7 @@
     <string name="segaro">#سگارو</string>
     <string name="yousef">#یوسف_قبادی</string>
     <string name="slogan">اینترنت برای همه، یا هیچکس</string>
-    <string name="blackList">لیست سیاه</string>
+    <string name="blackWhiteList">لیست سیاه/سفید</string>
     <string name="disabledR">غیرفعال</string>
     <string name="disabledRText">در حالت غیرفعال، ترافیک تمامی برنامه‌ها از VPN عبور می‌کند.</string>
     <string name="enabledR">فعال</string>
@@ -92,4 +92,6 @@
         <item>بریتانیا</item>
         <item>ایالات متحده</item>
     </string-array>
+    <string name="Permitted">مجاز</string>
+    <string name="permittedText">در حالت مجاز، فقط ترافیک برنامه های انتخاب شده از VPN عبور می کند.</string>
 </resources>

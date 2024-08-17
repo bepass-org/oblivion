@@ -306,7 +306,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/shabnam"
                 android:minWidth="100dp"
-                android:text="@string/blackList"
+                android:text="@string/blackWhiteList"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
                 android:textSize="20sp" />

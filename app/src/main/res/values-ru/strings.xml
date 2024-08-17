@@ -11,7 +11,7 @@
     <string name="segaro">#Segaro</string>
     <string name="yousef">#Yousef_Ghobadi</string>
     <string name="slogan">Интернет для всех или ни для кого</string>
-    <string name="blackList">Черный список</string>
+    <string name="blackWhiteList">Черный/Белый список</string>
     <string name="disabledR">Отключено</string>
     <string name="disabledRText">В режиме отключения весь трафик приложений проходит через VPN.</string>
     <string name="enabledR">Включено</string>
@@ -92,4 +92,6 @@
         <item>Великобритания</item>
         <item>Соединенные Штаты</item>
     </string-array>
+    <string name="Permitted">Разрешено</string>
+    <string name="permittedText">В разрешенном режиме через VPN проходит только трафик выбранных приложений.</string>
 </resources>

@@ -11,7 +11,7 @@
     <string name="segaro">#Segaro</string>
     <string name="yousef">#Yousef_Ghobadi</string>
     <string name="slogan">İnternet Herkes İçin, Ya Da Hiç Kimse İçin</string>
-    <string name="blackList">Kara Liste</string>
+    <string name="blackWhiteList">Kara/Beyaz Liste</string>
     <string name="disabledR">Devre Dışı</string>
     <string name="disabledRText">Devre dışı modda, tüm uygulamaların trafiği VPN üzerinden geçer.</string>
     <string name="enabledR">Etkin</string>
@@ -92,4 +92,6 @@
         <item>Birleşik Krallık</item>
         <item>Birleşik Devletler</item>
     </string-array>
+    <string name="Permitted">İzin verildi</string>
+    <string name="permittedText">İzin verilen modda yalnızca seçili uygulamaların trafiği VPN üzerinden geçer.</string>
 </resources>

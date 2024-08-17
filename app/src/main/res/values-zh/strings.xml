@@ -11,7 +11,7 @@
     <string name="segaro">#Segaro</string>
     <string name="yousef">#Yousef_Ghobadi</string>
     <string name="slogan">互联网为所有人，或者无人</string>
-    <string name="blackList">黑名单</string>
+    <string name="blackWhiteList">黑/白名单</string>
     <string name="disabledR">全局模式</string>
     <string name="disabledRText">在全局模式下，所有应用的流量都通过VPN。</string>
     <string name="enabledR">绕行模式</string>
@@ -92,5 +92,7 @@
         <item>美国</item>
     </string-array>
     <string name="select_language">选择语言</string>
+    <string name="Permitted">允许</string>
+    <string name="permittedText">在允许模式下，只有选定的应用程序的流量通过 VPN。</string>
 
 </resources>

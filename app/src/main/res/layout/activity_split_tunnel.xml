@@ -45,7 +45,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/shabnamlight"
-                android:text="@string/blackList"
+                android:text="@string/blackWhiteList"
                 android:textColor="@color/text_color"
                 android:textSize="24sp"
                 tools:ignore="RelativeOverlap"
