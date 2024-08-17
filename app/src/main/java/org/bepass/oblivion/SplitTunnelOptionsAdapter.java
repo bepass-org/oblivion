@@ -41,6 +41,9 @@ public class SplitTunnelOptionsAdapter extends RecyclerView.Adapter<SplitTunnelO
             case BLACKLIST:
                 holder.blacklist.setChecked(true);
                 break;
+            case PERMITTEDLIST:
+                holder.permittedList.setChecked(true);
+                break;
         }
         holder.showSystemApps.setOnCheckedChangeListener((buttonView, isChecked) -> settingsCallback.shouldShowSystemApps(isChecked));
         holder.disabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -53,6 +56,13 @@ public class SplitTunnelOptionsAdapter extends RecyclerView.Adapter<SplitTunnelO
             if (isChecked) {
                 settingsCallback.splitTunnelMode(SplitTunnelMode.BLACKLIST);
                 FileManager.set("splitTunnelMode", SplitTunnelMode.BLACKLIST.toString());
+            }
+
+        });
+        holder.permittedList.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                settingsCallback.splitTunnelMode(SplitTunnelMode.PERMITTEDLIST);
+                FileManager.set("splitTunnelMode", SplitTunnelMode.PERMITTEDLIST.toString());
             }
 
         });
@@ -73,12 +83,14 @@ public class SplitTunnelOptionsAdapter extends RecyclerView.Adapter<SplitTunnelO
         SwitchMaterial showSystemApps;
         RadioButton disabled;
         RadioButton blacklist;
+        RadioButton permittedList;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             showSystemApps = itemView.findViewById(R.id.showSystemApps);
             disabled = itemView.findViewById(R.id.disabled);
             blacklist = itemView.findViewById(R.id.blacklist);
+            permittedList = itemView.findViewById(R.id.permittedList);
         }
     }
 }

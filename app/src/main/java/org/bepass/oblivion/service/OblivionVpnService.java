@@ -622,11 +622,15 @@ public class OblivionVpnService extends VpnService {
 
         // Determine split tunnel mode
         SplitTunnelMode splitTunnelMode = SplitTunnelMode.getSplitTunnelMode();
-        if (splitTunnelMode == SplitTunnelMode.BLACKLIST) {
+        if (splitTunnelMode != SplitTunnelMode.DISABLED) {
             Set<String> splitTunnelApps = getSplitTunnelApps();
             for (String packageName : splitTunnelApps) {
                 try {
-                    builder.addDisallowedApplication(packageName);
+                    if (splitTunnelMode == SplitTunnelMode.BLACKLIST)
+                        builder.addDisallowedApplication(packageName);
+                    else if (splitTunnelMode == SplitTunnelMode.PERMITTEDLIST)
+                        builder.addAllowedApplication(packageName);
+
                 } catch (PackageManager.NameNotFoundException ignored) {
                 }
             }

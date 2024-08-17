@@ -4,7 +4,8 @@ import org.bepass.oblivion.utils.FileManager;
 
 public enum SplitTunnelMode {
     DISABLED,
-    BLACKLIST;
+    BLACKLIST,
+    PERMITTEDLIST;
 
     public static SplitTunnelMode getSplitTunnelMode() {
         SplitTunnelMode splitTunnelMode;

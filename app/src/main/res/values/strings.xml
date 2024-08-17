@@ -11,7 +11,7 @@
   <string name="segaro">#Segaro</string>
   <string name="yousef">#Yousef_Ghobadi</string>
   <string name="slogan">Internet for All, or No One</string>
-  <string name="blackList">Blacklist</string>
+  <string name="blackWhiteList">Black/White list</string>
   <string name="disabledR">Disabled</string>
   <string name="disabledRText">In disabled mode, traffic of all apps passes through VPN.</string>
   <string name="enabledR">Enabled</string>
@@ -131,4 +131,6 @@
     <item>IPv4</item>
     <item>IPv6</item>
   </string-array>
+  <string name="Permitted">Permitted</string>
+  <string name="permittedText">In permitted mode, just traffic of selected apps pass through VPN.</string>
 </resources>
