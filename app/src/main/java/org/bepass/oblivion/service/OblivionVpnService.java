@@ -498,25 +498,8 @@ public class OblivionVpnService extends VpnService {
     private void setLastKnownState(ConnectionState lastKnownState) {
         OblivionVpnService.lastKnownState = lastKnownState;
         publishConnectionState(lastKnownState);
-    }
-
-    private String getNotificationText() {
-        boolean usePsiphon = FileManager.getBoolean("USERSETTING_psiphon");
-        boolean useWarp = FileManager.getBoolean("USERSETTING_gool");
-        boolean proxyMode = FileManager.getBoolean("USERSETTING_proxymode");
-        String portInUse = FileManager.getString("USERSETTING_port");
-        String notificationText;
-        String proxyText = proxyMode ? String.format(Locale.getDefault(), " on socks5 proxy at 127.0.0.1:%s", portInUse) : "";
-
-        if (usePsiphon) {
-            notificationText = "Psiphon in Warp" + proxyText;
-        } else if (useWarp) {
-            notificationText = "Warp in Warp" + proxyText;
-        } else {
-            notificationText = "Warp" + proxyText;
-        }
-
-        return notificationText;
+        createNotification();
+        startForeground(1, notification);
     }
 
     private void createNotification() {
@@ -526,15 +509,20 @@ public class OblivionVpnService extends VpnService {
                 .setName("Vpn Service")
                 .build();
         notificationManager.createNotificationChannel(notificationChannel);
+
         Intent disconnectIntent = new Intent(this, OblivionVpnService.class);
         disconnectIntent.setAction(OblivionVpnService.FLAG_VPN_STOP);
         PendingIntent disconnectPendingIntent = PendingIntent.getService(
                 this, 0, disconnectIntent, PendingIntent.FLAG_IMMUTABLE);
         PendingIntent contentPendingIntent = PendingIntent.getActivity(
                 this, 2, new Intent(this, MainActivity.class), PendingIntent.FLAG_IMMUTABLE);
+
+        String notificationTitle = getNotificationTitle();
+        String notificationContent = getNotificationContent();
+
         notification = new NotificationCompat.Builder(this, notificationChannel.getId())
-                .setContentTitle("Vpn Service")
-                .setContentText("Oblivion - " + getNotificationText())
+                .setContentTitle(notificationTitle)
+                .setContentText(notificationContent)
                 .setSmallIcon(R.mipmap.ic_notification)
                 .setOnlyAlertOnce(true)
                 .setOngoing(true)
@@ -545,6 +533,48 @@ public class OblivionVpnService extends VpnService {
                 .setContentIntent(contentPendingIntent)
                 .addAction(0, "Disconnect", disconnectPendingIntent)
                 .build();
+    }
+
+    private String getNotificationTitle() {
+        switch (lastKnownState) {
+            case CONNECTING:
+                return "Oblivion - Connecting";
+            case CONNECTED:
+                return "Oblivion - Connected";
+            case DISCONNECTED:
+                return "Oblivion - Disconnected";
+            default:
+                return "Oblivion";
+        }
+    }
+
+    private String getNotificationContent() {
+        boolean usePsiphon = FileManager.getBoolean("USERSETTING_psiphon");
+        boolean useWarp = FileManager.getBoolean("USERSETTING_gool");
+        boolean proxyMode = FileManager.getBoolean("USERSETTING_proxymode");
+        String portInUse = FileManager.getString("USERSETTING_port");
+
+        StringBuilder content = new StringBuilder();
+
+        if (proxyMode) {
+            content.append("Proxy Mode - ");
+        } else {
+            content.append("VPN Mode - ");
+        }
+
+        if (usePsiphon) {
+            content.append("Psiphon in Warp");
+        } else if (useWarp) {
+            content.append("Warp in Warp");
+        } else {
+            content.append("Warp");
+        }
+
+        if (proxyMode) {
+            content.append(String.format(Locale.getDefault(), " (SOCKS5 127.0.0.1:%s)", portInUse));
+        }
+
+        return content.toString();
     }
 
     public void addConnectionStateObserver(String key, Messenger messenger) {
