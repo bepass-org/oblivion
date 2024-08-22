@@ -59,9 +59,9 @@
     <string name="proxy_mode">حالت پراکسی</string>
     <string name="running_in_proxy_mode_not_vpn">در حال اجرا در حالت پراکسی، نه VPN</string>
     <string-array name="countries">
+        <item>استرالیا</item>
         <item>اتریش</item>
         <item>بلژیک</item>
-        <item>برزیل</item>
         <item>بلغارستان</item>
         <item>کانادا</item>
         <item>کرواسی</item>
@@ -88,7 +88,6 @@
         <item>اسپانیا</item>
         <item>سوئد</item>
         <item>سوئیس</item>
-        <item>اوکراین</item>
         <item>بریتانیا</item>
         <item>ایالات متحده</item>
     </string-array>
