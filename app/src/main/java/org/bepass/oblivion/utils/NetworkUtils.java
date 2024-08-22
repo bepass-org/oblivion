@@ -13,8 +13,6 @@ import android.os.Handler;
 
 import org.bepass.oblivion.enums.ConnectionState;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Locale;
 
 public class NetworkUtils {
@@ -58,7 +56,7 @@ public class NetworkUtils {
         }
         return false;
     }
-    public static String getLocalIpAddress(Context context) {
+    public static String getLocalIpAddress(Context context) throws Exception {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
 
@@ -67,40 +65,29 @@ public class NetworkUtils {
                 // Get IP Address from Wi-Fi
                 WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                 int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
-                return String.format(Locale.US,"%d.%d.%d.%d",
+                return String.format(Locale.US, "%d.%d.%d.%d",
                         (ipAddress & 0xff),
                         (ipAddress >> 8 & 0xff),
                         (ipAddress >> 16 & 0xff),
                         (ipAddress >> 24 & 0xff));
             } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
-                // Get IP Address from Mobile Data using InetAddress
-                try {
-                    InetAddress ip = InetAddress.getByName("google.com");
-                    return ip.getHostAddress();
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                }
+                // Throw exception if connected to Mobile Data (4G)
+                throw new Exception("Operation not allowed on cellular data (4G). Please connect to Wi-Fi.");
             }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // For devices running Android Marshmallow or higher
             NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
             if (capabilities != null && capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
                 // Get IP Address from Wi-Fi
                 WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                 int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
-                return String.format(Locale.US,"%d.%d.%d.%d",
+                return String.format(Locale.US, "%d.%d.%d.%d",
                         (ipAddress & 0xff),
                         (ipAddress >> 8 & 0xff),
                         (ipAddress >> 16 & 0xff),
                         (ipAddress >> 24 & 0xff));
             } else if (capabilities != null && capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-                // Get IP Address from Mobile Data using InetAddress
-                try {
-                    InetAddress ip = InetAddress.getByName("google.com");
-                    return ip.getHostAddress();
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                }
+                // Throw exception if connected to Mobile Data (4G)
+                throw new Exception("Operation not allowed on cellular data (4G). Please connect to Wi-Fi.");
             }
         }
 

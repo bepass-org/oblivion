@@ -2,6 +2,7 @@ package org.bepass.oblivion.utils;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.os.LocaleListCompat;
@@ -22,7 +23,20 @@ public class LocaleHandler {
 
     public LocaleHandler(Context context) {
         this.context = context;
-        this.configuredLocales = LocaleConfigXKt.getConfiguredLocales(context);
+
+        // Safely load configured locales
+        LocaleListCompat locales;
+        try {
+            locales = LocaleConfigXKt.getConfiguredLocales(context);
+            if (locales.isEmpty()) {
+                throw new Exception("Locale configuration is empty or null.");
+            }
+        } catch (Exception e) {
+            Log.e("LocaleHandler", "Failed to load locale configuration. Falling back to default locale.", e);
+            locales = LocaleListCompat.create(Locale.forLanguageTag(DEFAULT_LOCALE));
+        }
+
+        this.configuredLocales = locales;
     }
 
     public void setPersianAsDefaultLocaleIfNeeds() {

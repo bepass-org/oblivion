@@ -59,9 +59,9 @@
   <string name="proxy_mode">Proxy Mode</string>
   <string name="running_in_proxy_mode_not_vpn">Running in proxy mode, not VPN</string>
   <string-array name="countries">
+    <item>Australia</item>
     <item>Austria</item>
     <item>Belgium</item>
-    <item>Brazil</item>
     <item>Bulgaria</item>
     <item>Canada</item>
     <item>Croatia</item>
@@ -88,14 +88,13 @@
     <item>Spain</item>
     <item>Sweden</item>
     <item>Switzerland</item>
-    <item>Ukraine</item>
     <item>United Kingdom</item>
     <item>United States</item>
   </string-array>
   <string-array name="englishCountries">
+    <item>Australia</item>
     <item>Austria</item>
     <item>Belgium</item>
-    <item>Brazil</item>
     <item>Bulgaria</item>
     <item>Canada</item>
     <item>Croatia</item>
@@ -122,7 +121,6 @@
     <item>Spain</item>
     <item>Sweden</item>
     <item>Switzerland</item>
-    <item>Ukraine</item>
     <item>United Kingdom</item>
     <item>United States</item>
   </string-array>
