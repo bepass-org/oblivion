@@ -58,9 +58,9 @@
     <string name="proxy_mode">代理模式</string>
     <string name="running_in_proxy_mode_not_vpn">以代理模式运行，而不是VPN</string>
     <string-array name="countries">
+        <item>澳大利亚</item>
         <item>奥地利</item>
         <item>比利时</item>
-        <item>巴西</item>
         <item>保加利亚</item>
         <item>加拿大</item>
         <item>克罗地亚</item>
@@ -87,7 +87,6 @@
         <item>西班牙</item>
         <item>瑞典</item>
         <item>瑞士</item>
-        <item>乌克兰</item>
         <item>英国</item>
         <item>美国</item>
     </string-array>

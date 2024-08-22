@@ -56,11 +56,9 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Initialize the LocaleHandler and set the locale
         localeHandler = new LocaleHandler(this);
-        // Update background based on current theme
         ThemeHelper.getInstance().updateActivityBackground(binding.getRoot());
-        FileManager.cleanOrMigrateSettings(this); // Pass this context
+        FileManager.cleanOrMigrateSettings(this);
         setupUI();
         setupVPNConnection();
         requestNotificationPermission();
@@ -89,17 +87,24 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
                 if (vpnIntent != null) {
                     vpnPermissionLauncher.launch(vpnIntent);
                 } else {
-                    startVpnService(this); // Use this context
+                    startVpnService(this);
                 }
                 NetworkUtils.monitorInternetConnection(lastKnownConnectionState, this);
             } else if (lastKnownConnectionState.isConnecting()) {
-                stopVpnService(this); // Use this context
+                stopVpnService(this);
             }
         } else {
             if (!lastKnownConnectionState.isDisconnected()) {
-                stopVpnService(this); // Use this context
+                stopVpnService(this);
             }
         }
+        refreshUI(); // Force refresh of the UI after VPN state changes
+    }
+
+    private void refreshUI() {
+        // This will force a refresh of the UI based on the current data bindings
+        binding.invalidateAll();
+        binding.executePendingBindings();
     }
 
     private void handleBackPress() {
@@ -166,6 +171,7 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
                     updateUIForConnectedState();
                     break;
             }
+            refreshUI(); // Refresh UI whenever the connection state changes
         });
     }
 
@@ -194,22 +200,22 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
                     lanIP = NetworkUtils.getLocalIpAddress(this);
                     binding.stateText.setText(String.format(Locale.getDefault(), "%s\n socks5 over LAN on\n %s:%s", getString(R.string.connected), lanIP, FileManager.getString("USERSETTING_port")));
                 } catch (Exception e) {
-                    binding.stateText.setText(String.format(Locale.getDefault(), "%s\n socks5 over LAN on\n 127.0.0.1:%s", getString(R.string.connected), FileManager.getString("USERSETTING_port")));
+                    binding.stateText.setText(String.format(Locale.getDefault(), "%s\n socks5 over LAN on\n 0.0.0.0:%s", getString(R.string.connected), FileManager.getString("USERSETTING_port")));
                 }
             } else {
                 binding.stateText.setText(String.format(Locale.getDefault(), "%s\nsocks5 on 127.0.0.1:%s", getString(R.string.connected), FileManager.getString("USERSETTING_port")));
             }
-        }else {
+        } else {
             binding.stateText.setText(R.string.connected);
         }
         binding.switchButton.setChecked(true, false);
         binding.ipProgressBar.setVisibility(View.GONE);
-        PublicIPUtils.getInstance().getIPDetails((details) -> {
+        PublicIPUtils.getInstance().getIPDetails((details) -> runOnUiThread(() -> { // Ensure UI updates are done on the main thread
             if (details.ip != null) {
                 String ipString = details.ip + " " + details.flag;
                 binding.publicIP.setText(ipString);
                 binding.publicIP.setVisibility(View.VISIBLE);
             }
-        });
+        }));
     }
 }
