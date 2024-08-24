@@ -129,4 +129,11 @@
     <item>IPv4</item>
     <item>IPv6</item>
   </string-array>
+  <string-array name="allowed_languages">
+    <item>en</item> <!-- English -->
+    <item>fa</item> <!-- Persian -->
+    <item>ru</item> <!-- Russian -->
+    <item>tr</item> <!-- Turkish -->
+    <item>zh</item> <!-- Chinese -->
+  </string-array>
 </resources>
