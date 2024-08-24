@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -329,6 +328,7 @@ public class OblivionVpnService extends VpnService {
     }
 
     private void start() {
+        FileManager.initialize(getApplicationContext());
         if (lastKnownState != ConnectionState.DISCONNECTED) {
             onRevoke();
         }
@@ -344,7 +344,6 @@ public class OblivionVpnService extends VpnService {
         }
 
         executorService.execute(() -> {
-            FileManager.initialize(this);
             bindAddress = getBindAddress();
             Log.i(TAG, "Configuring VPN service");
             try {
@@ -428,7 +427,6 @@ public class OblivionVpnService extends VpnService {
         } else {
             Log.w(TAG, "No wake lock to release");
         }
-        FileManager.initialize(this);
         // Close the VPN interface
         try {
             if (!FileManager.getBoolean("USERSETTING_proxymode")) {

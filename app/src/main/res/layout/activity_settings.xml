@@ -133,7 +133,6 @@
 
             <Spinner
                 android:id="@+id/endpoint_type"
-                android:entries="@array/endpointType"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -158,7 +157,7 @@
               android:layout_marginTop="4dp"
               android:fontFamily="@font/shabnam"
               android:text="@string/endpointTypeTextDesc"
-              android:textColor="#9A9A9A"
+              android:textColor="@color/subtitle_color"
               android:textSize="16sp" />
         </LinearLayout>
         <LinearLayout
