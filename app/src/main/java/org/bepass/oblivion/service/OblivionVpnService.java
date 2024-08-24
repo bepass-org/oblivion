@@ -95,12 +95,14 @@ public class OblivionVpnService extends VpnService {
     private static PowerManager.WakeLock wLock;
     private static ConnectionState lastKnownState = ConnectionState.DISCONNECTED;
     public static synchronized void startVpnService(Context context) {
+        FileManager.initialize(context);
         Intent intent = new Intent(context, OblivionVpnService.class);
         intent.setAction(OblivionVpnService.FLAG_VPN_START);
         context.startService(intent);
     }
 
     public static synchronized void stopVpnService(Context context) {
+        FileManager.initialize(context);
         Intent intent = new Intent(context, OblivionVpnService.class);
         intent.setAction(OblivionVpnService.FLAG_VPN_STOP);
         context.startService(intent);
@@ -344,7 +346,6 @@ public class OblivionVpnService extends VpnService {
         }
 
         executorService.execute(() -> {
-            FileManager.initialize(this);
             bindAddress = getBindAddress();
             Log.i(TAG, "Configuring VPN service");
             try {
@@ -428,7 +429,6 @@ public class OblivionVpnService extends VpnService {
         } else {
             Log.w(TAG, "No wake lock to release");
         }
-        FileManager.initialize(this);
         // Close the VPN interface
         try {
             if (!FileManager.getBoolean("USERSETTING_proxymode")) {
