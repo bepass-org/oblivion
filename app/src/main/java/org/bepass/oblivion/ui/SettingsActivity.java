@@ -5,7 +5,6 @@ import static org.bepass.oblivion.utils.BatteryOptimizationKt.showBatteryOptimiz
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,7 +12,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AppCompatDelegate;
 
 import org.bepass.oblivion.EndpointsBottomSheet;
 import org.bepass.oblivion.enums.ConnectionState;
@@ -23,13 +21,9 @@ import org.bepass.oblivion.utils.FileManager;
 import org.bepass.oblivion.service.OblivionVpnService;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.interfaces.SheetsCallBack;
-import org.bepass.oblivion.base.ApplicationLoader;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
 import org.bepass.oblivion.databinding.ActivitySettingsBinding;
 import org.bepass.oblivion.utils.ThemeHelper;
-
-import java.io.File;
-import java.util.Objects;
 
 import kotlin.Triple;
 
@@ -88,7 +82,24 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         });
 
         SheetsCallBack sheetsCallBack = this::settingBasicValuesFromSPF;
+        ArrayAdapter<CharSequence> etadapter = ArrayAdapter.createFromResource(this, R.array.endpointType, R.layout.country_item_layout);
+        etadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.endpointType.setAdapter(etadapter);
+        binding.endpointTypeLayout.setOnClickListener(v -> binding.endpointType.performClick());
 
+        binding.endpointType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                int selectedIndex = binding.endpointType.getSelectedItemPosition();
+                FileManager.set("USERSETTING_endpoint_type", selectedIndex);
+                binding.endpointType.setSelection(selectedIndex);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing or handle the case where no item is selected.
+            }
+        });
         binding.endpointLayout.setOnClickListener(v -> {
             EndpointsBottomSheet bottomSheet = new EndpointsBottomSheet();
             bottomSheet.setEndpointSelectionListener(content -> {
@@ -177,6 +188,7 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         startActivity(intent);
     }
     private void settingBasicValuesFromSPF() {
+        binding.endpointType.setSelection(FileManager.getInt("USERSETTING_endpoint_type"));
         binding.endpoint.setText(FileManager.getString("USERSETTING_endpoint"));
         binding.port.setText(FileManager.getString("USERSETTING_port"));
         binding.license.setText(FileManager.getString("USERSETTING_license"));
