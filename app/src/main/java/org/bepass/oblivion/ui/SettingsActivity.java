@@ -82,17 +82,11 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         });
 
         SheetsCallBack sheetsCallBack = this::settingBasicValuesFromSPF;
-        ArrayAdapter<CharSequence> etadapter = ArrayAdapter.createFromResource(this, R.array.endpointType, R.layout.country_item_layout);
-        etadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.endpointType.setAdapter(etadapter);
-        binding.endpointTypeLayout.setOnClickListener(v -> binding.endpointType.performClick());
 
         binding.endpointType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                int selectedIndex = binding.endpointType.getSelectedItemPosition();
-                FileManager.set("USERSETTING_endpoint_type", selectedIndex);
-                binding.endpointType.setSelection(selectedIndex);
+                FileManager.set("USERSETTING_endpoint_type", position);
             }
 
             @Override
@@ -111,10 +105,6 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
 
         binding.portLayout.setOnClickListener(v -> (new EditSheet(this, getString(R.string.portTunText), "port", sheetsCallBack)).start());
         binding.licenseLayout.setOnClickListener(v -> (new EditSheet(this, getString(R.string.licenseText), "license", sheetsCallBack)).start());
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.countries, R.layout.country_item_layout);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.country.setAdapter(adapter);
 
         binding.country.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -188,7 +178,15 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         startActivity(intent);
     }
     private void settingBasicValuesFromSPF() {
-        binding.endpointType.setSelection(FileManager.getInt("USERSETTING_endpoint_type"));
+        ArrayAdapter<CharSequence> etadapter = ArrayAdapter.createFromResource(this, R.array.endpointType, R.layout.country_item_layout);
+        etadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.endpointType.post(new Runnable() {
+            @Override
+            public void run() {
+                binding.endpointType.setAdapter(etadapter);
+                binding.endpointType.setSelection(FileManager.getInt("USERSETTING_endpoint_type"));
+            }
+        });
         binding.endpoint.setText(FileManager.getString("USERSETTING_endpoint"));
         binding.port.setText(FileManager.getString("USERSETTING_port"));
         binding.license.setText(FileManager.getString("USERSETTING_license"));
