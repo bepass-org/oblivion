@@ -3,14 +3,11 @@ package org.bepass.oblivion.utils;
 import android.os.Handler;
 import android.util.Log;
 
-import com.vdurmont.emoji.EmojiManager;
-
 import org.bepass.oblivion.model.IPDetails;
 import org.json.JSONObject;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -91,7 +88,7 @@ public class PublicIPUtils {
                             JSONObject jsonData = new JSONObject(Objects.requireNonNull(response.body()).string());
                             details.ip = jsonData.getString("ip");
                             details.country = jsonData.getString("country");
-                            details.flag = EmojiManager.getForAlias(details.country.toLowerCase(Locale.ROOT)).getUnicode();
+                            details.flag = CountryCodeUtils.toCountryFlagEmoji(new CountryCode(details.country));
                             Log.d(TAG, "IP details retrieved successfully");
                         }
                         handler.post(() -> callback.onDetailsReceived(details));
