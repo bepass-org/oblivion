@@ -19,7 +19,7 @@ android {
         }
     }
     androidResources {
-        generateLocaleConfig false
+        generateLocaleConfig true
     }
     buildFeatures {
         dataBinding = true
