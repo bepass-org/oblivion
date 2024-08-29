@@ -59,9 +59,9 @@
     <string name="proxy_mode">Proxy Modu</string>
     <string name="running_in_proxy_mode_not_vpn">Proxy modunda çalışıyor, VPN değil</string>
     <string-array name="countries">
+        <item>Avustralya</item>
         <item>Avusturya</item>
         <item>Belçika</item>
-        <item>Brezilya</item>
         <item>Bulgaristan</item>
         <item>Kanada</item>
         <item>Hırvatistan</item>
@@ -88,8 +88,7 @@
         <item>İspanya</item>
         <item>İsveç</item>
         <item>İsviçre</item>
-        <item>Ukrayna</item>
         <item>Birleşik Krallık</item>
-        <item>Birleşik Devletler</item>
+        <item>Amerika Birleşik Devletleri</item>
     </string-array>
 </resources>

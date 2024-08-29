@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -86,7 +85,7 @@ public class OblivionVpnService extends VpnService {
         }
     };
     // For JNI Calling in a new threa
-    private static final Executor executorService = Executors.newSingleThreadExecutor();
+    private static final ExecutorService executorService = Executors.newFixedThreadPool(1);
     // For PingHTTPTestConnection to don't busy-waiting
     private static ScheduledExecutorService scheduler;
     private Notification notification;
@@ -258,8 +257,6 @@ public class OblivionVpnService extends VpnService {
             return;
         }
 
-        scheduler = Executors.newScheduledThreadPool(1);
-
         final long startTime = System.currentTimeMillis();
         final long timeout = 60 * 1000; // 1 minute
 
@@ -267,20 +264,19 @@ public class OblivionVpnService extends VpnService {
             if (System.currentTimeMillis() - startTime >= timeout) {
                 changeListener.onChange(ConnectionState.DISCONNECTED);
                 stopForegroundService();
-                scheduler.shutdown();
+                scheduler.shutdown(); // Shutdown scheduler after test completion
                 return;
             }
 
             boolean result = pingOverHTTP(bindAddress);
             if (result) {
                 changeListener.onChange(ConnectionState.CONNECTED);
-                scheduler.shutdown();
+                scheduler.shutdown(); // Shutdown scheduler after successful connection
             }
         };
 
-
-        // Schedule the ping task to run with a fixed delay of 1 second
-        scheduler.scheduleWithFixedDelay(pingTask, 0, 1, TimeUnit.SECONDS);
+        // Schedule the ping task to run with a fixed delay of 5 seconds using shared scheduler
+        scheduler.scheduleWithFixedDelay(pingTask, 0, 5, TimeUnit.SECONDS);
     }
 
     private void stopForegroundService() {
@@ -332,6 +328,7 @@ public class OblivionVpnService extends VpnService {
     }
 
     private void start() {
+        FileManager.initialize(getApplicationContext());
         if (lastKnownState != ConnectionState.DISCONNECTED) {
             onRevoke();
         }
@@ -396,12 +393,18 @@ public class OblivionVpnService extends VpnService {
     public void onCreate() {
         super.onCreate();
         handler.post(logRunnable);
+        if (scheduler == null) {
+            scheduler = Executors.newScheduledThreadPool(1);
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         handler.removeCallbacks(logRunnable);
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdown();
+        }
         if (wLock != null && wLock.isHeld()) {
             wLock.release();
             wLock = null;
@@ -424,7 +427,6 @@ public class OblivionVpnService extends VpnService {
         } else {
             Log.w(TAG, "No wake lock to release");
         }
-
         // Close the VPN interface
         try {
             if (!FileManager.getBoolean("USERSETTING_proxymode")) {

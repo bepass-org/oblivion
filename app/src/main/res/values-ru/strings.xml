@@ -59,9 +59,9 @@
     <string name="proxy_mode">Режим прокси</string>
     <string name="running_in_proxy_mode_not_vpn">Работает в режиме прокси, а не VPN</string>
     <string-array name="countries">
+        <item>Австралия</item>
         <item>Австрия</item>
         <item>Бельгия</item>
-        <item>Бразилия</item>
         <item>Болгария</item>
         <item>Канада</item>
         <item>Хорватия</item>
@@ -88,7 +88,6 @@
         <item>Испания</item>
         <item>Швеция</item>
         <item>Швейцария</item>
-        <item>Украина</item>
         <item>Великобритания</item>
         <item>Соединенные Штаты</item>
     </string-array>
