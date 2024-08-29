@@ -25,6 +25,8 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
+
 import org.bepass.oblivion.enums.ConnectionState;
 import org.bepass.oblivion.interfaces.ConnectionStateChangeListener;
 import org.bepass.oblivion.R;
@@ -96,7 +98,7 @@ public class OblivionVpnService extends VpnService {
     public static synchronized void startVpnService(Context context) {
         Intent intent = new Intent(context, OblivionVpnService.class);
         intent.setAction(OblivionVpnService.FLAG_VPN_START);
-        context.startService(intent);
+        ContextCompat.startForegroundService(context, intent);
     }
 
     public static synchronized void stopVpnService(Context context) {
