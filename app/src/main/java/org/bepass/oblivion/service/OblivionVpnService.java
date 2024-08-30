@@ -456,7 +456,7 @@ public class OblivionVpnService extends VpnService {
         stopForegroundService();
         stopSelf();
         // Shutdown executor service
-        if (executorService instanceof ExecutorService) {
+        if (executorService != null) {
             ExecutorService service = (ExecutorService) executorService;
             try {
                 service.shutdownNow(); // Attempt to forcibly shutdown
@@ -559,58 +559,70 @@ public class OblivionVpnService extends VpnService {
         connectionStateObservers.remove(key);
     }
 
-    private void configure() throws Exception {
-        boolean proxyModeEnabled = FileManager.getBoolean("USERSETTING_proxymode");
-        if (proxyModeEnabled) {
-            // Proxy mode logic
-            StartOptions so = new StartOptions();
-            so.setPath(getApplicationContext().getFilesDir().getAbsolutePath());
-            so.setVerbose(true);
-            so.setEndpoint(getEndpoint());
-            so.setBindAddress(bindAddress);
-            so.setLicense(FileManager.getString("USERSETTING_license", "").trim());
-            so.setDNS("1.1.1.1");
-            so.setEndpointType(FileManager.getInt("USERSETTING_endpoint_type"));
+    private void configure() {
+        Runnable configureTask = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    boolean proxyModeEnabled = FileManager.getBoolean("USERSETTING_proxymode");
+                    if (proxyModeEnabled) {
+                        // Proxy mode logic
+                        StartOptions so = new StartOptions();
+                        so.setPath(getApplicationContext().getFilesDir().getAbsolutePath());
+                        so.setVerbose(true);
+                        so.setEndpoint(getEndpoint());
+                        so.setBindAddress(bindAddress);
+                        so.setLicense(FileManager.getString("USERSETTING_license", "").trim());
+                        so.setDNS("1.1.1.1");
+                        so.setEndpointType(FileManager.getInt("USERSETTING_endpoint_type"));
 
-            if (FileManager.getBoolean("USERSETTING_psiphon", false)) {
-                so.setPsiphonEnabled(true);
-                so.setCountry(FileManager.getString("USERSETTING_country", "AT").trim());
-            } else if (FileManager.getBoolean("USERSETTING_gool", false)) {
-                so.setGool(true);
+                        if (FileManager.getBoolean("USERSETTING_psiphon", false)) {
+                            so.setPsiphonEnabled(true);
+                            so.setCountry(FileManager.getString("USERSETTING_country", "AT").trim());
+                        } else if (FileManager.getBoolean("USERSETTING_gool", false)) {
+                            so.setGool(true);
+                        }
+
+                        // Start tun2socks in proxy mode
+                        Tun2socks.start(so);
+
+                    } else {
+                        // VPN mode logic
+                        VpnService.Builder builder = new VpnService.Builder();
+                        configureVpnBuilder(builder);
+
+                        mInterface = builder.establish();
+                        if (mInterface == null) throw new RuntimeException("failed to establish VPN interface");
+                        Log.i(TAG, "Interface created");
+
+                        StartOptions so = new StartOptions();
+                        so.setPath(getApplicationContext().getFilesDir().getAbsolutePath());
+                        so.setVerbose(true);
+                        so.setEndpoint(getEndpoint());
+                        so.setBindAddress(bindAddress);
+                        so.setLicense(FileManager.getString("USERSETTING_license", "").trim());
+                        so.setDNS("1.1.1.1");
+                        so.setEndpointType(FileManager.getInt("USERSETTING_endpoint_type"));
+                        so.setTunFd(mInterface.getFd());
+
+                        if (FileManager.getBoolean("USERSETTING_psiphon", false)) {
+                            so.setPsiphonEnabled(true);
+                            so.setCountry(FileManager.getString("USERSETTING_country", "AT").trim());
+                        } else if (FileManager.getBoolean("USERSETTING_gool", false)) {
+                            so.setGool(true);
+                        }
+
+                        // Start tun2socks with VPN
+                        Tun2socks.start(so);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Configuration failed", e);
+                }
             }
+        };
 
-            // Start tun2socks in proxy mode
-            Tun2socks.start(so);
-
-        } else {
-            // VPN mode logic
-            VpnService.Builder builder = new VpnService.Builder();
-            configureVpnBuilder(builder);
-
-            mInterface = builder.establish();
-            if (mInterface == null) throw new RuntimeException("failed to establish VPN interface");
-            Log.i(TAG, "Interface created");
-
-            StartOptions so = new StartOptions();
-            so.setPath(getApplicationContext().getFilesDir().getAbsolutePath());
-            so.setVerbose(true);
-            so.setEndpoint(getEndpoint());
-            so.setBindAddress(bindAddress);
-            so.setLicense(FileManager.getString("USERSETTING_license", "").trim());
-            so.setDNS("1.1.1.1");
-            so.setEndpointType(FileManager.getInt("USERSETTING_endpoint_type"));
-            so.setTunFd(mInterface.getFd());
-
-            if (FileManager.getBoolean("USERSETTING_psiphon", false)) {
-                so.setPsiphonEnabled(true);
-                so.setCountry(FileManager.getString("USERSETTING_country", "AT").trim());
-            } else if (FileManager.getBoolean("USERSETTING_gool", false)) {
-                so.setGool(true);
-            }
-
-            // Start tun2socks with VPN
-            Tun2socks.start(so);
-        }
+        // Run the task on a separate thread if needed
+        new Thread(configureTask).start();
     }
 
     private void configureVpnBuilder(VpnService.Builder builder) throws Exception {

@@ -180,12 +180,9 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
     private void settingBasicValuesFromSPF() {
         ArrayAdapter<CharSequence> etadapter = ArrayAdapter.createFromResource(this, R.array.endpointType, R.layout.country_item_layout);
         etadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.endpointType.post(new Runnable() {
-            @Override
-            public void run() {
-                binding.endpointType.setAdapter(etadapter);
-                binding.endpointType.setSelection(FileManager.getInt("USERSETTING_endpoint_type"));
-            }
+        binding.endpointType.post(() -> {
+            binding.endpointType.setAdapter(etadapter);
+            binding.endpointType.setSelection(FileManager.getInt("USERSETTING_endpoint_type"));
         });
         binding.endpoint.setText(FileManager.getString("USERSETTING_endpoint"));
         binding.port.setText(FileManager.getString("USERSETTING_port"));
@@ -194,16 +191,12 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         String countryCode = FileManager.getString("USERSETTING_country");
         if (!countryCode.isEmpty()) {
             int index = FileManager.getInt("USERSETTING_country_index");
-            if (index != 0) {
-                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.countries, R.layout.country_item_layout);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                binding.country.post(new Runnable() {
-                    public void run() {
-                        binding.country.setAdapter(adapter);
-                        binding.country.setSelection(index);
-                    }
-                });
-            }
+            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.countries, R.layout.country_item_layout);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            binding.country.post(() -> {
+                binding.country.setAdapter(adapter);
+                binding.country.setSelection(index);
+            });
         }
 
         binding.psiphon.setChecked(FileManager.getBoolean("USERSETTING_psiphon"));
