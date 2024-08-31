@@ -92,7 +92,9 @@ public class ThemeHelper {
         }
 
         // Configure status bar based on theme
-        configureStatusBar(view.getContext() instanceof Activity ? (Activity) view.getContext() : null);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            configureStatusBar(view.getContext() instanceof Activity ? (Activity) view.getContext() : null);
+        }
     }
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void configureStatusBar(Activity activity) {
