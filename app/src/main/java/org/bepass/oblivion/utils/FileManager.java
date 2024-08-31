@@ -1,6 +1,7 @@
 package org.bepass.oblivion.utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 
 import com.tencent.mmkv.MMKV;
@@ -31,7 +32,7 @@ public class FileManager {
         try {
             if (mmkv == null) {
                 MMKV.initialize(context.getApplicationContext());
-                mmkv = MMKV.defaultMMKV();
+                mmkv = MMKV.mmkvWithID("UserData");
             }
         } finally {
             lock.unlock();
@@ -183,6 +184,11 @@ public class FileManager {
         lock.lock();
         try {
             checkInitialized();
+            {
+                SharedPreferences old_man = context.getSharedPreferences("UserData", Context.MODE_PRIVATE);
+                mmkv.importFromSharedPreferences(old_man);
+                old_man.edit().clear().commit();
+            }
             if (!getBoolean("isFirstValueInit")) {
                 set("USERSETTING_endpoint", "engage.cloudflareclient.com:2408");
                 set("USERSETTING_port", "8086");
