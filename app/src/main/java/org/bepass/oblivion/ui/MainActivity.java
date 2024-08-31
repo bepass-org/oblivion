@@ -1,8 +1,7 @@
 package org.bepass.oblivion.ui;
 
-import static org.bepass.oblivion.service.OblivionVpnService.startVpnService;
 import static org.bepass.oblivion.service.OblivionVpnService.stopVpnService;
-
+import org.bepass.oblivion.service.OblivionVpnService;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -16,11 +15,11 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import org.bepass.oblivion.enums.ConnectionState;
 import org.bepass.oblivion.utils.FileManager;
 import org.bepass.oblivion.utils.LocaleHandler;
-import org.bepass.oblivion.service.OblivionVpnService;
 import org.bepass.oblivion.utils.PublicIPUtils;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
@@ -35,7 +34,19 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     private Toast backToast;
     private LocaleHandler localeHandler;
     private ActivityResultLauncher<Intent> vpnPermissionLauncher;
-
+    public static void startVpnService(Context context, Intent intent) {
+        intent.putExtra("USERSETTING_proxymode", FileManager.getBoolean("USERSETTING_proxymode"));
+        intent.putExtra("USERSETTING_license", FileManager.getString("USERSETTING_license"));
+        intent.putExtra("USERSETTING_endpoint_type", FileManager.getInt("USERSETTING_endpoint_type"));
+        intent.putExtra("USERSETTING_psiphon", FileManager.getBoolean("USERSETTING_psiphon"));
+        intent.putExtra("USERSETTING_country", FileManager.getString("USERSETTING_country"));
+        intent.putExtra("USERSETTING_gool", FileManager.getBoolean("USERSETTING_gool"));
+        intent.putExtra("USERSETTING_endpoint", FileManager.getString("USERSETTING_endpoint"));
+        intent.putExtra("USERSETTING_port", FileManager.getString("USERSETTING_port"));
+        intent.putExtra("USERSETTING_lan", FileManager.getBoolean("USERSETTING_lan"));
+        intent.setAction(OblivionVpnService.FLAG_VPN_START);
+        ContextCompat.startForegroundService(context, intent);
+    }
     public static void start(Context context) {
         Intent starter = new Intent(context, MainActivity.class);
         starter.putExtra("origin", context.getClass().getSimpleName());
@@ -80,14 +91,17 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     }
 
     private void handleVpnSwitch(boolean enableVpn) {
+        Log.d("83", FileManager.getString("USERSETTING_country"));
         FileManager.initialize(this);
+
         if (enableVpn) {
             if (lastKnownConnectionState.isDisconnected()) {
                 Intent vpnIntent = OblivionVpnService.prepare(this);
                 if (vpnIntent != null) {
                     vpnPermissionLauncher.launch(vpnIntent);
                 } else {
-                    startVpnService(this);
+                    vpnIntent = new Intent(this, OblivionVpnService.class);
+                    startVpnService(this, vpnIntent);
                 }
                 NetworkUtils.monitorInternetConnection(lastKnownConnectionState, this);
             } else if (lastKnownConnectionState.isConnecting()) {
@@ -98,9 +112,9 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
                 stopVpnService(this);
             }
         }
+
         refreshUI(); // Force refresh of the UI after VPN state changes
     }
-
     private void refreshUI() {
         // This will force a refresh of the UI based on the current data bindings
         binding.invalidateAll();
