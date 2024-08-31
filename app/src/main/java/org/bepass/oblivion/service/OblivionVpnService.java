@@ -45,6 +45,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -95,11 +96,7 @@ public class OblivionVpnService extends VpnService {
     private String bindAddress;
     private static PowerManager.WakeLock wLock;
     private static ConnectionState lastKnownState = ConnectionState.DISCONNECTED;
-    public static synchronized void startVpnService(Context context) {
-        Intent intent = new Intent(context, OblivionVpnService.class);
-        intent.setAction(OblivionVpnService.FLAG_VPN_START);
-        ContextCompat.startForegroundService(context, intent);
-    }
+    private Intent serviceIntent;
 
     public static synchronized void stopVpnService(Context context) {
         Intent intent = new Intent(context, OblivionVpnService.class);
@@ -293,8 +290,8 @@ public class OblivionVpnService extends VpnService {
     }
 
     private String getBindAddress() {
-        String port = FileManager.getString("USERSETTING_port");
-        boolean enableLan = FileManager.getBoolean("USERSETTING_lan");
+        String port = serviceIntent.getStringExtra("USERSETTING_port");
+        boolean enableLan = serviceIntent.getBooleanExtra("USERSETTING_lan",false);
         String bindAddress = "127.0.0.1:" + port;
 
         if (isLocalPortInUse(bindAddress).equals("true")) {
@@ -330,7 +327,6 @@ public class OblivionVpnService extends VpnService {
     }
 
     private void start() {
-        FileManager.initialize(getApplicationContext());
         if (lastKnownState != ConnectionState.DISCONNECTED) {
             onRevoke();
         }
@@ -346,6 +342,7 @@ public class OblivionVpnService extends VpnService {
         }
 
         executorService.execute(() -> {
+            Log.d("OblivionVpnService", "Starting VPN service");
             bindAddress = getBindAddress();
             Log.i(TAG, "Configuring VPN service");
             try {
@@ -377,7 +374,7 @@ public class OblivionVpnService extends VpnService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent != null ? intent.getAction() : null;
-
+        this.serviceIntent = intent;
         if (FLAG_VPN_START.equals(action)) {
             // Start VPN
             if (lastKnownState == ConnectionState.DISCONNECTED) {
@@ -431,7 +428,7 @@ public class OblivionVpnService extends VpnService {
         }
         // Close the VPN interface
         try {
-            if (!FileManager.getBoolean("USERSETTING_proxymode")) {
+            if (!serviceIntent.getBooleanExtra("USERSETTING_proxymode",false)) {
                 if (mInterface != null) {
                     mInterface.close();
                     mInterface = null; // Set to null to ensure it's not reused
@@ -505,10 +502,10 @@ public class OblivionVpnService extends VpnService {
     }
 
     private String getNotificationText() {
-        boolean usePsiphon = FileManager.getBoolean("USERSETTING_psiphon");
-        boolean useWarp = FileManager.getBoolean("USERSETTING_gool");
-        boolean proxyMode = FileManager.getBoolean("USERSETTING_proxymode");
-        String portInUse = FileManager.getString("USERSETTING_port");
+        boolean usePsiphon = serviceIntent.getBooleanExtra("USERSETTING_psiphon",false);
+        boolean useWarp = serviceIntent.getBooleanExtra("USERSETTING_gool",false);
+        boolean proxyMode = serviceIntent.getBooleanExtra("USERSETTING_proxymode",false);
+        String portInUse = serviceIntent.getStringExtra("USERSETTING_port");
         String notificationText;
         String proxyText = proxyMode ? String.format(Locale.getDefault(), " on socks5 proxy at 127.0.0.1:%s", portInUse) : "";
 
@@ -560,11 +557,10 @@ public class OblivionVpnService extends VpnService {
     }
 
     private void configure() {
-        Runnable configureTask = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    boolean proxyModeEnabled = FileManager.getBoolean("USERSETTING_proxymode");
+        Runnable configureTask = () -> {
+            try {
+                if(serviceIntent != null) {
+                    boolean proxyModeEnabled = serviceIntent.getBooleanExtra("USERSETTING_proxymode",false);
                     if (proxyModeEnabled) {
                         // Proxy mode logic
                         StartOptions so = new StartOptions();
@@ -572,14 +568,14 @@ public class OblivionVpnService extends VpnService {
                         so.setVerbose(true);
                         so.setEndpoint(getEndpoint());
                         so.setBindAddress(bindAddress);
-                        so.setLicense(FileManager.getString("USERSETTING_license", "").trim());
+                        so.setLicense(Objects.requireNonNull(serviceIntent.getStringExtra("USERSETTING_license")).trim());
                         so.setDNS("1.1.1.1");
-                        so.setEndpointType(FileManager.getInt("USERSETTING_endpoint_type"));
+                        so.setEndpointType(serviceIntent.getIntExtra("USERSETTING_endpoint_type",0));
 
-                        if (FileManager.getBoolean("USERSETTING_psiphon", false)) {
+                        if (serviceIntent.getBooleanExtra("USERSETTING_psiphon", false)) {
                             so.setPsiphonEnabled(true);
-                            so.setCountry(FileManager.getString("USERSETTING_country", "AT").trim());
-                        } else if (FileManager.getBoolean("USERSETTING_gool", false)) {
+                            so.setCountry(Objects.requireNonNull(serviceIntent.getStringExtra("USERSETTING_country")).trim());
+                        } else if (serviceIntent.getBooleanExtra("USERSETTING_gool", false)) {
                             so.setGool(true);
                         }
 
@@ -588,11 +584,12 @@ public class OblivionVpnService extends VpnService {
 
                     } else {
                         // VPN mode logic
-                        VpnService.Builder builder = new VpnService.Builder();
+                        Builder builder = new Builder();
                         configureVpnBuilder(builder);
 
                         mInterface = builder.establish();
-                        if (mInterface == null) throw new RuntimeException("failed to establish VPN interface");
+                        if (mInterface == null)
+                            throw new RuntimeException("failed to establish VPN interface");
                         Log.i(TAG, "Interface created");
 
                         StartOptions so = new StartOptions();
@@ -600,24 +597,24 @@ public class OblivionVpnService extends VpnService {
                         so.setVerbose(true);
                         so.setEndpoint(getEndpoint());
                         so.setBindAddress(bindAddress);
-                        so.setLicense(FileManager.getString("USERSETTING_license", "").trim());
+                        so.setLicense(Objects.requireNonNull(serviceIntent.getStringExtra("USERSETTING_license")).trim());
                         so.setDNS("1.1.1.1");
-                        so.setEndpointType(FileManager.getInt("USERSETTING_endpoint_type"));
+                        so.setEndpointType(serviceIntent.getIntExtra("USERSETTING_endpoint_type",0));
                         so.setTunFd(mInterface.getFd());
 
-                        if (FileManager.getBoolean("USERSETTING_psiphon", false)) {
+                        if (serviceIntent.getBooleanExtra("USERSETTING_psiphon", false)) {
                             so.setPsiphonEnabled(true);
-                            so.setCountry(FileManager.getString("USERSETTING_country", "AT").trim());
-                        } else if (FileManager.getBoolean("USERSETTING_gool", false)) {
+                            so.setCountry(Objects.requireNonNull(serviceIntent.getStringExtra("USERSETTING_country")).trim());
+                        } else if (serviceIntent.getBooleanExtra("USERSETTING_gool", false)) {
                             so.setGool(true);
                         }
 
                         // Start tun2socks with VPN
                         Tun2socks.start(so);
                     }
-                } catch (Exception e) {
-                    Log.e(TAG, "Configuration failed", e);
                 }
+            } catch (Exception e) {
+                Log.e(TAG, "Configuration failed", e);
             }
         };
 
@@ -650,7 +647,7 @@ public class OblivionVpnService extends VpnService {
     }
 
     private String getEndpoint() {
-        String endpoint = FileManager.getString("USERSETTING_endpoint", "engage.cloudflareclient.com:2408").trim();
+        String endpoint = Objects.requireNonNull(serviceIntent.getStringExtra("USERSETTING_endpoint")).trim();
         return endpoint.equals("engage.cloudflareclient.com:2408") ? "" : endpoint;
     }
 

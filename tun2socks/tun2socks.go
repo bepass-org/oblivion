@@ -98,7 +98,7 @@ func Start(opt *StartOptions) {
 			fmt.Fprintln(os.Stderr, "There was an error with the scanner", err)
 		}
 	}(r)
-
+    l.Info(fmt.Sprintf("%+v", *opt))
 	var scanOpts *wiresocks.ScanOptions
 	if global.Endpoint == "" {
 		scanOpts = &wiresocks.ScanOptions{
