@@ -32,7 +32,7 @@
         android:fontFamily="@font/shabnam"
         android:textStyle="bold"
         android:textColor="@color/text_color"
-        android:textSize="16sp"
+        android:textSize="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/icon"
         app:layout_constraintEnd_toStartOf="@+id/checkBox"
         app:layout_constraintStart_toEndOf="@+id/icon"

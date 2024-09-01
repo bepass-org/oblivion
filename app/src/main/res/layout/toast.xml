@@ -23,5 +23,5 @@
         android:layout_margin="8dp"
         android:text="@string/copied_to_clipboard"
         android:textColor="@color/white"
-        android:textSize="16sp" />
+        android:textSize="16dp" />
 </LinearLayout>

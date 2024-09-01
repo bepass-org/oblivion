@@ -47,7 +47,7 @@
                 android:fontFamily="@font/shabnamlight"
                 android:text="@string/blackList"
                 android:textColor="@color/text_color"
-                android:textSize="24sp"
+                android:textSize="24dp"
                 tools:ignore="RelativeOverlap"
                 android:focusable="true"
                 android:nextFocusDown="@id/appsRecycler" />
