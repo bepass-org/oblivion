@@ -36,7 +36,7 @@
                 android:text="@string/app_name"
                 android:textColor="@color/text_color"
                 android:textAllCaps="true"
-                android:textSize="48sp"
+                android:textSize="48dp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -51,7 +51,7 @@
                 android:gravity="center"
                 android:text="@string/means"
                 android:textAlignment="textEnd"
-                android:textSize="20sp"
+                android:textSize="20dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -68,7 +68,7 @@
                 android:text="@string/dontForget"
                 android:textAlignment="textEnd"
                 android:textColor="@color/primary"
-                android:textSize="20sp"
+                android:textSize="20dp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -143,7 +143,7 @@
                 android:text="@string/segaro"
                 android:textAlignment="center"
                 android:textColor="@color/subtitle_color"
-                android:textSize="20sp" />
+                android:textSize="20dp" />
 
             <TextView
                 android:id="@+id/textView9"
@@ -154,7 +154,7 @@
                 android:gravity="center"
                 android:text="@string/yousef"
                 android:textColor="@color/subtitle_color"
-                android:textSize="20sp" />
+                android:textSize="20dp" />
 
         </LinearLayout>
 
@@ -169,7 +169,7 @@
             android:text="@string/slogan"
             android:textAlignment="center"
             android:textColor="@color/subtitle_color"
-            android:textSize="20sp"
+            android:textSize="20dp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -45,7 +45,7 @@
           android:fontFamily="@font/shabnamlight"
           android:text="@string/logApp"
           android:textColor="@color/text_color"
-          android:textSize="32sp"
+          android:textSize="32dp"
           tools:ignore="RelativeOverlap" />
     </RelativeLayout>
 
@@ -69,7 +69,7 @@
           android:layout_height="wrap_content"
           android:textColor="@color/subtitle_color"
           android:text="Start Logging Here.."
-          android:textSize="11sp" />
+          android:textSize="11dp" />
     </ScrollView>
 
     <Button
@@ -80,7 +80,7 @@
         android:fontFamily="@font/shabnam"
         android:text="@string/copytoclip"
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -114,7 +114,7 @@
           android:layout_gravity="center"
           android:text="Getting ISP..."
           android:textColor="@android:color/white"
-          android:textSize="16sp"
+          android:textSize="16dp"
           android:padding="8dp"/>
     </FrameLayout>
 

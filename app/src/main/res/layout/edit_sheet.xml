@@ -27,7 +27,7 @@
         android:fontFamily="@font/shabnam"
         android:text="@string/editSheetEndpoint"
         android:textColor="@color/text_color"
-        android:textSize="18sp" />
+        android:textSize="18dp" />
 
     <EditText
         android:id="@+id/edittext"
@@ -43,7 +43,7 @@
         android:singleLine="true"
         android:textAlignment="center"
         android:textColor="@color/text_color"
-        android:textSize="15sp"
+        android:textSize="15dp"
         android:nextFocusDown="@+id/cancelButton" />
 
     <LinearLayout
@@ -65,7 +65,7 @@
           android:fontFamily="@font/shabnambold"
           android:text="@string/cancel"
           android:textColor="@color/text_color"
-          android:textSize="17sp"
+          android:textSize="17dp"
           android:focusable="true"
           android:nextFocusRight="@+id/applyButton"
           android:nextFocusUp="@+id/edittext" />
@@ -81,7 +81,7 @@
           android:fontFamily="@font/shabnambold"
           android:text="@string/update"
           android:textColor="@color/white"
-          android:textSize="17sp"
+          android:textSize="17dp"
           android:focusable="true"
           android:nextFocusLeft="@+id/cancelButton"
           android:nextFocusUp="@+id/edittext" />

@@ -31,7 +31,7 @@
             android:fontFamily="@font/shabnam"
             android:text="@string/editSheetEndpoint"
             android:textColor="@color/text_color"
-            android:textSize="20sp"
+            android:textSize="20dp"
             android:textStyle="bold" />
 
         <!-- LinearLayout to hold title and content in one line -->
@@ -58,7 +58,7 @@
                 android:singleLine="true"
                 android:textAlignment="center"
                 android:textColor="@color/text_color"
-                android:textSize="14sp"
+                android:textSize="14dp"
                 android:hint="@string/title"
                 android:textColorHint="@color/text_color"/>
             <EditText
@@ -74,7 +74,7 @@
                 android:singleLine="true"
                 android:textAlignment="center"
                 android:textColor="@color/text_color"
-                android:textSize="16sp"
+                android:textSize="16dp"
                 android:hint="@string/content"
                 android:textColorHint="@color/text_color"/>
                 />
@@ -90,7 +90,7 @@
             android:fontFamily="@font/shabnambold"
             android:text="@string/save"
             android:textColor="@color/white"
-            android:textSize="18sp" />
+            android:textSize="18dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -99,7 +99,7 @@
             android:fontFamily="@font/shabnam"
             android:text="@string/saved_endpoints"
             android:textColor="@color/text_color"
-            android:textSize="18sp"
+            android:textSize="18dp"
             android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView
