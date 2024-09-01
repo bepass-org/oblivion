@@ -156,15 +156,14 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
             FileManager.set("USERSETTING_proxymode", isChecked);
         };
 
-        binding.txtDarkMode.setOnClickListener(view -> binding.checkBoxDarkMode.setChecked(!binding.checkBoxDarkMode.isChecked()));
+        binding.txtDarkMode.setOnClickListener(view -> binding.switchDarkMode.setChecked(!binding.switchDarkMode.isActivated()));
 
-        // Set the initial state of the checkbox based on the current theme
-        binding.checkBoxDarkMode.setChecked(ThemeHelper.getInstance().getCurrentTheme() == ThemeHelper.Theme.DARK);
-        // Set up the listener to change the theme when the checkbox is toggled
-        binding.checkBoxDarkMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            // Determine the new theme based on the checkbox state
-            ThemeHelper.Theme newTheme = isChecked ? ThemeHelper.Theme.DARK : ThemeHelper.Theme.LIGHT;
-
+        // Set the initial state of the switch based on the current theme
+        binding.switchDarkMode.setChecked(ThemeHelper.getInstance().getCurrentTheme() == ThemeHelper.Theme.DARK);
+        // Set up the listener to change the theme when the switch is toggled
+        binding.switchDarkMode.setOnCheckedChangeListener((buttonView, isActive) -> {
+            // Determine the new theme based on the switch state
+            ThemeHelper.Theme newTheme = isActive ? ThemeHelper.Theme.DARK : ThemeHelper.Theme.LIGHT;
             // Use ThemeHelper to apply the new theme
             ThemeHelper.getInstance().select(newTheme);
         });
@@ -195,7 +194,13 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         binding.license.setText(FileManager.getString("USERSETTING_license"));
 
         int index = FileManager.getInt("USERSETTING_country_index");
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.countries, R.layout.country_item_layout);
+        String[] countryList = getResources().getStringArray(R.array.countries);
+        String[] countryLocaleList = getResources().getStringArray(R.array.localeCountries);
+        String[] countryFlagList = new String[countryList.length];
+        for (int i= 0;i<countryList.length;i++){
+            countryFlagList[i] = countryList[i]+" "+CountryUtils.localeToFlagEmoji(countryLocaleList[i]);
+        }
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,countryFlagList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.country.post(() -> {
             binding.country.setAdapter(adapter);
