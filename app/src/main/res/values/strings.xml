@@ -58,7 +58,8 @@
   <string name="resetAppText">Reset</string>
   <string name="proxy_mode">Proxy Mode</string>
   <string name="running_in_proxy_mode_not_vpn">Running in proxy mode, not VPN</string>
-  <string-array name="countries">
+  <string name="reset_to_default_endpoint">Reset to Default Endpoint</string>
+    <string-array name="countries">
     <item>Australia</item>
     <item>Austria</item>
     <item>Belgium</item>
