@@ -45,7 +45,7 @@
           android:fontFamily="@font/shabnamlight"
           android:text="@string/settingsText"
           android:textColor="@color/text_color"
-          android:textSize="24sp"
+          android:textSize="24dp"
           tools:ignore="RelativeOverlap"
           android:focusable="true"
           android:nextFocusDown="@id/battery_optimization_layout"/>
@@ -90,7 +90,7 @@
                   android:text="@string/batteryOpL"
                   android:textAlignment="viewEnd"
                   android:textColor="@color/text_color"
-                  android:textSize="20sp" />
+                  android:textSize="20dp" />
             </LinearLayout>
 
             <TextView
@@ -100,7 +100,7 @@
                 android:fontFamily="@font/shabnam"
                 android:text="@string/batteryOpLText"
                 android:textColor="@color/subtitle_color"
-                android:textSize="16sp" />
+                android:textSize="16dp" />
 
           </LinearLayout>
         <LinearLayout
@@ -147,7 +147,7 @@
                 android:text="@string/endpointTypeText"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20sp" />
+                android:textSize="20dp" />
 
           </LinearLayout>
 
@@ -158,7 +158,7 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/endpointTypeTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
+              android:textSize="16dp" />
         </LinearLayout>
         <LinearLayout
             android:id="@+id/endpoint_layout"
@@ -186,7 +186,7 @@
                 android:textColor="@color/primary"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:textSize="20sp" />
+                android:textSize="20dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -196,7 +196,7 @@
                 android:text="@string/endpointText"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20sp" />
+                android:textSize="20dp" />
 
           </LinearLayout>
 
@@ -207,7 +207,7 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/endpointTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
+              android:textSize="16dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -247,7 +247,7 @@
                 android:textColor="@color/primary"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:textSize="20sp" />
+                android:textSize="20dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -257,7 +257,7 @@
                 android:text="@string/portTunText"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20sp" />
+                android:textSize="20dp" />
 
           </LinearLayout>
 
@@ -268,7 +268,7 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/portTunTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
+              android:textSize="16dp" />
 
         </LinearLayout>
 
@@ -308,7 +308,7 @@
                 android:text="@string/blackList"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20sp" />
+                android:textSize="20dp" />
           </LinearLayout>
 
           <TextView
@@ -318,7 +318,7 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/blackListTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
+              android:textSize="16dp" />
 
         </LinearLayout>
         <LinearLayout
@@ -373,7 +373,7 @@
                 android:text="@string/proxy_mode"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20sp" />
+                android:textSize="20dp" />
           </LinearLayout>
 
           <TextView
@@ -383,7 +383,7 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/running_in_proxy_mode_not_vpn"
               android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
+              android:textSize="16dp" />
 
         </LinearLayout>
         <LinearLayout
@@ -439,7 +439,7 @@
                 android:text="@string/turn_on_dark_mode"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20sp" />
+                android:textSize="20dp" />
           </LinearLayout>
 
           <TextView
@@ -449,7 +449,7 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/turn_on_dark_mode_desc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
+              android:textSize="16dp" />
 
         </LinearLayout>
 
@@ -506,7 +506,7 @@
                 android:text="@string/connectFromLanText"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20sp" />
+                android:textSize="20dp" />
           </LinearLayout>
 
           <TextView
@@ -516,7 +516,7 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/connectFromLanTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
+              android:textSize="16dp" />
 
         </LinearLayout>
 
@@ -572,7 +572,7 @@
                 android:text="@string/psiphonText"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20sp" />
+                android:textSize="20dp" />
 
           </LinearLayout>
 
@@ -583,7 +583,7 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/psiphonTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
+              android:textSize="16dp" />
 
         </LinearLayout>
 
@@ -633,7 +633,7 @@
                 android:text="@string/chooseText"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20sp" />
+                android:textSize="20dp" />
 
           </LinearLayout>
 
@@ -644,7 +644,7 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/chooseTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
+              android:textSize="16dp" />
 
         </LinearLayout>
 
@@ -686,7 +686,7 @@
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:textColor="@color/primary"
-                android:textSize="20sp" />
+                android:textSize="20dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -696,7 +696,7 @@
                 android:text="@string/licenseText"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20sp" />
+                android:textSize="20dp" />
 
           </LinearLayout>
 
@@ -707,7 +707,7 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/licenseTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
+              android:textSize="16dp" />
 
         </LinearLayout>
 
@@ -762,7 +762,7 @@
                 android:text="@string/goolText"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20sp" />
+                android:textSize="20dp" />
 
           </LinearLayout>
 
@@ -773,7 +773,7 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/goolTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
+              android:textSize="16dp" />
 
         </LinearLayout>
         <LinearLayout
@@ -811,7 +811,7 @@
                 android:text="@string/resetAppText"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20sp" />
+                android:textSize="20dp" />
           </LinearLayout>
 
           <TextView
@@ -821,7 +821,7 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/resetAppTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
+              android:textSize="16dp" />
 
         </LinearLayout>
         <LinearLayout

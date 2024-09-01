@@ -22,7 +22,7 @@
             android:fontFamily="@font/shabnam"
             android:text="@string/batteryOpL"
             android:textColor="@color/text_color"
-            android:textSize="20sp"
+            android:textSize="20dp"
             android:textStyle="bold"
             android:focusable="true" />
 
@@ -35,7 +35,7 @@
             android:fontFamily="@font/shabnam"
             android:text="@string/dialBtText"
             android:textColor="@color/subtitle_color"
-            android:textSize="16sp"
+            android:textSize="16dp"
             android:focusable="true" />
 
         <LinearLayout
