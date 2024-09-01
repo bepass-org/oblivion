@@ -3,120 +3,130 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-  <data>
+    <data>
 
-  </data>
+    </data>
 
-  <androidx.constraintlayout.widget.ConstraintLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:background="@color/background"
-      tools:context="org.bepass.oblivion.ui.LogActivity"
-      android:fitsSystemWindows="true">
-
-    <RelativeLayout
-        android:id="@+id/top_bar"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:background="@color/background"
+        android:fitsSystemWindows="true"
+        tools:context="org.bepass.oblivion.ui.LogActivity">
 
-      <org.bepass.oblivion.component.Icon
-          android:id="@+id/back"
-          android:layout_width="24dp"
-          android:layout_height="24dp"
-          android:background="?selectableItemBackgroundBorderless"
-          android:layout_alignParentStart="true"
-          android:layout_centerVertical="true"
-          android:layout_marginStart="16dp"
-          app:icon_color="@color/icon_color"
-          android:src="@drawable/ic_back"
-          android:focusable="true"
-          android:nextFocusDown="@id/logScrollView" />
+        <LinearLayout
+            android:id="@+id/top_bar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-      <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_alignParentEnd="true"
-          android:layout_centerVertical="true"
-          android:layout_marginEnd="16dp"
-          android:fontFamily="@font/shabnamlight"
-          android:text="@string/logApp"
-          android:textColor="@color/text_color"
-          android:textSize="32sp"
-          tools:ignore="RelativeOverlap" />
-    </RelativeLayout>
+            <org.bepass.oblivion.component.Icon
+                android:id="@+id/back"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:background="?selectableItemBackgroundBorderless"
+                android:focusable="true"
+                android:nextFocusDown="@id/logScrollView"
+                android:src="@drawable/ic_back"
+                app:tint="@color/icon_color" />
 
-    <ScrollView
-        android:id="@+id/logScrollView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/top_bar"
-        app:layout_constraintBottom_toTopOf="@id/copytoclip"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:focusable="true"
-        android:nextFocusUp="@id/back"
-        android:nextFocusDown="@id/copytoclip">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:fontFamily="@font/shabnamlight"
+                android:text="@string/logApp"
+                android:textColor="@color/text_color"
+                android:textSize="24sp"
+                tools:ignore="RelativeOverlap" />
 
-      <TextView
-          android:id="@+id/logs"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:textColor="@color/subtitle_color"
-          android:text="Start Logging Here.."
-          android:textSize="11sp" />
-    </ScrollView>
+        </LinearLayout>
 
-    <Button
-        android:id="@+id/copytoclip"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/primary"
-        android:fontFamily="@font/shabnam"
-        android:text="@string/copytoclip"
-        android:textColor="@color/white"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:focusable="true"
-        android:nextFocusUp="@id/logScrollView" />
+        <View
+            android:id="@+id/toolbar_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/top_bar" />
 
-    <FrameLayout
-        android:id="@+id/progress_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5"
-        app:layout_constraintHorizontal_bias="0.5"
-        android:visibility="gone">
+        <ScrollView
+            android:id="@+id/logScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:focusable="true"
+            android:nextFocusUp="@id/back"
+            android:nextFocusDown="@id/copytoclip"
+            app:layout_constraintBottom_toTopOf="@id/copytoclip"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar_divider">
 
-      <ProgressBar
-          android:id="@+id/progressBar"
-          android:layout_width="100dp"
-          android:layout_height="100dp"
-          android:indeterminate="true"
-          android:layout_gravity="center"
-          style="@style/CustomProgressBar"/>
+            <TextView
+                android:id="@+id/logs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:paddingHorizontal="16dp"
+                android:text="Start Logging Here.."
+                android:textColor="@color/subtitle_color"
+                android:textSize="11sp" />
+        </ScrollView>
 
-      <TextView
-          android:id="@+id/loadingText"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_gravity="center"
-          android:text="Getting ISP..."
-          android:textColor="@android:color/white"
-          android:textSize="16sp"
-          android:padding="8dp"/>
-    </FrameLayout>
+        <Button
+            android:id="@+id/copytoclip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/primary"
+            android:focusable="true"
+            android:fontFamily="@font/shabnam"
+            android:nextFocusUp="@id/logScrollView"
+            android:text="@string/copytoclip"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
-  </androidx.constraintlayout.widget.ConstraintLayout>
+        <FrameLayout
+            android:id="@+id/progress_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="@style/CustomProgressBar"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:indeterminate="true" />
+
+            <TextView
+                android:id="@+id/loadingText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="8dp"
+                android:text="Getting ISP..."
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

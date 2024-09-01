@@ -3,132 +3,135 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-  <data>
+    <data>
 
-  </data>
+    </data>
 
-  <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:background="@color/background"
-      android:orientation="vertical"
-      tools:context="org.bepass.oblivion.ui.InfoActivity"
-      android:fitsSystemWindows="true">
-
-    <RelativeLayout
-        android:id="@+id/top_bar"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp">
+        android:layout_height="match_parent"
+        android:background="@color/background"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical"
+        tools:context="org.bepass.oblivion.ui.InfoActivity">
 
-      <ImageView
-          android:id="@+id/back"
-          android:layout_width="24dp"
-          android:layout_height="24dp"
-          android:background="?selectableItemBackgroundBorderless"
-          android:layout_alignParentStart="true"
-          android:layout_centerVertical="true"
-          android:layout_marginStart="16dp"
-          android:contentDescription="back"
-          android:src="@drawable/ic_back"
-          app:icon_color="@color/icon_color"
-          app:tint="@color/icon_color"
-          android:focusable="true"/>
+        <LinearLayout
+            android:id="@+id/top_bar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp">
 
-      <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_alignParentEnd="true"
-          android:layout_centerVertical="true"
-          android:layout_marginEnd="16dp"
-          android:fontFamily="@font/shabnamlight"
-          android:text="@string/aboutApp"
-          android:textColor="@color/text_color"
-          android:textSize="32sp"
-          tools:ignore="RelativeOverlap" />
+            <org.bepass.oblivion.component.Icon
+                android:id="@+id/back"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:background="?selectableItemBackgroundBorderless"
+                android:focusable="true"
+                android:nextFocusDown="@id/endpoint_type_layout"
+                android:src="@drawable/ic_back"
+                app:tint="@color/icon_color" />
 
-    </RelativeLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:fontFamily="@font/shabnamlight"
+                android:text="@string/aboutApp"
+                android:textColor="@color/text_color"
+                android:textSize="24sp" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:paddingHorizontal="12dp">
+        </LinearLayout>
 
-      <TextView
-          android:id="@+id/about"
-          android:layout_width="0dp"
-          android:layout_height="wrap_content"
-          android:fontFamily="@font/shabnammedium"
-          android:text='@string/aboutAppDesc'
-          android:textAlignment="center"
-          android:textColor="@color/subtitle_color"
-          android:textSize="16sp"
-          tools:ignore="RtlCompat"
-          android:focusable="true"
-          app:layout_constraintLeft_toLeftOf="parent"
-          app:layout_constraintRight_toRightOf="parent"
-          app:layout_constraintTop_toTopOf="parent"
-          app:layout_constraintBottom_toBottomOf="parent"
-          android:layout_margin="16dp"/>
+        <View
+            android:id="@+id/toolbar_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/darker_gray" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingHorizontal="12dp">
 
-    <RelativeLayout
-        android:id="@+id/github_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/about_item"
-        android:gravity="center"
-        android:paddingVertical="8dp"
-        android:focusable="true">
+            <TextView
+                android:id="@+id/about"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:focusable="true"
+                android:fontFamily="@font/shabnammedium"
+                android:text='@string/aboutAppDesc'
+                android:textAlignment="center"
+                android:textColor="@color/subtitle_color"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="RtlCompat" />
 
-      <ImageView
-          android:id="@+id/github_image"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_alignParentStart="true"
-          android:layout_centerVertical="true"
-          android:layout_marginStart="8dp"
-          android:layout_marginEnd="8dp"
-          android:src="@drawable/ic_github"
-          app:tint="@color/black"
-          android:focusable="true"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-      <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_centerInParent="true"
-          android:layout_toEndOf="@id/github_image"
-          android:fontFamily="@font/shabnam"
-          android:text="Github"
-          android:textColor="@color/black"
-          android:textSize="14sp" />
+        <RelativeLayout
+            android:id="@+id/github_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/about_item"
+            android:focusable="true"
+            android:gravity="center"
+            android:paddingVertical="8dp">
 
-      <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_alignParentEnd="true"
-          android:layout_centerVertical="true"
-          android:layout_marginEnd="16dp"
-          android:fontFamily="@font/shabnambold"
-          android:text="Bepass/Oblivion"
-          android:textColor="@color/black"
-          android:textSize="14sp" />
+            <ImageView
+                android:id="@+id/github_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:focusable="true"
+                android:src="@drawable/ic_github"
+                app:tint="@color/black" />
 
-    </RelativeLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_toEndOf="@id/github_image"
+                android:fontFamily="@font/shabnam"
+                android:text="Github"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/shabnam"
-        android:gravity="center"
-        android:text="@string/appVersion"
-        android:textColor="@color/subtitle_color"
-        android:textSize="14sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/shabnambold"
+                android:text="Bepass/Oblivion"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
 
-  </LinearLayout>
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/shabnam"
+            android:gravity="center"
+            android:text="@string/appVersion"
+            android:textColor="@color/subtitle_color"
+            android:textSize="14sp" />
+
+    </LinearLayout>
 </layout>

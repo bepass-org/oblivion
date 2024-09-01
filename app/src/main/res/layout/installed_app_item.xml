@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -14,29 +14,25 @@
         android:id="@+id/icon"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearanceOverlay="@style/circleImageView"
         android:focusable="true"
         android:nextFocusRight="@id/appNameTextView"
-        android:nextFocusDown="@id/checkBox"
-        />
+        android:nextFocusDown="@id/checkBox" />
 
     <TextView
         android:id="@+id/appNameTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_gravity="start"
         android:layout_weight="1"
         android:padding="8dp"
         android:fontFamily="@font/shabnam"
         android:textStyle="bold"
         android:textColor="@color/text_color"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/icon"
-        app:layout_constraintEnd_toStartOf="@+id/checkBox"
-        app:layout_constraintStart_toEndOf="@+id/icon"
-        app:layout_constraintTop_toTopOf="@+id/icon"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAlignment="viewStart"
         tools:text="Installed app name"
         android:focusable="true"
         android:nextFocusLeft="@id/icon"
@@ -51,11 +47,7 @@
         android:buttonTint="@color/checkbox_tint"
         android:clickable="false"
         android:focusable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:nextFocusLeft="@id/appNameTextView"
-        android:nextFocusUp="@id/icon"
-        />
+        android:nextFocusUp="@id/icon" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

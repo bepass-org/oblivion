@@ -3,841 +3,770 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-  <data>
+    <data>
 
-  </data>
+    </data>
 
-  <androidx.constraintlayout.widget.ConstraintLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:background="@color/background"
-      tools:context="org.bepass.oblivion.ui.SettingsActivity"
-      android:fitsSystemWindows="true">
-
-    <RelativeLayout
-        android:id="@+id/top_bar"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:background="@color/background"
+        android:fitsSystemWindows="true"
+        tools:context="org.bepass.oblivion.ui.SettingsActivity">
 
-      <org.bepass.oblivion.component.Icon
-          android:id="@+id/back"
-          android:layout_width="24dp"
-          android:layout_height="24dp"
-          android:background="?selectableItemBackgroundBorderless"
-          android:layout_alignParentStart="true"
-          android:layout_centerVertical="true"
-          android:layout_marginStart="16dp"
-          android:src="@drawable/ic_back"
-          app:tint="@color/icon_color"
-          android:focusable="true"
-          android:nextFocusDown="@id/endpoint_type_layout" />
+        <LinearLayout
+            android:id="@+id/top_bar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-      <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_alignParentEnd="true"
-          android:layout_centerVertical="true"
-          android:layout_marginEnd="16dp"
-          android:fontFamily="@font/shabnamlight"
-          android:text="@string/settingsText"
-          android:textColor="@color/text_color"
-          android:textSize="24sp"
-          tools:ignore="RelativeOverlap"
-          android:focusable="true"
-          android:nextFocusDown="@id/battery_optimization_layout"/>
+            <org.bepass.oblivion.component.Icon
+                android:id="@+id/back"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:background="?selectableItemBackgroundBorderless"
+                android:focusable="true"
+                android:nextFocusDown="@id/endpoint_type_layout"
+                android:src="@drawable/ic_back"
+                app:tint="@color/icon_color" />
 
-    </RelativeLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:focusable="true"
+                android:fontFamily="@font/shabnamlight"
+                android:nextFocusDown="@id/battery_optimization_layout"
+                android:text="@string/settingsText"
+                android:textColor="@color/text_color"
+                android:textSize="24sp"
+                tools:ignore="RelativeOverlap" />
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:paddingVertical="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/top_bar">
+        </LinearLayout>
 
-      <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:orientation="vertical">
-          <LinearLayout
-              android:id="@+id/battery_optimization_layout"
-              android:layout_width="match_parent"
-              android:layout_height="80dp"
-              android:background="?android:selectableItemBackground"
-              android:gravity="center"
-              android:paddingHorizontal="16dp"
-              android:orientation="vertical"
-              android:focusable="true"
-              android:nextFocusDown="@id/endpoint_type_layout">
+        <View
+            android:id="@+id/toolbar_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/top_bar" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar_divider">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="end">
+                android:orientation="vertical">
 
-              <TextView
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:fontFamily="@font/shabnam"
-                  android:minWidth="100dp"
-                  android:text="@string/batteryOpL"
-                  android:textAlignment="viewEnd"
-                  android:textColor="@color/text_color"
-                  android:textSize="20sp" />
+                <LinearLayout
+                    android:id="@+id/battery_optimization_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?android:selectableItemBackground"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:nextFocusDown="@id/endpoint_type_layout"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="start">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/shabnam"
+                            android:minWidth="100dp"
+                            android:text="@string/batteryOpL"
+                            android:textAlignment="viewEnd"
+                            android:textColor="@color/text_color"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/shabnam"
+                        android:text="@string/batteryOpLText"
+                        android:textColor="@color/subtitle_color"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/battery_opt_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/endpoint_type_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?selectableItemBackground"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:nextFocusLeft="@id/endpoint_type"
+                    android:nextFocusDown="@id/endpoint_layout"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/shabnam"
+                            android:layout_weight="1"
+                            android:text="@string/endpointTypeText"
+                            android:textColor="@color/text_color"
+                            android:textSize="20sp" />
+
+                        <Spinner
+                            android:id="@+id/endpoint_type"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:focusable="true"
+                            android:nextFocusDown="@id/endpoint_layout" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/shabnam"
+                        android:text="@string/endpointTypeTextDesc"
+                        android:textColor="@color/subtitle_color"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/endpoint_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?selectableItemBackground"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:nextFocusDown="@id/port_layout"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="start">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/shabnam"
+                            android:layout_weight="1"
+                            android:text="@string/endpointText"
+                            android:textColor="@color/text_color"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:id="@+id/endpoint"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:ellipsize="end"
+                            android:fontFamily="@font/shabnammedium"
+                            android:maxLines="1"
+                            android:text="engage.cloudflareclient.com:2048"
+                            android:textColor="@color/primary"
+                            android:textSize="20sp" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/shabnam"
+                        android:text="@string/endpointTextDesc"
+                        android:textColor="@color/subtitle_color"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/port_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?selectableItemBackground"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:nextFocusDown="@id/split_tunnel_layout"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/shabnam"
+                            android:layout_weight="1"
+                            android:text="@string/portTunText"
+                            android:textColor="@color/text_color"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:id="@+id/port"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:ellipsize="end"
+                            android:fontFamily="@font/shabnammedium"
+                            android:maxLines="1"
+                            android:gravity="end"
+                            android:text="8086"
+                            android:textColor="@color/primary"
+                            android:textSize="20sp" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/shabnam"
+                        android:text="@string/portTunTextDesc"
+                        android:textColor="@color/subtitle_color"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/split_tunnel_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?android:selectableItemBackground"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:nextFocusDown="@id/txt_dark_mode"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="start">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/shabnam"
+                            android:minWidth="100dp"
+                            android:text="@string/blackList"
+                            android:textColor="@color/text_color"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/shabnam"
+                        android:text="@string/blackListTextDesc"
+                        android:textColor="@color/subtitle_color"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/proxy_mode_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?selectableItemBackground"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:nextFocusDown="@id/lan_layout"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <CheckBox
+                            android:id="@+id/proxyMode"
+                            android:clickable="false"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:buttonTint="@color/checkbox_tint"
+                            android:fontFamily="@font/shabnam"
+                            android:text="@string/proxy_mode"
+                            android:textColor="@color/text_color"
+                            android:textSize="20sp" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/shabnam"
+                        android:text="@string/running_in_proxy_mode_not_vpn"
+                        android:textColor="@color/subtitle_color"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/txt_dark_mode"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?selectableItemBackground"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:nextFocusDown="@id/lan_layout"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <CheckBox
+                            android:id="@+id/check_box_dark_mode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:buttonTint="@color/checkbox_tint"
+                            android:fontFamily="@font/shabnam"
+                            android:clickable="false"
+                            android:text="@string/turn_on_dark_mode"
+                            android:textColor="@color/text_color"
+                            android:textSize="20sp" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/shabnam"
+                        android:text="@string/turn_on_dark_mode_desc"
+                        android:textColor="@color/subtitle_color"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lan_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?selectableItemBackground"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:nextFocusDown="@id/psiphon_layout"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <CheckBox
+                            android:id="@+id/lan"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:buttonTint="@color/checkbox_tint"
+                            android:fontFamily="@font/shabnam"
+                            android:clickable="false"
+                            android:text="@string/connectFromLanText"
+                            android:textColor="@color/text_color"
+                            android:textSize="20sp" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/shabnam"
+                        android:text="@string/connectFromLanTextDesc"
+                        android:textColor="@color/subtitle_color"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/psiphon_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?selectableItemBackground"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:nextFocusDown="@id/country_layout"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <CheckBox
+                            android:id="@+id/psiphon"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:buttonTint="@color/checkbox_tint"
+                            android:fontFamily="@font/shabnam"
+                            android:clickable="false"
+                            android:text="@string/psiphonText"
+                            android:textColor="@color/text_color"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/shabnam"
+                        android:text="@string/psiphonTextDesc"
+                        android:textColor="@color/subtitle_color"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/country_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?selectableItemBackground"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:nextFocusLeft="@id/country"
+                    android:nextFocusDown="@id/license_layout"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/shabnam"
+                            android:layout_weight="1"
+                            android:text="@string/chooseText"
+                            android:textColor="@color/text_color"
+                            android:textSize="20sp" />
+
+                        <Spinner
+                            android:id="@+id/country"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:focusable="true"
+                            android:layout_weight="1"
+                            android:nextFocusDown="@id/license_layout" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/shabnam"
+                        android:text="@string/chooseTextDesc"
+                        android:textColor="@color/subtitle_color"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/license_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?selectableItemBackground"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:nextFocusDown="@id/gool_layout"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/shabnam"
+                            android:layout_weight="1"
+                            android:text="@string/licenseText"
+                            android:textColor="@color/text_color"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:id="@+id/license"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:ellipsize="end"
+                            android:fontFamily="@font/shabnammedium"
+                            android:maxLines="1"
+                            android:text="ADSNjIOV56899QQ"
+                            android:textColor="@color/primary"
+                            android:textSize="20sp" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/shabnam"
+                        android:text="@string/licenseTextDesc"
+                        android:textColor="@color/subtitle_color"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/gool_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?selectableItemBackground"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:nextFocusUp="@id/license_layout"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <CheckBox
+                            android:id="@+id/gool"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:buttonTint="@color/checkbox_tint"
+                            android:fontFamily="@font/shabnam"
+                            android:clickable="false"
+                            android:text="@string/goolText"
+                            android:textColor="@color/text_color"
+                            android:textSize="20sp" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/shabnam"
+                        android:text="@string/goolTextDesc"
+                        android:textColor="@color/subtitle_color"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/reset_app_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?android:selectableItemBackground"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:nextFocusDown="@id/txt_dark_mode"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="start">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/shabnam"
+                            android:text="@string/resetAppText"
+                            android:textColor="@color/text_color"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/shabnam"
+                        android:text="@string/resetAppTextDesc"
+                        android:textColor="@color/subtitle_color"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
             </LinearLayout>
+        </ScrollView>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="@font/shabnam"
-                android:text="@string/batteryOpLText"
-                android:textColor="@color/subtitle_color"
-                android:textSize="16sp" />
 
-          </LinearLayout>
-        <LinearLayout
-            android:id="@+id/battery_opt_line"
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/endpoint_type_layout"
-            android:layout_width="match_parent"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:focusable="true"
-            android:nextFocusDown="@id/endpoint_layout"
-            android:nextFocusLeft="@id/endpoint_type">
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-            <Spinner
-                android:id="@+id/endpoint_type"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:focusable="true"
-                android:nextFocusDown="@id/endpoint_layout"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/endpointTypeText"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/endpointTypeTextDesc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/endpoint_layout"
-            android:layout_width="match_parent"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:focusable="true"
-            android:nextFocusDown="@id/port_layout">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-            <TextView
-                android:id="@+id/endpoint"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:fontFamily="@font/shabnammedium"
-                android:text="engage.cloudflareclient.com:2048"
-                android:textColor="@color/primary"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:textSize="20sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/endpointText"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/endpointTextDesc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/port_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical"
-            android:focusable="true"
-            android:nextFocusDown="@id/split_tunnel_layout">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-            <TextView
-                android:id="@+id/port"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:fontFamily="@font/shabnammedium"
-                android:textColor="@color/primary"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:textSize="20sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/portTunText"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/portTunTextDesc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/split_tunnel_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="?android:selectableItemBackground"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:orientation="vertical"
-            android:focusable="true"
-            android:nextFocusDown="@id/txt_dark_mode">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/blackList"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/blackListTextDesc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/proxy_mode_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical"
-            android:focusable="true"
-            android:nextFocusDown="@id/lan_layout">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2">
-
-              <CheckBox
-                  android:id="@+id/proxyMode"
-                  android:layout_width="50dp"
-                  android:layout_height="38dp"
-                  android:layout_marginStart="10dp"
-                  android:buttonTint="@color/checkbox_tint"
-                  android:scaleX="1.5"
-                  android:scaleY="1.5"
-                  android:translationX="5dp" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/proxy_mode"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/running_in_proxy_mode_not_vpn"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/txt_dark_mode"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical"
-            android:focusable="true"
-            android:nextFocusDown="@id/lan_layout">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2">
-
-              <CheckBox
-                  android:id="@+id/check_box_dark_mode"
-                  android:layout_width="50dp"
-                  android:layout_height="38dp"
-                  android:layout_marginStart="10dp"
-                  android:buttonTint="@color/checkbox_tint"
-                  android:scaleX="1.5"
-                  android:scaleY="1.5"
-                  android:translationX="5dp" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/turn_on_dark_mode"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/turn_on_dark_mode_desc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/lan_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical"
-            android:focusable="true"
-            android:nextFocusDown="@id/psiphon_layout">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2">
-
-              <CheckBox
-                  android:id="@+id/lan"
-                  android:layout_width="50dp"
-                  android:layout_height="38dp"
-                  android:layout_marginStart="10dp"
-                  android:buttonTint="@color/checkbox_tint"
-                  android:scaleX="1.5"
-                  android:scaleY="1.5"
-                  android:translationX="5dp" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/connectFromLanText"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/connectFromLanTextDesc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/psiphon_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical"
-            android:focusable="true"
-            android:nextFocusDown="@id/country_layout">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2">
-
-              <CheckBox
-                  android:id="@+id/psiphon"
-                  android:layout_width="50dp"
-                  android:layout_height="38dp"
-                  android:scaleX="1.5"
-                  android:scaleY="1.5"
-                  android:layout_marginStart="10dp"
-                  android:buttonTint="@color/checkbox_tint"
-                  android:translationX="5dp" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/psiphonText"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/psiphonTextDesc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/country_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical"
-            android:focusable="true"
-            android:nextFocusDown="@id/license_layout"
-            android:nextFocusLeft="@id/country">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-            <Spinner
-                android:id="@+id/country"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:focusable="true"
-                android:nextFocusDown="@id/license_layout"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/chooseText"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/chooseTextDesc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/license_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical"
-            android:focusable="true"
-            android:nextFocusDown="@id/gool_layout">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-            <TextView
-                android:id="@+id/license"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:fontFamily="@font/shabnammedium"
-                android:text="ADSNjIOV56899QQ"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:textColor="@color/primary"
-                android:textSize="20sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/licenseText"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/licenseTextDesc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/gool_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical"
-            android:focusable="true"
-            android:nextFocusUp="@id/license_layout">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2">
-
-              <CheckBox
-                  android:id="@+id/gool"
-                  android:layout_width="50dp"
-                  android:layout_height="38dp"
-                  android:scaleX="1.5"
-                  android:scaleY="1.5"
-                  android:layout_marginStart="10dp"
-                  android:buttonTint="@color/checkbox_tint"
-                  android:translationX="5dp" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/goolText"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/goolTextDesc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/reset_app_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="?android:selectableItemBackground"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:orientation="vertical"
-            android:focusable="true"
-            android:nextFocusDown="@id/txt_dark_mode">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/resetAppText"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20sp" />
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/resetAppTextDesc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16sp" />
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
-        </LinearLayout>
-      </LinearLayout>
-    </ScrollView>
-
-
-  </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

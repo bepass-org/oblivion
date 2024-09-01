@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/background"
     android:fitsSystemWindows="true">
 
     <RadioGroup
@@ -23,32 +21,31 @@
             android:layout_gravity="start"
             android:background="?android:selectableItemBackground"
             android:button="@null"
-            android:drawableRight="?android:attr/listChoiceIndicatorSingle"
+            android:drawableStart="?android:attr/listChoiceIndicatorSingle"
+            android:focusable="true"
             android:fontFamily="@font/shabnam"
             android:layoutDirection="rtl"
+            android:nextFocusDown="@id/blacklist"
             android:paddingLeft="20dp"
-            android:paddingTop="10dp"
-            android:textColor="@color/text_color"
+            android:paddingTop="8dp"
             android:paddingRight="20dp"
-            android:paddingBottom="10dp"
+            android:paddingBottom="8dp"
             android:text="@string/disabledR"
             android:textAlignment="textStart"
-            android:textSize="14sp"
-            android:focusable="true"
-            android:nextFocusDown="@id/blacklist" />
+            android:textColor="@color/text_color"
+            android:textSize="14sp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:fontFamily="@font/shabnam"
-            android:layoutDirection="rtl"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:paddingBottom="10dp"
             android:text="@string/disabledRText"
-            android:textColor="@color/subtitle_color"
             android:textAlignment="textStart"
+            android:textColor="@color/subtitle_color"
             android:textSize="14sp" />
 
         <RadioButton
@@ -56,51 +53,63 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:background="?android:selectableItemBackground"
             android:button="@null"
-            android:textColor="@color/text_color"
-            android:drawableRight="?android:attr/listChoiceIndicatorSingle"
+            android:background="?android:selectableItemBackground"
+            android:drawableStart="?android:attr/listChoiceIndicatorSingle"
+            android:focusable="true"
             android:fontFamily="@font/shabnam"
             android:layoutDirection="rtl"
+            android:nextFocusUp="@id/disabled"
+            android:nextFocusDown="@id/showSystemApps"
             android:paddingLeft="20dp"
-            android:paddingTop="10dp"
+            android:paddingTop="8dp"
             android:paddingRight="20dp"
-            android:paddingBottom="10dp"
+            android:paddingBottom="8dp"
             android:text="@string/enabledR"
             android:textAlignment="textStart"
-            android:textSize="14sp"
-            android:focusable="true"
-            android:nextFocusUp="@id/disabled"
-            android:nextFocusDown="@id/showSystemApps" />
+            android:textColor="@color/text_color"
+            android:textSize="14sp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:fontFamily="@font/shabnam"
-            android:layoutDirection="rtl"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:textColor="@color/subtitle_color"
             android:paddingBottom="10dp"
             android:text="@string/enabledRText"
             android:textAlignment="textStart"
+            android:textColor="@color/subtitle_color"
             android:textSize="14sp" />
     </RadioGroup>
 
+    <View
+        android:id="@+id/toolbar_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="4dp"
+        android:background="@android:color/darker_gray"
+        android:alpha="0.4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/radioGroup" />
+
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/showSystemApps"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
         android:checked="false"
-        android:textColor="@color/text_color"
-        android:fontFamily="@font/shabnam"
-        android:padding="4dp"
-        android:text="@string/showSystemAppsText"
         android:focusable="true"
+        android:fontFamily="@font/shabnam"
+        android:nextFocusUp="@id/blacklist"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="4dp"
+        android:text="@string/showSystemAppsText"
+        android:textColor="@color/text_color"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroup"
-        app:switchPadding="4dp"
-        android:nextFocusUp="@id/blacklist" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_divider"
+        app:switchPadding="4dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
