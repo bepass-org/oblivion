@@ -77,7 +77,6 @@
                 android:textSize="16dp"
                 android:hint="@string/content"
                 android:textColorHint="@color/text_color"/>
-                />
         </LinearLayout>
 
         <Button
@@ -89,6 +88,18 @@
             android:background="@drawable/button"
             android:fontFamily="@font/shabnambold"
             android:text="@string/save"
+            android:textColor="@color/white"
+            android:textSize="18dp" />
+
+        <Button
+            android:id="@+id/resetDefaultButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16sp"
+            android:layout_marginTop="8sp"
+            android:background="@drawable/button_op"
+            android:fontFamily="@font/shabnambold"
+            android:text="@string/reset_to_default_endpoint"
             android:textColor="@color/white"
             android:textSize="18dp" />
 

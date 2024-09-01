@@ -2,40 +2,28 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="?attr/selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true">
+    android:orientation="horizontal"
+    android:padding="8dp">
 
     <TextView
         android:id="@+id/titleTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/shabnam"
-        android:textColor="@color/text_color"
-        android:textSize="18dp"
-        android:textStyle="bold"
-        android:paddingBottom="4dp"/>
+        android:layout_weight="1"
+        android:textSize="16sp"
+        android:textColor="@color/text_color" />
 
     <TextView
         android:id="@+id/contentTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/shabnam"
-        android:textColor="@color/text_color"
-        android:textSize="16dp" />
-    <LinearLayout
-        android:id="@+id/battery_opt_line"
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_weight="2"
+        android:textSize="16sp"
+        android:textColor="@color/text_color" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
-    </LinearLayout>
+    <ImageView
+        android:id="@+id/delIcon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@android:drawable/ic_menu_close_clear_cancel" />
 </LinearLayout>
-
