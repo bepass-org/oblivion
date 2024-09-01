@@ -88,7 +88,7 @@ public class OblivionVpnService extends VpnService {
         }
     };
     // For JNI Calling in a new threa
-    private static final ExecutorService executorService = Executors.newFixedThreadPool(1);
+    private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
     // For PingHTTPTestConnection to don't busy-waiting
     private static ScheduledExecutorService scheduler;
     private Notification notification;
@@ -452,23 +452,23 @@ public class OblivionVpnService extends VpnService {
         }
         stopForegroundService();
         stopSelf();
-        // Shutdown executor service
+        // Shutdown executor service properly
         if (executorService != null) {
-            ExecutorService service = (ExecutorService) executorService;
+            executorService.shutdown(); // Initiates an orderly shutdown
             try {
-                service.shutdownNow(); // Attempt to forcibly shutdown
-                if (!service.awaitTermination(300, TimeUnit.MILLISECONDS)) {
-                    Log.e(TAG, "ExecutorService did not terminate in the specified time");
-                    List<Runnable> droppedTasks = service.shutdownNow();
-                    Log.e(TAG, "ExecutorService was forcibly shut down. Dropped tasks: " + droppedTasks);
+                if (!executorService.awaitTermination(1, TimeUnit.SECONDS)) {
+                    executorService.shutdownNow(); // Force shutdown if it doesn't terminate in time
+                    if (!executorService.awaitTermination(1, TimeUnit.SECONDS)) {
+                        Log.e(TAG, "ExecutorService did not terminate");
+                    }
                 }
-                Log.e(TAG, "ExecutorService shut down successfully");
             } catch (InterruptedException ie) {
                 Log.e(TAG, "Interrupted during ExecutorService shutdown", ie);
+                executorService.shutdownNow(); // Force shutdown
                 Thread.currentThread().interrupt();
             }
         } else {
-            Log.w(TAG, "ExecutorService was not an instance of ExecutorService");
+            Log.w(TAG, "ExecutorService was not initialized or is already null");
         }
 
         Log.e(TAG, "VPN stopped successfully or encountered errors. Check logs for details.");

@@ -1,9 +1,12 @@
 package org.bepass.oblivion;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,18 +25,40 @@ import java.util.Set;
 public class EndpointsBottomSheet extends BottomSheetDialogFragment {
     private List<Endpoint> endpointsList;
     public EndpointSelectionListener selectionListener;
+    private EndpointsAdapter adapter;
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.bottom_sheet_endpoints, container, false);
 
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
+        Button saveButton = view.findViewById(R.id.saveButton);
+        EditText titleEditText = view.findViewById(R.id.titleEditText);
+        EditText contentEditText = view.findViewById(R.id.contentEditText);
+
         endpointsList = new ArrayList<>();
         loadEndpoints();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        EndpointsAdapter adapter = new EndpointsAdapter(endpointsList, this::onEndpointSelected);
+        adapter = new EndpointsAdapter(endpointsList, this::onEndpointSelected);
         recyclerView.setAdapter(adapter);
+
+        // Handle save button press
+        saveButton.setOnClickListener(v -> {
+            String title = titleEditText.getText().toString().trim();
+            String content = contentEditText.getText().toString().trim();
+
+            if (!title.isEmpty() && !content.isEmpty()) {
+                Endpoint newEndpoint = new Endpoint(title, content);
+                saveEndpoint(newEndpoint);
+                adapter.notifyDataSetChanged(); // Refresh the RecyclerView
+
+                // Clear the input fields
+                titleEditText.setText("");
+                contentEditText.setText("");
+            }
+        });
 
         return view;
     }
@@ -46,6 +71,15 @@ public class EndpointsBottomSheet extends BottomSheetDialogFragment {
                 endpointsList.add(new Endpoint(parts[0], parts[1]));
             }
         }
+    }
+
+    private void saveEndpoint(Endpoint endpoint) {
+        endpointsList.add(endpoint);
+
+        // Save to FileManager
+        Set<String> savedEndpoints = FileManager.getStringSet("saved_endpoints", new HashSet<>());
+        savedEndpoints.add(endpoint.getTitle() + "::" + endpoint.getContent());
+        FileManager.set("saved_endpoints", savedEndpoints);
     }
 
     private void onEndpointSelected(String content) {

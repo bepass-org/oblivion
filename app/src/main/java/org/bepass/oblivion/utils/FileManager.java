@@ -196,6 +196,7 @@ public class FileManager {
                 set("USERSETTING_psiphon", false);
                 set("USERSETTING_lan", false);
                 set("USERSETTING_proxymode", false);
+                set("USERSETTING_endpoint_type", 0);
                 set("isFirstValueInit", true);
             }
 
