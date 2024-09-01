@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,7 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 public class EndpointsBottomSheet extends BottomSheetDialogFragment {
-    private List<Endpoint> endpointsList;
+    private static List<Endpoint> endpointsList;
     public EndpointSelectionListener selectionListener;
     private EndpointsAdapter adapter;
 
@@ -34,6 +35,7 @@ public class EndpointsBottomSheet extends BottomSheetDialogFragment {
 
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         Button saveButton = view.findViewById(R.id.saveButton);
+        Button resetDefaultButton = view.findViewById(R.id.resetDefaultButton); // Add this line
         EditText titleEditText = view.findViewById(R.id.titleEditText);
         EditText contentEditText = view.findViewById(R.id.contentEditText);
 
@@ -44,7 +46,6 @@ public class EndpointsBottomSheet extends BottomSheetDialogFragment {
         adapter = new EndpointsAdapter(endpointsList, this::onEndpointSelected);
         recyclerView.setAdapter(adapter);
 
-        // Handle save button press
         saveButton.setOnClickListener(v -> {
             String title = titleEditText.getText().toString().trim();
             String content = contentEditText.getText().toString().trim();
@@ -52,16 +53,24 @@ public class EndpointsBottomSheet extends BottomSheetDialogFragment {
             if (!title.isEmpty() && !content.isEmpty()) {
                 Endpoint newEndpoint = new Endpoint(title, content);
                 saveEndpoint(newEndpoint);
-                adapter.notifyDataSetChanged(); // Refresh the RecyclerView
+                adapter.notifyDataSetChanged();
 
-                // Clear the input fields
                 titleEditText.setText("");
                 contentEditText.setText("");
             }
         });
 
+        // Handle reset to default button press
+        resetDefaultButton.setOnClickListener(v -> {
+            endpointsList.clear();
+            endpointsList.add(new Endpoint("Default", "engage.cloudflareclient.com:2408")); // Add default endpoint
+            saveEndpoints(); // Save the updated list
+            adapter.notifyDataSetChanged();
+        });
+
         return view;
     }
+
 
     private void loadEndpoints() {
         Set<String> savedEndpoints = FileManager.getStringSet("saved_endpoints", new HashSet<>());
@@ -81,7 +90,6 @@ public class EndpointsBottomSheet extends BottomSheetDialogFragment {
         savedEndpoints.add(endpoint.getTitle() + "::" + endpoint.getContent());
         FileManager.set("saved_endpoints", savedEndpoints);
     }
-
     private void onEndpointSelected(String content) {
         if (selectionListener != null) {
             selectionListener.onEndpointSelected(content);
@@ -111,6 +119,14 @@ public class EndpointsBottomSheet extends BottomSheetDialogFragment {
         }
     }
 
+    private static void saveEndpoints() {
+        Set<String> savedEndpoints = new HashSet<>();
+        for (Endpoint endpoint : endpointsList) {
+            savedEndpoints.add(endpoint.getTitle() + "::" + endpoint.getContent());
+        }
+        FileManager.set("saved_endpoints", savedEndpoints);
+    }
+
     private static class EndpointsAdapter extends RecyclerView.Adapter<EndpointsAdapter.EndpointViewHolder> {
         private final List<Endpoint> endpointsList;
         public final EndpointSelectionListener selectionListener;
@@ -138,6 +154,17 @@ public class EndpointsBottomSheet extends BottomSheetDialogFragment {
                     selectionListener.onEndpointSelected(endpoint.getContent());
                 }
             });
+
+            // Handle delete button click
+            holder.deleteIcon.setOnClickListener(v -> {
+                // Remove the endpoint from the list and update the RecyclerView
+                endpointsList.remove(position);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, endpointsList.size());
+
+                // Save the updated list to FileManager
+                saveEndpoints();
+            });
         }
 
         @Override
@@ -147,11 +174,13 @@ public class EndpointsBottomSheet extends BottomSheetDialogFragment {
 
         static class EndpointViewHolder extends RecyclerView.ViewHolder {
             TextView titleTextView, contentTextView;
+            ImageView deleteIcon; // Added for delete icon
 
             EndpointViewHolder(@NonNull View itemView) {
                 super(itemView);
                 titleTextView = itemView.findViewById(R.id.titleTextView);
                 contentTextView = itemView.findViewById(R.id.contentTextView);
+                deleteIcon = itemView.findViewById(R.id.delIcon); // Initialize delete icon
             }
         }
     }

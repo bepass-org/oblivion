@@ -58,6 +58,7 @@
     <string name="resetAppText">Sıfırla</string>
     <string name="proxy_mode">Proxy Modu</string>
     <string name="running_in_proxy_mode_not_vpn">Proxy modunda çalışıyor, VPN değil</string>
+    <string name="reset_to_default_endpoint">Varsayılan Uç Noktaya Sıfırla</string>
     <string-array name="countries">
         <item>Avustralya</item>
         <item>Avusturya</item>
