@@ -5,6 +5,7 @@ import static org.bepass.oblivion.utils.BatteryOptimizationKt.showBatteryOptimiz
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -97,6 +98,7 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         binding.endpointLayout.setOnClickListener(v -> {
             EndpointsBottomSheet bottomSheet = new EndpointsBottomSheet();
             bottomSheet.setEndpointSelectionListener(content -> {
+                Log.d("100","Selected Endpoint: " + content);
                 FileManager.set("USERSETTING_endpoint", content);
                 binding.endpoint.post(() -> binding.endpoint.setText(content));
             });
@@ -145,11 +147,9 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
             if (isChecked && binding.psiphon.isChecked()) {
                 binding.psiphon.post(() -> setCheckBoxWithoutTriggeringListener(binding.psiphon, false, psiphonListener));
                 FileManager.set("USERSETTING_psiphon", false);
+                binding.countryLayout.setAlpha(0.2f);
+                binding.country.setEnabled(false);
             }
-            binding.countryLayout.post(() -> {
-                binding.countryLayout.setAlpha(isChecked ? 1f : 0.2f);
-                binding.country.setEnabled(isChecked);
-            });
         };
 
         proxyModeListener = (buttonView, isChecked) -> {

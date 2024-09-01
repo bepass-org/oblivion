@@ -9,7 +9,7 @@
     app:guidelineUseRtl="false">
 
     <LinearLayout
-        android:background="@color/background"
+        android:background="@drawable/endpoint_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -59,8 +59,8 @@
                 android:textAlignment="center"
                 android:textColor="@color/text_color"
                 android:textSize="14sp"
-                android:hint="@string/title" />
-
+                android:hint="@string/title"
+                android:textColorHint="@color/text_color"/>
             <EditText
                 android:id="@+id/contentEditText"
                 android:layout_width="0dp"
@@ -75,7 +75,9 @@
                 android:textAlignment="center"
                 android:textColor="@color/text_color"
                 android:textSize="16sp"
-                android:hint="@string/content" />
+                android:hint="@string/content"
+                android:textColorHint="@color/text_color"/>
+                />
         </LinearLayout>
 
         <Button
