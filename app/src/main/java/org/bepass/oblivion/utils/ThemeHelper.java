@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 
 import org.bepass.oblivion.R;
+import org.bepass.oblivion.config.AppConfigManager;
 
 public class ThemeHelper {
 
@@ -57,7 +58,7 @@ public class ThemeHelper {
     }
 
     public void init() {
-        int themeMode = FileManager.getInt(FileManager.KeyHolder.DARK_MODE);
+        int themeMode = AppConfigManager.getSettingNightMode();
         currentTheme = Theme.fromNightMode(themeMode);
         applyTheme();
     }
@@ -68,7 +69,7 @@ public class ThemeHelper {
 
     public void select(Theme theme) {
         currentTheme = theme;
-        FileManager.set(FileManager.KeyHolder.DARK_MODE, theme.nightMode);
+        AppConfigManager.setSettingNightMode(theme.nightMode);
         applyTheme();
     }
 

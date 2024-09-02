@@ -1,11 +1,8 @@
 package org.bepass.oblivion.base;
 
 import android.app.Application;
-import android.content.Context;
 
-import androidx.appcompat.app.AppCompatDelegate;
-
-import org.bepass.oblivion.utils.FileManager;
+import org.bepass.oblivion.config.AppConfigManager;
 import org.bepass.oblivion.utils.ThemeHelper;
 
 /**
@@ -25,7 +22,7 @@ public class ApplicationLoader extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        FileManager.initialize(this); // Initialize FileManager with Application context
+        AppConfigManager.init(this);
         ThemeHelper.getInstance().init();
         ThemeHelper.getInstance().applyTheme();
     }

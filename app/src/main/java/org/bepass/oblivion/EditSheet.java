@@ -8,11 +8,9 @@ import android.widget.TextView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import org.bepass.oblivion.interfaces.SheetsCallBack;
-import org.bepass.oblivion.utils.FileManager;
+import org.bepass.oblivion.config.AppConfigManager;
 
 public class EditSheet {
-
-    FileManager fileManager;
 
     Context context;
     BottomSheetDialog sheet;
@@ -60,11 +58,11 @@ public class EditSheet {
         }
 
         titleView.setText(title);
-        value.setText(FileManager.getString("USERSETTING_" + sharedPrefKey));
+        value.setText(AppConfigManager.getRawString("USERSETTING_" + sharedPrefKey, ""));
 
         cancel.setOnClickListener(v -> sheet.cancel());
         apply.setOnClickListener(v -> {
-            FileManager.set("USERSETTING_" + sharedPrefKey, value.getText().toString());
+            AppConfigManager.setRawString("USERSETTING_" + sharedPrefKey, value.getText().toString());
             sheet.cancel();
         });
 

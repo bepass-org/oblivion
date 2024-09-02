@@ -11,6 +11,7 @@ import androidx.core.os.LocaleListCompat;
 import com.github.erfansn.localeconfigx.LocaleConfigXKt;
 
 import org.bepass.oblivion.R;
+import org.bepass.oblivion.config.AppConfigManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -107,10 +108,10 @@ public class LocaleHandler {
     }
 
     public void setPersianAsDefaultLocaleIfNeeds() {
-        if (!FileManager.getBoolean(IS_SET_DEFAULT_LOCALE)) {
+        if (!AppConfigManager.getRawBoolean(IS_SET_DEFAULT_LOCALE, false)) {
             Locale persianLocale = Locale.forLanguageTag(DEFAULT_LOCALE);
             AppCompatDelegate.setApplicationLocales(LocaleListCompat.create(persianLocale));
-            FileManager.set(IS_SET_DEFAULT_LOCALE, true);
+            AppConfigManager.setRawBoolean(IS_SET_DEFAULT_LOCALE, true);
         }
     }
 

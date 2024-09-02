@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.ConcatAdapter;
 
 import org.bepass.oblivion.BypassListAppsAdapter;
 import org.bepass.oblivion.enums.ConnectionState;
-import org.bepass.oblivion.utils.FileManager;
+import org.bepass.oblivion.config.AppConfigManager;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.enums.SplitTunnelMode;
 import org.bepass.oblivion.SplitTunnelOptionsAdapter;
@@ -55,7 +55,7 @@ public class SplitTunnelActivity extends StateAwareBaseActivity<ActivitySplitTun
             @Override
             public void splitTunnelMode(SplitTunnelMode mode) {
                 StateAwareBaseActivity.setRequireRestartVpnService(true);
-                FileManager.set("splitTunnelMode", mode.toString());
+                AppConfigManager.setSplitTunnelMode(mode);
             }
 
             @Override

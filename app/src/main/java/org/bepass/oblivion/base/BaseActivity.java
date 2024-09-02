@@ -9,7 +9,6 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 
 import org.bepass.oblivion.utils.ColorUtils;
-import org.bepass.oblivion.utils.FileManager;
 import org.bepass.oblivion.utils.SystemUtils;
 
 /**
@@ -41,7 +40,6 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FileManager.initialize(this); // Initialize FileManager with Activity context
         // Inflates the layout and initializes the binding object
         binding = DataBindingUtil.setContentView(this, getLayoutResourceId());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

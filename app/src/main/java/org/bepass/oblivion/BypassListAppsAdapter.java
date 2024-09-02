@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.imageview.ShapeableImageView;
 
-import org.bepass.oblivion.utils.FileManager;
+import org.bepass.oblivion.config.AppConfigManager;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -53,7 +53,7 @@ public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAd
     }
 
     private List<AppInfo> getInstalledApps(Context context, boolean shouldShowSystemApps) {
-        Set<String> selectedApps = FileManager.getStringSet("splitTunnelApps", new HashSet<>());
+        Set<String> selectedApps = AppConfigManager.getSplitTunnelApps();
         PackageManager packageManager = context.getPackageManager();
         @SuppressLint("QueryPermissionsNeeded") List<ApplicationInfo> packages = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
         List<AppInfo> appList = new ArrayList<>(packages.size());
@@ -98,13 +98,13 @@ public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAd
             appInfo.isSelected = !appInfo.isSelected;
             notifyItemChanged(position);
 
-            Set<String> newSet = new HashSet<>(FileManager.getStringSet("splitTunnelApps", new HashSet<>()));
+            Set<String> newSet = new HashSet<>(AppConfigManager.getSplitTunnelApps());
             if (appInfo.isSelected) {
                 newSet.add(appInfo.packageName);
             } else {
                 newSet.remove(appInfo.packageName);
             }
-            FileManager.set("splitTunnelApps", newSet);
+            AppConfigManager.setSplitTunnelApps(newSet);
 
             if (onAppSelectListener != null)
                 onAppSelectListener.onSelect(appInfo.packageName, appInfo.isSelected);

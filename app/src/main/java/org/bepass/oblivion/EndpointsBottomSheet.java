@@ -12,10 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import org.bepass.oblivion.utils.FileManager;
+import org.bepass.oblivion.config.AppConfigManager;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -39,7 +38,7 @@ public class EndpointsBottomSheet extends BottomSheetDialogFragment {
     }
 
     private void loadEndpoints() {
-        Set<String> savedEndpoints = FileManager.getStringSet("saved_endpoints", new HashSet<>());
+        Set<String> savedEndpoints = AppConfigManager.getSettingSavedEndPoints();
         for (String endpoint : savedEndpoints) {
             String[] parts = endpoint.split("::");
             if (parts.length == 2) {

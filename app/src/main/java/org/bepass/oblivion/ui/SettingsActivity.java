@@ -15,10 +15,12 @@ import androidx.activity.OnBackPressedCallback;
 
 import org.bepass.oblivion.EndpointsBottomSheet;
 import org.bepass.oblivion.enums.ConnectionState;
+import org.bepass.oblivion.config.AppConfigManager;
+import org.bepass.oblivion.utils.CountryCode;
 import org.bepass.oblivion.utils.CountryUtils;
 import org.bepass.oblivion.EditSheet;
-import org.bepass.oblivion.utils.FileManager;
-import org.bepass.oblivion.service.OblivionVpnService;
+import org.bepass.oblivion.config.EndPoint;
+import org.bepass.oblivion.config.EndPointType;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.interfaces.SheetsCallBack;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
@@ -86,7 +88,7 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         binding.endpointType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                FileManager.set("USERSETTING_endpoint_type", position);
+                AppConfigManager.setSettingEndPointType(EndPointType.values()[position]);
             }
 
             @Override
@@ -97,7 +99,7 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         binding.endpointLayout.setOnClickListener(v -> {
             EndpointsBottomSheet bottomSheet = new EndpointsBottomSheet();
             bottomSheet.setEndpointSelectionListener(content -> {
-                FileManager.set("USERSETTING_endpoint", content);
+                AppConfigManager.setSettingEndPoint(new EndPoint(content));
                 binding.endpoint.post(() -> binding.endpoint.setText(content));
             });
             bottomSheet.show(getSupportFragmentManager(), bottomSheet.getTag());
@@ -111,8 +113,8 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String name = parent.getItemAtPosition(position).toString();
                 Triple<String, String, Integer> codeAndName = CountryUtils.getCountryCode(getApplicationContext(), name);
-                FileManager.set("USERSETTING_country", codeAndName.getFirst());
-                FileManager.set("USERSETTING_country_index", position);
+                AppConfigManager.setSettingCountry(new CountryCode(codeAndName.getFirst()));
+                AppConfigManager.setSettingCountryIndex(position);
             }
 
             @Override
@@ -128,23 +130,24 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         binding.psiphonLayout.setOnClickListener(v -> binding.psiphon.setChecked(!binding.psiphon.isChecked()));
 
         binding.lan.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            FileManager.set("USERSETTING_lan", isChecked);
+            AppConfigManager.setSettingLan(isChecked);
         });
         psiphonListener = (buttonView, isChecked) -> {
-            FileManager.set("USERSETTING_psiphon", isChecked);
+            // TODO: 9/1/2024 Check this logic and relation with Gool mode
+            AppConfigManager.setSettingPsiphon(isChecked);
             if (isChecked && binding.gool.isChecked()) {
                 binding.gool.post(() -> setCheckBoxWithoutTriggeringListener(binding.gool, false, goolListener));
-                FileManager.set("USERSETTING_gool", false);
+                AppConfigManager.setSettingGool(false);
             }
             binding.countryLayout.setAlpha(isChecked ? 1f : 0.2f);
             binding.country.setEnabled(isChecked);
         };
 
         goolListener = (buttonView, isChecked) -> {
-            FileManager.set("USERSETTING_gool", isChecked);
+            AppConfigManager.setSettingGool(isChecked);
             if (isChecked && binding.psiphon.isChecked()) {
                 binding.psiphon.post(() -> setCheckBoxWithoutTriggeringListener(binding.psiphon, false, psiphonListener));
-                FileManager.set("USERSETTING_psiphon", false);
+                AppConfigManager.setSettingPsiphon(false);
             }
             binding.countryLayout.post(() -> {
                 binding.countryLayout.setAlpha(isChecked ? 1f : 0.2f);
@@ -153,7 +156,7 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         };
 
         proxyModeListener = (buttonView, isChecked) -> {
-            FileManager.set("USERSETTING_proxymode", isChecked);
+            AppConfigManager.setSettingProxyMode(isChecked);
         };
 
         binding.txtDarkMode.setOnClickListener(view -> binding.checkBoxDarkMode.setChecked(!binding.checkBoxDarkMode.isChecked()));
@@ -177,8 +180,7 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
     }
 
     private void resetAppData() {
-        FileManager.resetToDefault();
-        FileManager.cleanOrMigrateSettings(this);
+        AppConfigManager.resetToDefault();
         Intent intent = new Intent(this, MainActivity.class);
         finish();
         startActivity(intent);
@@ -188,13 +190,13 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         etadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.endpointType.post(() -> {
             binding.endpointType.setAdapter(etadapter);
-            binding.endpointType.setSelection(FileManager.getInt("USERSETTING_endpoint_type"));
+            binding.endpointType.setSelection(AppConfigManager.getSettingEndPointType().ordinal());
         });
-        binding.endpoint.setText(FileManager.getString("USERSETTING_endpoint"));
-        binding.port.setText(FileManager.getString("USERSETTING_port"));
-        binding.license.setText(FileManager.getString("USERSETTING_license"));
+        binding.endpoint.setText(AppConfigManager.getSettingEndPoint().getValue());
+        binding.port.setText(AppConfigManager.getSettingPort().getValue());
+        binding.license.setText(AppConfigManager.getSettingLicense());
 
-        int index = FileManager.getInt("USERSETTING_country_index");
+        int index = AppConfigManager.getSettingCountryIndex();
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.countries, R.layout.country_item_layout);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.country.post(() -> {
@@ -202,10 +204,10 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
             binding.country.setSelection(index);
         });
 
-        binding.psiphon.setChecked(FileManager.getBoolean("USERSETTING_psiphon"));
-        binding.lan.setChecked(FileManager.getBoolean("USERSETTING_lan"));
-        binding.gool.setChecked(FileManager.getBoolean("USERSETTING_gool"));
-        binding.proxyMode.setChecked(FileManager.getBoolean("USERSETTING_proxymode"));
+        binding.psiphon.setChecked(AppConfigManager.getSettingPsiphon());
+        binding.lan.setChecked(AppConfigManager.getSettingLan());
+        binding.gool.setChecked(AppConfigManager.getSettingGool());
+        binding.proxyMode.setChecked(AppConfigManager.getSettingProxyMode());
         if (!binding.psiphon.isChecked()) {
             binding.countryLayout.setAlpha(0.2f);
             binding.country.setEnabled(false);

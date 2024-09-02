@@ -3,6 +3,7 @@ package org.bepass.oblivion.utils;
 import android.os.Handler;
 import android.util.Log;
 
+import org.bepass.oblivion.config.AppConfigManager;
 import org.bepass.oblivion.model.IPDetails;
 import org.json.JSONObject;
 
@@ -65,7 +66,7 @@ public class PublicIPUtils {
             while (System.currentTimeMillis() - startTime < TIMEOUT_MILLIS) { // 30 seconds
                 Log.d(TAG, "Attempting to fetch IP details");
                 try {
-                    String portString = FileManager.getString("USERSETTING_port");
+                    String portString = AppConfigManager.getSettingPort().getValue();
                     if (portString == null || portString.isEmpty()) {
                         throw new IllegalStateException("USERSETTING_port is not set in FileManager");
                     }

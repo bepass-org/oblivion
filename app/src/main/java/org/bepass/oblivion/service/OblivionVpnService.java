@@ -25,14 +25,13 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
 
 import org.bepass.oblivion.enums.ConnectionState;
 import org.bepass.oblivion.interfaces.ConnectionStateChangeListener;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.enums.SplitTunnelMode;
 import org.bepass.oblivion.ui.MainActivity;
-import org.bepass.oblivion.utils.FileManager;
+import org.bepass.oblivion.config.AppConfigManager;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -41,7 +40,6 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.ServerSocket;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -247,7 +245,7 @@ public class OblivionVpnService extends VpnService {
 
 
     private Set<String> getSplitTunnelApps() {
-        return FileManager.getStringSet("splitTunnelApps", new HashSet<>());
+        return AppConfigManager.getSplitTunnelApps();
     }
 
 

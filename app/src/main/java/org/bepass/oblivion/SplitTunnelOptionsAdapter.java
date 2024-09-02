@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import org.bepass.oblivion.enums.SplitTunnelMode;
-import org.bepass.oblivion.utils.FileManager;
 
 public class SplitTunnelOptionsAdapter extends RecyclerView.Adapter<SplitTunnelOptionsAdapter.ViewHolder> {
 
@@ -46,13 +45,11 @@ public class SplitTunnelOptionsAdapter extends RecyclerView.Adapter<SplitTunnelO
         holder.disabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 settingsCallback.splitTunnelMode(SplitTunnelMode.DISABLED);
-                FileManager.set("splitTunnelMode", SplitTunnelMode.DISABLED.toString());
             }
         });
         holder.blacklist.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 settingsCallback.splitTunnelMode(SplitTunnelMode.BLACKLIST);
-                FileManager.set("splitTunnelMode", SplitTunnelMode.BLACKLIST.toString());
             }
 
         });

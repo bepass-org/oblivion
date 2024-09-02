@@ -18,7 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import org.bepass.oblivion.enums.ConnectionState;
-import org.bepass.oblivion.utils.FileManager;
+import org.bepass.oblivion.config.AppConfigManager;
 import org.bepass.oblivion.utils.LocaleHandler;
 import org.bepass.oblivion.utils.PublicIPUtils;
 import org.bepass.oblivion.R;
@@ -35,15 +35,15 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     private LocaleHandler localeHandler;
     private ActivityResultLauncher<Intent> vpnPermissionLauncher;
     public static void startVpnService(Context context, Intent intent) {
-        intent.putExtra("USERSETTING_proxymode", FileManager.getBoolean("USERSETTING_proxymode"));
-        intent.putExtra("USERSETTING_license", FileManager.getString("USERSETTING_license"));
-        intent.putExtra("USERSETTING_endpoint_type", FileManager.getInt("USERSETTING_endpoint_type"));
-        intent.putExtra("USERSETTING_psiphon", FileManager.getBoolean("USERSETTING_psiphon"));
-        intent.putExtra("USERSETTING_country", FileManager.getString("USERSETTING_country"));
-        intent.putExtra("USERSETTING_gool", FileManager.getBoolean("USERSETTING_gool"));
-        intent.putExtra("USERSETTING_endpoint", FileManager.getString("USERSETTING_endpoint"));
-        intent.putExtra("USERSETTING_port", FileManager.getString("USERSETTING_port"));
-        intent.putExtra("USERSETTING_lan", FileManager.getBoolean("USERSETTING_lan"));
+        intent.putExtra("USERSETTING_proxymode", AppConfigManager.getSettingProxyMode());
+        intent.putExtra("USERSETTING_license", AppConfigManager.getSettingLicense());
+        intent.putExtra("USERSETTING_endpoint_type", AppConfigManager.getSettingEndPointType().ordinal());
+        intent.putExtra("USERSETTING_psiphon", AppConfigManager.getSettingPsiphon());
+        intent.putExtra("USERSETTING_country", AppConfigManager.getSettingCountry().getValue());
+        intent.putExtra("USERSETTING_gool", AppConfigManager.getSettingGool());
+        intent.putExtra("USERSETTING_endpoint", AppConfigManager.getSettingEndPoint().getValue());
+        intent.putExtra("USERSETTING_port", AppConfigManager.getSettingPort().getValue());
+        intent.putExtra("USERSETTING_lan", AppConfigManager.getSettingLan());
         intent.setAction(OblivionVpnService.FLAG_VPN_START);
         ContextCompat.startForegroundService(context, intent);
     }
@@ -69,7 +69,6 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
 
         localeHandler = new LocaleHandler(this);
         ThemeHelper.getInstance().updateActivityBackground(binding.getRoot());
-        FileManager.cleanOrMigrateSettings(this);
         setupUI();
         setupVPNConnection();
         requestNotificationPermission();
@@ -91,8 +90,7 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     }
 
     private void handleVpnSwitch(boolean enableVpn) {
-        Log.d("83", FileManager.getString("USERSETTING_country"));
-        FileManager.initialize(this);
+        Log.d("83", AppConfigManager.getSettingCountry().toString());
 
         if (enableVpn) {
             if (lastKnownConnectionState.isDisconnected()) {
@@ -207,17 +205,17 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
 
     private void updateUIForConnectedState() {
         binding.switchButton.setEnabled(true);
-        if (FileManager.getBoolean("USERSETTING_proxymode")) {
-            if (FileManager.getBoolean("USERSETTING_lan")) {
+        if (AppConfigManager.getSettingProxyMode()) {
+            if (AppConfigManager.getSettingLan()) {
                 String lanIP;
                 try {
                     lanIP = NetworkUtils.getLocalIpAddress(this);
-                    binding.stateText.setText(String.format(Locale.getDefault(), "%s\n socks5 over LAN on\n %s:%s", getString(R.string.connected), lanIP, FileManager.getString("USERSETTING_port")));
+                    binding.stateText.setText(String.format(Locale.getDefault(), "%s\n socks5 over LAN on\n %s:%s", getString(R.string.connected), lanIP, AppConfigManager.getSettingPort().getValue()));
                 } catch (Exception e) {
-                    binding.stateText.setText(String.format(Locale.getDefault(), "%s\n socks5 over LAN on\n 0.0.0.0:%s", getString(R.string.connected), FileManager.getString("USERSETTING_port")));
+                    binding.stateText.setText(String.format(Locale.getDefault(), "%s\n socks5 over LAN on\n 0.0.0.0:%s", getString(R.string.connected), AppConfigManager.getSettingPort().getValue()));
                 }
             } else {
-                binding.stateText.setText(String.format(Locale.getDefault(), "%s\nsocks5 on 127.0.0.1:%s", getString(R.string.connected), FileManager.getString("USERSETTING_port")));
+                binding.stateText.setText(String.format(Locale.getDefault(), "%s\nsocks5 on 127.0.0.1:%s", getString(R.string.connected), AppConfigManager.getSettingPort().getValue()));
             }
         } else {
             binding.stateText.setText(R.string.connected);
