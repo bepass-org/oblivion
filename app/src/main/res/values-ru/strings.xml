@@ -91,4 +91,6 @@
         <item>Великобритания</item>
         <item>Соединенные Штаты</item>
     </string-array>
+    <string name="disconnecting">Отключение...</string>
+    <string name="default_value">по умолчанию</string>
 </resources>

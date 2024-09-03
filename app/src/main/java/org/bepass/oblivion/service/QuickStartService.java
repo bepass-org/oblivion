@@ -1,7 +1,5 @@
 package org.bepass.oblivion.service;
 
-import static org.bepass.oblivion.ui.MainActivity.startVpnService;
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -77,8 +75,7 @@ public class QuickStartService extends TileService {
             Toast.makeText(this, "لطفا یک‌بار از درون اپلیکیشن متصل شوید", Toast.LENGTH_LONG).show();
             return;
         }
-        Intent vpnIntent = new Intent(this, OblivionVpnService.class);
-        startVpnService(this, vpnIntent);
+        OblivionVpnService.startVpnService(this);
     }
 
     private void subscribe() {
@@ -106,6 +103,13 @@ public class QuickStartService extends TileService {
                     tile.setLabel("Connected");
                     tile.setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.vpn_on));
                     tile.updateTile();
+                    break;
+                case DISCONNECTING:
+                    tile.setState(Tile.STATE_INACTIVE);
+                    tile.setLabel("Disconnecting");
+                    tile.setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.vpn_on));
+                    tile.updateTile();
+                    break;
             }
         });
     }

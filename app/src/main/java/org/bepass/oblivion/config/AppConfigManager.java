@@ -3,160 +3,156 @@ package org.bepass.oblivion.config;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
 
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.appcompat.app.AppCompatDelegate;
+
+import com.tencent.mmkv.MMKV;
 
 import org.bepass.oblivion.enums.SplitTunnelMode;
 import org.bepass.oblivion.utils.CountryCode;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 public class AppConfigManager {
 
-    private static SharedPreferences userDataPreferences = null;
+    private static MMKV mmkv;
 
     public static void init(Application application) {
-        userDataPreferences = application.getSharedPreferences(KeyConstant.FILE_NAME, Context.MODE_PRIVATE);
-    }
-
-    public static void setSplitTunnelMode(SplitTunnelMode mode) {
-        userDataPreferences.edit().putString(KeyConstant.SPLIT_TUNNEL_MODE, mode.toString()).apply();
+        MMKV.initialize(application.getApplicationContext());
+        mmkv = MMKV.mmkvWithID(KeyConstant.FILE_NAME, MMKV.MULTI_PROCESS_MODE);
     }
 
     public static SplitTunnelMode getSplitTunnelMode() {
-        String mode = userDataPreferences.getString(KeyConstant.SPLIT_TUNNEL_MODE, "");
-        return mode.isEmpty() ? SplitTunnelMode.DISABLED : SplitTunnelMode.valueOf(mode);
+        String mode = mmkv.decodeString(KeyConstant.SPLIT_TUNNEL_MODE, "");
+        return mode == null || mode.isEmpty() ? SplitTunnelMode.DISABLED : SplitTunnelMode.valueOf(mode);
     }
 
-    public static void setSettingEndPoint(EndPoint endPoint) {
-        userDataPreferences.edit().putString(KeyConstant.SETTINGS_ENDPOINT, endPoint.getValue()).apply();
+    public static void setSplitTunnelMode(SplitTunnelMode mode) {
+        mmkv.encode(KeyConstant.SPLIT_TUNNEL_MODE, mode.toString());
     }
 
     public static EndPoint getSettingEndPoint() {
-        String endPoint = userDataPreferences.getString(KeyConstant.SETTINGS_ENDPOINT, "engage.cloudflareclient.com:2408");
+        String endPoint = mmkv.decodeString(KeyConstant.SETTINGS_ENDPOINT, "engage.cloudflareclient.com:2408");
         return new EndPoint(endPoint);
     }
 
-    public static void setSettingCountry(CountryCode countryCode) {
-        userDataPreferences.edit().putString(KeyConstant.SETTINGS_COUNTRY, countryCode.getValue()).apply();
+    public static void setSettingEndPoint(EndPoint endPoint) {
+        mmkv.encode(KeyConstant.SETTINGS_ENDPOINT, endPoint.getValue());
     }
 
     public static CountryCode getSettingCountry() {
-        String countryCode = userDataPreferences.getString(KeyConstant.SETTINGS_COUNTRY, "AU");
+        String countryCode = mmkv.decodeString(KeyConstant.SETTINGS_COUNTRY, "AU");
         return new CountryCode(countryCode);
     }
 
-    public static void setRawString(String key, String value) {
-        userDataPreferences.edit().putString(key, value).apply();
-    }
-
-    public static String getRawString(String key, String defValue) {
-        return userDataPreferences.getString(key, defValue);
-    }
-
-    public static void setSettingPort(PortNumber portNumber) {
-        userDataPreferences.edit().putString(KeyConstant.SETTINGS_PORT, portNumber.getValue()).apply();
+    public static void setSettingCountry(CountryCode countryCode) {
+        mmkv.encode(KeyConstant.SETTINGS_COUNTRY, countryCode.getValue());
     }
 
     public static PortNumber getSettingPort() {
-        String portNumber = userDataPreferences.getString(KeyConstant.SETTINGS_PORT, "8086");
+        String portNumber = mmkv.decodeString(KeyConstant.SETTINGS_PORT, "8086");
         return new PortNumber(portNumber);
     }
 
-    public static void setSettingLan(boolean checked) {
-        userDataPreferences.edit().putBoolean(KeyConstant.SETTINGS_LAN, checked).apply();
+    public static void setSettingPort(PortNumber portNumber) {
+        mmkv.encode(KeyConstant.SETTINGS_PORT, portNumber.getValue());
     }
 
     public static boolean getSettingLan() {
-        return userDataPreferences.getBoolean(KeyConstant.SETTINGS_LAN, false);
+        return mmkv.decodeBool(KeyConstant.SETTINGS_LAN, false);
     }
 
-    public static void setSettingGool(boolean checked) {
-        userDataPreferences.edit().putBoolean(KeyConstant.SETTINGS_GOOL, checked).apply();
+    public static void setSettingLan(boolean checked) {
+        mmkv.encode(KeyConstant.SETTINGS_LAN, checked);
     }
 
     public static boolean getSettingGool() {
-        return userDataPreferences.getBoolean(KeyConstant.SETTINGS_GOOL, false);
+        return mmkv.decodeBool(KeyConstant.SETTINGS_GOOL, false);
     }
 
-    public static void setSettingPsiphon(boolean checked) {
-        userDataPreferences.edit().putBoolean(KeyConstant.SETTINGS_PSIPHON, checked).apply();
+    public static void setSettingGool(boolean checked) {
+        mmkv.encode(KeyConstant.SETTINGS_GOOL, checked);
     }
 
     public static boolean getSettingPsiphon() {
-        return userDataPreferences.getBoolean(KeyConstant.SETTINGS_PSIPHON, false);
+        return mmkv.decodeBool(KeyConstant.SETTINGS_PSIPHON, false);
     }
 
-    public static void setSettingProxyMode(boolean checked) {
-        userDataPreferences.edit().putBoolean(KeyConstant.SETTINGS_PROXY_MODE, checked).apply();
+    public static void setSettingPsiphon(boolean checked) {
+        mmkv.encode(KeyConstant.SETTINGS_PSIPHON, checked);
     }
 
     public static boolean getSettingProxyMode() {
-        return userDataPreferences.getBoolean(KeyConstant.SETTINGS_PROXY_MODE, false);
+        return mmkv.decodeBool(KeyConstant.SETTINGS_PROXY_MODE, false);
+    }
+
+    public static void setSettingProxyMode(boolean checked) {
+        mmkv.encode(KeyConstant.SETTINGS_PROXY_MODE, checked);
     }
 
     public static void setRawBoolean(String key, boolean value) {
-        userDataPreferences.edit().putBoolean(key, value).apply();
+        mmkv.encode(key, value);
     }
 
     public static boolean getRawBoolean(String key, boolean defValue) {
-        return userDataPreferences.getBoolean(key, defValue);
-    }
-
-    public static void setSplitTunnelApps(Set<String> appsPackageName) {
-        userDataPreferences.edit().putStringSet(KeyConstant.SPLIT_TUNNEL_APPS, appsPackageName).apply();
+        return mmkv.decodeBool(key, defValue);
     }
 
     public static Set<String> getSplitTunnelApps() {
-        return userDataPreferences.getStringSet(KeyConstant.SPLIT_TUNNEL_APPS, Collections.emptySet());
+        return mmkv.decodeStringSet(KeyConstant.SPLIT_TUNNEL_APPS, Collections.emptySet());
     }
 
-    public static void setSettingEndPointType(EndPointType type) {
-        userDataPreferences.edit().putInt(KeyConstant.SETTINGS_ENDPOINT_TYPE, type.ordinal()).apply();
+    public static void setSplitTunnelApps(Set<String> appsPackageName) {
+        mmkv.encode(KeyConstant.SPLIT_TUNNEL_APPS, appsPackageName);
     }
 
     public static EndPointType getSettingEndPointType() {
-        int endpointType = userDataPreferences.getInt(KeyConstant.SETTINGS_ENDPOINT_TYPE, 0);
+        int endpointType = mmkv.decodeInt(KeyConstant.SETTINGS_ENDPOINT_TYPE, 0);
         return EndPointType.values()[endpointType];
     }
 
-    public static void setSettingCountryIndex(int index) {
-        userDataPreferences.edit().putInt(KeyConstant.SETTINGS_COUNTRY_INDEX, index).apply();
+    public static void setSettingEndPointType(EndPointType type) {
+        mmkv.encode(KeyConstant.SETTINGS_ENDPOINT_TYPE, type.ordinal());
     }
 
     public static int getSettingCountryIndex() {
-        return userDataPreferences.getInt(KeyConstant.SETTINGS_COUNTRY_INDEX, 0);
+        return mmkv.decodeInt(KeyConstant.SETTINGS_COUNTRY_INDEX, 0);
     }
 
-    public static void setSettingLicense(String value) {
-        userDataPreferences.edit().putString(KeyConstant.SETTINGS_LICENSE, value).apply();
+    public static void setSettingCountryIndex(int index) {
+        mmkv.encode(KeyConstant.SETTINGS_COUNTRY_INDEX, index);
     }
 
     public static String getSettingLicense() {
-        return userDataPreferences.getString(KeyConstant.SETTINGS_LICENSE, "");
+        return mmkv.decodeString(KeyConstant.SETTINGS_LICENSE, "");
     }
 
-    public static void setSettingNightMode(@AppCompatDelegate.NightMode int mode) {
-        userDataPreferences.edit().putInt(KeyConstant.SETTING_NIGHT_MODE, mode).apply();
+    public static void setSettingLicense(String value) {
+        mmkv.encode(KeyConstant.SETTINGS_LICENSE, value);
     }
 
     public static int getSettingNightMode() {
-        return userDataPreferences.getInt(KeyConstant.SETTING_NIGHT_MODE, MODE_NIGHT_NO);
+        return mmkv.decodeInt(KeyConstant.SETTING_NIGHT_MODE, MODE_NIGHT_NO);
     }
 
-    public static void setSettingSavedEndPoints(Set<String> endPoints) {
-        userDataPreferences.edit().putStringSet(KeyConstant.SETTING_SAVED_ENDPOINTS, endPoints).apply();
+    public static void setSettingNightMode(@AppCompatDelegate.NightMode int mode) {
+        mmkv.encode(KeyConstant.SETTING_NIGHT_MODE, mode);
     }
 
-    public static Set<String> getSettingSavedEndPoints() {
-        return userDataPreferences.getStringSet(KeyConstant.SETTING_SAVED_ENDPOINTS, Collections.emptySet());
+    public static void insertToSettingSavedEndPointsWithTitle(String title, String endPoint) {
+        Set<String> updatedEndPoints = new HashSet<>(getSettingSavedEndPointsWithTitle());
+        updatedEndPoints.add(title + "," + endPoint);
+        mmkv.encode(KeyConstant.SETTING_SAVED_ENDPOINTS, updatedEndPoints);
+    }
+
+    public static Set<String> getSettingSavedEndPointsWithTitle() {
+        return mmkv.decodeStringSet(KeyConstant.SETTING_SAVED_ENDPOINTS, Collections.emptySet());
     }
 
     public static void resetToDefault() {
-        userDataPreferences.edit().clear().apply();
+        mmkv.clearAllWithKeepingSpace();
     }
 
     private static class KeyConstant {

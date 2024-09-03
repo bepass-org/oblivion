@@ -40,42 +40,42 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16sp"
             android:layout_marginTop="16sp"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="8dp"
-            android:gravity="center_vertical">
+            android:padding="8dp">
 
             <EditText
                 android:id="@+id/titleEditText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
                 android:layout_weight="1"
-                android:inputType="text"
                 android:background="@drawable/edittext_back"
                 android:fontFamily="@font/shabnam"
+                android:hint="@string/title"
+                android:inputType="text"
                 android:lineSpacingExtra="4sp"
                 android:padding="9dp"
-                android:layout_marginEnd="5sp"
                 android:singleLine="true"
                 android:textAlignment="center"
                 android:textColor="@color/text_color"
-                android:textSize="14sp"
-                android:hint="@string/title" />
+                android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/contentEditText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
-                android:inputType="text"
                 android:background="@drawable/edittext_back"
                 android:fontFamily="@font/shabnam"
-                android:lineSpacingExtra="4sp"
+                android:hint="@string/content"
+                android:inputType="text"
+                android:lineSpacingExtra="4dp"
                 android:padding="9dp"
                 android:singleLine="true"
                 android:textAlignment="center"
                 android:textColor="@color/text_color"
-                android:textSize="16sp"
-                android:hint="@string/content" />
+                android:textSize="16sp" />
         </LinearLayout>
 
         <Button

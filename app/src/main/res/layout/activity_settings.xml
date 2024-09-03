@@ -82,6 +82,7 @@
                     android:background="?android:selectableItemBackground"
                     android:focusable="true"
                     android:gravity="center"
+                    android:layout_marginTop="4dp"
                     android:nextFocusDown="@id/endpoint_type_layout"
                     android:orientation="vertical"
                     android:paddingHorizontal="16dp">
@@ -204,7 +205,8 @@
                             android:ellipsize="end"
                             android:fontFamily="@font/shabnammedium"
                             android:maxLines="1"
-                            android:text="engage.cloudflareclient.com:2048"
+                            android:text="@string/engage_cloudflareclient_com_2408"
+                            android:gravity="end"
                             android:textColor="@color/primary"
                             android:textSize="20sp" />
 

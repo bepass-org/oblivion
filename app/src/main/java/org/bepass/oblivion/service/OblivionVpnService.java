@@ -1,15 +1,11 @@
 package org.bepass.oblivion.service;
 
-import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED;
-
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.VpnService;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -25,6 +21,8 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.ServiceCompat;
+import androidx.core.content.ContextCompat;
 
 import org.bepass.oblivion.enums.ConnectionState;
 import org.bepass.oblivion.interfaces.ConnectionStateChangeListener;
@@ -40,14 +38,14 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.ServerSocket;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -85,23 +83,32 @@ public class OblivionVpnService extends VpnService {
             handler.postDelayed(this, 2000 + jitter); // Poll every ~2 seconds with some jitter
         }
     };
-    // For JNI Calling in a new threa
-    private static final ExecutorService executorService = Executors.newFixedThreadPool(1);
-    // For PingHTTPTestConnection to don't busy-waiting
-    private static ScheduledExecutorService scheduler;
+
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private Future<?> startVpnFuture;
+    private Future<?> stopVpnFuture;
+    private ScheduledFuture<?> scheduledConnectionTest = null;
     private Notification notification;
     private static ParcelFileDescriptor mInterface;
     private String bindAddress;
     private static PowerManager.WakeLock wLock;
     private static ConnectionState lastKnownState = ConnectionState.DISCONNECTED;
-    private Intent serviceIntent;
+
+    private volatile boolean vpnStarted = false;
+
+    public static synchronized void startVpnService(Context context) {
+        Intent intent = new Intent(context, OblivionVpnService.class);
+        intent.setAction(OblivionVpnService.FLAG_VPN_START);
+        ContextCompat.startForegroundService(context, intent);
+    }
 
     public static synchronized void stopVpnService(Context context) {
         Intent intent = new Intent(context, OblivionVpnService.class);
         intent.setAction(OblivionVpnService.FLAG_VPN_STOP);
         context.startService(intent);
-
     }
+
     public static void registerConnectionStateObserver(String key, Messenger serviceMessenger, ConnectionStateChangeListener observer) {
         // Create a message for the service
         Message subscriptionMessage = Message.obtain(null, OblivionVpnService.MSG_CONNECTION_STATE_SUBSCRIBE);
@@ -243,11 +250,9 @@ public class OblivionVpnService extends VpnService {
         }
     }
 
-
     private Set<String> getSplitTunnelApps() {
         return AppConfigManager.getSplitTunnelApps();
     }
-
 
     private void performConnectionTest(String bindAddress, ConnectionStateChangeListener changeListener) {
         if (changeListener == null) {
@@ -259,37 +264,30 @@ public class OblivionVpnService extends VpnService {
 
         Runnable pingTask = () -> {
             if (System.currentTimeMillis() - startTime >= timeout) {
-                changeListener.onChange(ConnectionState.DISCONNECTED);
-                stopForegroundService();
-                scheduler.shutdown(); // Shutdown scheduler after test completion
+                changeListener.onChange(ConnectionState.DISCONNECTING);
+                stopVpn();
+                scheduledConnectionTest.cancel(true);
                 return;
             }
 
             boolean result = pingOverHTTP(bindAddress);
             if (result) {
                 changeListener.onChange(ConnectionState.CONNECTED);
-                scheduler.shutdown(); // Shutdown scheduler after successful connection
+                scheduledConnectionTest.cancel(true);
             }
         };
 
         // Schedule the ping task to run with a fixed delay of 5 seconds using shared scheduler
-        scheduler.scheduleWithFixedDelay(pingTask, 0, 5, TimeUnit.SECONDS);
+        scheduledConnectionTest = scheduler.scheduleWithFixedDelay(pingTask, 0, 5, TimeUnit.SECONDS);
     }
 
     private void stopForegroundService() {
-        stopForeground(true);
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (notificationManager != null) {
-            notificationManager.cancel(1);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                notificationManager.deleteNotificationChannel("oblivion");
-            }
-        }
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
     }
 
     private String getBindAddress() {
-        String port = serviceIntent.getStringExtra("USERSETTING_port");
-        boolean enableLan = serviceIntent.getBooleanExtra("USERSETTING_lan",false);
+        String port = AppConfigManager.getSettingPort().getValue();
+        boolean enableLan = AppConfigManager.getSettingLan();
         String bindAddress = "127.0.0.1:" + port;
 
         if (isLocalPortInUse(bindAddress).equals("true")) {
@@ -305,15 +303,12 @@ public class OblivionVpnService extends VpnService {
 
     @Override
     public IBinder onBind(Intent intent) {
-        String action = intent != null ? intent.getAction() : null;
         /*
         If we override onBind, we never receive onRevoke.
         return superclass onBind when action is SERVICE_INTERFACE to receive onRevoke lifecycle call.
          */
-        if (action != null && action.equals(VpnService.SERVICE_INTERFACE)) {
-            return super.onBind(intent);
-        }
-        return serviceMessenger.getBinder();
+        IBinder iBinder = super.onBind(intent);
+        return iBinder != null ? iBinder : serviceMessenger.getBinder();
     }
 
     private void clearLogFile() {
@@ -325,10 +320,9 @@ public class OblivionVpnService extends VpnService {
     }
 
     private void start() {
-        if (lastKnownState != ConnectionState.DISCONNECTED) {
-            onRevoke();
-        }
-        setLastKnownState(ConnectionState.CONNECTING);
+        if (vpnStarted) return;
+        vpnStarted = true;
+
         Log.i(TAG, "Clearing Logs");
         clearLogFile();
         Log.i(TAG, "Create Notification");
@@ -339,81 +333,81 @@ public class OblivionVpnService extends VpnService {
             wLock.acquire(3 * 60 * 1000L /*3 minutes*/);
         }
 
-        executorService.execute(() -> {
-            Log.d("OblivionVpnService", "Starting VPN service");
-            bindAddress = getBindAddress();
-            Log.i(TAG, "Configuring VPN service");
-            try {
-                createNotification();
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU) {
-                    startForeground(1, notification);
-                } else {
-                    startForeground(1, notification, FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED);
-                }
-                configure();
+        Log.d("OblivionVpnService", "Starting VPN service");
+        bindAddress = getBindAddress();
+        Log.i(TAG, "Configuring VPN service");
+        try {
+            configure();
+        } catch (Exception e) {
+            setLastKnownState(ConnectionState.DISCONNECTING);
+            stopVpn();
+            e.printStackTrace();
+            return;
+        }
 
-            } catch (Exception e) {
-                onRevoke();
-                e.printStackTrace();
-                return;
-            }
-
-            performConnectionTest(bindAddress, (state) -> {
-                if (state == ConnectionState.DISCONNECTED) {
-                    onRevoke();
-                }
-                setLastKnownState(state);
-                createNotification();
-                startForeground(1, notification);
-            });
-        });
+        Log.i(TAG, "start: PerformConnectionTest");
+        performConnectionTest(bindAddress, this::setLastKnownState);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent != null ? intent.getAction() : null;
-        this.serviceIntent = intent;
         if (FLAG_VPN_START.equals(action)) {
-            // Start VPN
-            if (lastKnownState == ConnectionState.DISCONNECTED) {
-                start();
-            }
-        } else if (FLAG_VPN_STOP.equals(action)) {
-            // Stop VPN
-            onRevoke();
-        }
+            createNotification();
+            ServiceCompat.startForeground(this, 1, notification, -1);
 
-        return START_STICKY;
+            if (stopVpnFuture != null) stopVpnFuture.cancel(false);
+
+            setLastKnownState(ConnectionState.CONNECTING);
+            startVpnFuture = executorService.submit(this::start);
+        } else if (FLAG_VPN_STOP.equals(action)) {
+            if (startVpnFuture != null) startVpnFuture.cancel(true);
+
+            setLastKnownState(ConnectionState.DISCONNECTING);
+            stopVpnFuture = executorService.submit(this::stopVpn);
+        }
+        return START_NOT_STICKY;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
         handler.post(logRunnable);
-        if (scheduler == null) {
-            scheduler = Executors.newScheduledThreadPool(1);
-        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         handler.removeCallbacks(logRunnable);
-        if (scheduler != null && !scheduler.isShutdown()) {
-            scheduler.shutdown();
-        }
+        scheduler.shutdown();
+        executorService.shutdown();
+        Log.i("OblivionVpnService", "Destroyed");
         if (wLock != null && wLock.isHeld()) {
             wLock.release();
             wLock = null;
         }
     }
+
     @Override
     public void onRevoke() {
-        // Set the last known state to DISCONNECTED
-        setLastKnownState(ConnectionState.DISCONNECTED);
+        Log.e(TAG, "onRevoke: ");
+        setLastKnownState(ConnectionState.DISCONNECTING);
+        stopVpn();
+    }
 
-        // Stop the foreground service
+    private void stopVpn() {
+        if (!vpnStarted) return;
+        vpnStarted = false;
+        Log.e(TAG, "VPN stopped successfully or encountered errors. Check logs for details.");
+
         stopForegroundService();
+        stopTunnel();
+
+        setLastKnownState(ConnectionState.DISCONNECTED);
+        stopSelf();
+    }
+
+    private void stopTunnel() {
         Log.e(TAG, "VPN service is being forcefully stopped");
 
         // Release the wake lock if held
@@ -426,7 +420,7 @@ public class OblivionVpnService extends VpnService {
         }
         // Close the VPN interface
         try {
-            if (!serviceIntent.getBooleanExtra("USERSETTING_proxymode",false)) {
+            if (!AppConfigManager.getSettingProxyMode()) {
                 if (mInterface != null) {
                     mInterface.close();
                     mInterface = null; // Set to null to ensure it's not reused
@@ -443,33 +437,12 @@ public class OblivionVpnService extends VpnService {
 
         // Stop Tun2socks
         try {
-            Tun2socks.stop();
+            // Tun2socks.stop();
+            Runtime.getRuntime().exit(0);
             Log.e(TAG, "Tun2socks stopped successfully");
         } catch (Exception e) {
             Log.e(TAG, "Critical error stopping Tun2socks", e);
         }
-        stopForegroundService();
-        stopSelf();
-        // Shutdown executor service
-        if (executorService != null) {
-            ExecutorService service = (ExecutorService) executorService;
-            try {
-                service.shutdownNow(); // Attempt to forcibly shutdown
-                if (!service.awaitTermination(300, TimeUnit.MILLISECONDS)) {
-                    Log.e(TAG, "ExecutorService did not terminate in the specified time");
-                    List<Runnable> droppedTasks = service.shutdownNow();
-                    Log.e(TAG, "ExecutorService was forcibly shut down. Dropped tasks: " + droppedTasks);
-                }
-                Log.e(TAG, "ExecutorService shut down successfully");
-            } catch (InterruptedException ie) {
-                Log.e(TAG, "Interrupted during ExecutorService shutdown", ie);
-                Thread.currentThread().interrupt();
-            }
-        } else {
-            Log.w(TAG, "ExecutorService was not an instance of ExecutorService");
-        }
-
-        Log.e(TAG, "VPN stopped successfully or encountered errors. Check logs for details.");
     }
 
     private void publishConnectionState(ConnectionState state) {
@@ -500,10 +473,10 @@ public class OblivionVpnService extends VpnService {
     }
 
     private String getNotificationText() {
-        boolean usePsiphon = serviceIntent.getBooleanExtra("USERSETTING_psiphon",false);
-        boolean useWarp = serviceIntent.getBooleanExtra("USERSETTING_gool",false);
-        boolean proxyMode = serviceIntent.getBooleanExtra("USERSETTING_proxymode",false);
-        String portInUse = serviceIntent.getStringExtra("USERSETTING_port");
+        boolean usePsiphon = AppConfigManager.getSettingPsiphon();
+        boolean useWarp = AppConfigManager.getSettingGool();
+        boolean proxyMode = AppConfigManager.getSettingProxyMode();
+        String portInUse = AppConfigManager.getSettingPort().getValue();
         String notificationText;
         String proxyText = proxyMode ? String.format(Locale.getDefault(), " on socks5 proxy at 127.0.0.1:%s", portInUse) : "";
 
@@ -555,69 +528,42 @@ public class OblivionVpnService extends VpnService {
     }
 
     private void configure() {
-        Runnable configureTask = () -> {
-            try {
-                if(serviceIntent != null) {
-                    boolean proxyModeEnabled = serviceIntent.getBooleanExtra("USERSETTING_proxymode",false);
-                    if (proxyModeEnabled) {
-                        // Proxy mode logic
-                        StartOptions so = new StartOptions();
-                        so.setPath(getApplicationContext().getFilesDir().getAbsolutePath());
-                        so.setVerbose(true);
-                        so.setEndpoint(getEndpoint());
-                        so.setBindAddress(bindAddress);
-                        so.setLicense(Objects.requireNonNull(serviceIntent.getStringExtra("USERSETTING_license")).trim());
-                        so.setDNS("1.1.1.1");
-                        so.setEndpointType(serviceIntent.getIntExtra("USERSETTING_endpoint_type",0));
+        try {
+            StartOptions so = new StartOptions();
+            so.setPath(getApplicationContext().getFilesDir().getAbsolutePath());
+            so.setVerbose(true);
+            so.setEndpoint(getEndpoint());
+            so.setBindAddress(bindAddress);
+            so.setLicense(AppConfigManager.getSettingLicense().trim());
+            so.setDNS("1.1.1.1");
+            so.setEndpointType(AppConfigManager.getSettingEndPointType().ordinal());
 
-                        if (serviceIntent.getBooleanExtra("USERSETTING_psiphon", false)) {
-                            so.setPsiphonEnabled(true);
-                            so.setCountry(Objects.requireNonNull(serviceIntent.getStringExtra("USERSETTING_country")).trim());
-                        } else if (serviceIntent.getBooleanExtra("USERSETTING_gool", false)) {
-                            so.setGool(true);
-                        }
+            boolean proxyModeEnabled = AppConfigManager.getSettingProxyMode();
+            if (!proxyModeEnabled) {
+                Builder builder = new Builder();
+                configureVpnBuilder(builder);
 
-                        // Start tun2socks in proxy mode
-                        Tun2socks.start(so);
+                mInterface = builder.establish();
+                if (mInterface == null)
+                    throw new RuntimeException("failed to establish VPN interface");
+                Log.i(TAG, "Interface created");
 
-                    } else {
-                        // VPN mode logic
-                        Builder builder = new Builder();
-                        configureVpnBuilder(builder);
-
-                        mInterface = builder.establish();
-                        if (mInterface == null)
-                            throw new RuntimeException("failed to establish VPN interface");
-                        Log.i(TAG, "Interface created");
-
-                        StartOptions so = new StartOptions();
-                        so.setPath(getApplicationContext().getFilesDir().getAbsolutePath());
-                        so.setVerbose(true);
-                        so.setEndpoint(getEndpoint());
-                        so.setBindAddress(bindAddress);
-                        so.setLicense(Objects.requireNonNull(serviceIntent.getStringExtra("USERSETTING_license")).trim());
-                        so.setDNS("1.1.1.1");
-                        so.setEndpointType(serviceIntent.getIntExtra("USERSETTING_endpoint_type",0));
-                        so.setTunFd(mInterface.getFd());
-
-                        if (serviceIntent.getBooleanExtra("USERSETTING_psiphon", false)) {
-                            so.setPsiphonEnabled(true);
-                            so.setCountry(Objects.requireNonNull(serviceIntent.getStringExtra("USERSETTING_country")).trim());
-                        } else if (serviceIntent.getBooleanExtra("USERSETTING_gool", false)) {
-                            so.setGool(true);
-                        }
-
-                        // Start tun2socks with VPN
-                        Tun2socks.start(so);
-                    }
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Configuration failed", e);
+                so.setTunFd(mInterface.getFd());
             }
-        };
 
-        // Run the task on a separate thread if needed
-        new Thread(configureTask).start();
+            if (AppConfigManager.getSettingPsiphon()) {
+                so.setPsiphonEnabled(true);
+                so.setCountry(AppConfigManager.getSettingCountry().getValue().trim());
+            } else if (AppConfigManager.getSettingGool()) {
+                so.setGool(true);
+            }
+
+            Log.v("VpnOptions", so.toString());
+            // Start tun2socks with VPN
+            Tun2socks.start(so);
+        } catch (Exception e) {
+            Log.e(TAG, "Configuration failed", e);
+        }
     }
 
     private void configureVpnBuilder(VpnService.Builder builder) throws Exception {
@@ -645,8 +591,8 @@ public class OblivionVpnService extends VpnService {
     }
 
     private String getEndpoint() {
-        String endpoint = Objects.requireNonNull(serviceIntent.getStringExtra("USERSETTING_endpoint")).trim();
-        return endpoint.equals("engage.cloudflareclient.com:2408") ? "" : endpoint;
+        String endpoint = AppConfigManager.getSettingEndPoint().getValue().trim();
+        return endpoint.equals(getString(R.string.engage_cloudflareclient_com_2408)) ? "" : endpoint;
     }
 
     private static class IncomingHandler extends Handler {

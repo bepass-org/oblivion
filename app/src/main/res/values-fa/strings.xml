@@ -91,4 +91,6 @@
         <item>بریتانیا</item>
         <item>ایالات متحده</item>
     </string-array>
+    <string name="disconnecting">در حال قطع...</string>
+    <string name="default_value">پبشفرض</string>
 </resources>

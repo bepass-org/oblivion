@@ -1,7 +1,5 @@
 package org.bepass.oblivion.ui;
 
-import static org.bepass.oblivion.service.OblivionVpnService.stopVpnService;
-import org.bepass.oblivion.service.OblivionVpnService;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -15,17 +13,17 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 
-import org.bepass.oblivion.enums.ConnectionState;
-import org.bepass.oblivion.config.AppConfigManager;
-import org.bepass.oblivion.utils.LocaleHandler;
-import org.bepass.oblivion.utils.PublicIPUtils;
 import org.bepass.oblivion.R;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
+import org.bepass.oblivion.config.AppConfigManager;
 import org.bepass.oblivion.databinding.ActivityMainBinding;
-import org.bepass.oblivion.utils.ThemeHelper;
+import org.bepass.oblivion.enums.ConnectionState;
+import org.bepass.oblivion.service.OblivionVpnService;
+import org.bepass.oblivion.utils.LocaleHandler;
 import org.bepass.oblivion.utils.NetworkUtils;
+import org.bepass.oblivion.utils.PublicIPUtils;
+import org.bepass.oblivion.utils.ThemeHelper;
 
 import java.util.Locale;
 
@@ -34,19 +32,7 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     private Toast backToast;
     private LocaleHandler localeHandler;
     private ActivityResultLauncher<Intent> vpnPermissionLauncher;
-    public static void startVpnService(Context context, Intent intent) {
-        intent.putExtra("USERSETTING_proxymode", AppConfigManager.getSettingProxyMode());
-        intent.putExtra("USERSETTING_license", AppConfigManager.getSettingLicense());
-        intent.putExtra("USERSETTING_endpoint_type", AppConfigManager.getSettingEndPointType().ordinal());
-        intent.putExtra("USERSETTING_psiphon", AppConfigManager.getSettingPsiphon());
-        intent.putExtra("USERSETTING_country", AppConfigManager.getSettingCountry().getValue());
-        intent.putExtra("USERSETTING_gool", AppConfigManager.getSettingGool());
-        intent.putExtra("USERSETTING_endpoint", AppConfigManager.getSettingEndPoint().getValue());
-        intent.putExtra("USERSETTING_port", AppConfigManager.getSettingPort().getValue());
-        intent.putExtra("USERSETTING_lan", AppConfigManager.getSettingLan());
-        intent.setAction(OblivionVpnService.FLAG_VPN_START);
-        ContextCompat.startForegroundService(context, intent);
-    }
+
     public static void start(Context context) {
         Intent starter = new Intent(context, MainActivity.class);
         starter.putExtra("origin", context.getClass().getSimpleName());
@@ -90,29 +76,21 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     }
 
     private void handleVpnSwitch(boolean enableVpn) {
-        Log.d("83", AppConfigManager.getSettingCountry().toString());
-
         if (enableVpn) {
-            if (lastKnownConnectionState.isDisconnected()) {
-                Intent vpnIntent = OblivionVpnService.prepare(this);
-                if (vpnIntent != null) {
-                    vpnPermissionLauncher.launch(vpnIntent);
-                } else {
-                    vpnIntent = new Intent(this, OblivionVpnService.class);
-                    startVpnService(this, vpnIntent);
-                }
-                NetworkUtils.monitorInternetConnection(lastKnownConnectionState, this);
-            } else if (lastKnownConnectionState.isConnecting()) {
-                stopVpnService(this);
+            Intent vpnIntent = OblivionVpnService.prepare(this);
+            if (vpnIntent != null) {
+                vpnPermissionLauncher.launch(vpnIntent);
+            } else {
+                OblivionVpnService.startVpnService(this);
             }
+            NetworkUtils.monitorInternetConnection(lastKnownConnectionState, this);
         } else {
-            if (!lastKnownConnectionState.isDisconnected()) {
-                stopVpnService(this);
-            }
+            OblivionVpnService.stopVpnService(this);
         }
 
         refreshUI(); // Force refresh of the UI after VPN state changes
     }
+
     private void refreshUI() {
         // This will force a refresh of the UI based on the current data bindings
         binding.invalidateAll();
@@ -163,12 +141,6 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        observeConnectionStatus();
-    }
-
-    @Override
     public void onConnectionStateChange(ConnectionState state) {
         runOnUiThread(() -> {
             Log.d("MainActivity", "Connection state changed to: " + state);
@@ -181,6 +153,9 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
                     break;
                 case CONNECTED:
                     updateUIForConnectedState();
+                    break;
+                case DISCONNECTING:
+                    updateUIForDisconnectingState();
                     break;
             }
             refreshUI(); // Refresh UI whenever the connection state changes
@@ -229,5 +204,13 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
                 binding.publicIP.setVisibility(View.VISIBLE);
             }
         }));
+    }
+
+    private void updateUIForDisconnectingState() {
+        binding.stateText.setText(R.string.disconnecting);
+        binding.publicIP.setVisibility(View.GONE);
+        binding.ipProgressBar.setVisibility(View.VISIBLE);
+        binding.switchButton.setChecked(false, false);
+        binding.switchButton.setEnabled(true);
     }
 }

@@ -1,9 +1,12 @@
 package org.bepass.oblivion;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,6 +25,7 @@ public class EndpointsBottomSheet extends BottomSheetDialogFragment {
     private List<Endpoint> endpointsList;
     public EndpointSelectionListener selectionListener;
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.bottom_sheet_endpoints, container, false);
@@ -34,13 +38,29 @@ public class EndpointsBottomSheet extends BottomSheetDialogFragment {
         EndpointsAdapter adapter = new EndpointsAdapter(endpointsList, this::onEndpointSelected);
         recyclerView.setAdapter(adapter);
 
+        EditText title = view.findViewById(R.id.titleEditText);
+        EditText content = view.findViewById(R.id.contentEditText);
+
+        Button save = view.findViewById(R.id.saveButton);
+        save.setOnClickListener((v) -> {
+            AppConfigManager.insertToSettingSavedEndPointsWithTitle(title.getText().toString(), content.getText().toString());
+            loadEndpoints();
+            adapter.notifyDataSetChanged();
+
+            title.setText("");
+            content.setText("");
+        });
+
         return view;
     }
 
     private void loadEndpoints() {
-        Set<String> savedEndpoints = AppConfigManager.getSettingSavedEndPoints();
+        endpointsList.clear();
+
+        endpointsList.add(new Endpoint(getString(R.string.default_value), getString(R.string.engage_cloudflareclient_com_2408)));
+        Set<String> savedEndpoints = AppConfigManager.getSettingSavedEndPointsWithTitle();
         for (String endpoint : savedEndpoints) {
-            String[] parts = endpoint.split("::");
+            String[] parts = endpoint.split(",");
             if (parts.length == 2) {
                 endpointsList.add(new Endpoint(parts[0], parts[1]));
             }

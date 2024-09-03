@@ -16,6 +16,7 @@ import androidx.activity.OnBackPressedCallback;
 import org.bepass.oblivion.EndpointsBottomSheet;
 import org.bepass.oblivion.enums.ConnectionState;
 import org.bepass.oblivion.config.AppConfigManager;
+import org.bepass.oblivion.service.OblivionVpnService;
 import org.bepass.oblivion.utils.CountryCode;
 import org.bepass.oblivion.utils.CountryUtils;
 import org.bepass.oblivion.EditSheet;
@@ -72,13 +73,12 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-//                if (StateAwareBaseActivity.getRequireRestartVpnService()) {
-//                    StateAwareBaseActivity.setRequireRestartVpnService(false);
-//                    if (!lastKnownConnectionState.isDisconnected()) {
-//                        OblivionVpnService.stopVpnService(SettingsActivity.this);
-//                        OblivionVpnService.startVpnService(SettingsActivity.this);
-//                    }
-//                }
+                if (StateAwareBaseActivity.getRequireRestartVpnService()) {
+                    if (lastKnownConnectionState == ConnectionState.CONNECTED || lastKnownConnectionState == ConnectionState.CONNECTING) {
+                        OblivionVpnService.stopVpnService(SettingsActivity.this);
+                    }
+                    StateAwareBaseActivity.setRequireRestartVpnService(false);
+                }
                 finish();
             }
         });
@@ -89,6 +89,7 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 AppConfigManager.setSettingEndPointType(EndPointType.values()[position]);
+                StateAwareBaseActivity.setRequireRestartVpnService(true);
             }
 
             @Override
@@ -100,7 +101,8 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
             EndpointsBottomSheet bottomSheet = new EndpointsBottomSheet();
             bottomSheet.setEndpointSelectionListener(content -> {
                 AppConfigManager.setSettingEndPoint(new EndPoint(content));
-                binding.endpoint.post(() -> binding.endpoint.setText(content));
+                binding.endpoint.setText(content);
+                StateAwareBaseActivity.setRequireRestartVpnService(true);
             });
             bottomSheet.show(getSupportFragmentManager(), bottomSheet.getTag());
         });
@@ -115,6 +117,7 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
                 Triple<String, String, Integer> codeAndName = CountryUtils.getCountryCode(getApplicationContext(), name);
                 AppConfigManager.setSettingCountry(new CountryCode(codeAndName.getFirst()));
                 AppConfigManager.setSettingCountryIndex(position);
+                StateAwareBaseActivity.setRequireRestartVpnService(true);
             }
 
             @Override
@@ -133,30 +136,30 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
             AppConfigManager.setSettingLan(isChecked);
         });
         psiphonListener = (buttonView, isChecked) -> {
-            // TODO: 9/1/2024 Check this logic and relation with Gool mode
             AppConfigManager.setSettingPsiphon(isChecked);
             if (isChecked && binding.gool.isChecked()) {
-                binding.gool.post(() -> setCheckBoxWithoutTriggeringListener(binding.gool, false, goolListener));
+                setCheckBoxWithoutTriggeringListener(binding.gool, false, goolListener);
                 AppConfigManager.setSettingGool(false);
             }
             binding.countryLayout.setAlpha(isChecked ? 1f : 0.2f);
             binding.country.setEnabled(isChecked);
+            StateAwareBaseActivity.setRequireRestartVpnService(true);
         };
 
         goolListener = (buttonView, isChecked) -> {
             AppConfigManager.setSettingGool(isChecked);
             if (isChecked && binding.psiphon.isChecked()) {
-                binding.psiphon.post(() -> setCheckBoxWithoutTriggeringListener(binding.psiphon, false, psiphonListener));
+                setCheckBoxWithoutTriggeringListener(binding.psiphon, false, psiphonListener);
                 AppConfigManager.setSettingPsiphon(false);
+                binding.countryLayout.setAlpha(0.2f);
+                binding.country.setEnabled(false);
             }
-            binding.countryLayout.post(() -> {
-                binding.countryLayout.setAlpha(isChecked ? 1f : 0.2f);
-                binding.country.setEnabled(isChecked);
-            });
+            StateAwareBaseActivity.setRequireRestartVpnService(true);
         };
 
         proxyModeListener = (buttonView, isChecked) -> {
             AppConfigManager.setSettingProxyMode(isChecked);
+            StateAwareBaseActivity.setRequireRestartVpnService(true);
         };
 
         binding.txtDarkMode.setOnClickListener(view -> binding.checkBoxDarkMode.setChecked(!binding.checkBoxDarkMode.isChecked()));
@@ -181,6 +184,7 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
 
     private void resetAppData() {
         AppConfigManager.resetToDefault();
+        StateAwareBaseActivity.setRequireRestartVpnService(true);
         Intent intent = new Intent(this, MainActivity.class);
         finish();
         startActivity(intent);

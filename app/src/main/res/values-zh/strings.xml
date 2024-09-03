@@ -91,5 +91,7 @@
         <item>美国</item>
     </string-array>
     <string name="select_language">选择语言</string>
+    <string name="disconnecting">正在断开连接...</string>
+    <string name="default_value">默认</string>
 
 </resources>

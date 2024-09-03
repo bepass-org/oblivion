@@ -91,4 +91,6 @@
         <item>Birleşik Krallık</item>
         <item>Amerika Birleşik Devletleri</item>
     </string-array>
+    <string name="disconnecting">Bağlantı kesiliyor...</string>
+    <string name="default_value">varsayılan</string>
 </resources>

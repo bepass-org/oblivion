@@ -100,6 +100,7 @@ public abstract class StateAwareBaseActivity<B extends ViewDataBinding> extends 
     protected void onStart() {
         super.onStart();
         bindService(new Intent(this, OblivionVpnService.class), connection, Context.BIND_AUTO_CREATE);
+        observeConnectionStatus();
     }
 
     @Override
