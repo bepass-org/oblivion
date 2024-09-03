@@ -1,11 +1,13 @@
 package org.bepass.oblivion.service;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.VpnService;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -24,12 +26,12 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.ServiceCompat;
 import androidx.core.content.ContextCompat;
 
-import org.bepass.oblivion.enums.ConnectionState;
-import org.bepass.oblivion.interfaces.ConnectionStateChangeListener;
 import org.bepass.oblivion.R;
-import org.bepass.oblivion.enums.SplitTunnelMode;
-import org.bepass.oblivion.ui.MainActivity;
 import org.bepass.oblivion.config.AppConfigManager;
+import org.bepass.oblivion.enums.ConnectionState;
+import org.bepass.oblivion.enums.SplitTunnelMode;
+import org.bepass.oblivion.interfaces.ConnectionStateChangeListener;
+import org.bepass.oblivion.ui.MainActivity;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -85,7 +87,7 @@ public class OblivionVpnService extends VpnService {
     };
 
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final ExecutorService executorService = Executors.newFixedThreadPool(2);
     private Future<?> startVpnFuture;
     private Future<?> stopVpnFuture;
     private ScheduledFuture<?> scheduledConnectionTest = null;
@@ -282,7 +284,14 @@ public class OblivionVpnService extends VpnService {
     }
 
     private void stopForegroundService() {
-        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
+        stopForeground(true);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager != null) {
+            notificationManager.cancel(1);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                notificationManager.deleteNotificationChannel("oblivion");
+            }
+        }
     }
 
     private String getBindAddress() {
@@ -320,7 +329,10 @@ public class OblivionVpnService extends VpnService {
     }
 
     private void start() {
-        if (vpnStarted) return;
+        if (vpnStarted) {
+            stopForegroundService();
+            return;
+        }
         vpnStarted = true;
 
         Log.i(TAG, "Clearing Logs");
@@ -351,12 +363,15 @@ public class OblivionVpnService extends VpnService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String action = intent != null ? intent.getAction() : null;
+        if (intent == null) return START_NOT_STICKY;
+
+        String action = intent.getAction();
         if (FLAG_VPN_START.equals(action)) {
+            Log.d(TAG, "onStartCommand: StartVPN");
             createNotification();
             ServiceCompat.startForeground(this, 1, notification, -1);
 
-            if (stopVpnFuture != null) stopVpnFuture.cancel(false);
+            if (stopVpnFuture != null) stopVpnFuture.cancel(true);
 
             setLastKnownState(ConnectionState.CONNECTING);
             startVpnFuture = executorService.submit(this::start);
@@ -400,10 +415,10 @@ public class OblivionVpnService extends VpnService {
         vpnStarted = false;
         Log.e(TAG, "VPN stopped successfully or encountered errors. Check logs for details.");
 
-        stopForegroundService();
         stopTunnel();
 
         setLastKnownState(ConnectionState.DISCONNECTED);
+        stopForegroundService();
         stopSelf();
     }
 
@@ -437,8 +452,7 @@ public class OblivionVpnService extends VpnService {
 
         // Stop Tun2socks
         try {
-            // Tun2socks.stop();
-            Runtime.getRuntime().exit(0);
+            Tun2socks.stop();
             Log.e(TAG, "Tun2socks stopped successfully");
         } catch (Exception e) {
             Log.e(TAG, "Critical error stopping Tun2socks", e);

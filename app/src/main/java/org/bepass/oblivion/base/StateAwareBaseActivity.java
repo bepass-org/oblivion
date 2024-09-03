@@ -27,7 +27,6 @@ public abstract class StateAwareBaseActivity<B extends ViewDataBinding> extends 
     private static final String TAG = "StateAwareBaseActivity";
 
     protected ConnectionState lastKnownConnectionState = ConnectionState.DISCONNECTED;
-    private static boolean requireRestartVpnService = false;
     protected B binding;
     private Messenger serviceMessenger;
     private boolean isBound;
@@ -45,14 +44,6 @@ public abstract class StateAwareBaseActivity<B extends ViewDataBinding> extends 
                     this, getStatusBarColor(), ColorUtils.isColorDark(getStatusBarColor())
             );
         }
-    }
-
-    public static boolean getRequireRestartVpnService() {
-        return requireRestartVpnService;
-    }
-
-    public static void setRequireRestartVpnService(boolean b) {
-        StateAwareBaseActivity.requireRestartVpnService = b;
     }
 
     private final ServiceConnection connection = new ServiceConnection() {
@@ -100,14 +91,24 @@ public abstract class StateAwareBaseActivity<B extends ViewDataBinding> extends 
     protected void onStart() {
         super.onStart();
         bindService(new Intent(this, OblivionVpnService.class), connection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         observeConnectionStatus();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unsubscribeConnectionStatus();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         if (isBound) {
-            unsubscribeConnectionStatus();
             unbindService(connection);
             isBound = false;
         }

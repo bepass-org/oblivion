@@ -93,4 +93,5 @@
     </string-array>
     <string name="disconnecting">Bağlantı kesiliyor...</string>
     <string name="default_value">varsayılan</string>
+    <string name="to_apply_changes_please_reconnect">Değişiklikleri uygulamak için lütfen yeniden bağlanın</string>
 </resources>

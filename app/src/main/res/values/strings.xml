@@ -139,4 +139,5 @@
   <string name="disconnecting">Disconnecting…</string>
   <string translatable="false" name="engage_cloudflareclient_com_2408">engage.cloudflareclient.com:2408</string>
   <string name="default_value">Default</string>
+    <string name="to_apply_changes_please_reconnect">To apply changes please reconnect</string>
 </resources>

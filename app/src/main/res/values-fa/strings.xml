@@ -92,5 +92,6 @@
         <item>ایالات متحده</item>
     </string-array>
     <string name="disconnecting">در حال قطع...</string>
-    <string name="default_value">پبشفرض</string>
+    <string name="default_value">پیشفرض</string>
+    <string name="to_apply_changes_please_reconnect">برای اعمال تغییرات دوباره وصل شوید</string>
 </resources>

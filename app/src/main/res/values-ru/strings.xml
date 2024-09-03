@@ -93,4 +93,5 @@
     </string-array>
     <string name="disconnecting">Отключение...</string>
     <string name="default_value">по умолчанию</string>
+    <string name="to_apply_changes_please_reconnect">Чтобы применить изменения, пожалуйста, переподключитесь.</string>
 </resources>

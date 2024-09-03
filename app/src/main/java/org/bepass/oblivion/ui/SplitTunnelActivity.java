@@ -1,5 +1,8 @@
 package org.bepass.oblivion.ui;
 
+import static org.bepass.oblivion.ui.SettingsActivity.EXTRA_REQUIRE_TO_RESET;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -7,13 +10,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ConcatAdapter;
 
 import org.bepass.oblivion.BypassListAppsAdapter;
-import org.bepass.oblivion.enums.ConnectionState;
-import org.bepass.oblivion.config.AppConfigManager;
 import org.bepass.oblivion.R;
-import org.bepass.oblivion.enums.SplitTunnelMode;
 import org.bepass.oblivion.SplitTunnelOptionsAdapter;
 import org.bepass.oblivion.base.StateAwareBaseActivity;
+import org.bepass.oblivion.config.AppConfigManager;
 import org.bepass.oblivion.databinding.ActivitySplitTunnelBinding;
+import org.bepass.oblivion.enums.ConnectionState;
+import org.bepass.oblivion.enums.SplitTunnelMode;
 import org.bepass.oblivion.utils.ThemeHelper;
 
 
@@ -41,20 +44,19 @@ public class SplitTunnelActivity extends StateAwareBaseActivity<ActivitySplitTun
         // Set up the app list
         BypassListAppsAdapter bypassListAppsAdapter = new BypassListAppsAdapter(this, loading -> {
             binding.appsRecycler.setVisibility(loading ? View.INVISIBLE : View.VISIBLE);
-                if (loading) binding.progress.show();
-                else binding.progress.hide();
+            if (loading) binding.progress.show(); else binding.progress.hide();
         });
 
         // Signal the need to restart the VPN service on app selection change
         bypassListAppsAdapter.setOnAppSelectListener((packageName, selected) -> {
-            StateAwareBaseActivity.setRequireRestartVpnService(true);
+            setResult(1, new Intent().putExtra(EXTRA_REQUIRE_TO_RESET, true));
         });
 
         // Set behaviour for Split tunnel options
         SplitTunnelOptionsAdapter optionsAdapter = new SplitTunnelOptionsAdapter(this, new SplitTunnelOptionsAdapter.OnSettingsChanged() {
             @Override
             public void splitTunnelMode(SplitTunnelMode mode) {
-                StateAwareBaseActivity.setRequireRestartVpnService(true);
+                setResult(1, new Intent().putExtra(EXTRA_REQUIRE_TO_RESET, true));
                 AppConfigManager.setSplitTunnelMode(mode);
             }
 

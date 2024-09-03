@@ -93,5 +93,6 @@
     <string name="select_language">选择语言</string>
     <string name="disconnecting">正在断开连接...</string>
     <string name="default_value">默认</string>
+    <string name="to_apply_changes_please_reconnect">要应用更改，请重新连接</string>
 
 </resources>
