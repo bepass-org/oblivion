@@ -40,8 +40,8 @@
 
             <org.bepass.oblivion.component.Icon
                 android:id="@+id/info_icon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 app:icon_color="@color/icon_color"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
@@ -53,8 +53,8 @@
 
             <org.bepass.oblivion.component.Icon
                 android:id="@+id/bug_icon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_marginEnd="20dp"
                 android:layout_centerVertical="true"
                 app:icon_color="@color/icon_color"
@@ -66,8 +66,8 @@
 
             <org.bepass.oblivion.component.Icon
                 android:id="@+id/setting_icon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 app:icon_color="@color/icon_color"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"

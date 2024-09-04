@@ -75,6 +75,8 @@
                 android:textAlignment="center"
                 android:textColor="@color/text_color"
                 android:textSize="16dp"
+                android:textDirection="ltr"
+                android:layoutDirection="ltr"
                 android:hint="@string/content"
                 android:textColorHint="@color/text_color"/>
         </LinearLayout>
