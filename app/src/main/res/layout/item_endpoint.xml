@@ -23,7 +23,7 @@
 
     <ImageView
         android:id="@+id/delIcon"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:src="@android:drawable/ic_menu_close_clear_cancel" />
 </LinearLayout>
