@@ -26,8 +26,8 @@
 
             <org.bepass.oblivion.component.Icon
                 android:id="@+id/back"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:background="?android:selectableItemBackground"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"

@@ -13,5 +13,5 @@
     <color name="button_color">#ffa200</color>
     <color name="gray">#D7D7D7</color>
     <color name="status_bar_color">#1C202C</color>
-
+    <color name="dark_gray">#383A45</color>
 </resources>

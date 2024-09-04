@@ -25,8 +25,8 @@
 
       <org.bepass.oblivion.component.Icon
           android:id="@+id/back"
-          android:layout_width="24dp"
-          android:layout_height="24dp"
+          android:layout_width="35dp"
+          android:layout_height="35dp"
           android:background="?selectableItemBackgroundBorderless"
           android:layout_alignParentStart="true"
           android:layout_centerVertical="true"
@@ -113,7 +113,7 @@
           <View
               android:layout_width="match_parent"
               android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
+              android:background="@color/dark_gray" />
         </LinearLayout>
         <LinearLayout
             android:id="@+id/endpoint_type_layout"
@@ -219,7 +219,7 @@
           <View
               android:layout_width="match_parent"
               android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
+              android:background="@color/dark_gray" />
         </LinearLayout>
 
         <LinearLayout
@@ -281,7 +281,7 @@
           <View
               android:layout_width="match_parent"
               android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
+              android:background="@color/dark_gray" />
         </LinearLayout>
 
         <LinearLayout
@@ -330,7 +330,7 @@
           <View
               android:layout_width="match_parent"
               android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
+              android:background="@color/dark_gray" />
         </LinearLayout>
         <LinearLayout
             android:id="@+id/proxy_mode_layout"
@@ -395,7 +395,7 @@
           <View
               android:layout_width="match_parent"
               android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
+              android:background="@color/dark_gray" />
         </LinearLayout>
 
         <LinearLayout
@@ -462,7 +462,7 @@
           <View
               android:layout_width="match_parent"
               android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
+              android:background="@color/dark_gray" />
         </LinearLayout>
 
         <LinearLayout
@@ -529,7 +529,7 @@
           <View
               android:layout_width="match_parent"
               android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
+              android:background="@color/dark_gray" />
         </LinearLayout>
 
         <LinearLayout
@@ -596,7 +596,7 @@
           <View
               android:layout_width="match_parent"
               android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
+              android:background="@color/dark_gray" />
         </LinearLayout>
 
         <LinearLayout
@@ -657,7 +657,7 @@
           <View
               android:layout_width="match_parent"
               android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
+              android:background="@color/dark_gray" />
         </LinearLayout>
 
         <LinearLayout
@@ -720,7 +720,7 @@
           <View
               android:layout_width="match_parent"
               android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
+              android:background="@color/dark_gray" />
         </LinearLayout>
 
         <LinearLayout
@@ -785,7 +785,7 @@
           <View
               android:layout_width="match_parent"
               android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
+              android:background="@color/dark_gray" />
         </LinearLayout>
         <LinearLayout
             android:id="@+id/reset_app_layout"
@@ -833,7 +833,7 @@
           <View
               android:layout_width="match_parent"
               android:layout_height="1dp"
-              android:background="@android:color/darker_gray" />
+              android:background="@color/dark_gray" />
         </LinearLayout>
       </LinearLayout>
     </ScrollView>
