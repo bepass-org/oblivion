@@ -47,10 +47,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -87,10 +84,17 @@ public class OblivionVpnService extends VpnService {
             handler.postDelayed(this, 2000 + jitter); // Poll every ~2 seconds with some jitter
         }
     };
-    // For JNI Calling in a new threa
+
+
+    // For JNI Calling in a new thread
     private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
-    // For PingHTTPTestConnection to don't busy-waiting
-    private static ScheduledExecutorService scheduler;
+    // Blocking queue with a limit of 100 tasks
+    private static final BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(100);
+    // ThreadPoolExecutor with a fixed number of threads and a custom queue for non-scheduled tasks
+    private static final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(5, 10, 60L, TimeUnit.SECONDS, queue);
+    // ScheduledThreadPoolExecutor for scheduled tasks (e.g., connection tests)
+    private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);
+
     private Notification notification;
     private static ParcelFileDescriptor mInterface;
     private String bindAddress;
@@ -275,7 +279,11 @@ public class OblivionVpnService extends VpnService {
         };
 
         // Schedule the ping task to run with a fixed delay of 5 seconds using shared scheduler
-        scheduler.scheduleWithFixedDelay(pingTask, 0, 5, TimeUnit.SECONDS);
+        try {
+            scheduler.scheduleWithFixedDelay(pingTask, 0, 5, TimeUnit.SECONDS);
+        }catch (RejectedExecutionException e){
+            e.printStackTrace();
+        }
     }
 
     private void stopForegroundService() {
@@ -334,24 +342,23 @@ public class OblivionVpnService extends VpnService {
         Log.i(TAG, "Clearing Logs");
         clearLogFile();
         Log.i(TAG, "Create Notification");
-
+        createNotification();
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU) {
+            startForeground(1, notification);
+        } else {
+            startForeground(1, notification, FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED);
+        }
         if (wLock == null) {
             wLock = ((PowerManager) getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "oblivion:vpn");
             wLock.setReferenceCounted(false);
             wLock.acquire(3 * 60 * 1000L /*3 minutes*/);
         }
 
-        executorService.execute(() -> {
+        threadPoolExecutor.execute(() -> {
             Log.d("OblivionVpnService", "Starting VPN service");
             bindAddress = getBindAddress();
             Log.i(TAG, "Configuring VPN service");
             try {
-                createNotification();
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU) {
-                    startForeground(1, notification);
-                } else {
-                    startForeground(1, notification, FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED);
-                }
                 configure();
 
             } catch (Exception e) {
@@ -360,14 +367,15 @@ public class OblivionVpnService extends VpnService {
                 return;
             }
 
-            performConnectionTest(bindAddress, (state) -> {
+            // Schedule the connection test using the scheduler to avoid busy-waiting
+            scheduler.schedule(() -> performConnectionTest(bindAddress, (state) -> {
                 if (state == ConnectionState.DISCONNECTED) {
                     onRevoke();
                 }
                 setLastKnownState(state);
                 createNotification();
                 startForeground(1, notification);
-            });
+            }), 0, TimeUnit.SECONDS);  // Adjust the delay as needed
         });
     }
 
@@ -392,8 +400,8 @@ public class OblivionVpnService extends VpnService {
     public void onCreate() {
         super.onCreate();
         handler.post(logRunnable);
-        if (scheduler == null) {
-            scheduler = Executors.newScheduledThreadPool(1);
+        if (scheduler == null || scheduler.isShutdown()) {
+            scheduler = Executors.newScheduledThreadPool(2);
         }
     }
 
@@ -426,9 +434,10 @@ public class OblivionVpnService extends VpnService {
         } else {
             Log.w(TAG, "No wake lock to release");
         }
+
         // Close the VPN interface
         try {
-            if (!serviceIntent.getBooleanExtra("USERSETTING_proxymode",false)) {
+            if (!serviceIntent.getBooleanExtra("USERSETTING_proxymode", false)) {
                 if (mInterface != null) {
                     mInterface.close();
                     mInterface = null; // Set to null to ensure it's not reused
@@ -450,29 +459,28 @@ public class OblivionVpnService extends VpnService {
         } catch (Exception e) {
             Log.e(TAG, "Critical error stopping Tun2socks", e);
         }
+
         stopForegroundService();
         stopSelf();
-        // Shutdown executor service properly
-        if (executorService != null) {
-            executorService.shutdown(); // Initiates an orderly shutdown
-            try {
-                if (!executorService.awaitTermination(1, TimeUnit.SECONDS)) {
-                    executorService.shutdownNow(); // Force shutdown if it doesn't terminate in time
-                    if (!executorService.awaitTermination(1, TimeUnit.SECONDS)) {
-                        Log.e(TAG, "ExecutorService did not terminate");
-                    }
+
+        // Shutdown threadPoolExecutor properly
+        threadPoolExecutor.shutdown(); // Initiates an orderly shutdown
+        try {
+            if (!threadPoolExecutor.awaitTermination(1, TimeUnit.SECONDS)) {
+                threadPoolExecutor.shutdownNow(); // Force shutdown if it doesn't terminate in time
+                if (!threadPoolExecutor.awaitTermination(1, TimeUnit.SECONDS)) {
+                    Log.e(TAG, "ThreadPoolExecutor did not terminate");
                 }
-            } catch (InterruptedException ie) {
-                Log.e(TAG, "Interrupted during ExecutorService shutdown", ie);
-                executorService.shutdownNow(); // Force shutdown
-                Thread.currentThread().interrupt();
             }
-        } else {
-            Log.w(TAG, "ExecutorService was not initialized or is already null");
+        } catch (InterruptedException ie) {
+            Log.e(TAG, "Interrupted during ThreadPoolExecutor shutdown", ie);
+            threadPoolExecutor.shutdownNow(); // Force shutdown
+            Thread.currentThread().interrupt();
         }
 
         Log.e(TAG, "VPN stopped successfully or encountered errors. Check logs for details.");
     }
+
 
     private void publishConnectionState(ConnectionState state) {
         if (!connectionStateObservers.isEmpty()) {
