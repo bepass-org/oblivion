@@ -98,7 +98,7 @@ func Start(opt *StartOptions) {
 			fmt.Fprintln(os.Stderr, "There was an error with the scanner", err)
 		}
 	}(r)
-    l.Info(fmt.Sprintf("%+v", *opt))
+	l.Info(fmt.Sprintf("%+v", *opt))
 	var scanOpts *wiresocks.ScanOptions
 	if global.Endpoint == "" {
 		scanOpts = &wiresocks.ScanOptions{
@@ -132,7 +132,7 @@ func Start(opt *StartOptions) {
 		Psiphon:  psiphonOpts,
 		Gool:     global.Gool,
 		Scan:     scanOpts,
-		TestURL: "http://connectivity.cloudflareclient.com/cdn-cgi/trace",
+		TestURL:  "http://connectivity.cloudflareclient.com/cdn-cgi/trace",
 	})
 	if err != nil {
 		l.Error(err.Error())
