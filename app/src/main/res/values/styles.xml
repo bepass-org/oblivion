@@ -3,4 +3,7 @@
     <style name="CustomProgressBar" parent="Widget.AppCompat.ProgressBar">
         <item name="android:indeterminateDrawable">@drawable/custom_progress_drawable</item>
     </style>
+    <style name="basedOnTheme" parent="@android:style/Theme.Material">
+        <item name="android:tint">@color/tint_selector</item>
+    </style>
 </resources>

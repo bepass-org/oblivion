@@ -106,7 +106,7 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         });
 
         binding.portLayout.setOnClickListener(v -> (new EditSheet(this, getString(R.string.portTunText), "port", sheetsCallBack)).start());
-        binding.licenseLayout.setOnClickListener(v -> (new EditSheet(this, getString(R.string.licenseText), "license", sheetsCallBack)).start());
+//        binding.licenseLayout.setOnClickListener(v -> (new EditSheet(this, getString(R.string.licenseText), "license", sheetsCallBack)).start());
 
         binding.country.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -192,7 +192,7 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         });
         binding.endpoint.setText(FileManager.getString("USERSETTING_endpoint"));
         binding.port.setText(FileManager.getString("USERSETTING_port"));
-        binding.license.setText(FileManager.getString("USERSETTING_license"));
+//        binding.license.setText(FileManager.getString("USERSETTING_license"));
 
         int index = FileManager.getInt("USERSETTING_country_index");
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.countries, R.layout.country_item_layout);

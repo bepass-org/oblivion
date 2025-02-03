@@ -11,159 +11,97 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:onClick="@{handler::OnRootPressed}"
-        android:layout_height="match_parent"
         android:id="@+id/splashScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@color/background"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        android:onClick="@{handler::OnRootPressed}">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout3"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:padding="16sp"
-            app:layout_constraintBottom_toTopOf="@id/linearLayout2"
+            app:layout_constraintBottom_toTopOf="@+id/textView5"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/shapeableImageView"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:text="@string/app_name"
-                android:textColor="@color/text_color"
-                android:textAllCaps="true"
-                android:textSize="48dp"
-                android:textStyle="bold"
+                android:cropToPadding="false"
+                style="@style/basedOnTheme"
+                android:src="@drawable/segaroIc"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textAllCaps="true"
+                android:textColor="@color/primary"
+                android:textSize="48dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/shapeableImageView" />
+
+            <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_color"
                 android:fontFamily="@font/shabnammedium"
                 android:gravity="center"
                 android:text="@string/means"
                 android:textAlignment="textEnd"
+                android:textColor="@color/text_color"
                 android:textSize="20dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.502"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView"
-                app:layout_constraintVertical_bias="0.069"
+                app:layout_constraintVertical_bias="0.05"
                 tools:ignore="RtlCompat" />
 
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnambold"
-                android:gravity="center"
-                android:text="@string/dontForget"
-                android:textAlignment="textEnd"
-                android:textColor="@color/primary"
-                android:textSize="20dp"
-                android:textStyle="bold"
+                android:padding="15dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView2"
-                app:layout_constraintVertical_bias="0.034"
-                tools:ignore="RtlCompat" />
+                app:layout_constraintTop_toBottomOf="@+id/textView2">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/yousef"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/splashText"
+                    android:textSize="15dp"
+                    android:fontFamily="@font/shabnammedium"
+                    android:gravity="center"
+                    android:paddingTop="5dp"
+                    android:paddingHorizontal="15dp"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/text_color"/>
+            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <LinearLayout
-            android:id="@+id/linearLayout2"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingStart="20sp"
-            android:paddingEnd="20sp"
-            app:layout_constraintBottom_toBottomOf="@id/textView5"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/imageViewSegaro"
-                android:layout_width="0sp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8sp"
-                android:layout_weight="1"
-                android:adjustViewBounds="true"
-                android:cropToPadding="true"
-                app:srcCompat="@drawable/segaro"
-                tools:targetApi="m"
-                tools:ignore="UnusedAttribute" />
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/imageViewYousef"
-                android:layout_width="0sp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="8sp"
-                android:layout_weight="1"
-                android:adjustViewBounds="true"
-                android:cropToPadding="true"
-                app:srcCompat="@drawable/yousef"
-                tools:targetApi="m"
-                tools:ignore="UnusedAttribute" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/linearLayout3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8sp"
-            android:gravity="center|top"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
-
-            <TextView
-                android:id="@+id/textView8"
-                android:layout_width="0sp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:fontFamily="@font/shabnammedium"
-                android:gravity="center"
-                android:text="@string/segaro"
-                android:textAlignment="center"
-                android:textColor="@color/subtitle_color"
-                android:textSize="20dp" />
-
-            <TextView
-                android:id="@+id/textView9"
-                android:layout_width="0sp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:fontFamily="@font/shabnammedium"
-                android:gravity="center"
-                android:text="@string/yousef"
-                android:textColor="@color/subtitle_color"
-                android:textSize="20dp" />
-
-        </LinearLayout>
-
         <TextView
             android:id="@+id/textView5"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="20sp"
-            android:layout_marginBottom="8sp"
+            android:layout_width="411dp"
+            android:layout_height="174dp"
             android:fontFamily="@font/shabnammedium"
             android:gravity="center"
             android:text="@string/slogan"
@@ -173,8 +111,7 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/linearLayout2" />
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
