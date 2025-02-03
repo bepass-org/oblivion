@@ -84,19 +84,25 @@ public class LogActivity extends BaseActivity<ActivityLogBinding> {
         super.onPause();
         handler.removeCallbacks(logUpdater);
     }
+    private static final int MAX_LOG_LINES = 200; // Keep only last 200 lines in memory
+    private final Deque<String> logBuffer = new ArrayDeque<>(MAX_LOG_LINES);
 
     private void readLogsFromFile() {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(openFileInput("logs.txt")))) {
-            StringBuilder sb = new StringBuilder();
             String line;
-
             while ((line = reader.readLine()) != null) {
-                sb.append(line).append("\n");
+                if (logBuffer.size() >= MAX_LOG_LINES) {
+                    logBuffer.pollFirst(); // Remove the oldest line
+                }
+                logBuffer.addLast(line);
             }
 
-            String finalLog = sb.toString();
+            String finalLog = String.join("\n", logBuffer); // Efficient string concatenation
+
             runOnUiThread(() -> {
-                binding.logs.setText(finalLog);
+                if (!finalLog.equals(binding.logs.getText().toString())) { // Prevent unnecessary updates
+                    binding.logs.setText(finalLog);
+                }
                 if (!isUserScrollingUp) {
                     binding.logScrollView.post(() -> binding.logScrollView.fullScroll(ScrollView.FOCUS_DOWN));
                 }
@@ -105,7 +111,6 @@ public class LogActivity extends BaseActivity<ActivityLogBinding> {
             e.printStackTrace();
         }
     }
-
     private void copyLast100LinesToClipboard() {
         // Show progress bar
         progressBar.setVisibility(View.VISIBLE);
