@@ -132,6 +132,7 @@ func Start(opt *StartOptions) {
 		Psiphon:  psiphonOpts,
 		Gool:     global.Gool,
 		Scan:     scanOpts,
+		TestURL: "http://connectivity.cloudflareclient.com/cdn-cgi/trace",
 	})
 	if err != nil {
 		l.Error(err.Error())
