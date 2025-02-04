@@ -608,7 +608,7 @@
             android:background="?selectableItemBackground"
             android:orientation="vertical"
             android:focusable="true"
-            android:nextFocusDown="@id/license_layout"
+            android:nextFocusDown="@id/gool_layout"
             android:nextFocusLeft="@id/country">
 
           <LinearLayout
@@ -622,7 +622,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:focusable="true"
-                android:nextFocusDown="@id/license_layout"/>
+                android:nextFocusDown="@id/gool_layout"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -732,7 +732,7 @@
             android:background="?selectableItemBackground"
             android:orientation="vertical"
             android:focusable="true"
-            android:nextFocusUp="@id/license_layout">
+            android:nextFocusUp="@id/country_layout">
 
           <LinearLayout
               android:layout_width="match_parent"

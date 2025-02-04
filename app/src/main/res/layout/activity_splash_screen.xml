@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:cropToPadding="false"
                 style="@style/basedOnTheme"
-                android:src="@drawable/segaroIc"
+                android:src="@drawable/segaro"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
