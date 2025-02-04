@@ -89,7 +89,6 @@
                     android:text="@string/splashText"
                     android:textSize="15dp"
                     android:fontFamily="@font/shabnammedium"
-                    android:gravity="center"
                     android:paddingTop="5dp"
                     android:paddingHorizontal="15dp"
                     android:textAlignment="textStart"
