@@ -68,8 +68,15 @@ dependencies {
 
 tasks.register("preBuildTun2SocksAar", Exec) {
     workingDir "../tun2socks"
-    commandLine "go", "run", "golang.org/x/mobile/cmd/gomobile", "init"
+
+    def goCmd = findGoExecutable()
+    if (goCmd == null) {
+        throw new GradleException("Go executable not found in PATH")
+    }
+
+    commandLine goCmd, "run", "golang.org/x/mobile/cmd/gomobile", "init"
 }
+
 tasks.register("buildTun2SocksAar", Exec) {
     doFirst {
         File myDir = new File("$projectDir/libs")
@@ -79,7 +86,35 @@ tasks.register("buildTun2SocksAar", Exec) {
     }
 
     workingDir "../tun2socks"
-    commandLine "go", "run", "golang.org/x/mobile/cmd/gomobile", "bind", "-ldflags=-w -s", "-target=android", "-androidapi=$android.defaultConfig.minSdk", "-o=$projectDir/libs/tun2socks.aar", "."
+
+    def goCmd = findGoExecutable()
+    if (goCmd == null) {
+        throw new GradleException("Go executable not found in PATH")
+    }
+
+    commandLine goCmd, "run", "golang.org/x/mobile/cmd/gomobile", "bind", "-ldflags=-w -s", "-target=android", "-androidapi=$android.defaultConfig.minSdk", "-o=$projectDir/libs/tun2socks.aar", "."
+
     dependsOn(preBuildTun2SocksAar)
 }
+
 preBuild.dependsOn(buildTun2SocksAar)
+
+// Function to find 'go' executable in PATH
+def findGoExecutable() {
+    def goCmd = "go"
+    if (System.getProperty("os.name").toLowerCase().contains("win")) {
+        goCmd = "where go"
+    } else {
+        goCmd = "which go"
+    }
+
+    def output = new ByteArrayOutputStream()
+    def result = exec {
+        commandLine "sh", "-c", goCmd
+        standardOutput = output
+        ignoreExitValue true
+    }
+
+    def goPath = output.toString().trim()
+    return result.exitValue == 0 && goPath ? goPath : null
+}
