@@ -90,7 +90,7 @@ public class OblivionVpnService extends VpnService {
     // For JNI Calling in a new threa
     private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
     // For PingHTTPTestConnection to don't busy-waiting
-    private static ScheduledExecutorService scheduler;
+    private static ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private Notification notification;
     private static ParcelFileDescriptor mInterface;
     private String bindAddress;
@@ -256,6 +256,11 @@ public class OblivionVpnService extends VpnService {
             return;
         }
 
+        // Ensure scheduler is not shutdown; create a new one if necessary
+        if (scheduler.isShutdown() || scheduler.isTerminated()) {
+            scheduler = Executors.newSingleThreadScheduledExecutor();
+        }
+
         final long startTime = System.currentTimeMillis();
         final long timeout = 60 * 1000; // 1 minute
 
@@ -263,19 +268,33 @@ public class OblivionVpnService extends VpnService {
             if (System.currentTimeMillis() - startTime >= timeout) {
                 changeListener.onChange(ConnectionState.DISCONNECTED);
                 stopForegroundService();
-                scheduler.shutdown(); // Shutdown scheduler after test completion
+                shutdownScheduler();
                 return;
             }
 
             boolean result = pingOverHTTP(bindAddress);
             if (result) {
                 changeListener.onChange(ConnectionState.CONNECTED);
-                scheduler.shutdown(); // Shutdown scheduler after successful connection
+                shutdownScheduler();
             }
         };
 
-        // Schedule the ping task to run with a fixed delay of 5 seconds using shared scheduler
+        // Schedule the ping task to run with a fixed delay of 5 seconds
         scheduler.scheduleWithFixedDelay(pingTask, 0, 5, TimeUnit.SECONDS);
+    }
+
+    // Gracefully shut down the scheduler
+    private void shutdownScheduler() {
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdown();
+            try {
+                if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
+                    scheduler.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                scheduler.shutdownNow();
+            }
+        }
     }
 
     private void stopForegroundService() {
