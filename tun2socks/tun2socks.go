@@ -44,8 +44,6 @@ type StartOptions struct {
 	EndpointType   int
 }
 
-var global StartOptions
-
 type logWriter struct{}
 
 func (writer logWriter) Write(bytes []byte) (int, error) {
@@ -56,11 +54,9 @@ func (writer logWriter) Write(bytes []byte) (int, error) {
 }
 
 func Start(opt *StartOptions) {
-	global = *opt
-
 	ctx, cancelFunc = signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 
-	if err := os.Chdir(global.Path); err != nil {
+	if err := os.Chdir(opt.Path); err != nil {
 		l.Error("error changing to 'main' directory", "error", err.Error())
 		os.Exit(1)
 	}
@@ -69,7 +65,7 @@ func Start(opt *StartOptions) {
 
 	lOpts := slog.HandlerOptions{
 		Level: func() slog.Level {
-			if global.Verbose {
+			if opt.Verbose {
 				return slog.LevelDebug
 			}
 			return slog.LevelInfo
@@ -100,13 +96,13 @@ func Start(opt *StartOptions) {
 	}(r)
 	l.Info(fmt.Sprintf("%+v", *opt))
 	var scanOpts *wiresocks.ScanOptions
-	if global.Endpoint == "" {
+	if opt.Endpoint == "" {
 		scanOpts = &wiresocks.ScanOptions{
 			V4:     false,
 			V6:     false,
 			MaxRTT: 1500 * time.Millisecond,
 		}
-		switch global.EndpointType {
+		switch opt.EndpointType {
 		case 0:
 			scanOpts.V4 = true
 			scanOpts.V6 = true
@@ -118,19 +114,19 @@ func Start(opt *StartOptions) {
 	}
 
 	var psiphonOpts *app.PsiphonOptions
-	if global.PsiphonEnabled {
+	if opt.PsiphonEnabled {
 		psiphonOpts = &app.PsiphonOptions{
-			Country: global.Country,
+			Country: opt.Country,
 		}
 	}
 
 	err := app.RunWarp(ctx, l, app.WarpOptions{
-		Bind:     netip.MustParseAddrPort(global.BindAddress),
+		Bind:     netip.MustParseAddrPort(opt.BindAddress),
 		DnsAddr:  netip.MustParseAddr(opt.DNS),
-		Endpoint: global.Endpoint,
-		License:  global.License,
+		Endpoint: opt.Endpoint,
+		License:  opt.License,
 		Psiphon:  psiphonOpts,
-		Gool:     global.Gool,
+		Gool:     opt.Gool,
 		Scan:     scanOpts,
 		TestURL:  "http://connectivity.cloudflareclient.com/cdn-cgi/trace",
 	})
@@ -140,8 +136,8 @@ func Start(opt *StartOptions) {
 	}
 
 	tun2socksStartOptions := &lwip.Tun2socksStartOptions{
-		TunFd:        global.TunFd,
-		Socks5Server: strings.Replace(global.BindAddress, "0.0.0.0", "127.0.0.1", -1),
+		TunFd:        opt.TunFd,
+		Socks5Server: strings.Replace(opt.BindAddress, "0.0.0.0", "127.0.0.1", -1),
 		FakeIPRange:  "24.0.0.0/8",
 		MTU:          0,
 		EnableIPv6:   true,
@@ -161,7 +157,9 @@ func Start(opt *StartOptions) {
 }
 
 func Stop() {
-	os.Exit(0)
+	if cancelFunc != nil {
+		cancelFunc()
+	}
 }
 
 func GetLogMessages() string {
