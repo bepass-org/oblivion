@@ -51,6 +51,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Future;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -84,19 +85,22 @@ public class OblivionVpnService extends VpnService {
             }
             // Adding jitter to avoid exact timing
             long jitter = (long) (Math.random() * 500); // Random delay between 0 to 500ms
-            handler.postDelayed(this, 2000 + jitter); // Poll every ~2 seconds with some jitter
+            handler.postDelayed(this, 500 + jitter); // Poll every ~2 seconds with some jitter
         }
     };
     // For JNI Calling in a new threa
-    private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private static ExecutorService executorService = Executors.newSingleThreadExecutor();
     // For PingHTTPTestConnection to don't busy-waiting
     private static ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private static Future<?> pingTaskFuture;
     private Notification notification;
     private static ParcelFileDescriptor mInterface;
     private String bindAddress;
     private static PowerManager.WakeLock wLock;
     private static ConnectionState lastKnownState = ConnectionState.DISCONNECTED;
+    private static long connectionStartTime = 0;
     private Intent serviceIntent;
+    private int pingCounter = 0;
 
     public static synchronized void stopVpnService(Context context) {
         Intent intent = new Intent(context, OblivionVpnService.class);
@@ -199,29 +203,31 @@ public class OblivionVpnService extends VpnService {
         throw new IllegalStateException("Could not find a free TCP/IP port to start embedded Jetty HTTP Server on");
     }
 
-    public static boolean pingOverHTTP(String bindAddress) {
-        System.out.println("Pinging");
-       Map<String, Integer> result = splitHostAndPort(bindAddress);
-       if (result == null) {
-           throw new RuntimeException("Could not split host and port of " + bindAddress);
-       }
-       String socksHost = result.keySet().iterator().next();
-       int socksPort = result.values().iterator().next();
-       Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(socksHost, socksPort));
-       OkHttpClient client = new OkHttpClient.Builder()
-               .proxy(proxy)
-               .connectTimeout(5, TimeUnit.SECONDS) // 5 seconds connection timeout
-               .readTimeout(5, TimeUnit.SECONDS) // 5 seconds read timeout
-               .build();
-       Request request = new Request.Builder()
-               .url("https://www.gstatic.com/generate_204")
-               .build();
-       try (Response response = client.newCall(request).execute()) {
-           return response.isSuccessful();
-       } catch (IOException e) {
-           //e.printStackTrace();
-           return false;
-       }
+    public boolean pingOverHTTP(String bindAddress) {
+        pingCounter++;
+        Log.i(TAG, "Pinging (attempt #" + pingCounter + ")");
+        Map<String, Integer> result = splitHostAndPort(bindAddress);
+        if (result == null) {
+            throw new RuntimeException("Could not split host and port of " + bindAddress);
+        }
+        String socksHost = result.keySet().iterator().next();
+        int socksPort = result.values().iterator().next();
+        Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(socksHost, socksPort));
+        OkHttpClient client = new OkHttpClient.Builder()
+                .proxy(proxy)
+                .connectTimeout(5, TimeUnit.SECONDS) // 5 seconds connection timeout
+                .readTimeout(2, TimeUnit.SECONDS) // 5 seconds read timeout
+                .build();
+        Request request = new Request.Builder()
+                .url("https://www.gstatic.com/generate_204")
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            pingCounter = 0;
+            return response.isSuccessful();
+        } catch (IOException e) {
+            //e.printStackTrace();
+            return false;
+        }
     }
 
 
@@ -256,9 +262,9 @@ public class OblivionVpnService extends VpnService {
             return;
         }
 
-        // Ensure scheduler is not shutdown; create a new one if necessary
-        if (scheduler.isShutdown() || scheduler.isTerminated()) {
-            scheduler = Executors.newSingleThreadScheduledExecutor();
+        // Cancel any existing ping task
+        if (pingTaskFuture != null && !pingTaskFuture.isDone()) {
+            pingTaskFuture.cancel(true);
         }
 
         final long startTime = System.currentTimeMillis();
@@ -280,20 +286,62 @@ public class OblivionVpnService extends VpnService {
         };
 
         // Schedule the ping task to run with a fixed delay of 5 seconds
-        scheduler.scheduleWithFixedDelay(pingTask, 0, 5, TimeUnit.SECONDS);
+        pingTaskFuture = scheduler.scheduleWithFixedDelay(pingTask, 0, 1, TimeUnit.SECONDS);
     }
 
     // Gracefully shut down the scheduler
     private void shutdownScheduler() {
         if (scheduler != null && !scheduler.isShutdown()) {
-            scheduler.shutdown();
+            Log.i(TAG, "scheduler not null");
+            scheduler.shutdown(); // Initiates an orderly shutdown
             try {
-                if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
-                    scheduler.shutdownNow();
+                if (!scheduler.awaitTermination(1, TimeUnit.SECONDS)) {
+                    Log.i(TAG, "scheduler did not terminate gracefully within 1 second. Forcing shutdown...");
+                    List<Runnable> droppedTasks = scheduler.shutdownNow(); // Force shutdown if it doesn't terminate in time
+                    Log.w(TAG, "scheduler shutdownNow called, dropped " + droppedTasks.size() + " tasks");
+                    if (!scheduler.awaitTermination(1, TimeUnit.SECONDS)) {
+                        Log.e(TAG, "scheduler did not terminate even after shutdownNow.");
+                    } else {
+                        Log.i(TAG, "scheduler terminated after shutdownNow.");
+                    }
                 }
-            } catch (InterruptedException e) {
-                scheduler.shutdownNow();
+            } catch (InterruptedException ie) {
+                Log.e(TAG, "Interrupted during scheduler shutdown", ie);
+                scheduler.shutdownNow(); // Force shutdown
+                Thread.currentThread().interrupt();
+            } finally {
+                Log.i(TAG, "scheduler isShutdown: " + scheduler.isShutdown() + ", isTerminated: " + scheduler.isTerminated());
+                scheduler = null; // Ensure executorService is nulled
             }
+        }
+    }
+
+    // Shutdown executor service properly
+    private void shutdownExecutor() {
+        if (executorService != null && !executorService.isShutdown()) {
+            Log.i(TAG, "ExecutorService not null");
+            executorService.shutdown(); // Initiates an orderly shutdown
+            try {
+                if (!executorService.awaitTermination(1, TimeUnit.SECONDS)) {
+                    Log.i(TAG, "ExecutorService did not terminate gracefully within 1 second. Forcing shutdown...");
+                    List<Runnable> droppedTasks = executorService.shutdownNow(); // Force shutdown if it doesn't terminate in time
+                    Log.w(TAG, "ExecutorService shutdownNow called, dropped " + droppedTasks.size() + " tasks");
+                    if (!executorService.awaitTermination(1, TimeUnit.SECONDS)) {
+                        Log.e(TAG, "ExecutorService did not terminate even after shutdownNow.");
+                    } else {
+                        Log.i(TAG, "ExecutorService terminated after shutdownNow.");
+                    }
+                }
+            } catch (InterruptedException ie) {
+                Log.e(TAG, "Interrupted during ExecutorService shutdown", ie);
+                executorService.shutdownNow(); // Force shutdown
+                Thread.currentThread().interrupt();
+            } finally {
+                Log.i(TAG, "ExecutorService isShutdown: " + executorService.isShutdown() + ", isTerminated: " + executorService.isTerminated());
+                executorService = null; // Ensure executorService is nulled
+            }
+        } else {
+            Log.w(TAG, "ExecutorService was not initialized or is already null");
         }
     }
 
@@ -360,6 +408,14 @@ public class OblivionVpnService extends VpnService {
             wLock.acquire(3 * 60 * 1000L /*3 minutes*/);
         }
 
+        if (executorService == null || executorService.isShutdown()) {
+            executorService = Executors.newSingleThreadExecutor();
+        }
+
+        if (scheduler == null || scheduler.isShutdown()) {
+            scheduler = Executors.newSingleThreadScheduledExecutor();
+        }
+
         executorService.execute(() -> {
             Log.d("OblivionVpnService", "Starting VPN service");
             bindAddress = getBindAddress();
@@ -394,11 +450,11 @@ public class OblivionVpnService extends VpnService {
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent != null ? intent.getAction() : null;
         this.serviceIntent = intent;
+        Log.d(TAG, "onStartCommand called with action: " + action + ", lastKnownState: " + lastKnownState);
         if (FLAG_VPN_START.equals(action)) {
             // Start VPN
-            if (lastKnownState == ConnectionState.DISCONNECTED) {
-                start();
-            }
+            onRevoke();
+            start();
         } else if (FLAG_VPN_STOP.equals(action)) {
             // Stop VPN
             onRevoke();
@@ -411,27 +467,24 @@ public class OblivionVpnService extends VpnService {
     public void onCreate() {
         super.onCreate();
         handler.post(logRunnable);
-        if (scheduler == null) {
-            scheduler = Executors.newScheduledThreadPool(1);
-        }
+        createNotificationChannel(); // Create the notification channel here
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         handler.removeCallbacks(logRunnable);
-        if (scheduler != null && !scheduler.isShutdown()) {
-            scheduler.shutdown();
-        }
         if (wLock != null && wLock.isHeld()) {
             wLock.release();
             wLock = null;
         }
     }
+
     @Override
     public void onRevoke() {
-        // Set the last known state to DISCONNECTED
-        setLastKnownState(ConnectionState.DISCONNECTED);
+        pingCounter = 0;
+        shutdownScheduler();
+        shutdownExecutor();
 
         // Stop the foreground service
         stopForegroundService();
@@ -447,16 +500,12 @@ public class OblivionVpnService extends VpnService {
         }
         // Close the VPN interface
         try {
-            if (!serviceIntent.getBooleanExtra("USERSETTING_proxymode",false)) {
-                if (mInterface != null) {
-                    mInterface.close();
-                    mInterface = null; // Set to null to ensure it's not reused
-                    Log.e(TAG, "VPN interface closed successfully");
-                } else {
-                    Log.w(TAG, "VPN interface was already null");
-                }
+            if (mInterface != null) {
+                mInterface.close();
+                mInterface = null; // Set to null to ensure it's not reused
+                Log.e(TAG, "VPN interface closed successfully");
             } else {
-                Log.w(TAG, "Proxy mode is enabled; skipping VPN interface closure");
+                Log.w(TAG, "VPN interface was already null");
             }
         } catch (IOException e) {
             Log.e(TAG, "Critical error closing the VPN interface", e);
@@ -469,26 +518,9 @@ public class OblivionVpnService extends VpnService {
         } catch (Exception e) {
             Log.e(TAG, "Critical error stopping Tun2socks", e);
         }
-        stopForegroundService();
-        stopSelf();
-        // Shutdown executor service properly
-        if (executorService != null) {
-            executorService.shutdown(); // Initiates an orderly shutdown
-            try {
-                if (!executorService.awaitTermination(1, TimeUnit.SECONDS)) {
-                    executorService.shutdownNow(); // Force shutdown if it doesn't terminate in time
-                    if (!executorService.awaitTermination(1, TimeUnit.SECONDS)) {
-                        Log.e(TAG, "ExecutorService did not terminate");
-                    }
-                }
-            } catch (InterruptedException ie) {
-                Log.e(TAG, "Interrupted during ExecutorService shutdown", ie);
-                executorService.shutdownNow(); // Force shutdown
-                Thread.currentThread().interrupt();
-            }
-        } else {
-            Log.w(TAG, "ExecutorService was not initialized or is already null");
-        }
+
+        // Set the last known state to DISCONNECTED
+        setLastKnownState(ConnectionState.DISCONNECTED);
 
         Log.e(TAG, "VPN stopped successfully or encountered errors. Check logs for details.");
     }
@@ -515,9 +547,23 @@ public class OblivionVpnService extends VpnService {
         }
     }
 
-    private void setLastKnownState(ConnectionState lastKnownState) {
-        OblivionVpnService.lastKnownState = lastKnownState;
-        publishConnectionState(lastKnownState);
+    private synchronized void setLastKnownState(ConnectionState newState) {
+        if (lastKnownState != newState) {
+            Log.i(TAG, "Connection state changed from " + lastKnownState + " to " + newState);
+            lastKnownState = newState;
+
+            if (newState == ConnectionState.CONNECTING) {
+                connectionStartTime = System.currentTimeMillis();
+                Log.d(TAG, "Connection attempt started at: " + connectionStartTime);
+            } else if (newState == ConnectionState.CONNECTED) {
+                long connectionEndTime = System.currentTimeMillis();
+                long connectionDuration = connectionEndTime - connectionStartTime;
+                 Log.i(TAG, "VPN connected in " + connectionDuration + "ms");
+            }
+
+            // Notify observers
+            publishConnectionState(newState);
+        }
     }
 
     private String getNotificationText() {
@@ -539,21 +585,24 @@ public class OblivionVpnService extends VpnService {
         return notificationText;
     }
 
-    private void createNotification() {
+    private void createNotificationChannel() {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         NotificationChannelCompat notificationChannel = new NotificationChannelCompat.Builder(
                 "vpn_service", NotificationManagerCompat.IMPORTANCE_DEFAULT)
-                .setName("Vpn Service")
+                .setName("Oblivion VPN")
                 .build();
         notificationManager.createNotificationChannel(notificationChannel);
+    }
+
+    private void createNotification() {
         Intent disconnectIntent = new Intent(this, OblivionVpnService.class);
         disconnectIntent.setAction(OblivionVpnService.FLAG_VPN_STOP);
         PendingIntent disconnectPendingIntent = PendingIntent.getService(
                 this, 0, disconnectIntent, PendingIntent.FLAG_IMMUTABLE);
         PendingIntent contentPendingIntent = PendingIntent.getActivity(
                 this, 2, new Intent(this, MainActivity.class), PendingIntent.FLAG_IMMUTABLE);
-        notification = new NotificationCompat.Builder(this, notificationChannel.getId())
-                .setContentTitle("Vpn Service")
+        notification = new NotificationCompat.Builder(this, "vpn_service")
+                .setContentTitle("Oblivion VPN")
                 .setContentText("Oblivion - " + getNotificationText())
                 .setSmallIcon(R.mipmap.ic_notification)
                 .setOnlyAlertOnce(true)
