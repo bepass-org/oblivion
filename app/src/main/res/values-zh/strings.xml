@@ -92,5 +92,6 @@
         <item>美国</item>
     </string-array>
     <string name="select_language">选择语言</string>
+    <string name="splashText">在#尤瑟夫_科巴迪和几十位知名或匿名活动家的努力下，旨在为人民提供自由上网的机会…</string>
 
 </resources>

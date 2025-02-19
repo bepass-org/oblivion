@@ -608,7 +608,7 @@
             android:background="?selectableItemBackground"
             android:orientation="vertical"
             android:focusable="true"
-            android:nextFocusDown="@id/license_layout"
+            android:nextFocusDown="@id/gool_layout"
             android:nextFocusLeft="@id/country">
 
           <LinearLayout
@@ -622,7 +622,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:focusable="true"
-                android:nextFocusDown="@id/license_layout"/>
+                android:nextFocusDown="@id/gool_layout"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -661,69 +661,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/license_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical"
-            android:focusable="true"
-            android:nextFocusDown="@id/gool_layout">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-            <TextView
-                android:id="@+id/license"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:fontFamily="@font/shabnammedium"
-                android:text="ADSNjIOV56899QQ"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:textColor="@color/primary"
-                android:textSize="20dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="@string/licenseText"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20dp" />
-
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="@string/licenseTextDesc"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16dp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@color/dark_gray" />
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/gool_layout"
             android:layout_width="match_parent"
             android:layout_height="80dp"
@@ -732,7 +669,7 @@
             android:background="?selectableItemBackground"
             android:orientation="vertical"
             android:focusable="true"
-            android:nextFocusUp="@id/license_layout">
+            android:nextFocusUp="@id/country_layout">
 
           <LinearLayout
               android:layout_width="match_parent"
