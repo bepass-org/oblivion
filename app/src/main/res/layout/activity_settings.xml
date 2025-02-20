@@ -420,15 +420,12 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2">
 
-              <CheckBox
-                  android:id="@+id/check_box_dark_mode"
-                  android:layout_width="50dp"
-                  android:layout_height="38dp"
-                  android:layout_marginStart="10dp"
-                  android:buttonTint="@color/checkbox_tint"
-                  android:scaleX="1.5"
-                  android:scaleY="1.5"
-                  android:translationX="5dp" />
+              <androidx.appcompat.widget.SwitchCompat
+                  android:id="@+id/switch_dark_mode"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                />
+                
             </LinearLayout>
 
             <TextView
