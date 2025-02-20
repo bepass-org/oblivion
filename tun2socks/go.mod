@@ -7,7 +7,7 @@ toolchain go1.22.10
 replace github.com/eycorsican/go-tun2socks => github.com/trojan-gfw/go-tun2socks v1.16.3-0.20210702214000-083d49176e05
 
 require (
-	github.com/bepass-org/warp-plus v1.2.5
+	github.com/bepass-org/warp-plus v1.2.6-0.20250220023018-0480583debd9
 	github.com/eycorsican/go-tun2socks v1.16.11
 	github.com/songgao/water v0.0.0-20200317203138-2b4b6d7c09d8
 	github.com/xjasonlyu/tun2socks/v2 v2.5.2
