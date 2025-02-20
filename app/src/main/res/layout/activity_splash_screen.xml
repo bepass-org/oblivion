@@ -93,13 +93,15 @@
                     android:text="@string/splashText"
                     android:textAlignment="textStart"
                     android:textColor="@color/text_color"
-                    android:textSize="15dp" />
+                    android:textSize="15dp"
+                    tools:ignore="RtlCompat" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         <TextView
             android:id="@+id/textView5"
+            android:layout_width="fill_parent"
             android:layout_height="80dp"
             android:fontFamily="@font/shabnammedium"
             android:gravity="center"
