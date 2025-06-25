@@ -4,7 +4,7 @@
     <string name="basedOnWarp">Warp\'a Dayalı</string>
     <string name="aboutApp">Uygulama Hakkında</string>
     <string name="aboutAppDesc">"Bu uygulama internete özgürce erişim sağlamak için tasarlanmıştır ve ticari kullanımı yasaktır.\n\n\n İnternet herkes için ya da hiç kimse için!"</string>
-    <string name="appVersion">Uygulama Sürümü: 7</string>
+    <string name="appVersion">Uygulama Sürümü: 8</string>
     <string name="logApp">Uygulama Günlüğü</string>
     <string name="means" formatted="true">"bilgisizlik, cehalet" anlamına gelir</string>
     <string name="dontForget">Unutma!</string>
