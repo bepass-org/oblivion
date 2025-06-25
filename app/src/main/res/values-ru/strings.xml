@@ -4,7 +4,7 @@
     <string name="basedOnWarp">Основано на Warp</string>
     <string name="aboutApp">О приложении</string>
     <string name="aboutAppDesc">"Это приложение предназначено для свободного доступа к интернету, и любое коммерческое использование запрещено.\n\n\n Интернет для всех или ни для кого!"</string>
-    <string name="appVersion">Версия приложения: 7</string>
+    <string name="appVersion">Версия приложения: 8</string>
     <string name="logApp">Журнал приложения</string>
     <string name="means" formatted="true">Означает \"неведение, незнание\"</string>
     <string name="dontForget">Не забудьте!</string>
