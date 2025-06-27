@@ -1,126 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fillViewport="true"
-    android:background="@drawable/rounded_bottom_sheet"
-    app:chainUseRtl="false"
-    app:guidelineUseRtl="false">
+    android:background="@drawable/rounded_bottom_sheet">
 
     <LinearLayout
-        android:background="@drawable/endpoint_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp"
+        android:background="@drawable/endpoint_sheet">
 
         <View
             android:id="@+id/dividingCloser"
-            android:layout_width="64sp"
+            android:layout_width="64dp"
             android:layout_height="5dp"
-            android:layout_marginTop="8sp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
             android:background="@drawable/bottom_sheet_closer" />
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16sp"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
             android:fontFamily="@font/shabnam"
             android:text="@string/editSheetEndpoint"
             android:textColor="@color/text_color"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
-        <!-- LinearLayout to hold title and content in one line -->
-        <LinearLayout
+        <!-- Title Field -->
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16sp"
-            android:layout_marginTop="16sp"
-            android:orientation="horizontal"
-            android:padding="8dp"
-            android:gravity="center_vertical">
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="5dp"
+            android:text="@string/title"
+            android:textColor="@color/text_color"
+            android:fontFamily="@font/shabnam"
+            android:textSize="14sp" />
 
-            <EditText
-                android:id="@+id/titleEditText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:inputType="text"
-                android:background="@drawable/edittext_back"
-                android:fontFamily="@font/shabnam"
-                android:lineSpacingExtra="4sp"
-                android:padding="9dp"
-                android:layout_marginEnd="5sp"
-                android:singleLine="true"
-                android:textAlignment="center"
-                android:textColor="@color/text_color"
-                android:textSize="14dp"
-                android:hint="@string/title"
-                android:textColorHint="@color/text_color"/>
-            <EditText
-                android:id="@+id/contentEditText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:inputType="text"
-                android:background="@drawable/edittext_back"
-                android:fontFamily="@font/shabnam"
-                android:lineSpacingExtra="4sp"
-                android:padding="9dp"
-                android:singleLine="true"
-                android:textAlignment="center"
-                android:textColor="@color/text_color"
-                android:textSize="16dp"
-                android:textDirection="ltr"
-                android:layoutDirection="ltr"
-                android:hint="@string/content"
-                android:textColorHint="@color/text_color"/>
-        </LinearLayout>
+        <EditText
+            android:id="@+id/titleEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edittext_back"
+            android:fontFamily="@font/shabnam"
+            android:padding="10dp"
+            android:textSize="14sp"
+            android:hint="@string/title"
+            android:textColorHint="@color/text_color"
+            android:textColor="@color/text_color"
+            android:singleLine="true" />
 
+        <!-- Content Field -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="5dp"
+            android:text="@string/content"
+            android:textColor="@color/text_color"
+            android:fontFamily="@font/shabnam"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/contentEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edittext_back"
+            android:fontFamily="@font/shabnam"
+            android:padding="10dp"
+            android:textSize="14sp"
+            android:hint="@string/content"
+            android:textColorHint="@color/text_color"
+            android:textColor="@color/text_color"
+            android:textAlignment="viewStart"
+            android:inputType="text"
+            android:singleLine="true" />
+
+        <!-- Save Button -->
         <Button
             android:id="@+id/saveButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16sp"
-            android:layout_marginTop="16sp"
+            android:layout_marginTop="24dp"
             android:background="@drawable/button"
             android:fontFamily="@font/shabnambold"
             android:text="@string/save"
             android:textColor="@color/white"
-            android:textSize="18dp" />
+            android:textSize="16sp" />
 
+        <!-- Reset Button -->
         <Button
             android:id="@+id/resetDefaultButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16sp"
-            android:layout_marginTop="8sp"
+            android:layout_marginTop="12dp"
             android:background="@drawable/button_op"
             android:fontFamily="@font/shabnambold"
             android:text="@string/reset_to_default_endpoint"
             android:textColor="@color/white"
-            android:textSize="18dp" />
+            android:textSize="16sp" />
 
+        <!-- Saved endpoints title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24sp"
+            android:layout_marginTop="24dp"
             android:fontFamily="@font/shabnam"
             android:text="@string/saved_endpoints"
             android:textColor="@color/text_color"
-            android:textSize="18dp"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16sp"
-            android:layout_marginVertical="12sp"
+            android:layout_marginTop="12dp"
             android:background="@color/background" />
     </LinearLayout>
 </ScrollView>
