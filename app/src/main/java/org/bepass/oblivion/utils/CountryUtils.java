@@ -35,6 +35,17 @@ public class CountryUtils {
         // Return the triple of country code, full country name, and index
         return new Triple<>(countryCode, countryCodeAndName.component2(), countryCodeAndName.component3());
     }
+    
+    public static String localeToFlagEmoji(String locale) {
+        // Convert the country code to the flag emoji
+        StringBuilder flagEmoji = new StringBuilder();
+        for (char character : locale.toCharArray()) {
+            // Convert each character to the corresponding regional indicator symbol
+            flagEmoji.append(Character.toChars(character + 127397));
+        }
+
+        return flagEmoji.toString();
+    }
 
     private static Triple<String, String, Integer> translateToEnglish(String name, String[] translatedNames, String[] englishNames) {
         for (int i = 0; i < translatedNames.length; i++) {
