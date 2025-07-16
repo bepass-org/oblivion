@@ -66,42 +66,9 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'])
 }
 
-static def findGoExecutable() {
-    def goPath = ["which", "go"].execute().text.trim()
-    if (!goPath || !new File(goPath).exists()) {
-        throw new GradleException("Go executable not found in PATH.")
-    }
-    return goPath
-}
-
-static def findGomobileExecutable(goExec) {
-    def gomobilePath = ["which", "gomobile"].execute().text.trim()
-    if (gomobilePath && new File(gomobilePath).exists()) {
-        return gomobilePath
-    }
-
-    // fallback to GOPATH/bin/gomobile (usually ~/go/bin/gomobile)
-    def fallback = "${System.getProperty("user.home")}/go/bin/gomobile"
-    if (new File(fallback).exists()) {
-        return fallback
-    }
-
-    // try to install
-    println "Installing gomobile..."
-    def install = ["sh", "-c", "$goExec install golang.org/x/mobile/cmd/gomobile@latest"].execute()
-    install.waitForProcessOutput(System.out, System.err)
-    if (install.exitValue() != 0 || !new File(fallback).exists()) {
-        throw new GradleException("Failed to install gomobile")
-    }
-    return fallback
-}
-
-def goExec = findGoExecutable()
-def gomobileExec = findGomobileExecutable(goExec)
-
 tasks.register("preBuildTun2SocksAar", Exec) {
     workingDir "../tun2socks"
-    commandLine gomobileExec, "init"
+    commandLine "go", "run", "golang.org/x/mobile/cmd/gomobile", "init"
 }
 
 tasks.register("buildTun2SocksAar", Exec) {
@@ -113,7 +80,7 @@ tasks.register("buildTun2SocksAar", Exec) {
     }
 
     workingDir "../tun2socks"
-    commandLine gomobileExec, "bind",
+    commandLine "go", "run", "golang.org/x/mobile/cmd/gomobile", "bind",
             "-ldflags=-w -s",
             "-target=android",
             "-androidapi=$android.defaultConfig.minSdk",
