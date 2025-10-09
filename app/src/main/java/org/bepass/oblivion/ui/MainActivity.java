@@ -85,8 +85,8 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
                         Toast.makeText(this, "Permission required to start VPN", Toast.LENGTH_LONG).show();
                         binding.switchButton.setChecked(false);
                     }
-                });
-
+                }
+        );
         binding.switchButton.setOnCheckedChangeListener((view, isChecked) -> handleVpnSwitch(isChecked));
     }
 
@@ -95,13 +95,20 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
         FileManager.initialize(this);
 
         if (enableVpn) {
+            boolean proxyMode = FileManager.getBoolean("USERSETTING_proxymode");
             if (lastKnownConnectionState.isDisconnected()) {
-                Intent vpnIntent = OblivionVpnService.prepare(this);
-                if (vpnIntent != null) {
-                    vpnPermissionLauncher.launch(vpnIntent);
+                if (proxyMode) {
+                    // Proxy mode does not require VPN permission
+                    Intent intent = new Intent(this, OblivionVpnService.class);
+                    startVpnService(this, intent);
                 } else {
-                    vpnIntent = new Intent(this, OblivionVpnService.class);
-                    startVpnService(this, vpnIntent);
+                    Intent vpnIntent = OblivionVpnService.prepare(this);
+                    if (vpnIntent != null) {
+                        vpnPermissionLauncher.launch(vpnIntent);
+                    } else {
+                        vpnIntent = new Intent(this, OblivionVpnService.class);
+                        startVpnService(this, vpnIntent);
+                    }
                 }
                 NetworkUtils.monitorInternetConnection(lastKnownConnectionState, this);
             } else if (lastKnownConnectionState.isConnecting()) {
@@ -117,7 +124,6 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     }
     private void refreshUI() {
         // This will force a refresh of the UI based on the current data bindings
-        binding.invalidateAll();
         binding.executePendingBindings();
     }
 

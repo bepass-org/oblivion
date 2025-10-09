@@ -1,7 +1,5 @@
 package org.bepass.oblivion.service;
 
-import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -350,25 +348,31 @@ public class OblivionVpnService extends VpnService {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (notificationManager != null) {
             notificationManager.cancel(1);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                notificationManager.deleteNotificationChannel("oblivion");
-            }
+            // Keep the notification channel for reuse to preserve user's settings.
         }
     }
 
     private String getBindAddress() {
         String port = serviceIntent.getStringExtra("USERSETTING_port");
-        boolean enableLan = serviceIntent.getBooleanExtra("USERSETTING_lan",false);
-        String bindAddress = "127.0.0.1:" + port;
+        boolean enableLan = serviceIntent.getBooleanExtra("USERSETTING_lan", false);
+        String bindHost = serviceIntent.getStringExtra("USERSETTING_bind_host");
 
-        if (isLocalPortInUse(bindAddress).equals("true")) {
+        // Fallback host selection
+        if (bindHost == null || bindHost.trim().isEmpty()) {
+            bindHost = enableLan ? "0.0.0.0" : "127.0.0.1";
+        }
+
+        // For IPv6, ensure host is bracketed: [::1]:port
+        String hostForString = bindHost;
+        if (bindHost.contains(":") && !bindHost.startsWith("[")) {
+            hostForString = "[" + bindHost + "]";
+        }
+
+        String candidate = hostForString + ":" + port;
+        if (isLocalPortInUse(candidate).equals("true")) {
             port = String.valueOf(findFreePort());
         }
-        String bind = "127.0.0.1:" + port;
-        if (enableLan) {
-            bind = "0.0.0.0:" + port;
-        }
-        return bind;
+        return hostForString + ":" + port;
     }
 
 
@@ -390,6 +394,13 @@ public class OblivionVpnService extends VpnService {
             fos.write("".getBytes()); // Overwrite with empty content
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void appendLog(String message) {
+        try (FileOutputStream fos = getApplicationContext().openFileOutput("logs.txt", Context.MODE_APPEND)) {
+            fos.write((message + "\n").getBytes());
+        } catch (IOException ignored) {
         }
     }
 
@@ -422,11 +433,7 @@ public class OblivionVpnService extends VpnService {
             Log.i(TAG, "Configuring VPN service");
             try {
                 createNotification();
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU) {
-                    startForeground(1, notification);
-                } else {
-                    startForeground(1, notification, FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED);
-                }
+                startForeground(1, notification);
                 configure();
 
             } catch (Exception e) {
@@ -588,8 +595,9 @@ public class OblivionVpnService extends VpnService {
     private void createNotificationChannel() {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         NotificationChannelCompat notificationChannel = new NotificationChannelCompat.Builder(
-                "vpn_service", NotificationManagerCompat.IMPORTANCE_DEFAULT)
+                "vpn_service", NotificationManagerCompat.IMPORTANCE_LOW)
                 .setName("Oblivion VPN")
+                .setVibrationEnabled(false)
                 .build();
         notificationManager.createNotificationChannel(notificationChannel);
     }
@@ -609,8 +617,8 @@ public class OblivionVpnService extends VpnService {
                 .setOngoing(true)
                 .setAutoCancel(true)
                 .setShowWhen(false)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setDefaults(NotificationCompat.FLAG_ONLY_ALERT_ONCE)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setSilent(true)
                 .setContentIntent(contentPendingIntent)
                 .addAction(0, "Disconnect", disconnectPendingIntent)
                 .build();
@@ -647,6 +655,10 @@ public class OblivionVpnService extends VpnService {
                             so.setGool(true);
                         }
 
+                        appendLog("mode=proxy bind=" + bindAddress + " endpointType=" + serviceIntent.getIntExtra("USERSETTING_endpoint_type",0)
+                                + " psiphon=" + serviceIntent.getBooleanExtra("USERSETTING_psiphon", false)
+                                + " gool=" + serviceIntent.getBooleanExtra("USERSETTING_gool", false)
+                                + " endpoint='" + getEndpoint() + "'");
                         // Start tun2socks in proxy mode
                         Tun2socks.start(so);
 
@@ -677,6 +689,10 @@ public class OblivionVpnService extends VpnService {
                             so.setGool(true);
                         }
 
+                        appendLog("mode=vpn bind=" + bindAddress + " endpointType=" + serviceIntent.getIntExtra("USERSETTING_endpoint_type",0)
+                                + " psiphon=" + serviceIntent.getBooleanExtra("USERSETTING_psiphon", false)
+                                + " gool=" + serviceIntent.getBooleanExtra("USERSETTING_gool", false)
+                                + " endpoint='" + getEndpoint() + "'");
                         // Start tun2socks with VPN
                         Tun2socks.start(so);
                     }

@@ -4,6 +4,8 @@ import static org.bepass.oblivion.utils.BatteryOptimizationKt.isBatteryOptimizat
 import static org.bepass.oblivion.utils.BatteryOptimizationKt.showBatteryOptimizationDialog;
 
 import android.content.Intent;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -107,6 +109,9 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
 
         binding.portLayout.setOnClickListener(v -> (new EditSheet(this, getString(R.string.portTunText), "port", sheetsCallBack)).start());
 
+        // Bind Host editor
+        binding.bindHostLayout.setOnClickListener(v -> (new EditSheet(this, "Bind Host", "bind_host", sheetsCallBack)).start());
+
         binding.country.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -130,6 +135,15 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
 
         binding.lan.setOnCheckedChangeListener((buttonView, isChecked) -> {
             FileManager.set("USERSETTING_lan", isChecked);
+        });
+        // IPv6 toggle
+        binding.ipv6.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            FileManager.set("USERSETTING_ipv6", isChecked);
+            // If user wants IPv6 and bind host is empty, suggest default ::
+            if (isChecked && (FileManager.getString("USERSETTING_bind_host") == null || FileManager.getString("USERSETTING_bind_host").isEmpty())) {
+                FileManager.set("USERSETTING_bind_host", "::");
+                binding.bindHost.post(() -> binding.bindHost.setText("::"));
+            }
         });
         psiphonListener = (buttonView, isChecked) -> {
             FileManager.set("USERSETTING_psiphon", isChecked);
@@ -173,6 +187,31 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         binding.resetAppLayout.setOnClickListener(v -> resetAppData());
         binding.proxyModeLayout.setOnClickListener(v -> binding.proxyMode.performClick());
         binding.proxyMode.setOnCheckedChangeListener(proxyModeListener);
+
+        // Copy proxy info to clipboard
+        binding.copyProxyLayout.setOnClickListener(v -> {
+            String host = FileManager.getString("USERSETTING_bind_host");
+            boolean lan = FileManager.getBoolean("USERSETTING_lan");
+            boolean ipv6 = FileManager.getBoolean("USERSETTING_ipv6");
+            String port = FileManager.getString("USERSETTING_port");
+
+            if (host == null || host.trim().isEmpty()) {
+                host = ipv6 ? "::" : (lan ? "0.0.0.0" : "127.0.0.1");
+            }
+
+            // Bracket IPv6 for host:port
+            String hostForString = host;
+            if (host.contains(":") && !host.startsWith("[")) {
+                hostForString = "[" + host + "]";
+            }
+            String proxy = hostForString + ":" + port;
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+            if (clipboard != null) {
+                clipboard.setPrimaryClip(ClipData.newPlainText("proxy", proxy));
+                // Optional feedback
+                // Toast.makeText(this, "Copied: " + proxy, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void resetAppData() {
@@ -191,6 +230,7 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         });
         binding.endpoint.setText(FileManager.getString("USERSETTING_endpoint"));
         binding.port.setText(FileManager.getString("USERSETTING_port"));
+        binding.bindHost.setText(FileManager.getString("USERSETTING_bind_host"));
 
         int index = FileManager.getInt("USERSETTING_country_index");
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.countries, R.layout.country_item_layout);
@@ -204,6 +244,7 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         binding.lan.setChecked(FileManager.getBoolean("USERSETTING_lan"));
         binding.gool.setChecked(FileManager.getBoolean("USERSETTING_gool"));
         binding.proxyMode.setChecked(FileManager.getBoolean("USERSETTING_proxymode"));
+        binding.ipv6.setChecked(FileManager.getBoolean("USERSETTING_ipv6"));
         if (!binding.psiphon.isChecked()) {
             binding.countryLayout.setAlpha(0.2f);
             binding.country.setEnabled(false);

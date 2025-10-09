@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 
 import org.bepass.oblivion.R;
+import org.bepass.oblivion.utils.FileManager;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class QuickStartService extends TileService {
@@ -73,12 +74,21 @@ public class QuickStartService extends TileService {
             return;
         }
 
-        if (OblivionVpnService.prepare(this) != null) {
-            Toast.makeText(this, "لطفا یک‌بار از درون اپلیکیشن متصل شوید", Toast.LENGTH_LONG).show();
-            return;
+        // Initialize preferences access
+        FileManager.initialize(getApplicationContext());
+        boolean proxyMode = FileManager.getBoolean("USERSETTING_proxymode");
+        if (proxyMode) {
+            // In proxy mode, VPN permission is not required
+            Intent intent = new Intent(this, OblivionVpnService.class);
+            startVpnService(this, intent);
+        } else {
+            if (OblivionVpnService.prepare(this) != null) {
+                Toast.makeText(this, "لطفا یک‌بار از درون اپلیکیشن متصل شوید", Toast.LENGTH_LONG).show();
+                return;
+            }
+            Intent vpnIntent = new Intent(this, OblivionVpnService.class);
+            startVpnService(this, vpnIntent);
         }
-        Intent vpnIntent = new Intent(this, OblivionVpnService.class);
-        startVpnService(this, vpnIntent);
     }
 
     private void subscribe() {

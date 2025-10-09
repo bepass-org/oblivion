@@ -5,11 +5,12 @@ plugins {
 
 android {
     namespace 'org.bepass.oblivion'
-    compileSdk 34
+    compileSdk 35
+    ndkVersion "26.1.10909125"
     defaultConfig {
         applicationId "org.bepass.oblivion"
-        minSdk 23 // least supported api level => android 6.0
-        targetSdk 34
+        minSdk 24 // Android 7.0; enables modern features without legacy shims
+        targetSdk 35
         versionCode 18
         versionName "8"
 
@@ -33,14 +34,28 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
-    packagingOptions {
-        resources.excludes.add("META-INF/*")
+    packaging {
+        resources {
+            excludes += [
+                    "META-INF/DEPENDENCIES",
+                    "META-INF/LICENSE",
+                    "META-INF/LICENSE.txt",
+                    "META-INF/LICENSE.md",
+                    "META-INF/NOTICE",
+                    "META-INF/NOTICE.txt",
+                    "META-INF/NOTICE.md",
+                    "META-INF/ASL2.0",
+                    "META-INF/AL2.0",
+                    "META-INF/LGPL2.1",
+                    "META-INF/*.kotlin_module"
+            ]
+        }
     }
     lint {
         baseline = file("lint-baseline.xml")
@@ -66,34 +81,46 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'])
 }
 
+static def isWindows() { System.getProperty('os.name').toLowerCase().contains('win') }
+static def findExecutable(String name) {
+    try {
+        def proc = isWindows() ? ["cmd", "/c", "where", name].execute() : ["which", name].execute()
+        def out = new StringBuffer()
+        def err = new StringBuffer()
+        proc.consumeProcessOutput(out, err)
+        proc.waitFor()
+        if (proc.exitValue() == 0) {
+            def path = out.toString().readLines().find { it?.trim() }
+            if (path && new File(path.trim()).exists()) return path.trim()
+        }
+    } catch (ignored) {}
+    return null
+}
+
 static def findGoExecutable() {
-    def goPath = ["which", "go"].execute().text.trim()
-    if (!goPath || !new File(goPath).exists()) {
-        throw new GradleException("Go executable not found in PATH.")
-    }
+    def goPath = findExecutable('go')
+    if (!goPath) throw new GradleException('Go executable not found in PATH.')
     return goPath
 }
 
 static def findGomobileExecutable(goExec) {
-    def gomobilePath = ["which", "gomobile"].execute().text.trim()
-    if (gomobilePath && new File(gomobilePath).exists()) {
-        return gomobilePath
-    }
+    def gomobilePath = findExecutable('gomobile')
+    if (gomobilePath) return gomobilePath
 
     // fallback to GOPATH/bin/gomobile (usually ~/go/bin/gomobile)
-    def fallback = "${System.getProperty("user.home")}/go/bin/gomobile"
-    if (new File(fallback).exists()) {
-        return fallback
-    }
+    def fallback = new File(System.getProperty('user.home'), 'go/bin/gomobile').absolutePath
+    if (new File(fallback).exists()) return fallback
 
-    // try to install
-    println "Installing gomobile..."
-    def install = ["sh", "-c", "$goExec install golang.org/x/mobile/cmd/gomobile@latest"].execute()
+    // try to install cross-platform
+    println 'Installing gomobile...'
+    def install = [goExec, 'install', 'golang.org/x/mobile/cmd/gomobile@latest'].execute()
     install.waitForProcessOutput(System.out, System.err)
-    if (install.exitValue() != 0 || !new File(fallback).exists()) {
-        throw new GradleException("Failed to install gomobile")
-    }
-    return fallback
+    if (install.exitValue() != 0) throw new GradleException('Failed to install gomobile')
+    if (new File(fallback).exists()) return fallback
+    // try PATH again
+    gomobilePath = findExecutable('gomobile')
+    if (gomobilePath) return gomobilePath
+    throw new GradleException('gomobile not found after installation')
 }
 
 def goExec = findGoExecutable()
@@ -102,6 +129,12 @@ def gomobileExec = findGomobileExecutable(goExec)
 tasks.register("preBuildTun2SocksAar", Exec) {
     workingDir "../tun2socks"
     commandLine gomobileExec, "init"
+    // Run once and cache a stamp to avoid repeated init
+    outputs.file("$projectDir/../tun2socks/.gomobile-initialized")
+    onlyIf { !file("$projectDir/../tun2socks/.gomobile-initialized").exists() }
+    doLast {
+        new File("$projectDir/../tun2socks/.gomobile-initialized").text = "ok"
+    }
 }
 
 tasks.register("buildTun2SocksAar", Exec) {
@@ -116,10 +149,18 @@ tasks.register("buildTun2SocksAar", Exec) {
     commandLine gomobileExec, "bind",
             "-ldflags=-w -s",
             "-target=android",
-            "-androidapi=$android.defaultConfig.minSdk",
+            "-androidapi=${android.defaultConfig.minSdk}",
             "-o=$projectDir/libs/tun2socks.aar", "."
 
-    dependsOn(preBuildTun2SocksAar)
+    // Make task incremental: rebuild only if Go sources or go.mod/sum changed
+    inputs.files(project.fileTree("../tun2socks") {
+        include "**/*.go"
+    })
+    inputs.file("../tun2socks/go.mod")
+    inputs.file("../tun2socks/go.sum")
+    outputs.file("$projectDir/libs/tun2socks.aar")
+
+    dependsOn("preBuildTun2SocksAar")
 }
 
-preBuild.dependsOn(buildTun2SocksAar)
+tasks.named("preBuild").configure { dependsOn("buildTun2SocksAar") }

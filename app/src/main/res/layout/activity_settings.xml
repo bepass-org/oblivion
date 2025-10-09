@@ -93,6 +93,187 @@
                   android:textSize="20dp" />
             </LinearLayout>
 
+        <!-- Divider -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:gravity="center"
+            android:orientation="vertical">
+          <View
+              android:layout_width="match_parent"
+              android:layout_height="1dp"
+              android:background="@color/dark_gray" />
+        </LinearLayout>
+
+        <!-- Bind Host Setting -->
+        <LinearLayout
+            android:id="@+id/bind_host_layout"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:gravity="center"
+            android:paddingHorizontal="16dp"
+            android:background="?selectableItemBackground"
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/ipv6_layout">
+
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="end">
+
+            <TextView
+                android:id="@+id/bind_host"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:fontFamily="@font/shabnammedium"
+                android:textColor="@color/primary"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="20dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/shabnam"
+                android:minWidth="100dp"
+                android:text="Bind Host"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/text_color"
+                android:textSize="20dp" />
+
+          </LinearLayout>
+
+          <TextView
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="4dp"
+              android:fontFamily="@font/shabnam"
+              android:text="Host to bind SOCKS proxy (e.g. 127.0.0.1, 0.0.0.0, ::)"
+              android:textColor="@color/subtitle_color"
+              android:textSize="16dp" />
+
+        </LinearLayout>
+
+        <!-- Divider -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:gravity="center"
+            android:orientation="vertical">
+          <View
+              android:layout_width="match_parent"
+              android:layout_height="1dp"
+              android:background="@color/dark_gray" />
+        </LinearLayout>
+
+        <!-- IPv6 toggle -->
+        <LinearLayout
+            android:id="@+id/ipv6_layout"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:gravity="center"
+            android:paddingHorizontal="16dp"
+            android:background="?selectableItemBackground"
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/copy_proxy_layout">
+
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="end">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2">
+
+              <CheckBox
+                  android:id="@+id/ipv6"
+                  android:layout_width="50dp"
+                  android:layout_height="38dp"
+                  android:layout_marginStart="10dp"
+                  android:buttonTint="@color/checkbox_tint"
+                  android:scaleX="1.5"
+                  android:scaleY="1.5"
+                  android:translationX="5dp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/shabnam"
+                android:minWidth="100dp"
+                android:text="Enable IPv6 bind"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/text_color"
+                android:textSize="20dp" />
+          </LinearLayout>
+
+          <TextView
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="4dp"
+              android:fontFamily="@font/shabnam"
+              android:text="Use :: for SOCKS bind where supported"
+              android:textColor="@color/subtitle_color"
+              android:textSize="16dp" />
+
+        </LinearLayout>
+
+        <!-- Divider -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:gravity="center"
+            android:orientation="vertical">
+          <View
+              android:layout_width="match_parent"
+              android:layout_height="1dp"
+              android:background="@color/dark_gray" />
+        </LinearLayout>
+
+        <!-- Copy proxy info -->
+        <LinearLayout
+            android:id="@+id/copy_proxy_layout"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:gravity="center"
+            android:paddingHorizontal="16dp"
+            android:background="?selectableItemBackground"
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/split_tunnel_layout">
+
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="end">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/shabnam"
+                android:minWidth="100dp"
+                android:text="Copy Proxy Address"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/text_color"
+                android:textSize="20dp" />
+          </LinearLayout>
+
+          <TextView
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="4dp"
+              android:fontFamily="@font/shabnam"
+              android:text="Copy host:port to clipboard"
+              android:textColor="@color/subtitle_color"
+              android:textSize="16dp" />
+
+        </LinearLayout>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -231,7 +412,7 @@
             android:background="?selectableItemBackground"
             android:orientation="vertical"
             android:focusable="true"
-            android:nextFocusDown="@id/split_tunnel_layout">
+            android:nextFocusDown="@id/bind_host_layout">
 
           <LinearLayout
               android:layout_width="match_parent"
