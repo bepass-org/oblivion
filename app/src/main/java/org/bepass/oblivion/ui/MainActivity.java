@@ -16,6 +16,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import org.bepass.oblivion.enums.ConnectionState;
 import org.bepass.oblivion.utils.FileManager;
@@ -34,6 +35,7 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     private Toast backToast;
     private LocaleHandler localeHandler;
     private ActivityResultLauncher<Intent> vpnPermissionLauncher;
+    private boolean suppressSwitchListener = false;
     public static void startVpnService(Context context, Intent intent) {
         intent.putExtra("USERSETTING_proxymode", FileManager.getBoolean("USERSETTING_proxymode"));
         intent.putExtra("USERSETTING_license", FileManager.getString("USERSETTING_license"));
@@ -87,7 +89,10 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
                     }
                 }
         );
-        binding.switchButton.setOnCheckedChangeListener((view, isChecked) -> handleVpnSwitch(isChecked));
+        binding.switchButton.setOnCheckedChangeListener((view, isChecked) -> {
+            if (suppressSwitchListener) return;
+            handleVpnSwitch(isChecked);
+        });
     }
 
     private void handleVpnSwitch(boolean enableVpn) {
@@ -153,6 +158,10 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
                         }
                     });
             pushNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+        } else {
+            if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
+                Toast.makeText(this, "Notifications are disabled", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -200,14 +209,18 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
         binding.stateText.setText(R.string.notConnected);
         binding.ipProgressBar.setVisibility(View.GONE);
         binding.switchButton.setEnabled(true);
+        suppressSwitchListener = true;
         binding.switchButton.setChecked(false, false);
+        suppressSwitchListener = false;
     }
 
     private void updateUIForConnectingState() {
         binding.stateText.setText(R.string.connecting);
         binding.publicIP.setVisibility(View.GONE);
         binding.ipProgressBar.setVisibility(View.VISIBLE);
+        suppressSwitchListener = true;
         binding.switchButton.setChecked(true, false);
+        suppressSwitchListener = false;
         binding.switchButton.setEnabled(true);
     }
 
@@ -228,7 +241,9 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
         } else {
             binding.stateText.setText(R.string.connected);
         }
+        suppressSwitchListener = true;
         binding.switchButton.setChecked(true, false);
+        suppressSwitchListener = false;
         binding.ipProgressBar.setVisibility(View.GONE);
         PublicIPUtils.getInstance().getIPDetails((details) -> runOnUiThread(() -> { // Ensure UI updates are done on the main thread
             if (details.ip != null) {
