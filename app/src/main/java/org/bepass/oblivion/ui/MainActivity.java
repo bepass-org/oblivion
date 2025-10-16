@@ -29,6 +29,7 @@ import org.bepass.oblivion.utils.ThemeHelper;
 import org.bepass.oblivion.utils.NetworkUtils;
 
 import java.util.Locale;
+import java.io.FileOutputStream;
 
 public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     private long backPressedTime;
@@ -46,6 +47,13 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
         intent.putExtra("USERSETTING_endpoint", FileManager.getString("USERSETTING_endpoint"));
         intent.putExtra("USERSETTING_port", FileManager.getString("USERSETTING_port"));
         intent.putExtra("USERSETTING_lan", FileManager.getBoolean("USERSETTING_lan"));
+        intent.putExtra("USERSETTING_bind_host", FileManager.getString("USERSETTING_bind_host"));
+        intent.putExtra("USERSETTING_dns_primary", FileManager.getString("USERSETTING_dns_primary", "1.1.1.1"));
+        intent.putExtra("USERSETTING_dns_secondary", FileManager.getString("USERSETTING_dns_secondary", "1.0.0.1"));
+        intent.putExtra("USERSETTING_mtu", FileManager.getInt("USERSETTING_mtu"));
+        intent.putExtra("USERSETTING_bypass_lan", FileManager.getBoolean("USERSETTING_bypass_lan"));
+        intent.putExtra("USERSETTING_keepAwake", FileManager.getBoolean("USERSETTING_keepAwake"));
+        intent.putExtra("USERSETTING_ipv6", FileManager.getBoolean("USERSETTING_ipv6"));
         intent.setAction(OblivionVpnService.FLAG_VPN_START);
         ContextCompat.startForegroundService(context, intent);
     }
@@ -55,6 +63,12 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
         context.startActivity(starter);
     }
 
+    private void appendLog(String message) {
+        try (FileOutputStream fos = openFileOutput("logs.txt", MODE_APPEND)) {
+            fos.write((message + "\n").getBytes());
+        } catch (Exception ignored) {
+        }
+    }
     @Override
     protected int getLayoutResourceId() {
         return R.layout.activity_main;
@@ -82,7 +96,11 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
         vpnPermissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), result -> {
                     if (result.getResultCode() == RESULT_OK) {
-                        handleVpnSwitch(binding.switchButton.isChecked());
+                        // Permission granted: start VPN service directly
+                        Intent vpnIntent2 = new Intent(this, OblivionVpnService.class);
+                        startVpnService(this, vpnIntent2);
+                        NetworkUtils.monitorInternetConnection(lastKnownConnectionState, this);
+                        refreshUI();
                     } else {
                         Toast.makeText(this, "Permission required to start VPN", Toast.LENGTH_LONG).show();
                         binding.switchButton.setChecked(false);
@@ -96,36 +114,41 @@ public class MainActivity extends StateAwareBaseActivity<ActivityMainBinding> {
     }
 
     private void handleVpnSwitch(boolean enableVpn) {
-        Log.d("83", FileManager.getString("USERSETTING_country"));
-        FileManager.initialize(this);
+        try {
+            Log.d("83", FileManager.getString("USERSETTING_country"));
+            FileManager.initialize(this);
 
-        if (enableVpn) {
-            boolean proxyMode = FileManager.getBoolean("USERSETTING_proxymode");
-            if (lastKnownConnectionState.isDisconnected()) {
-                if (proxyMode) {
-                    // Proxy mode does not require VPN permission
-                    Intent intent = new Intent(this, OblivionVpnService.class);
-                    startVpnService(this, intent);
-                } else {
-                    Intent vpnIntent = OblivionVpnService.prepare(this);
-                    if (vpnIntent != null) {
-                        vpnPermissionLauncher.launch(vpnIntent);
+            if (enableVpn) {
+                boolean proxyMode = FileManager.getBoolean("USERSETTING_proxymode");
+                if (lastKnownConnectionState.isDisconnected()) {
+                    if (proxyMode) {
+                        // Proxy mode does not require VPN permission
+                        Intent intent = new Intent(this, OblivionVpnService.class);
+                        startVpnService(this, intent);
                     } else {
-                        vpnIntent = new Intent(this, OblivionVpnService.class);
-                        startVpnService(this, vpnIntent);
+                        Intent vpnIntent = OblivionVpnService.prepare(this);
+                        if (vpnIntent != null) {
+                            vpnPermissionLauncher.launch(vpnIntent);
+                        } else {
+                            vpnIntent = new Intent(this, OblivionVpnService.class);
+                            startVpnService(this, vpnIntent);
+                        }
                     }
+                    NetworkUtils.monitorInternetConnection(lastKnownConnectionState, this);
+                } else if (lastKnownConnectionState.isConnecting()) {
+                    stopVpnService(this);
                 }
-                NetworkUtils.monitorInternetConnection(lastKnownConnectionState, this);
-            } else if (lastKnownConnectionState.isConnecting()) {
-                stopVpnService(this);
+            } else {
+                if (!lastKnownConnectionState.isDisconnected()) {
+                    stopVpnService(this);
+                }
             }
-        } else {
-            if (!lastKnownConnectionState.isDisconnected()) {
-                stopVpnService(this);
-            }
-        }
 
-        refreshUI(); // Force refresh of the UI after VPN state changes
+            refreshUI(); // Force refresh of the UI after VPN state changes
+        } catch (Exception e) {
+            appendLog("connect_click error: " + android.util.Log.getStackTraceString(e));
+            Toast.makeText(this, "Error starting connection. See logs.", Toast.LENGTH_LONG).show();
+        }
     }
     private void refreshUI() {
         // This will force a refresh of the UI based on the current data bindings

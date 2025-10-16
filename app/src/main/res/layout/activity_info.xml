@@ -44,7 +44,7 @@
           android:fontFamily="@font/shabnamlight"
           android:text="@string/aboutApp"
           android:textColor="@color/text_color"
-          android:textSize="32dp"
+          android:textSize="32sp"
           tools:ignore="RelativeOverlap" />
 
     </RelativeLayout>
@@ -55,22 +55,22 @@
         android:layout_marginTop="16dp"
         android:paddingHorizontal="12dp">
 
-      <TextView
-          android:id="@+id/about"
-          android:layout_width="0dp"
-          android:layout_height="wrap_content"
-          android:fontFamily="@font/shabnammedium"
-          android:text='@string/aboutAppDesc'
-          android:textAlignment="center"
-          android:textColor="@color/subtitle_color"
-          android:textSize="16dp"
-          tools:ignore="RtlCompat"
-          android:focusable="true"
-          app:layout_constraintLeft_toLeftOf="parent"
-          app:layout_constraintRight_toRightOf="parent"
-          app:layout_constraintTop_toTopOf="parent"
-          app:layout_constraintBottom_toBottomOf="parent"
-          android:layout_margin="16dp"/>
+        <TextView
+            android:id="@+id/about"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/shabnammedium"
+            android:text="@string/aboutAppDesc"
+            android:textAlignment="center"
+            android:textColor="@color/subtitle_color"
+            android:textSize="16sp"
+            tools:ignore="RtlCompat"
+            android:focusable="true"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_margin="16dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -82,7 +82,6 @@
         android:layout_marginTop="32dp"
         android:background="@drawable/about_item"
         android:gravity="center"
-        android:paddingVertical="8dp"
         android:focusable="true">
 
       <ImageView
@@ -105,7 +104,7 @@
           android:fontFamily="@font/shabnam"
           android:text="Github"
           android:textColor="@color/black"
-          android:textSize="14dp" />
+          android:textSize="14sp" />
 
       <TextView
           android:layout_width="wrap_content"
@@ -116,7 +115,7 @@
           android:fontFamily="@font/shabnambold"
           android:text="Bepass/Oblivion"
           android:textColor="@color/black"
-          android:textSize="14dp" />
+          android:textSize="14sp" />
 
     </RelativeLayout>
 
@@ -128,7 +127,7 @@
         android:gravity="center"
         android:text="@string/appVersion"
         android:textColor="@color/subtitle_color"
-        android:textSize="14dp" />
+        android:textSize="14sp" />
 
   </LinearLayout>
 </layout>

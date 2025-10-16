@@ -6,6 +6,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ServiceInfo;
+import android.content.pm.ApplicationInfo;
 import android.net.VpnService;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +20,8 @@ import android.os.ParcelFileDescriptor;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.util.Log;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationChannelCompat;
@@ -31,6 +35,7 @@ import org.bepass.oblivion.R;
 import org.bepass.oblivion.enums.SplitTunnelMode;
 import org.bepass.oblivion.ui.MainActivity;
 import org.bepass.oblivion.utils.FileManager;
+import org.bepass.oblivion.widget.OblivionWidgetProvider;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -67,7 +72,7 @@ public class OblivionVpnService extends VpnService {
     private static final String TAG = "oblivionVPN";
     private static final String PRIVATE_VLAN4_CLIENT = "172.19.0.1";
     private static final String PRIVATE_VLAN6_CLIENT = "fdfe:dcba:9876::1";
-    private final Handler handler = new Handler();
+    private final Handler handler = new Handler(Looper.getMainLooper());
     private final Messenger serviceMessenger = new Messenger(new IncomingHandler(this));
     private static final Map<String, Messenger> connectionStateObservers = new HashMap<>();
     private final Runnable logRunnable = new Runnable() {
@@ -83,10 +88,10 @@ public class OblivionVpnService extends VpnService {
             }
             // Adding jitter to avoid exact timing
             long jitter = (long) (Math.random() * 500); // Random delay between 0 to 500ms
-            handler.postDelayed(this, 500 + jitter); // Poll every ~2 seconds with some jitter
+            handler.postDelayed(this, 2000 + jitter); // Poll every ~2.0–2.5s with some jitter
         }
     };
-    // For JNI Calling in a new threa
+    // For JNI Calling in a new thread
     private static ExecutorService executorService = Executors.newSingleThreadExecutor();
     // For PingHTTPTestConnection to don't busy-waiting
     private static ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -284,7 +289,7 @@ public class OblivionVpnService extends VpnService {
         };
 
         // Schedule the ping task to run with a fixed delay of 5 seconds
-        pingTaskFuture = scheduler.scheduleWithFixedDelay(pingTask, 0, 1, TimeUnit.SECONDS);
+        pingTaskFuture = scheduler.scheduleWithFixedDelay(pingTask, 0, 5, TimeUnit.SECONDS);
     }
 
     // Gracefully shut down the scheduler
@@ -362,6 +367,11 @@ public class OblivionVpnService extends VpnService {
             bindHost = enableLan ? "0.0.0.0" : "127.0.0.1";
         }
 
+        // Fallback port selection
+        if (port == null || port.trim().isEmpty()) {
+            port = "1080";
+        }
+
         // For IPv6, ensure host is bracketed: [::1]:port
         String hostForString = bindHost;
         if (bindHost.contains(":") && !bindHost.startsWith("[")) {
@@ -404,6 +414,10 @@ public class OblivionVpnService extends VpnService {
         }
     }
 
+    private boolean isDebugBuild() {
+        return (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+    }
+
     private void start() {
         if (lastKnownState != ConnectionState.DISCONNECTED) {
             onRevoke();
@@ -416,7 +430,10 @@ public class OblivionVpnService extends VpnService {
         if (wLock == null) {
             wLock = ((PowerManager) getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "oblivion:vpn");
             wLock.setReferenceCounted(false);
-            wLock.acquire(3 * 60 * 1000L /*3 minutes*/);
+            boolean keepAwake = serviceIntent != null && serviceIntent.getBooleanExtra("USERSETTING_keepAwake", true);
+            if (keepAwake) {
+                wLock.acquire();
+            }
         }
 
         if (executorService == null || executorService.isShutdown()) {
@@ -433,12 +450,17 @@ public class OblivionVpnService extends VpnService {
             Log.i(TAG, "Configuring VPN service");
             try {
                 createNotification();
-                startForeground(1, notification);
+                if (Build.VERSION.SDK_INT >= 34) {
+                    startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
+                } else {
+                    startForeground(1, notification);
+                }
                 configure();
 
             } catch (Exception e) {
                 onRevoke();
                 e.printStackTrace();
+                appendLog("start error: " + Log.getStackTraceString(e));
                 return;
             }
 
@@ -448,7 +470,7 @@ public class OblivionVpnService extends VpnService {
                 }
                 setLastKnownState(state);
                 createNotification();
-                startForeground(1, notification);
+                NotificationManagerCompat.from(this).notify(1, notification);
             });
         });
     }
@@ -558,6 +580,16 @@ public class OblivionVpnService extends VpnService {
         if (lastKnownState != newState) {
             Log.i(TAG, "Connection state changed from " + lastKnownState + " to " + newState);
             lastKnownState = newState;
+            // Persist for external observers (e.g., widget)
+            try { FileManager.set("lastKnownState", newState.toString()); } catch (Exception ignored) {}
+            // Notify app widget to refresh
+            try {
+                AppWidgetManager wm = AppWidgetManager.getInstance(this);
+                int[] ids = wm.getAppWidgetIds(new ComponentName(this, OblivionWidgetProvider.class));
+                Intent update = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                update.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+                sendBroadcast(update);
+            } catch (Exception ignored) {}
 
             if (newState == ConnectionState.CONNECTING) {
                 connectionStartTime = System.currentTimeMillis();
@@ -617,6 +649,7 @@ public class OblivionVpnService extends VpnService {
                 .setOngoing(true)
                 .setAutoCancel(true)
                 .setShowWhen(false)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setSilent(true)
                 .setContentIntent(contentPendingIntent)
@@ -641,24 +674,45 @@ public class OblivionVpnService extends VpnService {
                         // Proxy mode logic
                         StartOptions so = new StartOptions();
                         so.setPath(getApplicationContext().getFilesDir().getAbsolutePath());
-                        so.setVerbose(true);
+                        so.setVerbose(isDebugBuild());
                         so.setEndpoint(getEndpoint());
                         so.setBindAddress(bindAddress);
-                        so.setLicense(Objects.requireNonNull(serviceIntent.getStringExtra("USERSETTING_license")).trim());
-                        so.setDNS("1.1.1.1");
+                        String license = serviceIntent.getStringExtra("USERSETTING_license");
+                        if (license == null) license = "";
+                        so.setLicense(license.trim());
+                        String dnsPrimary = serviceIntent.getStringExtra("USERSETTING_dns_primary");
+                        if (dnsPrimary == null || dnsPrimary.trim().isEmpty()) dnsPrimary = "1.1.1.1";
+                        so.setDNS(dnsPrimary);
                         so.setEndpointType(serviceIntent.getIntExtra("USERSETTING_endpoint_type",0));
 
                         if (serviceIntent.getBooleanExtra("USERSETTING_psiphon", false)) {
                             so.setPsiphonEnabled(true);
-                            so.setCountry(Objects.requireNonNull(serviceIntent.getStringExtra("USERSETTING_country")).trim());
+                            String country = serviceIntent.getStringExtra("USERSETTING_country");
+                            if (country == null) country = "";
+                            so.setCountry(country.trim());
                         } else if (serviceIntent.getBooleanExtra("USERSETTING_gool", false)) {
                             so.setGool(true);
                         }
 
-                        appendLog("mode=proxy bind=" + bindAddress + " endpointType=" + serviceIntent.getIntExtra("USERSETTING_endpoint_type",0)
-                                + " psiphon=" + serviceIntent.getBooleanExtra("USERSETTING_psiphon", false)
-                                + " gool=" + serviceIntent.getBooleanExtra("USERSETTING_gool", false)
-                                + " endpoint='" + getEndpoint() + "'");
+                        // Diagnostics
+                        SplitTunnelMode stm = SplitTunnelMode.getSplitTunnelMode();
+                        Set<String> apps = getSplitTunnelApps();
+                        int mtuLog = serviceIntent.getIntExtra("USERSETTING_mtu", 1500);
+                        boolean bypassLan = serviceIntent.getBooleanExtra("USERSETTING_bypass_lan", false);
+                        String dnsSecondary = serviceIntent.getStringExtra("USERSETTING_dns_secondary");
+                        appendLog(
+                                "mode=proxy bind=" + bindAddress +
+                                        " endpointType=" + serviceIntent.getIntExtra("USERSETTING_endpoint_type",0) +
+                                        " psiphon=" + serviceIntent.getBooleanExtra("USERSETTING_psiphon", false) +
+                                        " gool=" + serviceIntent.getBooleanExtra("USERSETTING_gool", false) +
+                                        " endpoint='" + getEndpoint() + "'" +
+                                        " dnsPrimary=" + dnsPrimary +
+                                        " dnsSecondary=" + (dnsSecondary == null ? "" : dnsSecondary) +
+                                        " mtu=" + mtuLog +
+                                        " bypassLan=" + bypassLan +
+                                        " splitMode=" + stm +
+                                        " splitApps=" + apps.size()
+                        );
                         // Start tun2socks in proxy mode
                         Tun2socks.start(so);
 
@@ -674,11 +728,13 @@ public class OblivionVpnService extends VpnService {
 
                         StartOptions so = new StartOptions();
                         so.setPath(getApplicationContext().getFilesDir().getAbsolutePath());
-                        so.setVerbose(true);
+                        so.setVerbose(isDebugBuild());
                         so.setEndpoint(getEndpoint());
                         so.setBindAddress(bindAddress);
                         so.setLicense(Objects.requireNonNull(serviceIntent.getStringExtra("USERSETTING_license")).trim());
-                        so.setDNS("1.1.1.1");
+                        String dnsPrimary = serviceIntent.getStringExtra("USERSETTING_dns_primary");
+                        if (dnsPrimary == null || dnsPrimary.trim().isEmpty()) dnsPrimary = "1.1.1.1";
+                        so.setDNS(dnsPrimary);
                         so.setEndpointType(serviceIntent.getIntExtra("USERSETTING_endpoint_type",0));
                         so.setTunFd(mInterface.getFd());
 
@@ -689,10 +745,25 @@ public class OblivionVpnService extends VpnService {
                             so.setGool(true);
                         }
 
-                        appendLog("mode=vpn bind=" + bindAddress + " endpointType=" + serviceIntent.getIntExtra("USERSETTING_endpoint_type",0)
-                                + " psiphon=" + serviceIntent.getBooleanExtra("USERSETTING_psiphon", false)
-                                + " gool=" + serviceIntent.getBooleanExtra("USERSETTING_gool", false)
-                                + " endpoint='" + getEndpoint() + "'");
+                        // Diagnostics
+                        SplitTunnelMode stm2 = SplitTunnelMode.getSplitTunnelMode();
+                        Set<String> apps2 = getSplitTunnelApps();
+                        int mtuLog2 = serviceIntent.getIntExtra("USERSETTING_mtu", 1500);
+                        boolean bypassLan2 = serviceIntent.getBooleanExtra("USERSETTING_bypass_lan", false);
+                        String dnsSecondary2 = serviceIntent.getStringExtra("USERSETTING_dns_secondary");
+                        appendLog(
+                                "mode=vpn bind=" + bindAddress +
+                                        " endpointType=" + serviceIntent.getIntExtra("USERSETTING_endpoint_type",0) +
+                                        " psiphon=" + serviceIntent.getBooleanExtra("USERSETTING_psiphon", false) +
+                                        " gool=" + serviceIntent.getBooleanExtra("USERSETTING_gool", false) +
+                                        " endpoint='" + getEndpoint() + "'" +
+                                        " dnsPrimary=" + dnsPrimary +
+                                        " dnsSecondary=" + (dnsSecondary2 == null ? "" : dnsSecondary2) +
+                                        " mtu=" + mtuLog2 +
+                                        " bypassLan=" + bypassLan2 +
+                                        " splitMode=" + stm2 +
+                                        " splitApps=" + apps2.size()
+                        );
                         // Start tun2socks with VPN
                         Tun2socks.start(so);
                     }
@@ -707,15 +778,42 @@ public class OblivionVpnService extends VpnService {
     }
 
     private void configureVpnBuilder(VpnService.Builder builder) throws Exception {
+        int mtu = serviceIntent != null ? serviceIntent.getIntExtra("USERSETTING_mtu", 1500) : 1500;
+        if (mtu < 1200 || mtu > 1500) mtu = 1500;
+        String dns1 = serviceIntent != null && serviceIntent.getStringExtra("USERSETTING_dns_primary") != null ? serviceIntent.getStringExtra("USERSETTING_dns_primary") : "1.1.1.1";
+        String dns2 = serviceIntent != null && serviceIntent.getStringExtra("USERSETTING_dns_secondary") != null ? serviceIntent.getStringExtra("USERSETTING_dns_secondary") : "1.0.0.1";
+        boolean ipv6Enabled = serviceIntent != null && serviceIntent.getBooleanExtra("USERSETTING_ipv6", false);
+
         builder.setSession("oblivion")
-                .setMtu(1500)
-                .addAddress(PRIVATE_VLAN4_CLIENT, 30)
-                .addAddress(PRIVATE_VLAN6_CLIENT, 126)
-                .addDnsServer("1.1.1.1")
-                .addDnsServer("1.0.0.1")
-                .addDisallowedApplication(getPackageName())
-                .addRoute("0.0.0.0", 0)
-                .addRoute("::", 0);
+                .setMtu(mtu)
+                .addDisallowedApplication(getPackageName());
+
+        // Addresses
+        builder.addAddress(PRIVATE_VLAN4_CLIENT, 30);
+        if (ipv6Enabled) {
+            builder.addAddress(PRIVATE_VLAN6_CLIENT, 126);
+        }
+
+        // DNS Servers
+        builder.addDnsServer(dns1);
+        builder.addDnsServer(dns2);
+
+        // Routes
+        boolean bypassLan = serviceIntent != null && serviceIntent.getBooleanExtra("USERSETTING_bypass_lan", false);
+        if (bypassLan) {
+            // Split default route into halves so local (more specific) routes win
+            builder.addRoute("0.0.0.0", 1);
+            builder.addRoute("128.0.0.0", 1);
+            if (ipv6Enabled) {
+                builder.addRoute("::", 1);
+                builder.addRoute("8000::", 1);
+            }
+        } else {
+            builder.addRoute("0.0.0.0", 0);
+            if (ipv6Enabled) {
+                builder.addRoute("::", 0);
+            }
+        }
 
         // Determine split tunnel mode
         SplitTunnelMode splitTunnelMode = SplitTunnelMode.getSplitTunnelMode();
@@ -724,6 +822,14 @@ public class OblivionVpnService extends VpnService {
             for (String packageName : splitTunnelApps) {
                 try {
                     builder.addDisallowedApplication(packageName);
+                } catch (PackageManager.NameNotFoundException ignored) {
+                }
+            }
+        } else if (splitTunnelMode == SplitTunnelMode.WHITELIST) {
+            Set<String> splitTunnelApps = getSplitTunnelApps();
+            for (String packageName : splitTunnelApps) {
+                try {
+                    builder.addAllowedApplication(packageName);
                 } catch (PackageManager.NameNotFoundException ignored) {
                 }
             }

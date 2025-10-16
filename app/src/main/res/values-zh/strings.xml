@@ -52,19 +52,22 @@
     <string name="title">标题</string>
     <string name="content">端点</string>
     <string name="save">保存</string>
-    <string name="saved_endpoints">已保存的端点</string>
     <string name="resetAppTextDesc">将应用程序重置为默认设置</string>
     <string name="resetAppText">重置</string>
     <string name="proxy_mode">代理模式</string>
     <string name="running_in_proxy_mode_not_vpn">以代理模式运行，而不是VPN</string>
     <string name="reset_to_default_endpoint">重置为默认端点</string>
+    <string name="ipv6BindText">启用 IPv6 绑定</string>
+    <string name="ipv6BindDesc">在支持的情况下使用 :: 进行 SOCKS 绑定</string>
+    <string name="bind_host_label">绑定主机</string>
+    <string name="bind_host_desc">用于绑定 SOCKS 的主机（例如 127.0.0.1、0.0.0.0、::）</string>
+    <string name="copy_proxy_address">复制代理地址</string>
+    <string name="copy_proxy_address_desc">复制 host:port 到剪贴板</string>
+    <string name="mtuText">MTU</string>
+    <string name="mtuTextDesc">隧道 MTU（1200–1500）</string>
+    <string name="lanBypassText">LAN 旁路</string>
+    <string name="lanBypassTextDesc">将本地网络子网排除在 VPN 之外</string>
     <string-array name="countries">
-        <item>澳大利亚</item>
-        <item>奥地利</item>
-        <item>比利时</item>
-        <item>保加利亚</item>
-        <item>加拿大</item>
-        <item>克罗地亚</item>
         <item>捷克</item>
         <item>丹麦</item>
         <item>爱沙尼亚</item>

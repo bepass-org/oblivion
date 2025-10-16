@@ -45,10 +45,10 @@
           android:fontFamily="@font/shabnamlight"
           android:text="@string/settingsText"
           android:textColor="@color/text_color"
-          android:textSize="24dp"
+          android:textSize="24sp"
           tools:ignore="RelativeOverlap"
           android:focusable="true"
-          android:nextFocusDown="@id/battery_optimization_layout"/>
+          android:nextFocusDown="@id/battery_optimization_layout" />
 
     </RelativeLayout>
 
@@ -69,13 +69,15 @@
           <LinearLayout
               android:id="@+id/battery_optimization_layout"
               android:layout_width="match_parent"
-              android:layout_height="80dp"
+              android:layout_height="wrap_content"
+              android:minHeight="80dp"
               android:background="?android:selectableItemBackground"
               android:gravity="center"
               android:paddingHorizontal="16dp"
+              android:paddingVertical="8dp"
               android:orientation="vertical"
               android:focusable="true"
-              android:nextFocusDown="@id/endpoint_type_layout">
+              android:nextFocusDown="@id/keep_awake_layout">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -90,95 +92,43 @@
                   android:text="@string/batteryOpL"
                   android:textAlignment="viewEnd"
                   android:textColor="@color/text_color"
-                  android:textSize="20dp" />
+                  android:textSize="20sp" />
             </LinearLayout>
-
-        <!-- Divider -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@color/dark_gray" />
-        </LinearLayout>
-
-        <!-- Bind Host Setting -->
-        <LinearLayout
-            android:id="@+id/bind_host_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical"
-            android:focusable="true"
-            android:nextFocusDown="@id/ipv6_layout">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-            <TextView
-                android:id="@+id/bind_host"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:fontFamily="@font/shabnammedium"
-                android:textColor="@color/primary"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:textSize="20dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="Bind Host"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20dp" />
-
-          </LinearLayout>
-
           <TextView
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:layout_marginTop="4dp"
               android:fontFamily="@font/shabnam"
-              android:text="Host to bind SOCKS proxy (e.g. 127.0.0.1, 0.0.0.0, ::)"
+              android:text="@string/batteryOpLText"
               android:textColor="@color/subtitle_color"
-              android:textSize="16dp" />
+              android:textSize="16sp" />
 
-        </LinearLayout>
-
-        <!-- Divider -->
+          </LinearLayout>
         <LinearLayout
+            android:id="@+id/battery_opt_line"
             android:layout_width="match_parent"
             android:layout_height="10dp"
             android:gravity="center"
             android:orientation="vertical">
+
           <View
               android:layout_width="match_parent"
               android:layout_height="1dp"
               android:background="@color/dark_gray" />
         </LinearLayout>
-
-        <!-- IPv6 toggle -->
+        <!-- Keep Awake toggle (WakeLock) -->
         <LinearLayout
-            android:id="@+id/ipv6_layout"
+            android:id="@+id/keep_awake_layout"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
+            android:background="?selectableItemBackground"
             android:gravity="center"
             android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
+            android:paddingVertical="8dp"
             android:orientation="vertical"
             android:focusable="true"
-            android:nextFocusDown="@id/copy_proxy_layout">
+            android:nextFocusDown="@id/endpoint_type_layout">
 
           <LinearLayout
               android:layout_width="match_parent"
@@ -191,14 +141,10 @@
                 android:layout_weight="2">
 
               <CheckBox
-                  android:id="@+id/ipv6"
-                  android:layout_width="50dp"
-                  android:layout_height="38dp"
-                  android:layout_marginStart="10dp"
-                  android:buttonTint="@color/checkbox_tint"
-                  android:scaleX="1.5"
-                  android:scaleY="1.5"
-                  android:translationX="5dp" />
+                  android:id="@+id/keepAwake"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginStart="10dp" />
             </LinearLayout>
 
             <TextView
@@ -206,10 +152,10 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/shabnam"
                 android:minWidth="100dp"
-                android:text="Enable IPv6 bind"
+                android:text="@string/keepAwakeText"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
           </LinearLayout>
 
           <TextView
@@ -217,75 +163,13 @@
               android:layout_height="wrap_content"
               android:layout_marginTop="4dp"
               android:fontFamily="@font/shabnam"
-              android:text="Use :: for SOCKS bind where supported"
+              android:text="@string/keepAwakeTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16dp" />
+              android:textSize="16sp" />
 
         </LinearLayout>
 
-        <!-- Divider -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@color/dark_gray" />
-        </LinearLayout>
-
-        <!-- Copy proxy info -->
-        <LinearLayout
-            android:id="@+id/copy_proxy_layout"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical"
-            android:focusable="true"
-            android:nextFocusDown="@id/split_tunnel_layout">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="end">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
-                android:minWidth="100dp"
-                android:text="Copy Proxy Address"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="20dp" />
-          </LinearLayout>
-
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="4dp"
-              android:fontFamily="@font/shabnam"
-              android:text="Copy host:port to clipboard"
-              android:textColor="@color/subtitle_color"
-              android:textSize="16dp" />
-
-        </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="@font/shabnam"
-                android:text="@string/batteryOpLText"
-                android:textColor="@color/subtitle_color"
-                android:textSize="16dp" />
-
-          </LinearLayout>
-        <LinearLayout
-            android:id="@+id/battery_opt_line"
             android:layout_width="match_parent"
             android:layout_height="10dp"
             android:gravity="center"
@@ -301,8 +185,10 @@
             android:layout_width="match_parent"
             android:paddingHorizontal="16dp"
             android:background="?selectableItemBackground"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
             android:gravity="center"
+            android:paddingVertical="8dp"
             android:orientation="vertical"
             android:focusable="true"
             android:nextFocusDown="@id/endpoint_layout"
@@ -328,7 +214,7 @@
                 android:text="@string/endpointTypeText"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
 
           </LinearLayout>
 
@@ -339,18 +225,20 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/endpointTypeTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16dp" />
+              android:textSize="16sp" />
         </LinearLayout>
         <LinearLayout
             android:id="@+id/endpoint_layout"
             android:layout_width="match_parent"
             android:paddingHorizontal="16dp"
             android:background="?selectableItemBackground"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
             android:gravity="center"
+            android:paddingVertical="8dp"
             android:orientation="vertical"
             android:focusable="true"
-            android:nextFocusDown="@id/port_layout">
+            android:nextFocusDown="@id/bind_host_layout">
 
           <LinearLayout
               android:layout_width="match_parent"
@@ -367,18 +255,17 @@
                 android:textColor="@color/primary"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/shabnam"
                 android:minWidth="100dp"
                 android:text="@string/endpointText"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20dp" />
-
+                android:textSize="20sp" />
+          
           </LinearLayout>
 
           <TextView
@@ -388,7 +275,7 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/endpointTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16dp" />
+              android:textSize="16sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -403,16 +290,190 @@
               android:background="@color/dark_gray" />
         </LinearLayout>
 
+
+        <!-- Bind Host Setting (moved outside battery_optimization_layout) -->
         <LinearLayout
-            android:id="@+id/port_layout"
+            android:id="@+id/bind_host_layout"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
             android:gravity="center"
             android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
             android:background="?selectableItemBackground"
             android:orientation="vertical"
             android:focusable="true"
-            android:nextFocusDown="@id/bind_host_layout">
+            android:nextFocusDown="@id/ipv6_layout">
+
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="end">
+
+            <TextView
+                android:id="@+id/bind_host"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:fontFamily="@font/shabnammedium"
+                android:textColor="@color/primary"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/shabnam"
+                android:minWidth="100dp"
+                android:text="@string/bind_host_label"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/text_color"
+                android:textSize="20sp" />
+
+          </LinearLayout>
+
+          <TextView
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="4dp"
+              android:fontFamily="@font/shabnam"
+              android:text="@string/bind_host_desc"
+              android:textColor="@color/subtitle_color"
+              android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <!-- Divider -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:gravity="center"
+            android:orientation="vertical">
+          <View
+              android:layout_width="match_parent"
+              android:layout_height="1dp"
+              android:background="@color/dark_gray" />
+        </LinearLayout>
+
+        <!-- IPv6 toggle (moved) -->
+        <LinearLayout
+            android:id="@+id/ipv6_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
+            android:gravity="center"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:background="?selectableItemBackground"
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/copy_proxy_layout">
+
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="end">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2">
+
+              <CheckBox
+                  android:id="@+id/ipv6"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginStart="10dp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/shabnam"
+                android:minWidth="100dp"
+                android:text="@string/ipv6BindText"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/text_color"
+                android:textSize="20sp" />
+          </LinearLayout>
+
+          <TextView
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="4dp"
+              android:fontFamily="@font/shabnam"
+              android:text="@string/ipv6BindDesc"
+              android:textColor="@color/subtitle_color"
+              android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <!-- Divider -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:gravity="center"
+            android:orientation="vertical">
+          <View
+              android:layout_width="match_parent"
+              android:layout_height="1dp"
+              android:background="@color/dark_gray" />
+        </LinearLayout>
+
+        <!-- Copy proxy info (moved) -->
+        <LinearLayout
+            android:id="@+id/copy_proxy_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
+            android:gravity="center"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:background="?selectableItemBackground"
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/port_layout">
+
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="end">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/shabnam"
+                android:minWidth="100dp"
+                android:text="@string/copy_proxy_address"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/text_color"
+                android:textSize="20sp" />
+          </LinearLayout>
+
+          <TextView
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="4dp"
+              android:fontFamily="@font/shabnam"
+              android:text="@string/copy_proxy_address_desc"
+              android:textColor="@color/subtitle_color"
+              android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/port_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
+            android:gravity="center"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:background="?selectableItemBackground"
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/dns_layout">
 
           <LinearLayout
               android:layout_width="match_parent"
@@ -428,7 +489,7 @@
                 android:textColor="@color/primary"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -438,7 +499,7 @@
                 android:text="@string/portTunText"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
 
           </LinearLayout>
 
@@ -449,7 +510,125 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/portTunTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16dp" />
+              android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+          <View
+              android:layout_width="match_parent"
+              android:layout_height="1dp"
+              android:background="@color/dark_gray" />
+        </LinearLayout>
+
+        <!-- DNS Setting -->
+        <LinearLayout
+            android:id="@+id/dns_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
+            android:gravity="center"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:background="?selectableItemBackground"
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/mtu_layout">
+
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="end">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/shabnam"
+                android:minWidth="100dp"
+                android:text="@string/dnsText"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/text_color"
+                android:textSize="20sp" />
+          </LinearLayout>
+
+          <TextView
+              android:id="@+id/dns_desc"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="4dp"
+              android:fontFamily="@font/shabnam"
+              android:text="@string/dnsTextDesc"
+              android:textColor="@color/subtitle_color"
+              android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+          <View
+              android:layout_width="match_parent"
+              android:layout_height="1dp"
+              android:background="@color/dark_gray" />
+        </LinearLayout>
+
+        <!-- MTU Setting -->
+        <LinearLayout
+            android:id="@+id/mtu_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
+            android:background="?android:selectableItemBackground"
+            android:gravity="center"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/split_tunnel_layout">
+
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="end">
+
+            <TextView
+                android:id="@+id/mtu_value"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:fontFamily="@font/shabnammedium"
+                android:textColor="@color/primary"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/shabnam"
+                android:minWidth="100dp"
+                android:text="@string/mtuText"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/text_color"
+                android:textSize="20sp" />
+          </LinearLayout>
+
+          <TextView
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="4dp"
+              android:fontFamily="@font/shabnam"
+              android:text="@string/mtuTextDesc"
+              android:textColor="@color/subtitle_color"
+              android:textSize="16sp" />
 
         </LinearLayout>
 
@@ -468,14 +647,15 @@
         <LinearLayout
             android:id="@+id/split_tunnel_layout"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
             android:background="?android:selectableItemBackground"
             android:gravity="center"
             android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
             android:orientation="vertical"
             android:focusable="true"
             android:nextFocusDown="@id/txt_dark_mode">
-
           <LinearLayout
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
@@ -489,7 +669,7 @@
                 android:text="@string/blackList"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
           </LinearLayout>
 
           <TextView
@@ -499,26 +679,16 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/blackListTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16dp" />
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-          <View
-              android:layout_width="match_parent"
-              android:layout_height="1dp"
-              android:background="@color/dark_gray" />
+              android:textSize="16sp" />
         </LinearLayout>
         <LinearLayout
             android:id="@+id/proxy_mode_layout"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
             android:gravity="center"
             android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
             android:background="?selectableItemBackground"
             android:orientation="vertical"
             android:focusable="true"
@@ -537,13 +707,9 @@
 
               <CheckBox
                   android:id="@+id/proxyMode"
-                  android:layout_width="50dp"
-                  android:layout_height="38dp"
-                  android:layout_marginStart="10dp"
-                  android:buttonTint="@color/checkbox_tint"
-                  android:scaleX="1.5"
-                  android:scaleY="1.5"
-                  android:translationX="5dp" />
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginStart="10dp" />
             </LinearLayout>
 
             <TextView
@@ -554,7 +720,7 @@
                 android:text="@string/proxy_mode"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
           </LinearLayout>
 
           <TextView
@@ -564,7 +730,7 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/running_in_proxy_mode_not_vpn"
               android:textColor="@color/subtitle_color"
-              android:textSize="16dp" />
+              android:textSize="16sp" />
 
         </LinearLayout>
         <LinearLayout
@@ -582,9 +748,11 @@
         <LinearLayout
             android:id="@+id/txt_dark_mode"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
             android:gravity="center"
             android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
             android:background="?selectableItemBackground"
             android:orientation="vertical"
             android:focusable="true"
@@ -603,13 +771,9 @@
 
               <CheckBox
                   android:id="@+id/check_box_dark_mode"
-                  android:layout_width="50dp"
-                  android:layout_height="38dp"
-                  android:layout_marginStart="10dp"
-                  android:buttonTint="@color/checkbox_tint"
-                  android:scaleX="1.5"
-                  android:scaleY="1.5"
-                  android:translationX="5dp" />
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginStart="10dp" />
             </LinearLayout>
 
             <TextView
@@ -620,7 +784,7 @@
                 android:text="@string/turn_on_dark_mode"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
           </LinearLayout>
 
           <TextView
@@ -630,10 +794,10 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/turn_on_dark_mode_desc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16dp" />
-
+              android:textSize="16sp" />
         </LinearLayout>
 
+        <!-- Divider -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="10dp"
@@ -646,22 +810,24 @@
               android:background="@color/dark_gray" />
         </LinearLayout>
 
+        <!-- Connect from LAN (visible) -->
         <LinearLayout
             android:id="@+id/lan_layout"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
             android:gravity="center"
             android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
             android:background="?selectableItemBackground"
             android:orientation="vertical"
             android:focusable="true"
-            android:nextFocusDown="@id/psiphon_layout">
+            android:nextFocusDown="@id/lan_bypass_layout">
 
           <LinearLayout
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:gravity="end">
-
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -670,13 +836,9 @@
 
               <CheckBox
                   android:id="@+id/lan"
-                  android:layout_width="50dp"
-                  android:layout_height="38dp"
-                  android:layout_marginStart="10dp"
-                  android:buttonTint="@color/checkbox_tint"
-                  android:scaleX="1.5"
-                  android:scaleY="1.5"
-                  android:translationX="5dp" />
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginStart="10dp" />
             </LinearLayout>
 
             <TextView
@@ -687,7 +849,7 @@
                 android:text="@string/connectFromLanText"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
           </LinearLayout>
 
           <TextView
@@ -697,7 +859,73 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/connectFromLanTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16dp" />
+              android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <!-- Divider -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+          <View
+              android:layout_width="match_parent"
+              android:layout_height="1dp"
+              android:background="@color/dark_gray" />
+        </LinearLayout>
+
+        <!-- LAN Bypass Setting (visible, placed after LAN) -->
+        <LinearLayout
+            android:id="@+id/lan_bypass_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
+            android:gravity="center"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:background="?selectableItemBackground"
+            android:orientation="vertical"
+            android:focusable="true"
+            android:nextFocusDown="@id/psiphon_layout">
+
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="end">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2">
+
+              <CheckBox
+                  android:id="@+id/bypassLan"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginStart="10dp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/shabnam"
+                android:minWidth="100dp"
+                android:text="@string/lanBypassText"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/text_color"
+                android:textSize="20sp" />
+          </LinearLayout>
+
+          <TextView
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="4dp"
+              android:fontFamily="@font/shabnam"
+              android:text="@string/lanBypassTextDesc"
+              android:textColor="@color/subtitle_color"
+              android:textSize="16sp" />
 
         </LinearLayout>
 
@@ -716,9 +944,11 @@
         <LinearLayout
             android:id="@+id/psiphon_layout"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
             android:gravity="center"
             android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
             android:background="?selectableItemBackground"
             android:orientation="vertical"
             android:focusable="true"
@@ -736,13 +966,9 @@
 
               <CheckBox
                   android:id="@+id/psiphon"
-                  android:layout_width="50dp"
-                  android:layout_height="38dp"
-                  android:scaleX="1.5"
-                  android:scaleY="1.5"
-                  android:layout_marginStart="10dp"
-                  android:buttonTint="@color/checkbox_tint"
-                  android:translationX="5dp" />
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginStart="10dp" />
             </LinearLayout>
 
             <TextView
@@ -753,7 +979,7 @@
                 android:text="@string/psiphonText"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
 
           </LinearLayout>
 
@@ -764,7 +990,7 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/psiphonTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16dp" />
+              android:textSize="16sp" />
 
         </LinearLayout>
 
@@ -783,9 +1009,11 @@
         <LinearLayout
             android:id="@+id/country_layout"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
             android:gravity="center"
             android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
             android:background="?selectableItemBackground"
             android:orientation="vertical"
             android:focusable="true"
@@ -814,7 +1042,7 @@
                 android:text="@string/chooseText"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
 
           </LinearLayout>
 
@@ -825,7 +1053,7 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/chooseTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16dp" />
+              android:textSize="16sp" />
 
         </LinearLayout>
 
@@ -844,9 +1072,11 @@
         <LinearLayout
             android:id="@+id/gool_layout"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
             android:gravity="center"
             android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
             android:background="?selectableItemBackground"
             android:orientation="vertical"
             android:focusable="true"
@@ -863,13 +1093,9 @@
 
               <CheckBox
                   android:id="@+id/gool"
-                  android:layout_width="50dp"
-                  android:layout_height="38dp"
-                  android:scaleX="1.5"
-                  android:scaleY="1.5"
-                  android:layout_marginStart="10dp"
-                  android:buttonTint="@color/checkbox_tint"
-                  android:translationX="5dp" />
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginStart="10dp" />
             </LinearLayout>
 
             <TextView
@@ -880,7 +1106,7 @@
                 android:text="@string/goolText"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
 
           </LinearLayout>
 
@@ -891,7 +1117,7 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/goolTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16dp" />
+              android:textSize="16sp" />
 
         </LinearLayout>
         <LinearLayout
@@ -905,13 +1131,16 @@
               android:layout_height="1dp"
               android:background="@color/dark_gray" />
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/reset_app_layout"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
             android:background="?android:selectableItemBackground"
             android:gravity="center"
             android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
             android:orientation="vertical"
             android:focusable="true"
             android:nextFocusDown="@id/txt_dark_mode">
@@ -929,7 +1158,7 @@
                 android:text="@string/resetAppText"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
           </LinearLayout>
 
           <TextView
@@ -939,9 +1168,10 @@
               android:fontFamily="@font/shabnam"
               android:text="@string/resetAppTextDesc"
               android:textColor="@color/subtitle_color"
-              android:textSize="16dp" />
+              android:textSize="16sp" />
 
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="10dp"
@@ -959,3 +1189,4 @@
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
+

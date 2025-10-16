@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-feature android:name="android.hardware.wifi" android:required="false" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- Android 14+: Required to use special-use foreground services like VPN -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     
@@ -40,10 +42,10 @@
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BIND_VPN_SERVICE"
-            android:process=":vpn_background">
+            android:process=":vpn_background"
+            android:foregroundServiceType="specialUse">
             <intent-filter>
                 <action android:name="android.net.VpnService" />
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
 
             <meta-data
@@ -105,6 +107,18 @@
         <activity
             android:name=".ui.SplitTunnelActivity"
             android:exported="false" />
+
+        <receiver
+            android:name=".widget.OblivionWidgetProvider"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="org.bepass.oblivion.widget.TOGGLE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/oblivion_widget_info" />
+        </receiver>
     </application>
 
 </manifest>

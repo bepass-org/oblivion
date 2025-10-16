@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Messenger;
 import android.util.Log;
+import android.transition.Fade;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,7 +42,14 @@ public abstract class StateAwareBaseActivity<B extends ViewDataBinding> extends 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FileManager.initialize(this); // Initialize FileManager with Activity context
+        // Default Material motion for activity transitions
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setEnterTransition(new Fade());
+            getWindow().setExitTransition(new Fade());
+        }
         binding = DataBindingUtil.setContentView(this, getLayoutResourceId());
+        // Edge-to-edge content & insets handling
+        SystemUtils.enableEdgeToEdge(this, binding.getRoot());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             SystemUtils.setStatusBarColor(
                     this, getStatusBarColor(), ColorUtils.isColorDark(getStatusBarColor())

@@ -1,0 +1,868 @@
+2025-10-16 18:42:54.599  6764-6764  nativeloader            org.bepass.oblivion                  D  Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+---------------------------- PROCESS STARTED (6764) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:42:54.973  6764-6764  nativeloader            org.bepass.oblivion                  D  Configuring clns-9 for other apk /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64:/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/org.bepass.oblivion
+2025-10-16 18:42:54.984  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) locale list changing from [] to [en-US]
+2025-10-16 18:42:55.003  6764-6764  GraphicsEnvironment     org.bepass.oblivion                  V  Currently set values for:
+2025-10-16 18:42:55.003  6764-6764  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_pkgs=[]
+2025-10-16 18:42:55.003  6764-6764  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_values=[]
+2025-10-16 18:42:55.003  6764-6764  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in per-application setting
+2025-10-16 18:42:55.004  6764-6764  GraphicsEnvironment     org.bepass.oblivion                  V  ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+2025-10-16 18:42:55.004  6764-6764  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in ANGLE allowlist or settings, returning default
+2025-10-16 18:42:55.004  6764-6764  GraphicsEnvironment     org.bepass.oblivion                  V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-16 18:42:55.087  6764-6764  MMKV                    org.bepass.oblivion                  I  Enable checkProcessMode()
+2025-10-16 18:42:55.090  6764-6764  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libmmkv.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:42:55.091  6764-6764  MMKV                    org.bepass.oblivion                  I  current API level = 36, libc++_shared=0
+2025-10-16 18:42:55.091  6764-6764  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:166::initialize> version v1.3.14, page size 4096, arch x86_64
+2025-10-16 18:42:55.091  6764-6764  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:225::initializeMMKV> root dir: /data/user/0/org.bepass.oblivion/files/mmkv
+2025-10-16 18:42:55.092  6764-6764  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:42:55.092  6764-6764  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96001000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:42:55.092  6764-6764  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x55], /data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc
+2025-10-16 18:42:55.093  6764-6764  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96000000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc]
+2025-10-16 18:42:55.095  6764-6764  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 0 actual size, file size 4096, InterProcess 0, meta info version:0
+2025-10-16 18:42:55.095  6764-6764  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 0 key-values
+2025-10-16 18:42:55.145  6764-6787  DisplayManager          org.bepass.oblivion                  I  Choreographer implicitly registered for the refresh rate.
+2025-10-16 18:42:55.154  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc58ba78) locale list changing from [] to [en-US]
+2025-10-16 18:42:55.248  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc5875b8) locale list changing from [] to [en-US]
+2025-10-16 18:42:55.249  6764-6787  EGL_emulation           org.bepass.oblivion                  I  Opening libGLESv1_CM_emulation.so
+2025-10-16 18:42:55.251  6764-6787  EGL_emulation           org.bepass.oblivion                  I  Opening libGLESv2_emulation.so
+2025-10-16 18:42:55.258  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc58d9b8) locale list changing from [] to [en-US]
+2025-10-16 18:42:55.260  6764-6787  HWUI                    org.bepass.oblivion                  W  Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+2025-10-16 18:42:55.260  6764-6787  HWUI                    org.bepass.oblivion                  W  Failed to initialize 101010-2 format, error = EGL_SUCCESS
+2025-10-16 18:42:55.275  6764-6764  ashmem                  org.bepass.oblivion                  E  Pinning is deprecated since Android Q. Please use trim or other methods.
+2025-10-16 18:42:55.302  6764-6764  CompatChangeReporter    org.bepass.oblivion                  D  Compat change id reported: 377864165; UID 10217; state: ENABLED
+2025-10-16 18:42:55.304  6764-6764  DesktopModeFlags        org.bepass.oblivion                  D  Toggle override initialized to: OVERRIDE_UNSET
+2025-10-16 18:42:55.382  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  hiddenapi: Accessing hidden method Landroid/view/ViewGroup;->makeOptionalFitsSystemWindows()V (runtime_flags=0, domain=platform, api=unsupported) from Landroidx/appcompat/widget/ViewUtils; (domain=app) using reflection: allowed
+2025-10-16 18:42:55.426  6764-6764  HWUI                    org.bepass.oblivion                  W  Image decoding logging dropped!
+2025-10-16 18:42:55.500  6764-6764  HWUI                    org.bepass.oblivion                  W  Image decoding logging dropped!
+2025-10-16 18:42:55.541  6764-6764  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:515::writeActualSize> [UserData] increase sequence to 1, crc 1107532001, actualSize 4
+2025-10-16 18:42:55.594  6764-6764  HWUI                    org.bepass.oblivion                  W  Unknown dataspace 0
+2025-10-16 18:42:55.665  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc590578) locale list changing from [] to [fa]
+2025-10-16 18:42:55.666  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc590258) locale list changing from [] to [fa]
+2025-10-16 18:42:55.667  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc593a98) locale list changing from [] to [fa]
+2025-10-16 18:42:55.803  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [en-US] to [fa]
+2025-10-16 18:42:55.805  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) locale list changing from [en-US] to [fa]
+2025-10-16 18:42:55.817  6764-6764  WindowOnBackDispatcher  org.bepass.oblivion                  W  sendCancelIfRunning: isInProgress=false callback=android.app.Activity$$ExternalSyntheticLambda0@2d60a7f
+2025-10-16 18:42:55.823  6764-6764  ViewRootImpl            org.bepass.oblivion                  D  Skipping stats log for color mode
+2025-10-16 18:42:55.842  6764-6764  Resources               org.bepass.oblivion                  V  Updating configuration, with default locale en and selected locales [fa, en-US]
+2025-10-16 18:42:55.842  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc58ec78) locale list changing from [] to [fa,en-US]
+2025-10-16 18:42:55.842  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc58ec78) default locale changing from '' to 'en'
+2025-10-16 18:42:55.847  6764-6764  Resources               org.bepass.oblivion                  V  Updating configuration, with default locale en and selected locales [fa, en-US]
+2025-10-16 18:42:55.847  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc592198) locale list changing from [] to [fa,en-US]
+2025-10-16 18:42:55.848  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc592198) default locale changing from '' to 'en'
+2025-10-16 18:42:55.873  6764-6764  HWUI                    org.bepass.oblivion                  W  Image decoding logging dropped!
+2025-10-16 18:42:55.881  6764-6764  HWUI                    org.bepass.oblivion                  W  Image decoding logging dropped!
+2025-10-16 18:42:56.088  6764-6764  InsetsController        org.bepass.oblivion                  D  hide(ime(), fromIme=false)
+2025-10-16 18:42:56.089  6764-6764  ImeTracker              org.bepass.oblivion                  I  org.bepass.oblivion:fbcfa30a: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+2025-10-16 18:42:56.792  6764-6771  bepass.oblivion         org.bepass.oblivion                  I  Compiler allocated 5042KB to compile void android.view.ViewRootImpl.performTraversals()
+2025-10-16 18:42:56.935  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [fa] to [fa,en-US]
+2025-10-16 18:42:56.935  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) default locale changing from '' to 'en'
+2025-10-16 18:42:56.935  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc590258) locale list changing from [fa] to [fa,en-US]
+2025-10-16 18:42:56.936  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc590258) default locale changing from '' to 'en'
+2025-10-16 18:42:56.936  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc58ba78) default locale changing from '' to 'en'
+2025-10-16 18:42:56.936  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc590578) locale list changing from [fa] to [fa,en-US]
+2025-10-16 18:42:56.936  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc590578) default locale changing from '' to 'en'
+2025-10-16 18:42:56.937  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc58d9b8) default locale changing from '' to 'en'
+2025-10-16 18:42:56.937  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc5875b8) default locale changing from '' to 'en'
+2025-10-16 18:42:56.937  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc593a98) locale list changing from [fa] to [fa,en-US]
+2025-10-16 18:42:56.938  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc593a98) default locale changing from '' to 'en'
+2025-10-16 18:42:56.938  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) locale list changing from [fa] to [fa,en-US]
+2025-10-16 18:42:56.939  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) default locale changing from '' to 'en'
+2025-10-16 18:42:56.982  6764-6764  HWUI                    org.bepass.oblivion                  W  Image decoding logging dropped!
+2025-10-16 18:42:57.136  6764-6764  StateAwareBaseActivity  org.bepass.oblivion                  W  Service is not bound or messenger is null
+---------------------------- PROCESS STARTED (6818) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:42:57.306  6818-6818  nativeloader            org.bepass.oblivion                  D  Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+2025-10-16 18:42:57.474  6818-6818  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [en-US] to [fa]
+2025-10-16 18:42:58.386  6818-6818  nativeloader            org.bepass.oblivion                  D  Configuring clns-9 for other apk /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64:/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/org.bepass.oblivion
+2025-10-16 18:42:58.452  6818-6818  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58b118) locale list changing from [] to [fa]
+2025-10-16 18:42:58.512  6818-6818  GraphicsEnvironment     org.bepass.oblivion                  V  Currently set values for:
+2025-10-16 18:42:58.513  6818-6818  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_pkgs=[]
+2025-10-16 18:42:58.513  6818-6818  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_values=[]
+2025-10-16 18:42:58.513  6818-6818  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in per-application setting
+2025-10-16 18:42:58.513  6818-6818  GraphicsEnvironment     org.bepass.oblivion                  V  ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+2025-10-16 18:42:58.513  6818-6818  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in ANGLE allowlist or settings, returning default
+2025-10-16 18:42:58.514  6818-6818  GraphicsEnvironment     org.bepass.oblivion                  V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-16 18:42:58.534  6764-6764  VRI[Splash...nActivity] org.bepass.oblivion                  D  visibilityChanged oldVisibility=true newVisibility=false
+2025-10-16 18:42:58.556  6764-6764  WindowOnBackDispatcher  org.bepass.oblivion                  W  sendCancelIfRunning: isInProgress=false callback=android.app.Activity$$ExternalSyntheticLambda0@cb62b27
+2025-10-16 18:42:58.570  6764-6764  ViewRootImpl            org.bepass.oblivion                  D  Skipping stats log for color mode
+2025-10-16 18:42:58.571  6818-6818  MMKV                    org.bepass.oblivion                  I  Enable checkProcessMode()
+2025-10-16 18:42:58.580  6818-6818  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libmmkv.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:42:58.580  6818-6818  MMKV                    org.bepass.oblivion                  I  current API level = 36, libc++_shared=0
+2025-10-16 18:42:58.580  6818-6818  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:166::initialize> version v1.3.14, page size 4096, arch x86_64
+2025-10-16 18:42:58.581  6818-6818  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:225::initializeMMKV> root dir: /data/user/0/org.bepass.oblivion/files/mmkv
+2025-10-16 18:42:58.581  6818-6818  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:42:58.581  6818-6818  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96001000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:42:58.588  6818-6818  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x55], /data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc
+2025-10-16 18:42:58.589  6818-6818  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96000000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc]
+2025-10-16 18:42:58.596  6818-6818  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:214::loadMetaInfoAndCheck> meta file [UserData] has flag [0]
+2025-10-16 18:42:58.596  6818-6818  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 254 actual size, file size 4096, InterProcess 0, meta info version:4
+2025-10-16 18:42:58.596  6818-6818  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:89::loadFromFile> loading [UserData] with crc 1680429838 sequence 1 version 4
+2025-10-16 18:42:58.596  6818-6818  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 10 key-values
+2025-10-16 18:42:58.764  6818-6818  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:42:58.790  6818-6818  :vpn_background         org.bepass.oblivion                  W  type=1400 audit(0.0:128): avc:  denied  { read } for  name="cap_last_cap" dev="proc" ino=34037 scontext=u:r:untrusted_app:s0:c217,c256,c512,c768 tcontext=u:object_r:proc:s0 tclass=file permissive=0 app=org.bepass.oblivion
+2025-10-16 18:42:58.805  6818-6846  GoLog                   org.bepass.oblivion                  I  goidOffset: 152
+2025-10-16 18:42:58.815  6818-0     Go                      org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:42:58.816  6818-6849  GoLog                   org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:42:58.817  6818-6846  libc                    org.bepass.oblivion                  A  Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 6846 (:vpn_background), pid 6818 (:vpn_background)
+2025-10-16 18:42:59.389  6764-6764  InsetsController        org.bepass.oblivion                  D  hide(ime(), fromIme=false)
+2025-10-16 18:42:59.389  6764-6764  ImeTracker              org.bepass.oblivion                  I  org.bepass.oblivion:ec7f77c4: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+2025-10-16 18:42:59.771  6855-6855  DEBUG                   crash_dump64                         A  Cmdline: org.bepass.oblivion:vpn_background
+2025-10-16 18:42:59.771  6855-6855  DEBUG                   crash_dump64                         A  pid: 6818, tid: 6846, name: :vpn_background  >>> org.bepass.oblivion:vpn_background <<<
+2025-10-16 18:42:59.771  6855-6855  DEBUG                   crash_dump64                         A        #00 pc 000000000049d6a1  /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so (BuildId: 4f616648d252267f50f6b2f6b8ef85124c3c7339)
+---------------------------- PROCESS ENDED (6818) for package org.bepass.oblivion ----------------------------
+---------------------------- PROCESS STARTED (6867) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:00.917  6867-6867  nativeloader            org.bepass.oblivion                  D  Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+2025-10-16 18:43:00.966  6867-6867  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [en-US] to [fa]
+2025-10-16 18:43:00.975  6764-6879  ProfileInstaller        org.bepass.oblivion                  D  Installing profile for org.bepass.oblivion
+2025-10-16 18:43:01.250  6867-6867  nativeloader            org.bepass.oblivion                  D  Configuring clns-9 for other apk /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64:/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/org.bepass.oblivion
+2025-10-16 18:43:01.264  6867-6867  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) locale list changing from [] to [fa]
+2025-10-16 18:43:01.280  6867-6867  GraphicsEnvironment     org.bepass.oblivion                  V  Currently set values for:
+2025-10-16 18:43:01.281  6867-6867  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_pkgs=[]
+2025-10-16 18:43:01.281  6867-6867  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_values=[]
+2025-10-16 18:43:01.281  6867-6867  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in per-application setting
+2025-10-16 18:43:01.282  6867-6867  GraphicsEnvironment     org.bepass.oblivion                  V  ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+2025-10-16 18:43:01.282  6867-6867  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in ANGLE allowlist or settings, returning default
+2025-10-16 18:43:01.282  6867-6867  GraphicsEnvironment     org.bepass.oblivion                  V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-16 18:43:01.316  6867-6867  MMKV                    org.bepass.oblivion                  I  Enable checkProcessMode()
+2025-10-16 18:43:01.321  6867-6867  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libmmkv.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:01.323  6867-6867  MMKV                    org.bepass.oblivion                  I  current API level = 36, libc++_shared=0
+2025-10-16 18:43:01.323  6867-6867  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:166::initialize> version v1.3.14, page size 4096, arch x86_64
+2025-10-16 18:43:01.323  6867-6867  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:225::initializeMMKV> root dir: /data/user/0/org.bepass.oblivion/files/mmkv
+2025-10-16 18:43:01.323  6867-6867  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:43:01.323  6867-6867  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b960be000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:43:01.323  6867-6867  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x55], /data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc
+2025-10-16 18:43:01.323  6867-6867  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96001000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc]
+2025-10-16 18:43:01.327  6867-6867  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:214::loadMetaInfoAndCheck> meta file [UserData] has flag [0]
+2025-10-16 18:43:01.328  6867-6867  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 254 actual size, file size 4096, InterProcess 0, meta info version:4
+2025-10-16 18:43:01.328  6867-6867  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:89::loadFromFile> loading [UserData] with crc 1680429838 sequence 1 version 4
+2025-10-16 18:43:01.328  6867-6867  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 10 key-values
+2025-10-16 18:43:01.399  6867-6867  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:01.410  6867-6867  :vpn_background         org.bepass.oblivion                  W  type=1400 audit(0.0:129): avc:  denied  { read } for  name="cap_last_cap" dev="proc" ino=34037 scontext=u:r:untrusted_app:s0:c217,c256,c512,c768 tcontext=u:object_r:proc:s0 tclass=file permissive=0 app=org.bepass.oblivion
+2025-10-16 18:43:01.415  6867-6882  GoLog                   org.bepass.oblivion                  I  goidOffset: 152
+2025-10-16 18:43:01.421  6867-0     Go                      org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:01.421  6867-6885  GoLog                   org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:01.421  6867-6882  libc                    org.bepass.oblivion                  A  Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 6882 (:vpn_background), pid 6867 (:vpn_background)
+2025-10-16 18:43:01.665  6891-6891  DEBUG                   crash_dump64                         A  Cmdline: org.bepass.oblivion:vpn_background
+2025-10-16 18:43:01.665  6891-6891  DEBUG                   crash_dump64                         A  pid: 6867, tid: 6882, name: :vpn_background  >>> org.bepass.oblivion:vpn_background <<<
+2025-10-16 18:43:01.666  6891-6891  DEBUG                   crash_dump64                         A        #00 pc 000000000049d6a1  /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so (BuildId: 4f616648d252267f50f6b2f6b8ef85124c3c7339)
+---------------------------- PROCESS ENDED (6867) for package org.bepass.oblivion ----------------------------
+---------------------------- PROCESS STARTED (6896) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:01.968  6896-6896  nativeloader            org.bepass.oblivion                  D  Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+2025-10-16 18:43:02.087  6896-6896  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [en-US] to [fa]
+2025-10-16 18:43:02.239  6764-6764  InsetsController        org.bepass.oblivion                  D  hide(ime(), fromIme=false)
+2025-10-16 18:43:02.240  6764-6764  ImeTracker              org.bepass.oblivion                  I  org.bepass.oblivion:cb112021: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+2025-10-16 18:43:02.479  6896-6896  nativeloader            org.bepass.oblivion                  D  Configuring clns-9 for other apk /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64:/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/org.bepass.oblivion
+2025-10-16 18:43:02.501  6896-6896  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) locale list changing from [] to [fa]
+2025-10-16 18:43:02.524  6896-6896  GraphicsEnvironment     org.bepass.oblivion                  V  Currently set values for:
+2025-10-16 18:43:02.528  6896-6896  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_pkgs=[]
+2025-10-16 18:43:02.528  6896-6896  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_values=[]
+2025-10-16 18:43:02.529  6896-6896  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in per-application setting
+2025-10-16 18:43:02.529  6896-6896  GraphicsEnvironment     org.bepass.oblivion                  V  ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+2025-10-16 18:43:02.530  6896-6896  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in ANGLE allowlist or settings, returning default
+2025-10-16 18:43:02.530  6896-6896  GraphicsEnvironment     org.bepass.oblivion                  V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-16 18:43:02.579  6896-6896  MMKV                    org.bepass.oblivion                  I  Enable checkProcessMode()
+2025-10-16 18:43:02.584  6896-6896  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libmmkv.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:02.585  6896-6896  MMKV                    org.bepass.oblivion                  I  current API level = 36, libc++_shared=0
+2025-10-16 18:43:02.585  6896-6896  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:166::initialize> version v1.3.14, page size 4096, arch x86_64
+2025-10-16 18:43:02.585  6896-6896  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:225::initializeMMKV> root dir: /data/user/0/org.bepass.oblivion/files/mmkv
+2025-10-16 18:43:02.586  6896-6896  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:43:02.586  6896-6896  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b960be000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:43:02.586  6896-6896  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x55], /data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc
+2025-10-16 18:43:02.586  6896-6896  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96001000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc]
+2025-10-16 18:43:02.589  6896-6896  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:214::loadMetaInfoAndCheck> meta file [UserData] has flag [0]
+2025-10-16 18:43:02.589  6896-6896  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 254 actual size, file size 4096, InterProcess 0, meta info version:4
+2025-10-16 18:43:02.589  6896-6896  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:89::loadFromFile> loading [UserData] with crc 1680429838 sequence 1 version 4
+2025-10-16 18:43:02.589  6896-6896  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 10 key-values
+2025-10-16 18:43:02.630  6764-6764  VRI[MainActivity]       org.bepass.oblivion                  D  visibilityChanged oldVisibility=true newVisibility=false
+2025-10-16 18:43:02.668  6764-6764  WindowOnBackDispatcher  org.bepass.oblivion                  W  sendCancelIfRunning: isInProgress=false callback=androidx.activity.OnBackPressedDispatcher$Api34Impl$createOnBackAnimationCallback$1@81a2bb4
+2025-10-16 18:43:02.722  6896-6896  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:02.734  6896-6896  :vpn_background         org.bepass.oblivion                  W  type=1400 audit(0.0:130): avc:  denied  { read } for  name="cap_last_cap" dev="proc" ino=34037 scontext=u:r:untrusted_app:s0:c217,c256,c512,c768 tcontext=u:object_r:proc:s0 tclass=file permissive=0 app=org.bepass.oblivion
+2025-10-16 18:43:02.749  6896-6912  GoLog                   org.bepass.oblivion                  I  goidOffset: 152
+2025-10-16 18:43:02.757  6896-0     Go                      org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:02.757  6896-6915  GoLog                   org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:02.758  6896-6912  libc                    org.bepass.oblivion                  A  Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 6912 (:vpn_background), pid 6896 (:vpn_background)
+2025-10-16 18:43:03.017  6920-6920  DEBUG                   crash_dump64                         A  Cmdline: org.bepass.oblivion:vpn_background
+2025-10-16 18:43:03.017  6920-6920  DEBUG                   crash_dump64                         A  pid: 6896, tid: 6912, name: :vpn_background  >>> org.bepass.oblivion:vpn_background <<<
+2025-10-16 18:43:03.017  6920-6920  DEBUG                   crash_dump64                         A        #00 pc 000000000049d6a1  /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so (BuildId: 4f616648d252267f50f6b2f6b8ef85124c3c7339)
+---------------------------- PROCESS ENDED (6896) for package org.bepass.oblivion ----------------------------
+---------------------------- PROCESS STARTED (6927) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:04.170  6927-6927  nativeloader            org.bepass.oblivion                  D  Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+2025-10-16 18:43:04.229  6927-6927  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [en-US] to [fa]
+2025-10-16 18:43:04.463  6927-6927  nativeloader            org.bepass.oblivion                  D  Configuring clns-9 for other apk /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64:/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/org.bepass.oblivion
+2025-10-16 18:43:04.481  6927-6927  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) locale list changing from [] to [fa]
+2025-10-16 18:43:04.501  6927-6927  GraphicsEnvironment     org.bepass.oblivion                  V  Currently set values for:
+2025-10-16 18:43:04.502  6927-6927  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_pkgs=[]
+2025-10-16 18:43:04.502  6927-6927  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_values=[]
+2025-10-16 18:43:04.502  6927-6927  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in per-application setting
+2025-10-16 18:43:04.502  6927-6927  GraphicsEnvironment     org.bepass.oblivion                  V  ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+2025-10-16 18:43:04.503  6927-6927  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in ANGLE allowlist or settings, returning default
+2025-10-16 18:43:04.503  6927-6927  GraphicsEnvironment     org.bepass.oblivion                  V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-16 18:43:04.530  6927-6927  MMKV                    org.bepass.oblivion                  I  Enable checkProcessMode()
+2025-10-16 18:43:04.536  6927-6927  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libmmkv.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:04.537  6927-6927  MMKV                    org.bepass.oblivion                  I  current API level = 36, libc++_shared=0
+2025-10-16 18:43:04.537  6927-6927  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:166::initialize> version v1.3.14, page size 4096, arch x86_64
+2025-10-16 18:43:04.538  6927-6927  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:225::initializeMMKV> root dir: /data/user/0/org.bepass.oblivion/files/mmkv
+2025-10-16 18:43:04.538  6927-6927  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:43:04.538  6927-6927  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b960be000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:43:04.539  6927-6927  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x55], /data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc
+2025-10-16 18:43:04.539  6927-6927  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96001000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc]
+2025-10-16 18:43:04.543  6927-6927  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:214::loadMetaInfoAndCheck> meta file [UserData] has flag [0]
+2025-10-16 18:43:04.544  6927-6927  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 254 actual size, file size 4096, InterProcess 0, meta info version:4
+2025-10-16 18:43:04.544  6927-6927  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:89::loadFromFile> loading [UserData] with crc 1680429838 sequence 1 version 4
+2025-10-16 18:43:04.544  6927-6927  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 10 key-values
+2025-10-16 18:43:04.613  6927-6927  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:04.622  6927-6927  :vpn_background         org.bepass.oblivion                  W  type=1400 audit(0.0:131): avc:  denied  { read } for  name="cap_last_cap" dev="proc" ino=34037 scontext=u:r:untrusted_app:s0:c217,c256,c512,c768 tcontext=u:object_r:proc:s0 tclass=file permissive=0 app=org.bepass.oblivion
+2025-10-16 18:43:04.631  6927-6941  GoLog                   org.bepass.oblivion                  I  goidOffset: 152
+2025-10-16 18:43:04.638  6927-0     Go                      org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:04.638  6927-6944  GoLog                   org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:04.639  6927-6941  libc                    org.bepass.oblivion                  A  Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 6941 (:vpn_background), pid 6927 (:vpn_background)
+2025-10-16 18:43:04.852  6951-6951  DEBUG                   crash_dump64                         A  Cmdline: org.bepass.oblivion:vpn_background
+2025-10-16 18:43:04.852  6951-6951  DEBUG                   crash_dump64                         A  pid: 6927, tid: 6941, name: :vpn_background  >>> org.bepass.oblivion:vpn_background <<<
+2025-10-16 18:43:04.853  6951-6951  DEBUG                   crash_dump64                         A        #00 pc 000000000049d6a1  /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so (BuildId: 4f616648d252267f50f6b2f6b8ef85124c3c7339)
+---------------------------- PROCESS ENDED (6927) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:08.373  6764-6772  bepass.oblivion         org.bepass.oblivion                  W  Cleared Reference was only reachable from finalizer (only reported once)
+2025-10-16 18:43:13.832  6764-6764  CompatChangeReporter    org.bepass.oblivion                  D  Compat change id reported: 379365266; UID 10217; state: ENABLED
+2025-10-16 18:43:16.533  6764-6764  WindowOnBackDispatcher  org.bepass.oblivion                  W  sendCancelIfRunning: isInProgress=false callback=android.app.Dialog$$ExternalSyntheticLambda2@5412033
+2025-10-16 18:43:16.537  6764-6787  HWUI                    org.bepass.oblivion                  D  endAllActiveAnimators on 0x72794c63c120 (RippleDrawable) with handle 0x727a3c5d0050
+2025-10-16 18:43:17.794  6764-6764  VRI[SettingsActivity]   org.bepass.oblivion                  D  visibilityChanged oldVisibility=true newVisibility=false
+2025-10-16 18:43:19.486  6764-6764  ViewRootImpl            org.bepass.oblivion                  D  Skipping stats log for color mode
+---------------------------- PROCESS STARTED (6996) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:19.558  6996-6996  nativeloader            org.bepass.oblivion                  D  Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+2025-10-16 18:43:19.617  6764-6764  InsetsController        org.bepass.oblivion                  D  hide(ime(), fromIme=false)
+2025-10-16 18:43:19.617  6764-6764  ImeTracker              org.bepass.oblivion                  I  org.bepass.oblivion:83dca4b5: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+2025-10-16 18:43:19.637  6996-6996  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [en-US] to [fa]
+2025-10-16 18:43:19.924  6996-6996  nativeloader            org.bepass.oblivion                  D  Configuring clns-9 for other apk /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64:/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/org.bepass.oblivion
+2025-10-16 18:43:19.930  6996-6996  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) locale list changing from [] to [fa]
+2025-10-16 18:43:19.943  6996-6996  GraphicsEnvironment     org.bepass.oblivion                  V  Currently set values for:
+2025-10-16 18:43:19.943  6996-6996  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_pkgs=[]
+2025-10-16 18:43:19.943  6996-6996  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_values=[]
+2025-10-16 18:43:19.943  6996-6996  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in per-application setting
+2025-10-16 18:43:19.943  6996-6996  GraphicsEnvironment     org.bepass.oblivion                  V  ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+2025-10-16 18:43:19.943  6996-6996  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in ANGLE allowlist or settings, returning default
+2025-10-16 18:43:19.943  6996-6996  GraphicsEnvironment     org.bepass.oblivion                  V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-16 18:43:19.965  6996-6996  MMKV                    org.bepass.oblivion                  I  Enable checkProcessMode()
+2025-10-16 18:43:19.967  6996-6996  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libmmkv.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:19.968  6996-6996  MMKV                    org.bepass.oblivion                  I  current API level = 36, libc++_shared=0
+2025-10-16 18:43:19.968  6996-6996  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:166::initialize> version v1.3.14, page size 4096, arch x86_64
+2025-10-16 18:43:19.968  6996-6996  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:225::initializeMMKV> root dir: /data/user/0/org.bepass.oblivion/files/mmkv
+2025-10-16 18:43:19.968  6996-6996  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:43:19.968  6996-6996  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b960be000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:43:19.968  6996-6996  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x55], /data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc
+2025-10-16 18:43:19.968  6996-6996  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96001000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc]
+2025-10-16 18:43:19.970  6996-6996  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:214::loadMetaInfoAndCheck> meta file [UserData] has flag [0]
+2025-10-16 18:43:19.970  6996-6996  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 254 actual size, file size 4096, InterProcess 0, meta info version:4
+2025-10-16 18:43:19.970  6996-6996  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:89::loadFromFile> loading [UserData] with crc 1680429838 sequence 1 version 4
+2025-10-16 18:43:19.970  6996-6996  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 10 key-values
+2025-10-16 18:43:20.037  6996-6996  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:20.053  6996-7012  GoLog                   org.bepass.oblivion                  I  goidOffset: 152
+2025-10-16 18:43:20.050  6996-6996  :vpn_background         org.bepass.oblivion                  W  type=1400 audit(0.0:132): avc:  denied  { read } for  name="cap_last_cap" dev="proc" ino=34037 scontext=u:r:untrusted_app:s0:c217,c256,c512,c768 tcontext=u:object_r:proc:s0 tclass=file permissive=0 app=org.bepass.oblivion
+2025-10-16 18:43:20.061  6996-0     Go                      org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:20.062  6996-7012  libc                    org.bepass.oblivion                  A  Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 7012 (:vpn_background), pid 6996 (:vpn_background)
+2025-10-16 18:43:20.065  6996-7014  GoLog                   org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:20.243  7020-7020  DEBUG                   crash_dump64                         A  Cmdline: org.bepass.oblivion:vpn_background
+2025-10-16 18:43:20.243  7020-7020  DEBUG                   crash_dump64                         A  pid: 6996, tid: 7012, name: :vpn_background  >>> org.bepass.oblivion:vpn_background <<<
+2025-10-16 18:43:20.243  7020-7020  DEBUG                   crash_dump64                         A        #00 pc 000000000049d6a1  /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so (BuildId: 4f616648d252267f50f6b2f6b8ef85124c3c7339)
+---------------------------- PROCESS ENDED (6996) for package org.bepass.oblivion ----------------------------
+---------------------------- PROCESS STARTED (7027) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:21.400  7027-7027  nativeloader            org.bepass.oblivion                  D  Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+2025-10-16 18:43:21.436  7027-7027  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [en-US] to [fa]
+2025-10-16 18:43:21.567  7027-7027  nativeloader            org.bepass.oblivion                  D  Configuring clns-9 for other apk /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64:/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/org.bepass.oblivion
+2025-10-16 18:43:21.575  7027-7027  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) locale list changing from [] to [fa]
+2025-10-16 18:43:21.581  7027-7027  GraphicsEnvironment     org.bepass.oblivion                  V  Currently set values for:
+2025-10-16 18:43:21.582  7027-7027  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_pkgs=[]
+2025-10-16 18:43:21.582  7027-7027  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_values=[]
+2025-10-16 18:43:21.582  7027-7027  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in per-application setting
+2025-10-16 18:43:21.582  7027-7027  GraphicsEnvironment     org.bepass.oblivion                  V  ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+2025-10-16 18:43:21.582  7027-7027  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in ANGLE allowlist or settings, returning default
+2025-10-16 18:43:21.582  7027-7027  GraphicsEnvironment     org.bepass.oblivion                  V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-16 18:43:21.597  7027-7027  MMKV                    org.bepass.oblivion                  I  Enable checkProcessMode()
+2025-10-16 18:43:21.599  7027-7027  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libmmkv.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:21.600  7027-7027  MMKV                    org.bepass.oblivion                  I  current API level = 36, libc++_shared=0
+2025-10-16 18:43:21.600  7027-7027  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:166::initialize> version v1.3.14, page size 4096, arch x86_64
+2025-10-16 18:43:21.600  7027-7027  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:225::initializeMMKV> root dir: /data/user/0/org.bepass.oblivion/files/mmkv
+2025-10-16 18:43:21.600  7027-7027  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:43:21.601  7027-7027  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b960be000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:43:21.601  7027-7027  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x55], /data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc
+2025-10-16 18:43:21.601  7027-7027  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96001000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc]
+2025-10-16 18:43:21.603  7027-7027  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:214::loadMetaInfoAndCheck> meta file [UserData] has flag [0]
+2025-10-16 18:43:21.603  7027-7027  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 254 actual size, file size 4096, InterProcess 0, meta info version:4
+2025-10-16 18:43:21.603  7027-7027  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:89::loadFromFile> loading [UserData] with crc 1680429838 sequence 1 version 4
+2025-10-16 18:43:21.603  7027-7027  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 10 key-values
+2025-10-16 18:43:21.653  7027-7027  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:21.662  7027-7027  :vpn_background         org.bepass.oblivion                  W  type=1400 audit(0.0:133): avc:  denied  { read } for  name="cap_last_cap" dev="proc" ino=34037 scontext=u:r:untrusted_app:s0:c217,c256,c512,c768 tcontext=u:object_r:proc:s0 tclass=file permissive=0 app=org.bepass.oblivion
+2025-10-16 18:43:21.667  7027-7042  GoLog                   org.bepass.oblivion                  I  goidOffset: 152
+2025-10-16 18:43:21.681  7027-0     Go                      org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:21.681  7027-7042  libc                    org.bepass.oblivion                  A  Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 7042 (:vpn_background), pid 7027 (:vpn_background)
+2025-10-16 18:43:21.681  7027-7045  GoLog                   org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:21.808  7050-7050  DEBUG                   crash_dump64                         A  Cmdline: org.bepass.oblivion:vpn_background
+2025-10-16 18:43:21.808  7050-7050  DEBUG                   crash_dump64                         A  pid: 7027, tid: 7042, name: :vpn_background  >>> org.bepass.oblivion:vpn_background <<<
+2025-10-16 18:43:21.808  7050-7050  DEBUG                   crash_dump64                         A        #00 pc 000000000049d6a1  /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so (BuildId: 4f616648d252267f50f6b2f6b8ef85124c3c7339)
+---------------------------- PROCESS ENDED (7027) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:33.831  6764-6764  HWUI                    org.bepass.oblivion                  W  Image decoding logging dropped!
+2025-10-16 18:43:33.831  6764-6764  HWUI                    org.bepass.oblivion                  W  Image decoding logging dropped!
+2025-10-16 18:43:33.832  6764-6764  HWUI                    org.bepass.oblivion                  W  Image decoding logging dropped!
+2025-10-16 18:43:34.064  6764-6764  InsetsController        org.bepass.oblivion                  D  hide(ime(), fromIme=false)
+2025-10-16 18:43:34.065  6764-6764  ImeTracker              org.bepass.oblivion                  I  org.bepass.oblivion:768622a5: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+2025-10-16 18:43:34.389  6764-6764  InsetsController        org.bepass.oblivion                  D  hide(ime(), fromIme=false)
+2025-10-16 18:43:34.389  6764-6764  ImeTracker              org.bepass.oblivion                  I  org.bepass.oblivion:f1229929: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+2025-10-16 18:43:34.831  6764-6764  WindowOnBackDispatcher  org.bepass.oblivion                  W  sendCancelIfRunning: isInProgress=false callback=android.app.Dialog$$ExternalSyntheticLambda2@5d9b2e4
+2025-10-16 18:43:34.839  6764-6764  InputEventReceiver      org.bepass.oblivion                  W  Attempted to finish an input event but the input event receiver has already been disposed.
+2025-10-16 18:43:34.865  6764-6764  InsetsController        org.bepass.oblivion                  D  hide(ime(), fromIme=false)
+2025-10-16 18:43:34.865  6764-6764  ImeTracker              org.bepass.oblivion                  I  org.bepass.oblivion:c5a84565: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+2025-10-16 18:43:35.222  6764-6764  WindowOnBackDispatcher  org.bepass.oblivion                  W  sendCancelIfRunning: isInProgress=false callback=android.app.Dialog$$ExternalSyntheticLambda2@bc81b94
+2025-10-16 18:43:35.230  6764-6764  InputEventReceiver      org.bepass.oblivion                  W  Attempted to finish an input event but the input event receiver has already been disposed.
+2025-10-16 18:43:35.262  6764-6764  InsetsController        org.bepass.oblivion                  D  hide(ime(), fromIme=false)
+2025-10-16 18:43:35.262  6764-6764  ImeTracker              org.bepass.oblivion                  I  org.bepass.oblivion:22333a2c: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+2025-10-16 18:43:35.928  6764-6764  InsetsController        org.bepass.oblivion                  D  hide(ime(), fromIme=false)
+2025-10-16 18:43:35.929  6764-6764  ImeTracker              org.bepass.oblivion                  I  org.bepass.oblivion:10d194d4: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+2025-10-16 18:43:36.406  6764-6764  WindowOnBackDispatcher  org.bepass.oblivion                  W  sendCancelIfRunning: isInProgress=false callback=android.app.Dialog$$ExternalSyntheticLambda2@afecf9c
+2025-10-16 18:43:36.417  6764-6764  InputEventReceiver      org.bepass.oblivion                  W  Attempted to finish an input event but the input event receiver has already been disposed.
+2025-10-16 18:43:36.449  6764-6764  InsetsController        org.bepass.oblivion                  D  hide(ime(), fromIme=false)
+2025-10-16 18:43:36.449  6764-6764  ImeTracker              org.bepass.oblivion                  I  org.bepass.oblivion:aa1cad31: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+2025-10-16 18:43:37.570  6764-6764  Resources               org.bepass.oblivion                  V  Updating configuration, with default locale en and selected locales [fa, en-US]
+2025-10-16 18:43:37.570  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc595398) locale list changing from [] to [fa,en-US]
+2025-10-16 18:43:37.570  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc595398) default locale changing from '' to 'en'
+2025-10-16 18:43:37.695  6764-6764  HWUI                    org.bepass.oblivion                  W  Image decoding logging dropped!
+2025-10-16 18:43:37.696  6764-6764  HWUI                    org.bepass.oblivion                  W  Image decoding logging dropped!
+2025-10-16 18:43:37.698  6764-6764  HWUI                    org.bepass.oblivion                  W  Image decoding logging dropped!
+---------------------------- PROCESS STARTED (7067) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:37.747  7067-7067  nativeloader            org.bepass.oblivion                  D  Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+2025-10-16 18:43:37.810  7067-7067  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [en-US] to [fa]
+2025-10-16 18:43:37.958  6764-6764  InsetsController        org.bepass.oblivion                  D  hide(ime(), fromIme=false)
+2025-10-16 18:43:37.958  6764-6764  ImeTracker              org.bepass.oblivion                  I  org.bepass.oblivion:9f2f8499: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+2025-10-16 18:43:38.012  7067-7067  nativeloader            org.bepass.oblivion                  D  Configuring clns-9 for other apk /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64:/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/org.bepass.oblivion
+2025-10-16 18:43:38.024  7067-7067  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) locale list changing from [] to [fa]
+2025-10-16 18:43:38.039  7067-7067  GraphicsEnvironment     org.bepass.oblivion                  V  Currently set values for:
+2025-10-16 18:43:38.039  7067-7067  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_pkgs=[]
+2025-10-16 18:43:38.039  7067-7067  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_values=[]
+2025-10-16 18:43:38.039  7067-7067  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in per-application setting
+2025-10-16 18:43:38.039  7067-7067  GraphicsEnvironment     org.bepass.oblivion                  V  ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+2025-10-16 18:43:38.039  7067-7067  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in ANGLE allowlist or settings, returning default
+2025-10-16 18:43:38.039  7067-7067  GraphicsEnvironment     org.bepass.oblivion                  V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-16 18:43:38.078  7067-7067  MMKV                    org.bepass.oblivion                  I  Enable checkProcessMode()
+2025-10-16 18:43:38.083  7067-7067  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libmmkv.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:38.084  7067-7067  MMKV                    org.bepass.oblivion                  I  current API level = 36, libc++_shared=0
+2025-10-16 18:43:38.084  7067-7067  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:166::initialize> version v1.3.14, page size 4096, arch x86_64
+2025-10-16 18:43:38.084  7067-7067  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:225::initializeMMKV> root dir: /data/user/0/org.bepass.oblivion/files/mmkv
+2025-10-16 18:43:38.084  7067-7067  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:43:38.084  7067-7067  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b960be000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:43:38.084  7067-7067  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x55], /data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc
+2025-10-16 18:43:38.084  7067-7067  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96001000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc]
+2025-10-16 18:43:38.086  7067-7067  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:214::loadMetaInfoAndCheck> meta file [UserData] has flag [0]
+2025-10-16 18:43:38.086  7067-7067  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 356 actual size, file size 4096, InterProcess 0, meta info version:4
+2025-10-16 18:43:38.086  7067-7067  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:89::loadFromFile> loading [UserData] with crc 3857664221 sequence 1 version 4
+2025-10-16 18:43:38.086  7067-7067  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 12 key-values
+2025-10-16 18:43:38.161  7067-7067  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:38.170  7067-7067  :vpn_background         org.bepass.oblivion                  W  type=1400 audit(0.0:134): avc:  denied  { read } for  name="cap_last_cap" dev="proc" ino=34037 scontext=u:r:untrusted_app:s0:c217,c256,c512,c768 tcontext=u:object_r:proc:s0 tclass=file permissive=0 app=org.bepass.oblivion
+2025-10-16 18:43:38.176  7067-7083  GoLog                   org.bepass.oblivion                  I  goidOffset: 152
+2025-10-16 18:43:38.182  7067-0     Go                      org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:38.183  7067-7083  libc                    org.bepass.oblivion                  A  Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 7083 (:vpn_background), pid 7067 (:vpn_background)
+2025-10-16 18:43:38.296  6764-6764  VRI[SettingsActivity]   org.bepass.oblivion                  D  visibilityChanged oldVisibility=true newVisibility=false
+2025-10-16 18:43:38.317  6764-6787  HWUI                    org.bepass.oblivion                  D  endAllActiveAnimators on 0x72794c61cb00 (RippleDrawable) with handle 0x727a3c5e0700
+2025-10-16 18:43:38.440  7092-7092  DEBUG                   crash_dump64                         A  Cmdline: org.bepass.oblivion:vpn_background
+2025-10-16 18:43:38.440  7092-7092  DEBUG                   crash_dump64                         A  pid: 7067, tid: 7083, name: :vpn_background  >>> org.bepass.oblivion:vpn_background <<<
+2025-10-16 18:43:38.440  7092-7092  DEBUG                   crash_dump64                         A        #00 pc 000000000049d6a1  /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so (BuildId: 4f616648d252267f50f6b2f6b8ef85124c3c7339)
+---------------------------- PROCESS ENDED (7067) for package org.bepass.oblivion ----------------------------
+---------------------------- PROCESS STARTED (7096) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:39.571  7096-7096  nativeloader            org.bepass.oblivion                  D  Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+2025-10-16 18:43:39.613  7096-7096  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [en-US] to [fa]
+2025-10-16 18:43:39.765  7096-7096  nativeloader            org.bepass.oblivion                  D  Configuring clns-9 for other apk /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64:/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/org.bepass.oblivion
+2025-10-16 18:43:39.773  7096-7096  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) locale list changing from [] to [fa]
+2025-10-16 18:43:39.782  7096-7096  GraphicsEnvironment     org.bepass.oblivion                  V  Currently set values for:
+2025-10-16 18:43:39.782  7096-7096  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_pkgs=[]
+2025-10-16 18:43:39.782  7096-7096  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_values=[]
+2025-10-16 18:43:39.782  7096-7096  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in per-application setting
+2025-10-16 18:43:39.782  7096-7096  GraphicsEnvironment     org.bepass.oblivion                  V  ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+2025-10-16 18:43:39.783  7096-7096  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in ANGLE allowlist or settings, returning default
+2025-10-16 18:43:39.783  7096-7096  GraphicsEnvironment     org.bepass.oblivion                  V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-16 18:43:39.802  7096-7096  MMKV                    org.bepass.oblivion                  I  Enable checkProcessMode()
+2025-10-16 18:43:39.804  7096-7096  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libmmkv.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:39.805  7096-7096  MMKV                    org.bepass.oblivion                  I  current API level = 36, libc++_shared=0
+2025-10-16 18:43:39.805  7096-7096  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:166::initialize> version v1.3.14, page size 4096, arch x86_64
+2025-10-16 18:43:39.806  7096-7096  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:225::initializeMMKV> root dir: /data/user/0/org.bepass.oblivion/files/mmkv
+2025-10-16 18:43:39.806  7096-7096  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:43:39.806  7096-7096  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b960be000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:43:39.806  7096-7096  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x55], /data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc
+2025-10-16 18:43:39.806  7096-7096  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96001000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc]
+2025-10-16 18:43:39.809  7096-7096  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:214::loadMetaInfoAndCheck> meta file [UserData] has flag [0]
+2025-10-16 18:43:39.809  7096-7096  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 356 actual size, file size 4096, InterProcess 0, meta info version:4
+2025-10-16 18:43:39.809  7096-7096  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:89::loadFromFile> loading [UserData] with crc 3857664221 sequence 1 version 4
+2025-10-16 18:43:39.809  7096-7096  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 12 key-values
+2025-10-16 18:43:39.863  7096-7096  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:39.874  7096-7096  :vpn_background         org.bepass.oblivion                  W  type=1400 audit(0.0:135): avc:  denied  { read } for  name="cap_last_cap" dev="proc" ino=34037 scontext=u:r:untrusted_app:s0:c217,c256,c512,c768 tcontext=u:object_r:proc:s0 tclass=file permissive=0 app=org.bepass.oblivion
+2025-10-16 18:43:39.877  7096-7110  GoLog                   org.bepass.oblivion                  I  goidOffset: 152
+2025-10-16 18:43:39.883  7096-0     Go                      org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:39.883  7096-7113  GoLog                   org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:39.883  7096-7110  libc                    org.bepass.oblivion                  A  Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 7110 (:vpn_background), pid 7096 (:vpn_background)
+2025-10-16 18:43:40.046  7119-7119  DEBUG                   crash_dump64                         A  Cmdline: org.bepass.oblivion:vpn_background
+2025-10-16 18:43:40.046  7119-7119  DEBUG                   crash_dump64                         A  pid: 7096, tid: 7110, name: :vpn_background  >>> org.bepass.oblivion:vpn_background <<<
+2025-10-16 18:43:40.046  7119-7119  DEBUG                   crash_dump64                         A        #00 pc 000000000049d6a1  /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so (BuildId: 4f616648d252267f50f6b2f6b8ef85124c3c7339)
+---------------------------- PROCESS ENDED (7096) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:41.199  6764-6764  ViewRootImpl            org.bepass.oblivion                  D  Skipping stats log for color mode
+---------------------------- PROCESS STARTED (7124) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:41.335  7124-7124  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [en-US] to [fa]
+2025-10-16 18:43:41.415  6764-6764  InsetsController        org.bepass.oblivion                  D  hide(ime(), fromIme=false)
+2025-10-16 18:43:41.415  6764-6764  ImeTracker              org.bepass.oblivion                  I  org.bepass.oblivion:889a23ae: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+2025-10-16 18:43:41.652  7124-7124  nativeloader            org.bepass.oblivion                  D  Configuring clns-9 for other apk /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64:/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/org.bepass.oblivion
+2025-10-16 18:43:41.670  7124-7124  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) locale list changing from [] to [fa]
+2025-10-16 18:43:41.684  7124-7124  GraphicsEnvironment     org.bepass.oblivion                  V  Currently set values for:
+2025-10-16 18:43:41.684  7124-7124  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_pkgs=[]
+2025-10-16 18:43:41.684  7124-7124  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_values=[]
+2025-10-16 18:43:41.684  7124-7124  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in per-application setting
+2025-10-16 18:43:41.684  7124-7124  GraphicsEnvironment     org.bepass.oblivion                  V  ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+2025-10-16 18:43:41.685  7124-7124  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in ANGLE allowlist or settings, returning default
+2025-10-16 18:43:41.685  7124-7124  GraphicsEnvironment     org.bepass.oblivion                  V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-16 18:43:41.712  7124-7124  MMKV                    org.bepass.oblivion                  I  Enable checkProcessMode()
+2025-10-16 18:43:41.715  7124-7124  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libmmkv.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:41.716  7124-7124  MMKV                    org.bepass.oblivion                  I  current API level = 36, libc++_shared=0
+2025-10-16 18:43:41.716  7124-7124  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:166::initialize> version v1.3.14, page size 4096, arch x86_64
+2025-10-16 18:43:41.716  7124-7124  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:225::initializeMMKV> root dir: /data/user/0/org.bepass.oblivion/files/mmkv
+2025-10-16 18:43:41.717  7124-7124  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:43:41.717  7124-7124  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b960be000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:43:41.717  7124-7124  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x55], /data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc
+2025-10-16 18:43:41.717  7124-7124  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96001000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc]
+2025-10-16 18:43:41.719  7124-7124  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:214::loadMetaInfoAndCheck> meta file [UserData] has flag [0]
+2025-10-16 18:43:41.719  7124-7124  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 356 actual size, file size 4096, InterProcess 0, meta info version:4
+2025-10-16 18:43:41.719  7124-7124  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:89::loadFromFile> loading [UserData] with crc 3857664221 sequence 1 version 4
+2025-10-16 18:43:41.719  7124-7124  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 12 key-values
+2025-10-16 18:43:41.772  7124-7124  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:41.778  7124-7124  :vpn_background         org.bepass.oblivion                  W  type=1400 audit(0.0:136): avc:  denied  { read } for  name="cap_last_cap" dev="proc" ino=34037 scontext=u:r:untrusted_app:s0:c217,c256,c512,c768 tcontext=u:object_r:proc:s0 tclass=file permissive=0 app=org.bepass.oblivion
+2025-10-16 18:43:41.785  7124-7139  GoLog                   org.bepass.oblivion                  I  goidOffset: 152
+2025-10-16 18:43:41.789  7124-0     Go                      org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:41.789  7124-7139  libc                    org.bepass.oblivion                  A  Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 7139 (:vpn_background), pid 7124 (:vpn_background)
+2025-10-16 18:43:41.794  6764-6764  VRI[SplitT...lActivity] org.bepass.oblivion                  D  visibilityChanged oldVisibility=true newVisibility=false
+2025-10-16 18:43:41.830  6764-6787  HWUI                    org.bepass.oblivion                  D  endAllActiveAnimators on 0x72794c68c230 (RippleDrawable) with handle 0x727a3c5d86c0
+2025-10-16 18:43:41.843  6764-6764  WindowOnBackDispatcher  org.bepass.oblivion                  W  sendCancelIfRunning: isInProgress=false callback=android.app.Activity$$ExternalSyntheticLambda0@64370bd
+2025-10-16 18:43:41.849  6764-6764  ViewRootImpl            org.bepass.oblivion                  D  Skipping stats log for color mode
+2025-10-16 18:43:41.984  7148-7148  DEBUG                   crash_dump64                         A  Cmdline: org.bepass.oblivion:vpn_background
+2025-10-16 18:43:41.984  7148-7148  DEBUG                   crash_dump64                         A  pid: 7124, tid: 7139, name: :vpn_background  >>> org.bepass.oblivion:vpn_background <<<
+2025-10-16 18:43:41.984  7148-7148  DEBUG                   crash_dump64                         A        #00 pc 000000000049d6a1  /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so (BuildId: 4f616648d252267f50f6b2f6b8ef85124c3c7339)
+---------------------------- PROCESS ENDED (7124) for package org.bepass.oblivion ----------------------------
+---------------------------- PROCESS STARTED (7152) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:43.099  7152-7152  nativeloader            org.bepass.oblivion                  D  Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+2025-10-16 18:43:43.155  7152-7152  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [en-US] to [fa]
+2025-10-16 18:43:43.339  7152-7152  nativeloader            org.bepass.oblivion                  D  Configuring clns-9 for other apk /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64:/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/org.bepass.oblivion
+2025-10-16 18:43:43.351  7152-7152  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) locale list changing from [] to [fa]
+2025-10-16 18:43:43.359  7152-7152  GraphicsEnvironment     org.bepass.oblivion                  V  Currently set values for:
+2025-10-16 18:43:43.359  7152-7152  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_pkgs=[]
+2025-10-16 18:43:43.359  7152-7152  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_values=[]
+2025-10-16 18:43:43.359  7152-7152  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in per-application setting
+2025-10-16 18:43:43.359  7152-7152  GraphicsEnvironment     org.bepass.oblivion                  V  ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+2025-10-16 18:43:43.360  7152-7152  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in ANGLE allowlist or settings, returning default
+2025-10-16 18:43:43.360  7152-7152  GraphicsEnvironment     org.bepass.oblivion                  V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-16 18:43:43.383  7152-7152  MMKV                    org.bepass.oblivion                  I  Enable checkProcessMode()
+2025-10-16 18:43:43.387  7152-7152  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libmmkv.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:43.387  7152-7152  MMKV                    org.bepass.oblivion                  I  current API level = 36, libc++_shared=0
+2025-10-16 18:43:43.387  7152-7152  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:166::initialize> version v1.3.14, page size 4096, arch x86_64
+2025-10-16 18:43:43.388  7152-7152  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:225::initializeMMKV> root dir: /data/user/0/org.bepass.oblivion/files/mmkv
+2025-10-16 18:43:43.388  7152-7152  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:43:43.388  7152-7152  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b960be000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:43:43.388  7152-7152  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x55], /data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc
+2025-10-16 18:43:43.388  7152-7152  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96007000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc]
+2025-10-16 18:43:43.391  7152-7152  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:214::loadMetaInfoAndCheck> meta file [UserData] has flag [0]
+2025-10-16 18:43:43.391  7152-7152  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 356 actual size, file size 4096, InterProcess 0, meta info version:4
+2025-10-16 18:43:43.391  7152-7152  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:89::loadFromFile> loading [UserData] with crc 3857664221 sequence 1 version 4
+2025-10-16 18:43:43.391  7152-7152  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 12 key-values
+2025-10-16 18:43:43.435  7152-7152  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:43.442  7152-7152  :vpn_background         org.bepass.oblivion                  W  type=1400 audit(0.0:137): avc:  denied  { read } for  name="cap_last_cap" dev="proc" ino=34037 scontext=u:r:untrusted_app:s0:c217,c256,c512,c768 tcontext=u:object_r:proc:s0 tclass=file permissive=0 app=org.bepass.oblivion
+2025-10-16 18:43:43.447  7152-7166  GoLog                   org.bepass.oblivion                  I  goidOffset: 152
+2025-10-16 18:43:43.454  7152-0     Go                      org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:43.454  7152-7169  GoLog                   org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:43.454  7152-7166  libc                    org.bepass.oblivion                  A  Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 7166 (:vpn_background), pid 7152 (:vpn_background)
+2025-10-16 18:43:43.602  7174-7174  DEBUG                   crash_dump64                         A  Cmdline: org.bepass.oblivion:vpn_background
+2025-10-16 18:43:43.602  7174-7174  DEBUG                   crash_dump64                         A  pid: 7152, tid: 7166, name: :vpn_background  >>> org.bepass.oblivion:vpn_background <<<
+2025-10-16 18:43:43.603  7174-7174  DEBUG                   crash_dump64                         A        #00 pc 000000000049d6a1  /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so (BuildId: 4f616648d252267f50f6b2f6b8ef85124c3c7339)
+---------------------------- PROCESS ENDED (7152) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:43.944  6764-6764  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:1446::clearAll> cleaning all key-values from [UserData]
+2025-10-16 18:43:43.944  6764-6764  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:515::writeActualSize> [UserData] increase sequence to 2, crc 0, actualSize 0
+2025-10-16 18:43:43.945  6764-6764  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:307::clearMemoryCache> clearMemoryCache [UserData]
+2025-10-16 18:43:43.946  6764-6764  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:104::close> closing fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:43:43.946  6764-6764  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:214::loadMetaInfoAndCheck> meta file [UserData] has flag [0]
+2025-10-16 18:43:43.947  6764-6764  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:43:43.947  6764-6764  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96001000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:43:43.947  6764-6764  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 0 actual size, file size 4096, InterProcess 0, meta info version:4
+2025-10-16 18:43:43.947  6764-6764  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 0 key-values
+2025-10-16 18:43:43.948  6764-6764  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:515::writeActualSize> [UserData] increase sequence to 3, crc 3286597348, actualSize 4
+2025-10-16 18:43:43.992  6764-6764  HWUI                    org.bepass.oblivion                  W  Image decoding logging dropped!
+2025-10-16 18:43:44.018  6764-6764  StateAwareBaseActivity  org.bepass.oblivion                  W  Service is not bound or messenger is null
+---------------------------- PROCESS STARTED (7178) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:44.138  7178-7178  nativeloader            org.bepass.oblivion                  D  Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+2025-10-16 18:43:44.235  7178-7178  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [en-US] to [fa]
+2025-10-16 18:43:44.258  6764-6764  InsetsController        org.bepass.oblivion                  D  hide(ime(), fromIme=false)
+2025-10-16 18:43:44.258  6764-6764  ImeTracker              org.bepass.oblivion                  I  org.bepass.oblivion:b09a55f0: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+2025-10-16 18:43:44.454  7178-7178  nativeloader            org.bepass.oblivion                  D  Configuring clns-9 for other apk /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64:/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/org.bepass.oblivion
+2025-10-16 18:43:44.461  7178-7178  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) locale list changing from [] to [fa]
+2025-10-16 18:43:44.473  7178-7178  GraphicsEnvironment     org.bepass.oblivion                  V  Currently set values for:
+2025-10-16 18:43:44.473  7178-7178  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_pkgs=[]
+2025-10-16 18:43:44.473  7178-7178  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_values=[]
+2025-10-16 18:43:44.473  7178-7178  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in per-application setting
+2025-10-16 18:43:44.473  7178-7178  GraphicsEnvironment     org.bepass.oblivion                  V  ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+2025-10-16 18:43:44.473  7178-7178  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in ANGLE allowlist or settings, returning default
+2025-10-16 18:43:44.473  7178-7178  GraphicsEnvironment     org.bepass.oblivion                  V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-16 18:43:44.501  7178-7178  MMKV                    org.bepass.oblivion                  I  Enable checkProcessMode()
+2025-10-16 18:43:44.502  7178-7178  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libmmkv.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:44.503  7178-7178  MMKV                    org.bepass.oblivion                  I  current API level = 36, libc++_shared=0
+2025-10-16 18:43:44.503  7178-7178  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:166::initialize> version v1.3.14, page size 4096, arch x86_64
+2025-10-16 18:43:44.503  7178-7178  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:225::initializeMMKV> root dir: /data/user/0/org.bepass.oblivion/files/mmkv
+2025-10-16 18:43:44.503  7178-7178  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:43:44.503  7178-7178  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b960be000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:43:44.503  7178-7178  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x55], /data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc
+2025-10-16 18:43:44.503  7178-7178  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96001000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc]
+2025-10-16 18:43:44.508  7178-7178  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:214::loadMetaInfoAndCheck> meta file [UserData] has flag [0]
+2025-10-16 18:43:44.508  7178-7178  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 268 actual size, file size 4096, InterProcess 0, meta info version:4
+2025-10-16 18:43:44.510  7178-7178  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:89::loadFromFile> loading [UserData] with crc 3737172034 sequence 3 version 4
+2025-10-16 18:43:44.510  7178-7178  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 10 key-values
+2025-10-16 18:43:44.580  7178-7178  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:44.592  7178-7194  GoLog                   org.bepass.oblivion                  I  goidOffset: 152
+2025-10-16 18:43:44.586  7178-7178  :vpn_background         org.bepass.oblivion                  W  type=1400 audit(0.0:138): avc:  denied  { read } for  name="cap_last_cap" dev="proc" ino=34037 scontext=u:r:untrusted_app:s0:c217,c256,c512,c768 tcontext=u:object_r:proc:s0 tclass=file permissive=0 app=org.bepass.oblivion
+2025-10-16 18:43:44.603  7178-0     Go                      org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:44.603  7178-7197  GoLog                   org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:44.603  7178-7194  libc                    org.bepass.oblivion                  A  Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 7194 (:vpn_background), pid 7178 (:vpn_background)
+2025-10-16 18:43:44.632  6764-6764  VRI[SettingsActivity]   org.bepass.oblivion                  D  visibilityChanged oldVisibility=true newVisibility=false
+2025-10-16 18:43:44.649  6764-6787  HWUI                    org.bepass.oblivion                  D  endAllActiveAnimators on 0x72794c623ee0 (RippleDrawable) with handle 0x727a3c5f3120
+2025-10-16 18:43:44.663  6764-6764  WindowOnBackDispatcher  org.bepass.oblivion                  W  sendCancelIfRunning: isInProgress=false callback=android.app.Activity$$ExternalSyntheticLambda0@6f40a17
+2025-10-16 18:43:44.667  6764-6764  ViewRootImpl            org.bepass.oblivion                  D  Skipping stats log for color mode
+2025-10-16 18:43:44.771  7202-7202  DEBUG                   crash_dump64                         A  Cmdline: org.bepass.oblivion:vpn_background
+2025-10-16 18:43:44.771  7202-7202  DEBUG                   crash_dump64                         A  pid: 7178, tid: 7194, name: :vpn_background  >>> org.bepass.oblivion:vpn_background <<<
+2025-10-16 18:43:44.771  7202-7202  DEBUG                   crash_dump64                         A        #00 pc 000000000049d6a1  /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so (BuildId: 4f616648d252267f50f6b2f6b8ef85124c3c7339)
+---------------------------- PROCESS ENDED (7178) for package org.bepass.oblivion ----------------------------
+---------------------------- PROCESS STARTED (7207) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:45.863  7207-7207  nativeloader            org.bepass.oblivion                  D  Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+2025-10-16 18:43:45.932  7207-7207  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [en-US] to [fa]
+2025-10-16 18:43:46.026  6764-6772  bepass.oblivion         org.bepass.oblivion                  I  Background concurrent mark compact GC freed 4560KB AllocSpace bytes, 3(60KB) LOS objects, 49% free, 7138KB/13MB, paused 979us,7.349ms total 78.537ms
+2025-10-16 18:43:46.040  6764-6764  System.err              org.bepass.oblivion                  W  java.io.FileNotFoundException: /data/user/0/org.bepass.oblivion/files/logs.txt: open failed: ENOENT (No such file or directory)
+2025-10-16 18:43:46.051  6764-6764  System.err              org.bepass.oblivion                  W  	at libcore.io.IoBridge.open(IoBridge.java:574)
+2025-10-16 18:43:46.051  6764-6764  System.err              org.bepass.oblivion                  W  	at java.io.FileInputStream.<init>(FileInputStream.java:179)
+2025-10-16 18:43:46.051  6764-6764  System.err              org.bepass.oblivion                  W  	at android.app.ContextImpl.openFileInput(ContextImpl.java:773)
+2025-10-16 18:43:46.051  6764-6764  System.err              org.bepass.oblivion                  W  	at android.content.ContextWrapper.openFileInput(ContextWrapper.java:251)
+2025-10-16 18:43:46.051  6764-6764  System.err              org.bepass.oblivion                  W  	at android.content.ContextWrapper.openFileInput(ContextWrapper.java:251)
+2025-10-16 18:43:46.051  6764-6764  System.err              org.bepass.oblivion                  W  	at org.bepass.oblivion.ui.LogActivity.readLogsFromFile(LogActivity.java:89)
+2025-10-16 18:43:46.052  6764-6764  System.err              org.bepass.oblivion                  W  	at org.bepass.oblivion.ui.LogActivity.-$$Nest$mreadLogsFromFile(Unknown Source:0)
+2025-10-16 18:43:46.052  6764-6764  System.err              org.bepass.oblivion                  W  	at org.bepass.oblivion.ui.LogActivity$1.run(LogActivity.java:62)
+2025-10-16 18:43:46.052  6764-6764  System.err              org.bepass.oblivion                  W  	at android.os.Handler.handleCallback(Handler.java:995)
+2025-10-16 18:43:46.052  6764-6764  System.err              org.bepass.oblivion                  W  	at android.os.Handler.dispatchMessage(Handler.java:103)
+2025-10-16 18:43:46.052  6764-6764  System.err              org.bepass.oblivion                  W  	at android.os.Looper.loopOnce(Looper.java:248)
+2025-10-16 18:43:46.052  6764-6764  System.err              org.bepass.oblivion                  W  	at android.os.Looper.loop(Looper.java:338)
+2025-10-16 18:43:46.052  6764-6764  System.err              org.bepass.oblivion                  W  	at android.app.ActivityThread.main(ActivityThread.java:9067)
+2025-10-16 18:43:46.052  6764-6764  System.err              org.bepass.oblivion                  W  	at java.lang.reflect.Method.invoke(Native Method)
+2025-10-16 18:43:46.052  6764-6764  System.err              org.bepass.oblivion                  W  	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+2025-10-16 18:43:46.052  6764-6764  System.err              org.bepass.oblivion                  W  	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+2025-10-16 18:43:46.052  6764-6764  System.err              org.bepass.oblivion                  W  Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
+2025-10-16 18:43:46.053  6764-6764  System.err              org.bepass.oblivion                  W  	at libcore.io.Linux.open(Native Method)
+2025-10-16 18:43:46.053  6764-6764  System.err              org.bepass.oblivion                  W  	at libcore.io.ForwardingOs.open(ForwardingOs.java:568)
+2025-10-16 18:43:46.053  6764-6764  System.err              org.bepass.oblivion                  W  	at libcore.io.BlockGuardOs.open(BlockGuardOs.java:274)
+2025-10-16 18:43:46.053  6764-6764  System.err              org.bepass.oblivion                  W  	at libcore.io.ForwardingOs.open(ForwardingOs.java:568)
+2025-10-16 18:43:46.053  6764-6764  System.err              org.bepass.oblivion                  W  	at android.app.ActivityThread$AndroidOs.open(ActivityThread.java:8953)
+2025-10-16 18:43:46.053  6764-6764  System.err              org.bepass.oblivion                  W  	at libcore.io.IoBridge.open(IoBridge.java:560)
+2025-10-16 18:43:46.053  6764-6764  System.err              org.bepass.oblivion                  W  	... 15 more
+2025-10-16 18:43:46.144  7207-7207  nativeloader            org.bepass.oblivion                  D  Configuring clns-9 for other apk /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64:/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/org.bepass.oblivion
+2025-10-16 18:43:46.156  7207-7207  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58b118) locale list changing from [] to [fa]
+2025-10-16 18:43:46.166  7207-7207  GraphicsEnvironment     org.bepass.oblivion                  V  Currently set values for:
+2025-10-16 18:43:46.166  7207-7207  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_pkgs=[]
+2025-10-16 18:43:46.166  7207-7207  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_values=[]
+2025-10-16 18:43:46.166  7207-7207  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in per-application setting
+2025-10-16 18:43:46.167  7207-7207  GraphicsEnvironment     org.bepass.oblivion                  V  ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+2025-10-16 18:43:46.167  7207-7207  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in ANGLE allowlist or settings, returning default
+2025-10-16 18:43:46.167  7207-7207  GraphicsEnvironment     org.bepass.oblivion                  V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-16 18:43:46.198  6764-6764  InsetsController        org.bepass.oblivion                  D  hide(ime(), fromIme=false)
+2025-10-16 18:43:46.199  6764-6764  ImeTracker              org.bepass.oblivion                  I  org.bepass.oblivion:68389af9: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+2025-10-16 18:43:46.224  7207-7207  MMKV                    org.bepass.oblivion                  I  Enable checkProcessMode()
+2025-10-16 18:43:46.229  7207-7207  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libmmkv.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:46.229  7207-7207  MMKV                    org.bepass.oblivion                  I  current API level = 36, libc++_shared=0
+2025-10-16 18:43:46.230  7207-7207  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:166::initialize> version v1.3.14, page size 4096, arch x86_64
+2025-10-16 18:43:46.230  7207-7207  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:225::initializeMMKV> root dir: /data/user/0/org.bepass.oblivion/files/mmkv
+2025-10-16 18:43:46.230  7207-7207  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:43:46.230  7207-7207  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b960be000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:43:46.230  7207-7207  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x55], /data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc
+2025-10-16 18:43:46.231  7207-7207  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96001000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc]
+2025-10-16 18:43:46.233  7207-7207  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:214::loadMetaInfoAndCheck> meta file [UserData] has flag [0]
+2025-10-16 18:43:46.233  7207-7207  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 268 actual size, file size 4096, InterProcess 0, meta info version:4
+2025-10-16 18:43:46.233  7207-7207  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:89::loadFromFile> loading [UserData] with crc 3737172034 sequence 3 version 4
+2025-10-16 18:43:46.233  7207-7207  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 10 key-values
+2025-10-16 18:43:46.349  7207-7207  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:46.374  7207-7207  :vpn_background         org.bepass.oblivion                  W  type=1400 audit(0.0:139): avc:  denied  { read } for  name="cap_last_cap" dev="proc" ino=34037 scontext=u:r:untrusted_app:s0:c217,c256,c512,c768 tcontext=u:object_r:proc:s0 tclass=file permissive=0 app=org.bepass.oblivion
+2025-10-16 18:43:46.419  7207-7222  GoLog                   org.bepass.oblivion                  I  goidOffset: 152
+2025-10-16 18:43:46.437  7207-0     Go                      org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:46.437  7207-7222  libc                    org.bepass.oblivion                  A  Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 7222 (:vpn_background), pid 7207 (:vpn_background)
+2025-10-16 18:43:46.513  6764-6764  VRI[MainActivity]       org.bepass.oblivion                  D  visibilityChanged oldVisibility=true newVisibility=false
+2025-10-16 18:43:46.529  6764-6787  HWUI                    org.bepass.oblivion                  D  endAllActiveAnimators on 0x72794c69ea50 (RippleDrawable) with handle 0x727a3c5f1980
+2025-10-16 18:43:46.537  6764-6764  WindowOnBackDispatcher  org.bepass.oblivion                  W  sendCancelIfRunning: isInProgress=false callback=androidx.activity.OnBackPressedDispatcher$Api34Impl$createOnBackAnimationCallback$1@d2ff8fa
+2025-10-16 18:43:46.653  7231-7231  DEBUG                   crash_dump64                         A  Cmdline: org.bepass.oblivion:vpn_background
+2025-10-16 18:43:46.653  7231-7231  DEBUG                   crash_dump64                         A  pid: 7207, tid: 7222, name: :vpn_background  >>> org.bepass.oblivion:vpn_background <<<
+2025-10-16 18:43:46.653  7231-7231  DEBUG                   crash_dump64                         A        #00 pc 000000000049d6a1  /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so (BuildId: 4f616648d252267f50f6b2f6b8ef85124c3c7339)
+---------------------------- PROCESS ENDED (7207) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:46.929  6764-6764  ViewRootImpl            org.bepass.oblivion                  D  Skipping stats log for color mode
+2025-10-16 18:43:46.932  6764-6764  StateAwareBaseActivity  org.bepass.oblivion                  W  Service is not bound or messenger is null
+---------------------------- PROCESS STARTED (7235) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:47.048  6764-6764  InsetsController        org.bepass.oblivion                  D  hide(ime(), fromIme=false)
+2025-10-16 18:43:47.049  6764-6764  ImeTracker              org.bepass.oblivion                  I  org.bepass.oblivion:e3122be9: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+2025-10-16 18:43:47.074  7235-7235  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [en-US] to [fa]
+2025-10-16 18:43:47.282  7235-7235  nativeloader            org.bepass.oblivion                  D  Configuring clns-9 for other apk /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64:/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/org.bepass.oblivion
+2025-10-16 18:43:47.291  7235-7235  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) locale list changing from [] to [fa]
+2025-10-16 18:43:47.302  7235-7235  GraphicsEnvironment     org.bepass.oblivion                  V  Currently set values for:
+2025-10-16 18:43:47.302  7235-7235  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_pkgs=[]
+2025-10-16 18:43:47.302  7235-7235  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_values=[]
+2025-10-16 18:43:47.302  7235-7235  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in per-application setting
+2025-10-16 18:43:47.302  7235-7235  GraphicsEnvironment     org.bepass.oblivion                  V  ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+2025-10-16 18:43:47.302  7235-7235  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in ANGLE allowlist or settings, returning default
+2025-10-16 18:43:47.302  7235-7235  GraphicsEnvironment     org.bepass.oblivion                  V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-16 18:43:47.321  7235-7235  MMKV                    org.bepass.oblivion                  I  Enable checkProcessMode()
+2025-10-16 18:43:47.326  7235-7235  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libmmkv.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:47.328  7235-7235  MMKV                    org.bepass.oblivion                  I  current API level = 36, libc++_shared=0
+2025-10-16 18:43:47.328  7235-7235  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:166::initialize> version v1.3.14, page size 4096, arch x86_64
+2025-10-16 18:43:47.328  7235-7235  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:225::initializeMMKV> root dir: /data/user/0/org.bepass.oblivion/files/mmkv
+2025-10-16 18:43:47.329  7235-7235  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:43:47.329  7235-7235  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b960be000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:43:47.329  7235-7235  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x55], /data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc
+2025-10-16 18:43:47.329  7235-7235  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96001000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc]
+2025-10-16 18:43:47.331  7235-7235  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:214::loadMetaInfoAndCheck> meta file [UserData] has flag [0]
+2025-10-16 18:43:47.331  7235-7235  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 268 actual size, file size 4096, InterProcess 0, meta info version:4
+2025-10-16 18:43:47.331  7235-7235  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:89::loadFromFile> loading [UserData] with crc 3737172034 sequence 3 version 4
+2025-10-16 18:43:47.331  7235-7235  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 10 key-values
+2025-10-16 18:43:47.383  7235-7235  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:47.402  7235-7250  GoLog                   org.bepass.oblivion                  I  goidOffset: 152
+2025-10-16 18:43:47.398  7235-7235  :vpn_background         org.bepass.oblivion                  W  type=1400 audit(0.0:140): avc:  denied  { read } for  name="cap_last_cap" dev="proc" ino=34037 scontext=u:r:untrusted_app:s0:c217,c256,c512,c768 tcontext=u:object_r:proc:s0 tclass=file permissive=0 app=org.bepass.oblivion
+2025-10-16 18:43:47.407  7235-0     Go                      org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:47.407  7235-7253  GoLog                   org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:47.408  7235-7250  libc                    org.bepass.oblivion                  A  Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 7250 (:vpn_background), pid 7235 (:vpn_background)
+2025-10-16 18:43:47.498  6764-6764  VRI[LogActivity]        org.bepass.oblivion                  D  visibilityChanged oldVisibility=true newVisibility=false
+2025-10-16 18:43:47.513  6764-6787  HWUI                    org.bepass.oblivion                  D  endAllActiveAnimators on 0x72794c6abec0 (RippleDrawable) with handle 0x727a3c5f4b60
+2025-10-16 18:43:47.523  6764-6764  WindowOnBackDispatcher  org.bepass.oblivion                  W  sendCancelIfRunning: isInProgress=false callback=android.app.Activity$$ExternalSyntheticLambda0@ff81fe7
+2025-10-16 18:43:47.526  6764-6764  ViewRootImpl            org.bepass.oblivion                  D  Skipping stats log for color mode
+2025-10-16 18:43:47.621  7258-7258  DEBUG                   crash_dump64                         A  Cmdline: org.bepass.oblivion:vpn_background
+2025-10-16 18:43:47.621  7258-7258  DEBUG                   crash_dump64                         A  pid: 7235, tid: 7250, name: :vpn_background  >>> org.bepass.oblivion:vpn_background <<<
+2025-10-16 18:43:47.621  7258-7258  DEBUG                   crash_dump64                         A        #00 pc 000000000049d6a1  /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so (BuildId: 4f616648d252267f50f6b2f6b8ef85124c3c7339)
+---------------------------- PROCESS ENDED (7235) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:47.941  6764-6764  83                      org.bepass.oblivion                  D  
+2025-10-16 18:43:48.047   762-2573  AppOps                  system_server                        E  Bad call made by uid 10113. Package "org.bepass.oblivion" does not belong to uid 10113.
+2025-10-16 18:43:48.052   762-2573  AppOps                  system_server                        E  Cannot noteOperation
+                                                                                                    java.lang.SecurityException: Specified package "org.bepass.oblivion" under uid 10113 but it is not
+                                                                                                    	at com.android.server.appop.AppOpsService.verifyAndGetBypass(AppOpsService.java:5036)
+                                                                                                    	at com.android.server.appop.AppOpsService.verifyAndGetBypass(AppOpsService.java:4881)
+                                                                                                    	at com.android.server.appop.AppOpsService.noteOperationUnchecked(AppOpsService.java:3408)
+                                                                                                    	at com.android.server.appop.AppOpsService.noteOperationImpl(AppOpsService.java:3395)
+                                                                                                    	at com.android.server.appop.AppOpsService.-$$Nest$mnoteOperationImpl(AppOpsService.java:0)
+                                                                                                    	at com.android.server.appop.AppOpsService$CheckOpsDelegateDispatcher.$r8$lambda$eTKLGbByFLiOzK62QHhpSvtx4do(AppOpsService.java:0)
+                                                                                                    	at com.android.server.appop.AppOpsService$CheckOpsDelegateDispatcher$$ExternalSyntheticLambda5.apply(R8$$SyntheticClass:0)
+                                                                                                    	at com.android.server.policy.AppOpsPolicy.noteOperation(AppOpsPolicy.java:254)
+                                                                                                    	at com.android.server.appop.AppOpsService$CheckOpsDelegateDispatcher.noteOperation(AppOpsService.java:7797)
+                                                                                                    	at com.android.server.appop.AppOpsService.noteOperation(AppOpsService.java:3342)
+                                                                                                    	at android.app.AppOpsManager.noteOpNoThrow(AppOpsManager.java:9698)
+                                                                                                    	at android.app.AppOpsManager.noteOpNoThrow(AppOpsManager.java:9602)
+                                                                                                    	at android.app.AppOpsManager.noteOpNoThrow(AppOpsManager.java:9579)
+                                                                                                    	at com.android.server.connectivity.Vpn.doesPackageHaveAppop(Vpn.java:1403)
+                                                                                                    	at com.android.server.connectivity.Vpn.isVpnServicePreConsented(Vpn.java:1408)
+                                                                                                    	at com.android.server.connectivity.Vpn.isVpnPreConsented(Vpn.java:1387)
+                                                                                                    	at com.android.server.connectivity.Vpn.prepare(Vpn.java:1237)
+                                                                                                    	at com.android.server.VpnManagerService.prepareVpn(VpnManagerService.java:228)
+                                                                                                    	at android.net.IVpnManager$Stub.onTransact(IVpnManager.java:320)
+                                                                                                    	at android.os.Binder.execTransactInternal(Binder.java:1421)
+                                                                                                    	at android.os.Binder.execTransact(Binder.java:1365)
+---------------------------- PROCESS STARTED (7282) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:48.732  7282-7282  nativeloader            org.bepass.oblivion                  D  Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+2025-10-16 18:43:48.780  7282-7282  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [en-US] to [fa]
+2025-10-16 18:43:48.932  7282-7282  nativeloader            org.bepass.oblivion                  D  Configuring clns-9 for other apk /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64:/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/org.bepass.oblivion
+2025-10-16 18:43:48.941  7282-7282  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) locale list changing from [] to [fa]
+2025-10-16 18:43:48.950  7282-7282  GraphicsEnvironment     org.bepass.oblivion                  V  Currently set values for:
+2025-10-16 18:43:48.950  7282-7282  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_pkgs=[]
+2025-10-16 18:43:48.950  7282-7282  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_values=[]
+2025-10-16 18:43:48.950  7282-7282  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in per-application setting
+2025-10-16 18:43:48.951  7282-7282  GraphicsEnvironment     org.bepass.oblivion                  V  ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+2025-10-16 18:43:48.951  7282-7282  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in ANGLE allowlist or settings, returning default
+2025-10-16 18:43:48.951  7282-7282  GraphicsEnvironment     org.bepass.oblivion                  V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-16 18:43:48.967  7282-7282  MMKV                    org.bepass.oblivion                  I  Enable checkProcessMode()
+2025-10-16 18:43:48.970  7282-7282  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libmmkv.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:48.971  7282-7282  MMKV                    org.bepass.oblivion                  I  current API level = 36, libc++_shared=0
+2025-10-16 18:43:48.971  7282-7282  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:166::initialize> version v1.3.14, page size 4096, arch x86_64
+2025-10-16 18:43:48.971  7282-7282  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:225::initializeMMKV> root dir: /data/user/0/org.bepass.oblivion/files/mmkv
+2025-10-16 18:43:48.972  7282-7282  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:43:48.972  7282-7282  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96001000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:43:48.972  7282-7282  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x55], /data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc
+2025-10-16 18:43:48.972  7282-7282  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96000000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc]
+2025-10-16 18:43:48.973  7282-7282  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:214::loadMetaInfoAndCheck> meta file [UserData] has flag [0]
+2025-10-16 18:43:48.973  7282-7282  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 268 actual size, file size 4096, InterProcess 0, meta info version:4
+2025-10-16 18:43:48.973  7282-7282  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:89::loadFromFile> loading [UserData] with crc 3737172034 sequence 3 version 4
+2025-10-16 18:43:48.973  7282-7282  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 10 key-values
+2025-10-16 18:43:49.014  7282-7282  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:49.027  7282-7297  GoLog                   org.bepass.oblivion                  I  goidOffset: 152
+2025-10-16 18:43:49.022  7282-7282  :vpn_background         org.bepass.oblivion                  W  type=1400 audit(0.0:141): avc:  denied  { read } for  name="cap_last_cap" dev="proc" ino=34037 scontext=u:r:untrusted_app:s0:c217,c256,c512,c768 tcontext=u:object_r:proc:s0 tclass=file permissive=0 app=org.bepass.oblivion
+2025-10-16 18:43:49.033  7282-0     Go                      org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:49.033  7282-7297  libc                    org.bepass.oblivion                  A  Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 7297 (:vpn_background), pid 7282 (:vpn_background)
+2025-10-16 18:43:49.230  7305-7305  DEBUG                   crash_dump64                         A  Cmdline: org.bepass.oblivion:vpn_background
+2025-10-16 18:43:49.230  7305-7305  DEBUG                   crash_dump64                         A  pid: 7282, tid: 7297, name: :vpn_background  >>> org.bepass.oblivion:vpn_background <<<
+2025-10-16 18:43:49.231  7305-7305  DEBUG                   crash_dump64                         A        #00 pc 000000000049d6a1  /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so (BuildId: 4f616648d252267f50f6b2f6b8ef85124c3c7339)
+---------------------------- PROCESS ENDED (7282) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:49.387  6764-6764  StateAwareBaseActivity  org.bepass.oblivion                  W  Service is not bound or messenger is null
+2025-10-16 18:43:49.421  6764-6764  InsetsController        org.bepass.oblivion                  D  hide(ime(), fromIme=false)
+2025-10-16 18:43:49.421  6764-6764  ImeTracker              org.bepass.oblivion                  I  org.bepass.oblivion:f6ca8f27: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+---------------------------- PROCESS STARTED (7309) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:49.461  7309-7309  nativeloader            org.bepass.oblivion                  D  Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+2025-10-16 18:43:49.522  7309-7309  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [en-US] to [fa]
+2025-10-16 18:43:49.690  7309-7309  nativeloader            org.bepass.oblivion                  D  Configuring clns-9 for other apk /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64:/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/org.bepass.oblivion
+2025-10-16 18:43:49.703  7309-7309  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) locale list changing from [] to [fa]
+2025-10-16 18:43:49.715  7309-7309  GraphicsEnvironment     org.bepass.oblivion                  V  Currently set values for:
+2025-10-16 18:43:49.715  7309-7309  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_pkgs=[]
+2025-10-16 18:43:49.715  7309-7309  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_values=[]
+2025-10-16 18:43:49.715  7309-7309  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in per-application setting
+2025-10-16 18:43:49.716  7309-7309  GraphicsEnvironment     org.bepass.oblivion                  V  ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+2025-10-16 18:43:49.716  7309-7309  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in ANGLE allowlist or settings, returning default
+2025-10-16 18:43:49.716  7309-7309  GraphicsEnvironment     org.bepass.oblivion                  V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-16 18:43:49.735  7309-7309  MMKV                    org.bepass.oblivion                  I  Enable checkProcessMode()
+2025-10-16 18:43:49.739  7309-7309  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libmmkv.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:49.740  7309-7309  MMKV                    org.bepass.oblivion                  I  current API level = 36, libc++_shared=0
+2025-10-16 18:43:49.740  7309-7309  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:166::initialize> version v1.3.14, page size 4096, arch x86_64
+2025-10-16 18:43:49.740  7309-7309  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:225::initializeMMKV> root dir: /data/user/0/org.bepass.oblivion/files/mmkv
+2025-10-16 18:43:49.741  7309-7309  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:43:49.741  7309-7309  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96001000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:43:49.741  7309-7309  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x55], /data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc
+2025-10-16 18:43:49.741  7309-7309  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96000000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc]
+2025-10-16 18:43:49.743  7309-7309  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:214::loadMetaInfoAndCheck> meta file [UserData] has flag [0]
+2025-10-16 18:43:49.744  7309-7309  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 268 actual size, file size 4096, InterProcess 0, meta info version:4
+2025-10-16 18:43:49.744  7309-7309  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:89::loadFromFile> loading [UserData] with crc 3737172034 sequence 3 version 4
+2025-10-16 18:43:49.744  7309-7309  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 10 key-values
+2025-10-16 18:43:49.801  7309-7309  oblivionVPN             org.bepass.oblivion                  D  onStartCommand called with action: org.bepass.oblivion.START, lastKnownState: DISCONNECTED
+2025-10-16 18:43:49.802  7309-7309  oblivionVPN             org.bepass.oblivion                  I  scheduler not null
+2025-10-16 18:43:49.802  7309-7309  oblivionVPN             org.bepass.oblivion                  I  scheduler isShutdown: true, isTerminated: true
+2025-10-16 18:43:49.803  7309-7309  oblivionVPN             org.bepass.oblivion                  I  ExecutorService not null
+2025-10-16 18:43:49.803  7309-7309  oblivionVPN             org.bepass.oblivion                  I  ExecutorService isShutdown: true, isTerminated: true
+2025-10-16 18:43:49.805  7309-7309  oblivionVPN             org.bepass.oblivion                  E  VPN service is being forcefully stopped
+2025-10-16 18:43:49.805  7309-7309  oblivionVPN             org.bepass.oblivion                  W  No wake lock to release
+2025-10-16 18:43:49.805  7309-7309  oblivionVPN             org.bepass.oblivion                  W  VPN interface was already null
+2025-10-16 18:43:49.823  7309-7309  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:49.838  7309-7309  :vpn_background         org.bepass.oblivion                  W  type=1400 audit(0.0:142): avc:  denied  { read } for  name="cap_last_cap" dev="proc" ino=34037 scontext=u:r:untrusted_app:s0:c217,c256,c512,c768 tcontext=u:object_r:proc:s0 tclass=file permissive=0 app=org.bepass.oblivion
+2025-10-16 18:43:49.859  7309-7324  GoLog                   org.bepass.oblivion                  I  goidOffset: 152
+2025-10-16 18:43:49.867  7309-0     Go                      org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:49.867  7309-7324  libc                    org.bepass.oblivion                  A  Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 7324 (:vpn_background), pid 7309 (:vpn_background)
+2025-10-16 18:43:49.868  7309-7328  GoLog                   org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:50.179  7333-7333  DEBUG                   crash_dump64                         A  Cmdline: org.bepass.oblivion:vpn_background
+2025-10-16 18:43:50.179  7333-7333  DEBUG                   crash_dump64                         A  pid: 7309, tid: 7324, name: :vpn_background  >>> org.bepass.oblivion:vpn_background <<<
+2025-10-16 18:43:50.179  7333-7333  DEBUG                   crash_dump64                         A        #00 pc 000000000049d6a1  /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so (BuildId: 4f616648d252267f50f6b2f6b8ef85124c3c7339)
+---------------------------- PROCESS ENDED (7309) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:51.080  6764-6764  Resources               org.bepass.oblivion                  V  Updating configuration, with default locale en and selected locales [fa, en-US]
+2025-10-16 18:43:51.080  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc5875b8) locale list changing from [] to [fa,en-US]
+2025-10-16 18:43:51.080  6764-6764  bepass.oblivion         org.bepass.oblivion                  I  AssetManager2(0x727abc5875b8) default locale changing from '' to 'en'
+---------------------------- PROCESS STARTED (7337) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:51.227  7337-7337  nativeloader            org.bepass.oblivion                  D  Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+2025-10-16 18:43:51.279  7337-7337  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [en-US] to [fa]
+2025-10-16 18:43:51.422  6764-6764  InsetsController        org.bepass.oblivion                  D  hide(ime(), fromIme=false)
+2025-10-16 18:43:51.422  6764-6764  ImeTracker              org.bepass.oblivion                  I  org.bepass.oblivion:5ffa1353: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+2025-10-16 18:43:51.462  7337-7337  nativeloader            org.bepass.oblivion                  D  Configuring clns-9 for other apk /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64:/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/org.bepass.oblivion
+2025-10-16 18:43:51.473  7337-7337  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) locale list changing from [] to [fa]
+2025-10-16 18:43:51.490  7337-7337  GraphicsEnvironment     org.bepass.oblivion                  V  Currently set values for:
+2025-10-16 18:43:51.491  7337-7337  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_pkgs=[]
+2025-10-16 18:43:51.491  7337-7337  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_values=[]
+2025-10-16 18:43:51.491  7337-7337  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in per-application setting
+2025-10-16 18:43:51.492  7337-7337  GraphicsEnvironment     org.bepass.oblivion                  V  ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+2025-10-16 18:43:51.492  7337-7337  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in ANGLE allowlist or settings, returning default
+2025-10-16 18:43:51.493  7337-7337  GraphicsEnvironment     org.bepass.oblivion                  V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-16 18:43:51.518  7337-7337  MMKV                    org.bepass.oblivion                  I  Enable checkProcessMode()
+2025-10-16 18:43:51.521  7337-7337  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libmmkv.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:51.524  7337-7337  MMKV                    org.bepass.oblivion                  I  current API level = 36, libc++_shared=0
+2025-10-16 18:43:51.524  7337-7337  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:166::initialize> version v1.3.14, page size 4096, arch x86_64
+2025-10-16 18:43:51.525  7337-7337  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:225::initializeMMKV> root dir: /data/user/0/org.bepass.oblivion/files/mmkv
+2025-10-16 18:43:51.525  7337-7337  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:43:51.525  7337-7337  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96001000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:43:51.525  7337-7337  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x55], /data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc
+2025-10-16 18:43:51.525  7337-7337  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96000000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc]
+2025-10-16 18:43:51.529  7337-7337  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:214::loadMetaInfoAndCheck> meta file [UserData] has flag [0]
+2025-10-16 18:43:51.529  7337-7337  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 268 actual size, file size 4096, InterProcess 0, meta info version:4
+2025-10-16 18:43:51.529  7337-7337  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:89::loadFromFile> loading [UserData] with crc 3737172034 sequence 3 version 4
+2025-10-16 18:43:51.529  7337-7337  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 10 key-values
+2025-10-16 18:43:51.582  7337-7337  oblivionVPN             org.bepass.oblivion                  D  onStartCommand called with action: org.bepass.oblivion.START, lastKnownState: DISCONNECTED
+2025-10-16 18:43:51.582  7337-7337  oblivionVPN             org.bepass.oblivion                  I  scheduler not null
+2025-10-16 18:43:51.582  7337-7337  oblivionVPN             org.bepass.oblivion                  I  scheduler isShutdown: true, isTerminated: true
+2025-10-16 18:43:51.582  7337-7337  oblivionVPN             org.bepass.oblivion                  I  ExecutorService not null
+2025-10-16 18:43:51.583  7337-7337  oblivionVPN             org.bepass.oblivion                  I  ExecutorService isShutdown: true, isTerminated: true
+2025-10-16 18:43:51.585  7337-7337  oblivionVPN             org.bepass.oblivion                  E  VPN service is being forcefully stopped
+2025-10-16 18:43:51.585  7337-7337  oblivionVPN             org.bepass.oblivion                  W  No wake lock to release
+2025-10-16 18:43:51.585  7337-7337  oblivionVPN             org.bepass.oblivion                  W  VPN interface was already null
+2025-10-16 18:43:51.599  7337-7337  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:51.614  7337-7337  :vpn_background         org.bepass.oblivion                  W  type=1400 audit(0.0:143): avc:  denied  { read } for  name="cap_last_cap" dev="proc" ino=34037 scontext=u:r:untrusted_app:s0:c217,c256,c512,c768 tcontext=u:object_r:proc:s0 tclass=file permissive=0 app=org.bepass.oblivion
+2025-10-16 18:43:51.621  7337-7353  GoLog                   org.bepass.oblivion                  I  goidOffset: 152
+2025-10-16 18:43:51.630  7337-0     Go                      org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:51.630  7337-7353  libc                    org.bepass.oblivion                  A  Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 7353 (:vpn_background), pid 7337 (:vpn_background)
+2025-10-16 18:43:51.744  6764-6764  VRI[MainActivity]       org.bepass.oblivion                  D  visibilityChanged oldVisibility=true newVisibility=false
+2025-10-16 18:43:51.762  6764-6787  HWUI                    org.bepass.oblivion                  D  endAllActiveAnimators on 0x72794c6a1dd0 (RippleDrawable) with handle 0x727a3c5f3030
+2025-10-16 18:43:51.766  6764-6764  WindowOnBackDispatcher  org.bepass.oblivion                  W  sendCancelIfRunning: isInProgress=false callback=androidx.activity.OnBackPressedDispatcher$Api34Impl$createOnBackAnimationCallback$1@d2ff8fa
+2025-10-16 18:43:52.017  7363-7363  DEBUG                   crash_dump64                         A  Cmdline: org.bepass.oblivion:vpn_background
+2025-10-16 18:43:52.017  7363-7363  DEBUG                   crash_dump64                         A  pid: 7337, tid: 7353, name: :vpn_background  >>> org.bepass.oblivion:vpn_background <<<
+2025-10-16 18:43:52.017  7363-7363  DEBUG                   crash_dump64                         A        #00 pc 000000000049d6a1  /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so (BuildId: 4f616648d252267f50f6b2f6b8ef85124c3c7339)
+---------------------------- PROCESS ENDED (7337) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:53.696  6764-6764  ViewRootImpl            org.bepass.oblivion                  D  Skipping stats log for color mode
+2025-10-16 18:43:53.701  6764-6764  StateAwareBaseActivity  org.bepass.oblivion                  W  Service is not bound or messenger is null
+---------------------------- PROCESS STARTED (7367) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:53.772  7367-7367  nativeloader            org.bepass.oblivion                  D  Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+2025-10-16 18:43:53.836  7367-7367  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [en-US] to [fa]
+2025-10-16 18:43:53.890  6764-6764  InsetsController        org.bepass.oblivion                  D  hide(ime(), fromIme=false)
+2025-10-16 18:43:53.890  6764-6764  ImeTracker              org.bepass.oblivion                  I  org.bepass.oblivion:b08385ec: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+2025-10-16 18:43:54.048  7367-7367  nativeloader            org.bepass.oblivion                  D  Configuring clns-9 for other apk /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64:/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/org.bepass.oblivion
+2025-10-16 18:43:54.058  7367-7367  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) locale list changing from [] to [fa]
+2025-10-16 18:43:54.068  7367-7367  GraphicsEnvironment     org.bepass.oblivion                  V  Currently set values for:
+2025-10-16 18:43:54.068  7367-7367  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_pkgs=[]
+2025-10-16 18:43:54.068  7367-7367  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_values=[]
+2025-10-16 18:43:54.068  7367-7367  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in per-application setting
+2025-10-16 18:43:54.068  7367-7367  GraphicsEnvironment     org.bepass.oblivion                  V  ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+2025-10-16 18:43:54.068  7367-7367  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in ANGLE allowlist or settings, returning default
+2025-10-16 18:43:54.068  7367-7367  GraphicsEnvironment     org.bepass.oblivion                  V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-16 18:43:54.085  7367-7367  MMKV                    org.bepass.oblivion                  I  Enable checkProcessMode()
+2025-10-16 18:43:54.087  7367-7367  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libmmkv.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:54.088  7367-7367  MMKV                    org.bepass.oblivion                  I  current API level = 36, libc++_shared=0
+2025-10-16 18:43:54.088  7367-7367  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:166::initialize> version v1.3.14, page size 4096, arch x86_64
+2025-10-16 18:43:54.088  7367-7367  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:225::initializeMMKV> root dir: /data/user/0/org.bepass.oblivion/files/mmkv
+2025-10-16 18:43:54.088  7367-7367  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:43:54.088  7367-7367  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b960be000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:43:54.089  7367-7367  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x55], /data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc
+2025-10-16 18:43:54.089  7367-7367  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96001000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc]
+2025-10-16 18:43:54.091  7367-7367  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:214::loadMetaInfoAndCheck> meta file [UserData] has flag [0]
+2025-10-16 18:43:54.091  7367-7367  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 268 actual size, file size 4096, InterProcess 0, meta info version:4
+2025-10-16 18:43:54.091  7367-7367  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:89::loadFromFile> loading [UserData] with crc 3737172034 sequence 3 version 4
+2025-10-16 18:43:54.091  7367-7367  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 10 key-values
+2025-10-16 18:43:54.141  7367-7367  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:54.150  7367-7367  :vpn_background         org.bepass.oblivion                  W  type=1400 audit(0.0:144): avc:  denied  { read } for  name="cap_last_cap" dev="proc" ino=34037 scontext=u:r:untrusted_app:s0:c217,c256,c512,c768 tcontext=u:object_r:proc:s0 tclass=file permissive=0 app=org.bepass.oblivion
+2025-10-16 18:43:54.156  7367-7382  GoLog                   org.bepass.oblivion                  I  goidOffset: 152
+2025-10-16 18:43:54.162  7367-0     Go                      org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:54.162  7367-7386  GoLog                   org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:54.162  7367-7382  libc                    org.bepass.oblivion                  A  Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 7382 (:vpn_background), pid 7367 (:vpn_background)
+2025-10-16 18:43:54.296  6764-6764  VRI[SettingsActivity]   org.bepass.oblivion                  D  visibilityChanged oldVisibility=true newVisibility=false
+2025-10-16 18:43:54.316  6764-6787  HWUI                    org.bepass.oblivion                  D  endAllActiveAnimators on 0x72794c6ccea0 (RippleDrawable) with handle 0x727a3c5f4080
+2025-10-16 18:43:54.329  7390-7390  DEBUG                   crash_dump64                         A  Cmdline: org.bepass.oblivion:vpn_background
+2025-10-16 18:43:54.329  7390-7390  DEBUG                   crash_dump64                         A  pid: 7367, tid: 7382, name: :vpn_background  >>> org.bepass.oblivion:vpn_background <<<
+2025-10-16 18:43:54.330  7390-7390  DEBUG                   crash_dump64                         A        #00 pc 000000000049d6a1  /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so (BuildId: 4f616648d252267f50f6b2f6b8ef85124c3c7339)
+2025-10-16 18:43:54.333  6764-6764  WindowOnBackDispatcher  org.bepass.oblivion                  W  sendCancelIfRunning: isInProgress=false callback=android.app.Activity$$ExternalSyntheticLambda0@5403b5f
+2025-10-16 18:43:54.335  6764-6764  ViewRootImpl            org.bepass.oblivion                  D  Skipping stats log for color mode
+---------------------------- PROCESS ENDED (7367) for package org.bepass.oblivion ----------------------------
+---------------------------- PROCESS STARTED (7394) for package org.bepass.oblivion ----------------------------
+2025-10-16 18:43:55.446  7394-7394  nativeloader            org.bepass.oblivion                  D  Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+2025-10-16 18:43:55.481  7394-7394  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58aad8) locale list changing from [en-US] to [fa]
+2025-10-16 18:43:55.618  7394-7394  nativeloader            org.bepass.oblivion                  D  Configuring clns-9 for other apk /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64:/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/org.bepass.oblivion
+2025-10-16 18:43:55.627  7394-7394  :vpn_background         org.bepass.oblivion                  I  AssetManager2(0x727abc58ca18) locale list changing from [] to [fa]
+2025-10-16 18:43:55.636  7394-7394  GraphicsEnvironment     org.bepass.oblivion                  V  Currently set values for:
+2025-10-16 18:43:55.637  7394-7394  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_pkgs=[]
+2025-10-16 18:43:55.637  7394-7394  GraphicsEnvironment     org.bepass.oblivion                  V    angle_gl_driver_selection_values=[]
+2025-10-16 18:43:55.637  7394-7394  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in per-application setting
+2025-10-16 18:43:55.637  7394-7394  GraphicsEnvironment     org.bepass.oblivion                  V  ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+2025-10-16 18:43:55.637  7394-7394  GraphicsEnvironment     org.bepass.oblivion                  V  org.bepass.oblivion is not listed in ANGLE allowlist or settings, returning default
+2025-10-16 18:43:55.637  7394-7394  GraphicsEnvironment     org.bepass.oblivion                  V  Neither updatable production driver nor prerelease driver is supported.
+2025-10-16 18:43:55.653  7394-7394  MMKV                    org.bepass.oblivion                  I  Enable checkProcessMode()
+2025-10-16 18:43:55.655  7394-7394  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libmmkv.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:55.656  7394-7394  MMKV                    org.bepass.oblivion                  I  current API level = 36, libc++_shared=0
+2025-10-16 18:43:55.656  7394-7394  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:166::initialize> version v1.3.14, page size 4096, arch x86_64
+2025-10-16 18:43:55.656  7394-7394  MMKV                    org.bepass.oblivion                  I  <MMKV.cpp:225::initializeMMKV> root dir: /data/user/0/org.bepass.oblivion/files/mmkv
+2025-10-16 18:43:55.656  7394-7394  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x54], /data/user/0/org.bepass.oblivion/files/mmkv/UserData
+2025-10-16 18:43:55.656  7394-7394  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b960be000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData]
+2025-10-16 18:43:55.656  7394-7394  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:98::open> open fd[0x55], /data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc
+2025-10-16 18:43:55.656  7394-7394  MMKV                    org.bepass.oblivion                  I  <MemoryFile.cpp:203::mmap> mmap to address [0x727b96001000], oldPtr [0x0], [/data/user/0/org.bepass.oblivion/files/mmkv/UserData.crc]
+2025-10-16 18:43:55.658  7394-7394  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:214::loadMetaInfoAndCheck> meta file [UserData] has flag [0]
+2025-10-16 18:43:55.658  7394-7394  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:84::loadFromFile> loading [UserData] with 268 actual size, file size 4096, InterProcess 0, meta info version:4
+2025-10-16 18:43:55.658  7394-7394  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:89::loadFromFile> loading [UserData] with crc 3737172034 sequence 3 version 4
+2025-10-16 18:43:55.658  7394-7394  MMKV                    org.bepass.oblivion                  I  <MMKV_IO.cpp:133::loadFromFile> loaded [UserData] with 10 key-values
+2025-10-16 18:43:55.697  7394-7394  nativeloader            org.bepass.oblivion                  D  Load /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so using class loader ns clns-9 (caller=/data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/base.apk): ok
+2025-10-16 18:43:55.702  7394-7394  :vpn_background         org.bepass.oblivion                  W  type=1400 audit(0.0:145): avc:  denied  { read } for  name="cap_last_cap" dev="proc" ino=34037 scontext=u:r:untrusted_app:s0:c217,c256,c512,c768 tcontext=u:object_r:proc:s0 tclass=file permissive=0 app=org.bepass.oblivion
+2025-10-16 18:43:55.708  7394-7408  GoLog                   org.bepass.oblivion                  I  goidOffset: 152
+2025-10-16 18:43:55.713  7394-0     Go                      org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:55.713  7394-7410  GoLog                   org.bepass.oblivion                  E  panic: tls.ConnectionState doesn't match
+2025-10-16 18:43:55.713  7394-7408  libc                    org.bepass.oblivion                  A  Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 7408 (:vpn_background), pid 7394 (:vpn_background)
+2025-10-16 18:43:55.841  7417-7417  DEBUG                   crash_dump64                         A  Cmdline: org.bepass.oblivion:vpn_background
+2025-10-16 18:43:55.841  7417-7417  DEBUG                   crash_dump64                         A  pid: 7394, tid: 7408, name: :vpn_background  >>> org.bepass.oblivion:vpn_background <<<
+2025-10-16 18:43:55.841  7417-7417  DEBUG                   crash_dump64                         A        #00 pc 000000000049d6a1  /data/app/~~JvTzP9Q1WRDjTPCHZFbIUg==/org.bepass.oblivion-0Kf0YXWjmPCTQkk-Kv5VJQ==/lib/x86_64/libgojni.so (BuildId: 4f616648d252267f50f6b2f6b8ef85124c3c7339)
+---------------------------- PROCESS ENDED (7394) for package org.bepass.oblivion ----------------------------
+---------------------------- PROCESS ENDED (6764) for package org.bepass.oblivion ----------------------------

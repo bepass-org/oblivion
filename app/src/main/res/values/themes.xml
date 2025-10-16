@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <style name="Theme.OblivionUI" parent="Theme.AppCompat.Light.NoActionBar">
+  <style name="Theme.OblivionUI" parent="Theme.Material3.DayNight.NoActionBar">
     <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
   </style>
 
   <!-- Light theme -->
-  <style name="Theme.OblivionUI.Light" parent="Theme.AppCompat.Light">
+  <style name="Theme.OblivionUI.Light" parent="Theme.Material3.Light.NoActionBar">
     <item name="android:windowBackground">@drawable/background_gradient</item>
     <item name="android:background">@drawable/background_gradient</item>
   </style>
 
   <!-- Dark theme -->
-  <style name="Theme.MyApp.Dark" parent="Theme.AppCompat.DayNight">
+  <style name="Theme.MyApp.Dark" parent="Theme.Material3.DayNight.NoActionBar">
     <item name="android:windowBackground">@color/background</item>
     <item name="android:background">@color/background</item>
   </style>
 
-  <style name="CustomBottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+  <style name="CustomBottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
     <item name="android:windowIsFloating">false</item>
     <item name="android:windowSoftInputMode">adjustResize</item>
     <item name="bottomSheetStyle">@style/CustomBottomSheet</item>
   </style>
 
-  <style name="CustomBottomSheet" parent="Widget.MaterialComponents.BottomSheet.Modal">` <item
-      name="backgroundTint">@android:color/transparent</item>
+  <style name="CustomBottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+      <item name="backgroundTint">@android:color/transparent</item>
   </style>
 
     <style name="circleImageView" parent="">

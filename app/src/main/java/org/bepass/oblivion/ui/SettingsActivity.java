@@ -6,15 +6,21 @@ import static org.bepass.oblivion.utils.BatteryOptimizationKt.showBatteryOptimiz
 import android.content.Intent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.text.InputType;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AlertDialog;
 
 import org.bepass.oblivion.EndpointsBottomSheet;
 import org.bepass.oblivion.enums.ConnectionState;
@@ -41,9 +47,78 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         checkBox.setOnCheckedChangeListener(listener); // Reattach the listener
     }
 
+    private void updateDnsSummary() {
+        String primary = FileManager.getString("USERSETTING_dns_primary", "1.1.1.1");
+        String secondary = FileManager.getString("USERSETTING_dns_secondary", "1.0.0.1");
+        if (binding.dnsDesc != null) {
+            String base = getString(R.string.dnsTextDesc);
+            String summary = base + " (" + primary + (secondary == null || secondary.trim().isEmpty() ? "" : ", " + secondary.trim()) + ")";
+            binding.dnsDesc.setText(summary);
+        }
+    }
+
+    private void showDnsDialog() {
+        final EditText inputPrimary = new EditText(this);
+        inputPrimary.setInputType(InputType.TYPE_CLASS_TEXT);
+        inputPrimary.setHint("1.1.1.1");
+        inputPrimary.setText(FileManager.getString("USERSETTING_dns_primary", "1.1.1.1"));
+
+        final EditText inputSecondary = new EditText(this);
+        inputSecondary.setInputType(InputType.TYPE_CLASS_TEXT);
+        inputSecondary.setHint("1.0.0.1");
+        inputSecondary.setText(FileManager.getString("USERSETTING_dns_secondary", "1.0.0.1"));
+
+        LinearLayout container = new LinearLayout(this);
+        container.setOrientation(LinearLayout.VERTICAL);
+        int pad = (int) (16 * getResources().getDisplayMetrics().density);
+        container.setPadding(pad, pad, pad, 0);
+        container.addView(inputPrimary);
+        container.addView(inputSecondary);
+
+        new AlertDialog.Builder(this)
+                .setTitle("DNS")
+                .setView(container)
+                .setPositiveButton(R.string.update, (d, w) -> {
+                    String p = inputPrimary.getText().toString().trim();
+                    String s = inputSecondary.getText().toString().trim();
+                    if (p.isEmpty()) p = "1.1.1.1";
+                    FileManager.set("USERSETTING_dns_primary", p);
+                    FileManager.set("USERSETTING_dns_secondary", s);
+                    updateDnsSummary();
+                    StateAwareBaseActivity.setRequireRestartVpnService(true);
+                    Toast.makeText(this, "DNS saved", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Refresh battery optimization row after returning from settings
+        if (isBatteryOptimizationEnabled(this)) {
+            binding.batteryOptimizationLayout.setVisibility(View.VISIBLE);
+            if (binding.batteryOptLine != null) binding.batteryOptLine.setVisibility(View.VISIBLE);
+        } else {
+            binding.batteryOptimizationLayout.setVisibility(View.GONE);
+            if (binding.batteryOptLine != null) binding.batteryOptLine.setVisibility(View.GONE);
+        }
+        // Sync MTU text
+        if (binding.mtuValue != null) {
+            int mtu = FileManager.getInt("USERSETTING_mtu");
+            if (mtu <= 0) mtu = 1500;
+            binding.mtuValue.setText(String.valueOf(mtu));
+        }
+        // Sync bypass checkbox
+        if (binding.bypassLan != null) {
+        }
+        // Update DNS summary
+        updateDnsSummary();
+    }
+
     @Override
     protected int getLayoutResourceId() {
-        return R.layout.activity_settings;
+      return R.layout.activity_settings;
     }
 
     @Override
@@ -54,80 +129,57 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
         // Update background based on current theme
         ThemeHelper.getInstance().updateActivityBackground(binding.getRoot());
+        // Back button in the top bar
+        if (binding.back != null) {
+            binding.back.setOnClickListener(v -> finish());
+        }
         // Set Current Values
         settingBasicValuesFromSPF();
 
+        // Battery optimization prompt row visibility/handler
         if (isBatteryOptimizationEnabled(this)) {
+            binding.batteryOptimizationLayout.setVisibility(View.VISIBLE);
             binding.batteryOptimizationLayout.setOnClickListener(view -> {
                 showBatteryOptimizationDialog(this);
             });
         } else {
             binding.batteryOptimizationLayout.setVisibility(View.GONE);
-            binding.batteryOptLine.setVisibility(View.GONE);
+            if (binding.batteryOptLine != null) binding.batteryOptLine.setVisibility(View.GONE);
         }
 
-        binding.back.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
-
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-//                if (StateAwareBaseActivity.getRequireRestartVpnService()) {
-//                    StateAwareBaseActivity.setRequireRestartVpnService(false);
-//                    if (!lastKnownConnectionState.isDisconnected()) {
-//                        OblivionVpnService.stopVpnService(SettingsActivity.this);
-//                        OblivionVpnService.startVpnService(SettingsActivity.this);
-//                    }
-//                }
-                finish();
-            }
-        });
-
-        SheetsCallBack sheetsCallBack = this::settingBasicValuesFromSPF;
-
-        binding.endpointType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                FileManager.set("USERSETTING_endpoint_type", position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // Do nothing or handle the case where no item is selected.
-            }
-        });
-        binding.endpointLayout.setOnClickListener(v -> {
-            EndpointsBottomSheet bottomSheet = new EndpointsBottomSheet();
-            bottomSheet.setEndpointSelectionListener(content -> {
-                Log.d("100","Selected Endpoint: " + content);
-                FileManager.set("USERSETTING_endpoint", content);
-                binding.endpoint.post(() -> binding.endpoint.setText(content));
+        // Visible MTU row
+        if (binding.mtuLayout != null) {
+            binding.mtuLayout.setOnClickListener(v -> {
+                final EditText input = new EditText(this);
+                input.setInputType(InputType.TYPE_CLASS_NUMBER);
+                input.setHint("1200-1500");
+                new AlertDialog.Builder(this)
+                        .setTitle("MTU")
+                        .setView(input)
+                        .setPositiveButton(R.string.update, (d, w) -> {
+                            try {
+                                int mtu = Integer.parseInt(input.getText().toString().trim());
+                                FileManager.set("USERSETTING_mtu", mtu);
+                                if (binding.mtuValue != null) binding.mtuValue.setText(String.valueOf(mtu));
+                                StateAwareBaseActivity.setRequireRestartVpnService(true);
+                                Toast.makeText(this, "MTU saved", Toast.LENGTH_SHORT).show();
+                            } catch (Exception e) {
+                                Toast.makeText(this, "Invalid MTU", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, null)
+                        .show();
             });
-            bottomSheet.show(getSupportFragmentManager(), bottomSheet.getTag());
-        });
-
-        binding.portLayout.setOnClickListener(v -> (new EditSheet(this, getString(R.string.portTunText), "port", sheetsCallBack)).start());
-
-        // Bind Host editor
-        binding.bindHostLayout.setOnClickListener(v -> (new EditSheet(this, "Bind Host", "bind_host", sheetsCallBack)).start());
-
-        binding.country.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String name = parent.getItemAtPosition(position).toString();
-                Triple<String, String, Integer> codeAndName = CountryUtils.getCountryCode(getApplicationContext(), name);
-                FileManager.set("USERSETTING_country", codeAndName.getFirst());
-                FileManager.set("USERSETTING_country_index", position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // Do nothing
-            }
-        });
-
+        }
         binding.splitTunnelLayout.setOnClickListener(v -> startActivity(new Intent(this, SplitTunnelActivity.class)));
+
+        // DNS editor
+        if (binding.dnsLayout != null) {
+            binding.dnsLayout.setOnClickListener(v -> showDnsDialog());
+        }
 
         binding.goolLayout.setOnClickListener(v -> binding.gool.setChecked(!binding.gool.isChecked()));
         binding.lanLayout.setOnClickListener(v -> binding.lan.setChecked(!binding.lan.isChecked()));
@@ -188,6 +240,21 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         binding.proxyModeLayout.setOnClickListener(v -> binding.proxyMode.performClick());
         binding.proxyMode.setOnCheckedChangeListener(proxyModeListener);
 
+        // LAN bypass row/checkbox behaves like others
+        if (binding.lanBypassLayout != null) {
+            binding.lanBypassLayout.setOnClickListener(v -> {
+                if (binding.bypassLan != null) {
+                    binding.bypassLan.setChecked(!binding.bypassLan.isChecked());
+                }
+            });
+        }
+        if (binding.bypassLan != null) {
+            binding.bypassLan.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                FileManager.set("USERSETTING_bypass_lan", isChecked);
+                StateAwareBaseActivity.setRequireRestartVpnService(true);
+            });
+        }
+
         // Copy proxy info to clipboard
         binding.copyProxyLayout.setOnClickListener(v -> {
             String host = FileManager.getString("USERSETTING_bind_host");
@@ -230,7 +297,13 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         });
         binding.endpoint.setText(FileManager.getString("USERSETTING_endpoint"));
         binding.port.setText(FileManager.getString("USERSETTING_port"));
-        binding.bindHost.setText(FileManager.getString("USERSETTING_bind_host"));
+        String bindHostVal = FileManager.getString("USERSETTING_bind_host");
+        if (bindHostVal == null || bindHostVal.trim().isEmpty()) {
+            boolean lan = FileManager.getBoolean("USERSETTING_lan");
+            boolean ipv6 = FileManager.getBoolean("USERSETTING_ipv6");
+            bindHostVal = ipv6 ? "::" : (lan ? "0.0.0.0" : "127.0.0.1");
+        }
+        binding.bindHost.setText(bindHostVal);
 
         int index = FileManager.getInt("USERSETTING_country_index");
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.countries, R.layout.country_item_layout);
@@ -245,6 +318,14 @@ public class SettingsActivity extends StateAwareBaseActivity<ActivitySettingsBin
         binding.gool.setChecked(FileManager.getBoolean("USERSETTING_gool"));
         binding.proxyMode.setChecked(FileManager.getBoolean("USERSETTING_proxymode"));
         binding.ipv6.setChecked(FileManager.getBoolean("USERSETTING_ipv6"));
+        if (binding.bypassLan != null) {
+            binding.bypassLan.setChecked(FileManager.getBoolean("USERSETTING_bypass_lan"));
+        }
+        if (binding.mtuValue != null) {
+            int mtu = FileManager.getInt("USERSETTING_mtu");
+            if (mtu <= 0) mtu = 1500;
+            binding.mtuValue.setText(String.valueOf(mtu));
+        }
         if (!binding.psiphon.isChecked()) {
             binding.countryLayout.setAlpha(0.2f);
             binding.country.setEnabled(false);

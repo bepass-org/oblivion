@@ -69,16 +69,41 @@ fun showBatteryOptimizationDialog(context: Context) {
     binding.dialogTitle.text = context.getString(R.string.batteryOpL)
     binding.dialogMessage.text = context.getString(R.string.dialBtText)
 
-    // Set positive button action
+    // Positive: request to disable optimization
     binding.dialogButtonPositive.setOnClickListener {
         requestIgnoreBatteryOptimizations(context)
         dialog.dismiss()
     }
 
-    // Set negative button action
+    // Negative: open system settings so user can enable/disable manually
     binding.dialogButtonNegative.setOnClickListener {
+        openBatteryOptimizationSettings(context)
         dialog.dismiss()
     }
 
     dialog.show()
+}
+
+/**
+ * Opens the OS battery optimization screen (Android M+) so the user can manage it.
+ * Falls back to App Info page if the general screen isn't available.
+ */
+fun openBatteryOptimizationSettings(context: Context) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        try {
+            val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+            if (context !is Activity) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+            return
+        } catch (_: Exception) { }
+
+        // Fallback: App details
+        try {
+            val appIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.parse("package:${context.packageName}")
+                if (context !is Activity) addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            context.startActivity(appIntent)
+        } catch (_: Exception) { }
+    }
 }

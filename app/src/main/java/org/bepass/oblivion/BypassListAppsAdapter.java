@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.text.Collator;
+import java.util.Collections;
 
 public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAdapter.ViewHolder> {
 
@@ -69,6 +71,9 @@ public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAd
                     selectedApps.contains(packageInfo.packageName)
             ));
         }
+        // Alphabetize by appName using locale-aware collator
+        Collator collator = Collator.getInstance();
+        Collections.sort(appList, (a, b) -> collator.compare(a.appName, b.appName));
         return appList;
     }
 
@@ -78,6 +83,24 @@ public class BypassListAppsAdapter extends RecyclerView.Adapter<BypassListAppsAd
 
     public void setOnAppSelectListener(OnAppSelectListener onAppSelectListener) {
         this.onAppSelectListener = onAppSelectListener;
+    }
+
+    public void selectAll() {
+        Set<String> newSet = new HashSet<>();
+        for (AppInfo ai : appList) {
+            ai.isSelected = true;
+            newSet.add(ai.packageName);
+        }
+        FileManager.set("splitTunnelApps", newSet);
+        notifyDataSetChanged();
+    }
+
+    public void clearAll() {
+        for (AppInfo ai : appList) {
+            ai.isSelected = false;
+        }
+        FileManager.set("splitTunnelApps", new HashSet<>());
+        notifyDataSetChanged();
     }
 
     @NonNull

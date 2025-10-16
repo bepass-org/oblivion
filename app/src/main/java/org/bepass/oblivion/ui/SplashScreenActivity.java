@@ -12,6 +12,7 @@ import org.bepass.oblivion.databinding.ActivitySplashScreenBinding;
 import org.bepass.oblivion.utils.FileManager;
 import org.bepass.oblivion.utils.LocaleHandler;
 import org.bepass.oblivion.utils.ThemeHelper;
+import androidx.core.splashscreen.SplashScreen;
 
 /**
  * A simple splash screen activity that shows a splash screen for a short duration before navigating
@@ -43,6 +44,8 @@ public class SplashScreenActivity extends BaseActivity<ActivitySplashScreenBindi
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Install Android 12+ splash screen API before super/onCreate content view
+        SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
         LocaleHandler localeHandler = new LocaleHandler(this);
         localeHandler.setPersianAsDefaultLocaleIfNeeds();

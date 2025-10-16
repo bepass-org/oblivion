@@ -33,8 +33,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:cropToPadding="false"
-                style="@style/basedOnTheme"
                 android:src="@drawable/segaro"
+                app:tint="@color/primary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

@@ -65,6 +65,16 @@ public class SplitTunnelActivity extends StateAwareBaseActivity<ActivitySplitTun
         });
 
         binding.appsRecycler.setAdapter(new ConcatAdapter(optionsAdapter, bypassListAppsAdapter));
+
+        // Bulk actions
+        binding.selectAllButton.setOnClickListener(v -> {
+            bypassListAppsAdapter.selectAll();
+            StateAwareBaseActivity.setRequireRestartVpnService(true);
+        });
+        binding.clearAllButton.setOnClickListener(v -> {
+            bypassListAppsAdapter.clearAll();
+            StateAwareBaseActivity.setRequireRestartVpnService(true);
+        });
     }
 
     @Override

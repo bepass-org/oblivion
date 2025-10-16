@@ -6,7 +6,7 @@
     <string name="aboutAppDesc">"Bu uygulama internete özgürce erişim sağlamak için tasarlanmıştır ve ticari kullanımı yasaktır.\n\n\n İnternet herkes için ya da hiç kimse için!"</string>
     <string name="appVersion">Uygulama Sürümü: 8</string>
     <string name="logApp">Uygulama Günlüğü</string>
-    <string name="means" formatted="true">"bilgisizlik, cehalet" anlamına gelir</string>
+    <string name="means" formatted="false">"bilgisizlik, cehalet" anlamına gelir</string>
     <string name="dontForget">Unutma!</string>
     <string name="segaro">#Segaro</string>
     <string name="yousef">#Yousef_Ghobadi</string>
@@ -53,19 +53,22 @@
     <string name="content">Uç Nokta</string>
     <string name="save">Kaydet</string>
     <string name="saved_endpoints">Kaydedilen Uç Noktalar</string>
-    <string name="select_language">Dil Seçin</string>
     <string name="resetAppTextDesc">Uygulamayı varsayılana sıfırla</string>
     <string name="resetAppText">Sıfırla</string>
     <string name="proxy_mode">Proxy Modu</string>
     <string name="running_in_proxy_mode_not_vpn">Proxy modunda çalışıyor, VPN değil</string>
     <string name="reset_to_default_endpoint">Varsayılan Uç Noktaya Sıfırla</string>
+    <string name="ipv6BindText">IPv6 bağlamayı etkinleştir</string>
+    <string name="ipv6BindDesc">Desteklendiğinde SOCKS bağlamak için :: kullanın</string>
+    <string name="bind_host_label">Bind Host</string>
+    <string name="bind_host_desc">SOCKS bağlamak için host (örn. 127.0.0.1, 0.0.0.0, ::)</string>
+    <string name="copy_proxy_address">Proxy Adresini Kopyala</string>
+    <string name="copy_proxy_address_desc">host:port bilgisini panoya kopyala</string>
+    <string name="mtuText">MTU</string>
+    <string name="mtuTextDesc">Tünel MTU\'su (1200–1500)</string>
+    <string name="lanBypassText">LAN Baypas</string>
+    <string name="lanBypassTextDesc">Yerel ağları VPN\'den hariç tut</string>
     <string-array name="countries">
-        <item>Avustralya</item>
-        <item>Avusturya</item>
-        <item>Belçika</item>
-        <item>Bulgaristan</item>
-        <item>Kanada</item>
-        <item>Hırvatistan</item>
         <item>Çekya</item>
         <item>Danimarka</item>
         <item>Estonya</item>

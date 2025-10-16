@@ -16,6 +16,10 @@
   <string name="disabledRText">In disabled mode, traffic of all apps passes through VPN.</string>
   <string name="enabledR">Enabled</string>
   <string name="enabledRText">In enabled mode, traffic of selected apps does not pass through VPN.</string>
+  <string name="whitelistR">Whitelist</string>
+  <string name="whitelistRText">In whitelist mode, only selected apps will use VPN.</string>
+  <string name="select_all">Select all</string>
+  <string name="clear_all">Clear all</string>
   <string name="showSystemAppsText">Show System Apps</string>
   <string name="settingsText">Settings</string>
   <string name="endpointText">Endpoint</string>
@@ -57,7 +61,15 @@
   <string name="resetAppTextDesc">Reset app to defaults</string>
   <string name="resetAppText">Reset</string>
   <string name="proxy_mode">Proxy Mode</string>
-  <string name="running_in_proxy_mode_not_vpn">Running in proxy mode, not VPN</string>
+  <string name="running_in_proxy_mode_not_vpn">Running in proxy mode (not VPN). System DNS may leak; IPv6 is disabled to reduce leaks.</string>
+  <string name="dnsText">DNS</string>
+  <string name="dnsTextDesc">Set DNS servers for the tunnel</string>
+  <string name="keepAwakeText">Keep Alive</string>
+  <string name="keepAwakeTextDesc">Prevent device from sleeping while connected (uses more battery)</string>
+  <string name="mtuText">MTU</string>
+  <string name="mtuTextDesc">Tunnel MTU (1200–1500)</string>
+  <string name="lanBypassText">LAN Bypass</string>
+  <string name="lanBypassTextDesc">Exclude local network subnets from VPN</string>
   <string name="reset_to_default_endpoint">Reset to Default Endpoint</string>
     <string-array name="countries">
     <item>Australia</item>
@@ -138,4 +150,12 @@
     <item>zh</item> <!-- Chinese -->
   </string-array>
   <string name="splashText">With the efforts of #Yousef_Ghobadi and dozens of well-known or anonymous activists, for the purpose of providing free access to the internet for people…</string>
+  <string name="ipv6BindText">Enable IPv6 bind</string>
+  <string name="ipv6BindDesc">Use :: for SOCKS bind where supported</string>
+  <string name="bind_host_label">Bind Host</string>
+  <string name="bind_host_desc">Host to bind SOCKS proxy (e.g. 127.0.0.1, 0.0.0.0, ::)</string>
+  <string name="copy_proxy_address">Copy Proxy Address</string>
+  <string name="copy_proxy_address_desc">Copy host:port to clipboard</string>
+  <string name="widget_connect">Connect</string>
+  <string name="widget_disconnect">Disconnect</string>
 </resources>
