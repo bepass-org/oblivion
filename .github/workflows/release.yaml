@@ -57,14 +57,14 @@ jobs:
 
       # Upload build aar to Artifacts
       - name: Upload build aar to Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: "tun2socks"
           path: app/libs/tun2socks.aar
 
       # Upload APK artifact
       - name: Upload files to Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: oblivion-${{ github.sha }}-unsigned.apk
           path: |
