@@ -125,6 +125,39 @@
     <item>United Kingdom</item>
     <item>United States</item>
   </string-array>
+  <string-array name="localeCountries">
+      <item>AU</item>
+      <item>AT</item>
+      <item>BE</item>
+      <item>BG</item>
+      <item>CA</item>
+      <item>HR</item>
+      <item>CZ</item>
+      <item>DK</item>
+      <item>EE</item>
+      <item>FI</item>
+      <item>FR</item>
+      <item>DE</item>
+      <item>HU</item>
+      <item>IN</item>
+      <item>IE</item>
+      <item>IT</item>
+      <item>JP</item>
+      <item>LV</item>
+      <item>NL</item>
+      <item>NO</item>
+      <item>PL</item>
+      <item>PT</item>
+      <item>RO</item>
+      <item>RS</item>
+      <item>SG</item>
+      <item>SK</item>
+      <item>ES</item>
+      <item>SE</item>
+      <item>CH</item>
+      <item>GB</item>
+      <item>US</item>
+  </string-array>
   <string-array name="endpointType">
     <item>Auto</item>
     <item>IPv4</item>
