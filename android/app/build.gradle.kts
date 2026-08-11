@@ -15,33 +15,6 @@ val signingProperties = Properties().apply {
 
 val hasReleaseKey = signingProperties.getProperty("storeFile") != null
 
-val abiTargets = mapOf(
-    "arm64-v8a" to "aarch64-linux-android",
-    "armeabi-v7a" to "armv7-linux-androideabi",
-    "x86_64" to "x86_64-linux-android",
-)
-
-val platformAbis = mapOf(
-    "android-arm64" to "arm64-v8a",
-    "android-arm" to "armeabi-v7a",
-    "android-x64" to "x86_64",
-)
-
-val requestedAbis: List<String> = listOfNotNull(
-    project.findProperty("aetherAbi") as String?,
-    project.findProperty("target-platform") as String?,
-)
-    .flatMap { it.split(',') }
-    .map { it.trim() }
-    .mapNotNull { platformAbis[it] ?: it.takeIf(abiTargets::containsKey) }
-    .distinct()
-
-val selectedAbis: Set<String> = when {
-    requestedAbis.isEmpty() -> abiTargets.keys
-    else -> abiTargets.keys.filter(requestedAbis::contains).toSet()
-}
-
-
 android {
     namespace = "org.bepass.oblivion"
     compileSdk = flutter.compileSdkVersion
@@ -60,10 +33,6 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-
-        ndk {
-            abiFilters.addAll(selectedAbis)
-        }
     }
 
     packaging {
