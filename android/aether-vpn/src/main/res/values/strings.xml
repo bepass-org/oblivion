@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tunnel_channel_name">Tunnel</string>
+    <string name="tunnel_channel_description">Shows whether the tunnel is running</string>
+    <string name="tunnel_state_connecting">Connecting…</string>
+    <string name="tunnel_state_connected">Connected</string>
+    <string name="tunnel_action_disconnect">Disconnect</string>
+    <string name="tunnel_proxy_at">SOCKS5 on %1$s</string>
+</resources>
