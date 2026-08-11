@@ -1,0 +1,55 @@
+name: oblivion
+description: Oblivion - a free and open internet client powered by the Aether core.
+publish_to: "none"
+version: 8.0.0+8
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.9
+  flutter_svg: ^2.2.1
+  intl: ^0.20.2
+  flutter_riverpod: ^2.6.1
+  shared_preferences: ^2.5.3
+  http: ^1.5.0
+  url_launcher: ^6.3.2
+  path_provider: ^2.1.5
+  ffi: ^2.1.4
+
+  window_manager: ^0.5.1
+  tray_manager: ^0.5.2
+  screen_retriever: ^0.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - assets/images/
+    - assets/tray/
+    - assets/flags/
+
+  fonts:
+    - family: Vazirmatn
+      fonts:
+        - asset: assets/fonts/Vazirmatn-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Vazirmatn-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Vazirmatn-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Vazirmatn-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Vazirmatn-ExtraBold.ttf
+          weight: 800

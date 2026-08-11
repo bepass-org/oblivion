@@ -1,0 +1,6 @@
+
+PRODUCT_NAME = oblivion
+
+PRODUCT_BUNDLE_IDENTIFIER = org.bepass.oblivion
+
+PRODUCT_COPYRIGHT = Copyright © 2026 org.bepass. All rights reserved.

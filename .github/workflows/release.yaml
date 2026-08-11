@@ -1,71 +1,265 @@
-name: Android CI
+name: Release
 
 on:
   workflow_dispatch:
   push:
-    branches: ["main"]
-  release:
-    types: ["published"]
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+env:
+  FLUTTER_VERSION: "3.44.3"
 
 jobs:
-  build:
-    permissions:
-      contents: write
-
+  android:
+    name: Android
     runs-on: ubuntu-latest
-
-    env:
-      CGO_ENABLED: 0
-
     steps:
-      - name: Checkout codebase
+      - name: Checkout with the core and hev-socks5-tunnel
         uses: actions/checkout@v6
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
         with:
-          go-version: "1.22"
-          check-latest: true
+          submodules: recursive
 
-      # Set up JDK
-      - name: Set Up JDK
+      - name: Set up JDK
         uses: actions/setup-java@v5
         with:
           java-version: "17"
           distribution: "zulu"
-          cache: "gradle"
 
-      - name: Install NDK
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Set up Rust with the Android targets
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            aetherproject/aether/target
+          key: cargo-android-${{ hashFiles('aetherproject/aether/Cargo.lock') }}
+          restore-keys: cargo-android-
+
+      - name: Install the NDK
+        id: ndk
         uses: nttld/setup-ndk@v1
         with:
-          ndk-version: r26b
+          ndk-version: r27c
           link-to-sdk: true
 
-      - name: Change wrapper permissions
-        run: chmod +x ./gradlew
+      - name: Pin both modules to the NDK that was installed
+        run: |
+          version=$(basename "$(ls -d "$ANDROID_HOME"/ndk/*/ | head -1)")
+          echo "ANDROID_NDK_VERSION=$version" >> "$GITHUB_ENV"
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/$version" >> "$GITHUB_ENV"
+          echo "using ndk $version"
 
-      - name: Build Tun2Socks AAR
-        run: ./gradlew buildTun2SocksAar
+      - name: Restore the signing key
+        working-directory: android
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::warning::no signing key configured, falling back to the debug key"
+            exit 0
+          fi
+          printf '%s' "$KEYSTORE_BASE64" | base64 -d > oblivion-release.jks
+          {
+            echo "storeFile=oblivion-release.jks"
+            echo "storePassword=$KEYSTORE_PASSWORD"
+            echo "keyAlias=$KEY_ALIAS"
+            echo "keyPassword=$KEY_PASSWORD"
+          } > key.properties
 
-      # Run Build Project
-      - name: Build gradle project
-        run: ./gradlew build
+      - name: Fetch dependencies
+        run: flutter pub get
 
-      # Build APKs
-      - name: Build Release APK
-        run: ./gradlew assembleRelease
+      - name: Build the per ABI APKs
+        run: flutter build apk --release --no-pub --split-per-abi
 
-      # Upload build aar to Artifacts
-      - name: Upload build aar to Artifacts
-        uses: actions/upload-artifact@v5
+      - name: Build the universal APK
+        run: flutter build apk --release --no-pub
+
+      - name: Collect the APKs
+        run: |
+          mkdir -p dist
+          out=build/app/outputs/flutter-apk
+          cp "$out/app-release.apk"             dist/oblivion-universal.apk
+          cp "$out/app-arm64-v8a-release.apk"   dist/oblivion-arm64-v8a.apk
+          cp "$out/app-armeabi-v7a-release.apk" dist/oblivion-armeabi-v7a.apk
+          cp "$out/app-x86_64-release.apk"      dist/oblivion-x86_64.apk
+          ls -la dist
+
+      - name: Report which key signed the APKs
+        run: |
+          signer=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
+          for apk in dist/*.apk; do
+            echo "== $apk"
+            "$signer" verify --print-certs "$apk" | grep -E "certificate DN|SHA-256 digest" || true
+          done
+
+      - name: Drop the signing key
+        if: always()
+        working-directory: android
+        run: rm -f oblivion-release.jks key.properties
+
+      - uses: actions/upload-artifact@v5
         with:
-          name: "tun2socks"
-          path: app/libs/tun2socks.aar
+          name: android
+          path: dist/*.apk
 
-      # Upload APK artifact
-      - name: Upload files to Artifacts
-        uses: actions/upload-artifact@v5
+  linux:
+    name: Linux ${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            runner: ubuntu-22.04
+          - arch: arm64
+            runner: ubuntu-22.04-arm
+    steps:
+      - name: Checkout with the core
+        uses: actions/checkout@v6
         with:
-          name: oblivion-${{ github.sha }}-unsigned.apk
+          submodules: recursive
+
+      - name: Install the build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
           path: |
-            app/build/outputs/apk/release/*.apk
+            ~/.cargo/registry
+            ~/.cargo/git
+            aetherproject/aether/target
+          key: cargo-linux-${{ matrix.arch }}-${{ hashFiles('aetherproject/aether/Cargo.lock') }}
+          restore-keys: cargo-linux-${{ matrix.arch }}-
+
+      - name: Build
+        run: |
+          flutter pub get
+          flutter build linux --release --no-pub
+
+      - name: Package
+        run: |
+          mkdir -p dist
+          tar -C "build/linux/${{ matrix.arch }}/release" \
+              -czf "dist/oblivion-linux-${{ matrix.arch }}.tar.gz" bundle
+          ls -la dist
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: linux-${{ matrix.arch }}
+          path: dist/*.tar.gz
+
+  windows:
+    name: Windows x64
+    runs-on: windows-latest
+    steps:
+      - name: Checkout with the core
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install NASM, needed to build BoringSSL
+        uses: ilammy/setup-nasm@v1
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            aetherproject/aether/target
+          key: cargo-windows-${{ hashFiles('aetherproject/aether/Cargo.lock') }}
+          restore-keys: cargo-windows-
+
+      - name: Build
+        run: |
+          flutter pub get
+          flutter build windows --release --no-pub
+
+      - name: Package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          Compress-Archive -Path "build/windows/x64/runner/Release/*" -DestinationPath "dist/oblivion-windows-x64.zip"
+          Get-ChildItem dist
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: windows-x64
+          path: dist/*.zip
+
+  release:
+    name: Publish
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [android, linux, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          path: artifacts
+
+      - name: Lay out the assets
+        run: |
+          mkdir -p dist
+          find artifacts -type f \( -name '*.apk' -o -name '*.tar.gz' -o -name '*.zip' \) \
+            -exec cp {} dist/ \;
+          cd dist
+          for file in *; do
+            case "$file" in
+              *.tar.gz) base="${file%.tar.gz}"; extension="tar.gz" ;;
+              *)        base="${file%.*}";      extension="${file##*.}" ;;
+            esac
+            mv "$file" "${base}-${GITHUB_REF_NAME}.${extension}"
+          done
+          sha256sum * > SHA256SUMS.txt
+          ls -la
+
+      - name: Publish the release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "${{ github.ref_name }} #یوسف_قبادی"
+          draft: false
+          prerelease: false
+          fail_on_unmatched_files: false
+          files: dist/*
+          body: |
+            بازنویسی برنامه و تغییر هسته به Aether
+
+            Rewritten app, the core is now Aether.

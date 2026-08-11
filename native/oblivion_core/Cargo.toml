@@ -1,0 +1,29 @@
+[package]
+name = "oblivion_core"
+version = "1.0.0"
+edition = "2021"
+publish = false
+
+[lib]
+name = "oblivion_core"
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+log = "0.4"
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = [
+    "Win32_Foundation",
+    "Win32_System_Threading",
+] }
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true

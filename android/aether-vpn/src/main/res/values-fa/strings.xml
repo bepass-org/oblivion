@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tunnel_channel_name">تونل</string>
+    <string name="tunnel_channel_description">نشان می‌دهد تونل روشن است یا نه</string>
+    <string name="tunnel_state_connecting">در حال اتصال…</string>
+    <string name="tunnel_state_connected">متصل</string>
+    <string name="tunnel_action_disconnect">قطع اتصال</string>
+    <string name="tunnel_proxy_at">SOCKS5 روی %1$s</string>
+</resources>

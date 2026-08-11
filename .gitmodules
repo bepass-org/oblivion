@@ -1,0 +1,6 @@
+[submodule "aetherproject"]
+	path = aetherproject
+	url = https://github.com/CluvexStudio/aether.git
+[submodule "android/aether-vpn/src/main/jni/hev-socks5-tunnel"]
+	path = android/aether-vpn/src/main/jni/hev-socks5-tunnel
+	url = https://github.com/heiher/hev-socks5-tunnel

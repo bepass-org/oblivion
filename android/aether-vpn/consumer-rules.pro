@@ -1,0 +1,2 @@
+-keep class org.bepass.oblivion.vpn.TProxyService { *; }
+-keep class org.bepass.oblivion.vpn.AetherVpnService { *; }
