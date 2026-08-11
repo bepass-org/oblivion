@@ -95,10 +95,10 @@ jobs:
         run: |
           mkdir -p dist
           out=build/app/outputs/flutter-apk
-          cp "$out/app-release.apk"             dist/oblivion-universal.apk
-          cp "$out/app-arm64-v8a-release.apk"   dist/oblivion-arm64-v8a.apk
-          cp "$out/app-armeabi-v7a-release.apk" dist/oblivion-armeabi-v7a.apk
-          cp "$out/app-x86_64-release.apk"      dist/oblivion-x86_64.apk
+          cp "$out/app-release.apk"             dist/oblivion-android-universal.apk
+          cp "$out/app-arm64-v8a-release.apk"   dist/oblivion-android-arm64-v8a.apk
+          cp "$out/app-armeabi-v7a-release.apk" dist/oblivion-android-armeabi-v7a.apk
+          cp "$out/app-x86_64-release.apk"      dist/oblivion-android-x86_64.apk
           ls -la dist
 
       - name: Report which key signed the APKs
@@ -116,8 +116,23 @@ jobs:
 
       - uses: actions/upload-artifact@v5
         with:
-          name: android
-          path: dist/*.apk
+          name: oblivion-android-universal
+          path: dist/oblivion-android-universal.apk
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: oblivion-android-arm64-v8a
+          path: dist/oblivion-android-arm64-v8a.apk
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: oblivion-android-armeabi-v7a
+          path: dist/oblivion-android-armeabi-v7a.apk
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: oblivion-android-x86_64
+          path: dist/oblivion-android-x86_64.apk
 
   linux:
     name: Linux ${{ matrix.arch }}
@@ -180,13 +195,15 @@ jobs:
       - name: Package
         run: |
           mkdir -p dist
-          tar -C "build/linux/${{ matrix.arch }}/release" \
-              -czf "dist/oblivion-linux-${{ matrix.arch }}.tar.gz" bundle
-          ls -la dist
+          release="build/linux/${{ matrix.arch }}/release"
+          mv "$release/bundle" "$release/oblivion"
+          tar -C "$release" -czf "dist/oblivion-linux-${{ matrix.arch }}.tar.gz" oblivion
+          echo "the archive holds:"
+          tar -tzf "dist/oblivion-linux-${{ matrix.arch }}.tar.gz" | head -5
 
       - uses: actions/upload-artifact@v5
         with:
-          name: linux-${{ matrix.arch }}
+          name: oblivion-linux-${{ matrix.arch }}
           path: dist/*.tar.gz
 
   windows:
@@ -250,13 +267,17 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path dist | Out-Null
-          Compress-Archive -Path "build/windows/${{ matrix.arch }}/runner/Release/*" `
+          $staging = "staging/oblivion"
+          New-Item -ItemType Directory -Force -Path $staging | Out-Null
+          Copy-Item -Recurse -Force `
+            -Path "build/windows/${{ matrix.arch }}/runner/Release/*" -Destination $staging
+          Compress-Archive -Path $staging `
                            -DestinationPath "dist/oblivion-windows-${{ matrix.arch }}.zip"
           Get-ChildItem dist
 
       - uses: actions/upload-artifact@v5
         with:
-          name: windows-${{ matrix.arch }}
+          name: oblivion-windows-${{ matrix.arch }}
           path: dist/*.zip
 
   release:
@@ -269,18 +290,14 @@ jobs:
         with:
           path: artifacts
 
-      - name: Lay out the assets
+      - name: Lay out the assets and stamp them with the version
         run: |
           mkdir -p dist
           find artifacts -type f \( -name '*.apk' -o -name '*.tar.gz' -o -name '*.zip' \) \
             -exec cp {} dist/ \;
           cd dist
-          for file in *; do
-            case "$file" in
-              *.tar.gz) base="${file%.tar.gz}"; extension="tar.gz" ;;
-              *)        base="${file%.*}";      extension="${file##*.}" ;;
-            esac
-            mv "$file" "${base}-${GITHUB_REF_NAME}.${extension}"
+          for file in oblivion-*; do
+            mv "$file" "${file/oblivion-/oblivion-${GITHUB_REF_NAME}-}"
           done
           sha256sum * > SHA256SUMS.txt
           ls -la
