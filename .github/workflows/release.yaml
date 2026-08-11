@@ -86,10 +86,10 @@ jobs:
         run: flutter pub get
 
       - name: Build the per ABI APKs
-        run: flutter build apk --release --no-pub --split-per-abi
+        run: flutter build apk --release --split-per-abi
 
       - name: Build the universal APK
-        run: flutter build apk --release --no-pub
+        run: flutter build apk --release
 
       - name: Collect the APKs
         run: |
@@ -139,13 +139,25 @@ jobs:
       - name: Install the build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+          sudo apt-get install -y clang cmake ninja-build pkg-config \
+            libgtk-3-dev liblzma-dev libayatana-appindicator3-dev
 
       - name: Set up Flutter
+        if: matrix.arch == 'x64'
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
+
+      - name: Set up Flutter from git
+        if: matrix.arch == 'arm64'
+        run: |
+          git clone --single-branch -b "${FLUTTER_VERSION}" \
+            https://github.com/flutter/flutter.git "$HOME/flutter"
+          echo "$HOME/flutter/bin" >> "$GITHUB_PATH"
+
+      - name: Report the toolchain
+        run: flutter --version
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
@@ -163,7 +175,7 @@ jobs:
       - name: Build
         run: |
           flutter pub get
-          flutter build linux --release --no-pub
+          flutter build linux --release
 
       - name: Package
         run: |
@@ -178,8 +190,17 @@ jobs:
           path: dist/*.tar.gz
 
   windows:
-    name: Windows x64
-    runs-on: windows-latest
+    name: Windows ${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    continue-on-error: ${{ matrix.arch == 'arm64' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            runner: windows-latest
+          - arch: arm64
+            runner: windows-11-arm
     steps:
       - name: Checkout with the core
         uses: actions/checkout@v6
@@ -187,10 +208,22 @@ jobs:
           submodules: recursive
 
       - name: Set up Flutter
+        if: matrix.arch == 'x64'
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
+
+      - name: Set up Flutter from git
+        if: matrix.arch == 'arm64'
+        shell: pwsh
+        run: |
+          git clone --single-branch -b "$env:FLUTTER_VERSION" `
+            https://github.com/flutter/flutter.git "$env:USERPROFILE\flutter"
+          "$env:USERPROFILE\flutter\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+
+      - name: Report the toolchain
+        run: flutter --version
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
@@ -205,24 +238,25 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             aetherproject/aether/target
-          key: cargo-windows-${{ hashFiles('aetherproject/aether/Cargo.lock') }}
-          restore-keys: cargo-windows-
+          key: cargo-windows-${{ matrix.arch }}-${{ hashFiles('aetherproject/aether/Cargo.lock') }}
+          restore-keys: cargo-windows-${{ matrix.arch }}-
 
       - name: Build
         run: |
           flutter pub get
-          flutter build windows --release --no-pub
+          flutter build windows --release
 
       - name: Package
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path dist | Out-Null
-          Compress-Archive -Path "build/windows/x64/runner/Release/*" -DestinationPath "dist/oblivion-windows-x64.zip"
+          Compress-Archive -Path "build/windows/${{ matrix.arch }}/runner/Release/*" `
+                           -DestinationPath "dist/oblivion-windows-${{ matrix.arch }}.zip"
           Get-ChildItem dist
 
       - uses: actions/upload-artifact@v5
         with:
-          name: windows-x64
+          name: windows-${{ matrix.arch }}
           path: dist/*.zip
 
   release:
