@@ -146,6 +146,7 @@ class TunnelController extends StateNotifier<TunnelStatus> {
   final TunnelChannel _channel;
   StreamSubscription<TunnelStatus>? _subscription;
   Timer? _ticker;
+  bool _connecting = false;
 
   Future<void> _syncInitialStatus() async {
     try {
@@ -191,18 +192,25 @@ class TunnelController extends StateNotifier<TunnelStatus> {
   }
 
   Future<bool> connect() async {
-    final settings = _ref.read(tunnelSettingsProvider);
+    if (_connecting) return false;
+    _connecting = true;
 
-    await _channel.requestNotifications();
+    try {
+      final settings = _ref.read(tunnelSettingsProvider);
 
-    if (!settings.proxyOnly) {
-      final granted = await _channel.prepare();
-      if (!granted) return false;
+      if (!settings.proxyOnly) {
+        final granted = await _channel.prepare();
+        if (!granted) return false;
+      }
+
+      state = state.copyWith(stage: TunnelStage.connecting);
+      await _channel.connect(settings);
+
+      unawaited(_channel.requestNotifications());
+      return true;
+    } finally {
+      _connecting = false;
     }
-
-    state = state.copyWith(stage: TunnelStage.connecting);
-    await _channel.connect(settings);
-    return true;
   }
 
   Future<void> disconnect() async {
