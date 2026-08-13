@@ -83,6 +83,7 @@ class AetherVpnService : VpnService() {
         core = runner
         TunnelBus.bindCodeSink(runner::submitLine)
         runner.start(target.coreArguments, coreEnvironment(target))
+        if (!runner.isRunning) return
 
         scheduleValidation(target)
     }
@@ -132,12 +133,26 @@ class AetherVpnService : VpnService() {
         val scheduler = Executors.newSingleThreadScheduledExecutor()
         validator = scheduler
 
-        val deadline = System.currentTimeMillis() + VALIDATION_TIMEOUT_MS
+        val budgetMs = validationBudgetMs(target.scanMode)
+        val deadline = System.currentTimeMillis() + budgetMs
         var announcedValidating = false
 
+        TunnelBus.log(
+            "aether",
+            "[*] waiting up to ${budgetMs / 1000}s for the tunnel on scan mode ${target.scanMode}",
+        )
+
         scheduler.scheduleWithFixedDelay({
+            if (core?.isRunning != true) {
+                stopTunnel(TunnelStage.FAILED, "the core stopped before the tunnel came up")
+                return@scheduleWithFixedDelay
+            }
+
             if (System.currentTimeMillis() > deadline) {
-                stopTunnel(TunnelStage.FAILED, "timed out waiting for a working tunnel")
+                stopTunnel(
+                    TunnelStage.FAILED,
+                    "no working tunnel after ${budgetMs / 1000}s on scan mode ${target.scanMode}",
+                )
                 return@scheduleWithFixedDelay
             }
 
@@ -430,7 +445,18 @@ class AetherVpnService : VpnService() {
         private const val HEV_LOG_NAME = "hev-tunnel.log"
 
 
-        private const val VALIDATION_TIMEOUT_MS = 90_000L
+        private const val POST_SCAN_HEADROOM_MS = 60_000L
+
+        private fun validationBudgetMs(scanMode: String): Long {
+            val scanBudget = when (scanMode.trim().lowercase()) {
+                "turbo", "fast" -> 45_000L
+                "thorough", "deep", "pro" -> 300_000L
+                "stealth", "quiet" -> 180_000L
+                "ironclad", "real", "verify", "guaranteed" -> 180_000L
+                else -> 120_000L
+            }
+            return scanBudget + POST_SCAN_HEADROOM_MS
+        }
         private const val VALIDATION_INTERVAL_MS = 1_000L
         private const val STATS_INTERVAL_MS = 1_000L
         private const val HEV_LOG_INTERVAL_MS = 500L
