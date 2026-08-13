@@ -84,6 +84,11 @@ class OblivionPlugin(
         TunnelBus.removeLogListener(logListener)
         statusSink = null
         logSink = null
+
+        pendingPermission?.let { runCatching { it.success(false) } }
+        pendingPermission = null
+        pendingNotifications?.let { runCatching { it.success(false) } }
+        pendingNotifications = null
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
@@ -126,16 +131,21 @@ class OblivionPlugin(
             return
         }
 
-        if (pendingNotifications != null) {
-            result.success(false)
-            return
+        pendingNotifications?.let { stale ->
+            pendingNotifications = null
+            runCatching { stale.success(false) }
         }
 
         pendingNotifications = result
-        activity.requestPermissions(
-            arrayOf(NOTIFICATION_PERMISSION),
-            REQUEST_NOTIFICATIONS,
-        )
+        runCatching {
+            activity.requestPermissions(
+                arrayOf(NOTIFICATION_PERMISSION),
+                REQUEST_NOTIFICATIONS,
+            )
+        }.onFailure {
+            pendingNotifications = null
+            result.success(false)
+        }
     }
 
     fun onRequestPermissionsResult(
