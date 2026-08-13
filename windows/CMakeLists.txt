@@ -35,7 +35,14 @@ endfunction()
 set(FLUTTER_MANAGED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/flutter")
 add_subdirectory(${FLUTTER_MANAGED_DIR})
 
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../native" "${CMAKE_BINARY_DIR}/native")
+
 add_subdirectory("runner")
+
+add_dependencies(${BINARY_NAME} oblivion_core_build)
+if(TARGET aether_core_build)
+  add_dependencies(${BINARY_NAME} aether_core_build)
+endif()
 
 
 include(flutter/generated_plugins.cmake)
@@ -62,6 +69,16 @@ install(FILES "${FLUTTER_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
 if(PLUGIN_BUNDLED_LIBRARIES)
   install(FILES "${PLUGIN_BUNDLED_LIBRARIES}"
     DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+    COMPONENT Runtime)
+endif()
+
+install(FILES "${OBLIVION_CORE_BUNDLED_LIB}"
+  DESTINATION "${CMAKE_INSTALL_PREFIX}"
+  COMPONENT Runtime)
+
+if(OBLIVION_AETHER_BIN)
+  install(PROGRAMS "${OBLIVION_AETHER_BIN}"
+    DESTINATION "${CMAKE_INSTALL_PREFIX}"
     COMPONENT Runtime)
 endif()
 
