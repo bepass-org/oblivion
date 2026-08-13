@@ -15,7 +15,18 @@ use crate::settings::TunnelSettings;
 use crate::sysproxy::SystemProxy;
 use crate::tunnel::TunnelDevice;
 
-const VALIDATION_TIMEOUT: Duration = Duration::from_secs(90);
+const POST_SCAN_HEADROOM: Duration = Duration::from_secs(60);
+
+fn validation_budget(scan_mode: &str) -> Duration {
+    let scan_budget = match scan_mode.trim().to_lowercase().as_str() {
+        "turbo" | "fast" => Duration::from_secs(45),
+        "thorough" | "deep" | "pro" => Duration::from_secs(300),
+        "stealth" | "quiet" => Duration::from_secs(180),
+        "ironclad" | "real" | "verify" | "guaranteed" => Duration::from_secs(180),
+        _ => Duration::from_secs(120),
+    };
+    scan_budget + POST_SCAN_HEADROOM
+}
 const VALIDATION_INTERVAL: Duration = Duration::from_secs(1);
 const RETAINED_LOG_LINES: usize = 2500;
 const MAX_TAILED_LOG_BYTES: u64 = 2 * 1024 * 1024;
@@ -473,9 +484,26 @@ impl Supervisor {
     fn await_validation(self: Arc<Self>, settings: TunnelSettings) {
         self.publish(Stage::Validating, None, None);
 
-        let deadline = Instant::now() + VALIDATION_TIMEOUT;
+        let budget = validation_budget(&settings.scan_mode);
+        self.log_from(
+            "aether",
+            format!(
+                "[*] waiting up to {}s for the tunnel on scan mode {}",
+                budget.as_secs(),
+                settings.scan_mode
+            ),
+        );
+
+        let deadline = Instant::now() + budget;
         while Instant::now() < deadline {
             if self.shutting_down.load(Ordering::SeqCst) {
+                return;
+            }
+
+            if !self.core_alive() {
+                self.log_from("aether", "[-] the core stopped before the tunnel came up");
+                self.disconnect();
+                self.publish(Stage::Failed, Some("core stopped".into()), None);
                 return;
             }
 
@@ -511,9 +539,27 @@ impl Supervisor {
             thread::sleep(VALIDATION_INTERVAL);
         }
 
-        self.log_from("aether", "[-] timed out waiting for a working tunnel");
+        self.log_from(
+            "aether",
+            format!(
+                "[-] no working tunnel after {}s on scan mode {}",
+                budget.as_secs(),
+                settings.scan_mode
+            ),
+        );
         self.disconnect();
         self.publish(Stage::Failed, Some("validation timeout".into()), None);
+    }
+
+    fn core_alive(self: &Arc<Self>) -> bool {
+        let mut guard = match self.core.lock() {
+            Ok(guard) => guard,
+            Err(_) => return true,
+        };
+        match guard.as_mut() {
+            Some(child) => !matches!(child.try_wait(), Ok(Some(_))),
+            None => false,
+        }
     }
 
     fn raise_device(
