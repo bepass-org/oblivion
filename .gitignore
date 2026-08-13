@@ -36,3 +36,6 @@ app.*.map.json
 
 # Rust build output for the FFI bridge and the core
 **/target/
+
+# cross compiled aether core, produced by the buildAetherCore task
+android/aether-vpn/src/main/jniLibs/
