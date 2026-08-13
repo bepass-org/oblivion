@@ -114,13 +114,32 @@ fun resolveNdkDir(): File? {
         ?.maxByOrNull { it.name }
 }
 
-fun hostTag(): String {
+fun hostTag(ndkDir: File): String {
     val os = System.getProperty("os.name").lowercase()
-    return when {
-        os.contains("mac") -> "darwin-x86_64"
-        os.contains("win") -> "windows-x86_64"
-        else -> "linux-x86_64"
+    val arch = System.getProperty("os.arch").lowercase()
+
+    val preferred = when {
+        os.contains("mac") && (arch.contains("aarch64") || arch.contains("arm")) ->
+            listOf("darwin-arm64", "darwin-x86_64")
+        os.contains("mac") -> listOf("darwin-x86_64", "darwin-arm64")
+        os.contains("win") -> listOf("windows-x86_64")
+        arch.contains("aarch64") || arch.contains("arm") ->
+            listOf("linux-arm64", "linux-x86_64")
+        else -> listOf("linux-x86_64", "linux-arm64")
     }
+
+    val prebuilt = File(ndkDir, "toolchains/llvm/prebuilt")
+    for (candidate in preferred) {
+        if (File(prebuilt, candidate).isDirectory) return candidate
+    }
+
+    val found = prebuilt.listFiles()?.firstOrNull { it.isDirectory }?.name
+    if (found != null) {
+        logger.lifecycle("[aether] using the only ndk toolchain present: $found")
+        return found
+    }
+
+    return preferred.first()
 }
 
 fun runCommand(
@@ -169,7 +188,7 @@ val buildAetherCore by tasks.registering {
 
         val ndkDir = resolveNdkDir()
             ?: throw GradleException("Android NDK not found, set ANDROID_NDK_HOME")
-        val toolchainBin = File(ndkDir, "toolchains/llvm/prebuilt/${hostTag()}/bin")
+        val toolchainBin = File(ndkDir, "toolchains/llvm/prebuilt/${hostTag(ndkDir)}/bin")
         val apiLevel = 24
 
         logger.lifecycle("[aether] building for ${selectedAbis.keys.joinToString(", ")}")
