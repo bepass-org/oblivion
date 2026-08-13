@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../providers/app_providers.dart';
 import '../providers/tunnel_providers.dart';
 import '../widgets/screen_header.dart';
 
@@ -19,6 +20,23 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
 
   final List<String> _lines = <String>[];
   final ScrollController _scroll = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRetained();
+  }
+
+  Future<void> _loadRetained() async {
+    final retained = await ref.read(tunnelChannelProvider).readLogs();
+    if (!mounted || retained.trim().isEmpty) return;
+
+    setState(() {
+      for (final line in retained.split('\n')) {
+        _append(line);
+      }
+    });
+  }
 
   @override
   void dispose() {
