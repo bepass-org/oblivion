@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
   <style name="Theme.OblivionUI" parent="@android:style/Theme.Material.NoActionBar">
     <item name="android:windowNoTitle">true</item>
@@ -8,9 +8,5 @@
     <item name="android:colorAccent">@color/md_theme_primary</item>
     <item name="android:colorBackground">#000000</item>
     <item name="android:windowBackground">#000000</item>
-    <item name="android:statusBarColor">#000000</item>
-    <item name="android:navigationBarColor">#000000</item>
-    <item name="android:windowLightStatusBar">false</item>
-    <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
   </style>
 </resources>
