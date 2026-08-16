@@ -2,6 +2,75 @@
 
 This file records dependency/toolchain upgrades and any required rollbacks or workarounds.
 
+## 2026-08-16 — Full Android-side modernization pass
+
+### Upgraded (all verified against live Maven/Google Maven metadata via `version_audit.ps1`)
+- **Gradle:** 9.6.1 → **9.7.0** (wrapper)
+- **AGP:** 9.3.0 → **9.3.1**
+- **KSP:** 2.3.10 → **2.3.11**
+- **Compose BOM:** 2026.06.01 → **2026.08.00** (Compose 1.11.4 → 1.12.0, material3 1.4.0)
+- **OkHttp:** 5.4.0 → **5.5.0**
+- **Okio:** 3.17.0 → **3.18.1**
+- **MMKV:** 2.4.0 → **2.4.1**
+- **Detekt:** 2.0.0-alpha.5 → **2.0.0-alpha.6**
+- **Spotless:** 8.8.0 → **8.9.0**
+- **Dependency Analysis:** 3.17.0 → **3.18.0**
+- **CycloneDX:** 3.3.0 → **3.4.1**
+- Kotlin 2.4.10, Hilt 2.60.1, Lifecycle 2.11.0, Navigation 2.9.8, Glide 5.0.9, Coroutines 1.11.0
+  already latest stable and unchanged.
+
+### Supply chain
+- `gradle/verification-metadata.xml` regenerated for Gradle 9.7.0's kotlin-dsl 6.7.3 and all new
+  versions; `org.apache:apache:39` pinned by cross-verified sha256 (local cache vs independent
+  Maven Central download) because its signing key sits in the ignored-keys list on this network.
+- `app/gradle.lockfile` re-persisted with `--write-locks` under STRICT locking.
+- `buildSrc/build` artifacts untracked from git (already covered by `.gitignore`).
+
+### Android platform compliance (documented APIs)
+- VPN foreground service migrated from `specialUse` (+ subtype property, `VpnServicePolicy`
+  lint suppression) to **`systemExempted`** with `FOREGROUND_SERVICE_SYSTEM_EXEMPTED`, matching
+  the official foreground-service-types guidance for VPN apps; `startForeground` call updated.
+- `themes.xml`: removed `statusBarColor`/`navigationBarColor`/`windowLight*` items deprecated by
+  Android 15 edge-to-edge enforcement; `enableEdgeToEdge` remains the single source of truth.
+- `Uri.parse` replaced with the KTX `String.toUri` extension (lint `UseKtx`).
+- Deprecated `TileService.startActivityAndCollapse(Intent)` legacy branch documented and
+  suppressed per lint waiver LINT-TILE-COLLAPSE-001 (API 24-33 fallback is unavoidable).
+
+### Responsiveness (phones, tablets, foldables, desktop mode, TV)
+- `OblivionApp` now wraps all destinations in a single-pane adaptive frame using the documented
+  Material 3 window width breakpoints (compact <600 dp; medium/expanded capped at a 600 dp
+  centered column). No new dependency: uses `BoxWithConstraints`, matching the existing
+  `SplashScreen` pattern; `material3-adaptive` was evaluated and rejected (alpha-only, not in the
+  Compose BOM). Phone (compact) layout is pixel-identical to before.
+- TV: banner, LEANBACK_LAUNCHER, `leanback`/`touchscreen` feature declarations verified; focus
+  traversal comes from standard Material3 clickable semantics.
+
+### Dead code / resource removal (Android side only)
+- Deleted unused sources: `utils/NetworkUtils`, `utils/LogFiles`, `utils/ColorUtils`,
+  `utils/SystemUtils` (deprecated window APIs), `wireguard/WireGuardProfileRepository`,
+  `ui/SettingsDialogs.EditValueDialog`, `MainActivity.start()`.
+- Deleted unused resources: 6 unreferenced fonts (emoji/oxygen x3/shabnam-light/thin),
+  `values/attrs.xml` (unused `Icon` styleable), empty `res/color`, `res/layout`,
+  `res/values-night`, `res/values-television` dirs, and the empty nested
+  `service/org/bepass/...` directory tree.
+- ProGuard: removed 4 stale `base.*Initializer` keep rules; added the missing
+  `-keep class hev.htproxy.TProxyService` rule that protects the name-based JNI binding under
+  full-mode R8 repackaging.
+- `TunnelEndpointPolicy` rewritten with named constants and split helpers to satisfy the zero
+  Detekt findings gate (MagicNumber, ReturnCount); policy behavior unchanged and unit-tested.
+- `EndpointSheet`: duplicate endpoint content is now rejected on save and `LazyColumn` rows use
+  content keys; `SplitTunnelScreen` bitmap assertion `!!` replaced with null-safe `?.let`.
+
+### Verification evidence (this pass)
+- `compileOssDebugKotlin`/`compilePlayDebugKotlin` with Kotlin warnings-as-errors: PASS
+- `testOssDebugUnitTest` + `testPlayDebugUnitTest`: PASS
+- `detekt` zero findings, `spotlessCheck`, `lintOssDebug` (warningsAsErrors, one documented
+  waiver pair): PASS under strict dependency verification
+- Native core tasks were excluded (`-x buildNativeCore -x buildHev`) because pre-existing
+  core-side edits (native/ + tun2socks inputs modified 2026-07-19) fail the pinned usque
+  patch-hash gate against the AAR built 2026-07-16. That rebuild is core-side work and is
+  intentionally untouched per project boundaries; see docs/PRODUCTION_GATES.md.
+
 ## 2026-06-21 — Gradle 9.6.0 Full Feature Adoption
 
 ### Upgraded
