@@ -24,12 +24,8 @@
 -dontwarn tun2socks.**
 -dontwarn go.**
 
-# ── AndroidX App Startup ──────────────────────────────────────
--keep class org.bepass.oblivion.base.FileManagerInitializer { *; }
--keep class org.bepass.oblivion.base.ThemeFontInitializer { *; }
--keep class org.bepass.oblivion.base.LocaleInitializer { *; }
--keep class org.bepass.oblivion.base.DnsInitializer { *; }
--keep class * extends androidx.startup.Initializer { *; }
+# ── hev-socks5-tunnel JNI bridge (name-based native binding) ──
+-keep class hev.htproxy.TProxyService { *; }
 
 # ── Messenger IPC ─────────────────────────────────────────────
 -keep class org.bepass.oblivion.service.OblivionVpnService$IncomingHandler { *; }
