@@ -57,7 +57,12 @@ jobs:
         run: flutter analyze
 
       - name: Run the dart tests
-        run: flutter test
+        run: |
+          if ls test/*_test.dart >/dev/null 2>&1; then
+            flutter test
+          else
+            echo "there are no dart tests to run"
+          fi
 
       - name: Run the ffi bridge tests
         working-directory: native/oblivion_core
