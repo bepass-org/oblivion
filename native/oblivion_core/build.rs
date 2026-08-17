@@ -137,9 +137,9 @@ fn main() {
     println!("cargo:rerun-if-changed={}", root.join("Makefile").display());
 
     if target_os == "windows" {
-        give_up(
-            "hev-socks5-tunnel only builds under msys2 on windows, \
-             so it cannot be linked into an msvc library",
+        println!(
+            "cargo:warning=on windows the tunnel device runs as the bundled \
+             hev-socks5-tunnel.exe helper rather than being linked in"
         );
         return;
     }
