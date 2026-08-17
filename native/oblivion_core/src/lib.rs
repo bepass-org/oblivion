@@ -1,3 +1,7 @@
+#[cfg(unix)]
+mod dns;
+#[cfg(not(unix))]
+#[path = "dns_windows.rs"]
 mod dns;
 mod net;
 mod probe;
