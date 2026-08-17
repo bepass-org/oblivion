@@ -54,3 +54,18 @@ else()
 endif()
 
 set(OBLIVION_CORE_BUNDLED_LIB "${OBLIVION_CORE_LIB}" PARENT_SCOPE)
+
+if(WIN32)
+  set(OBLIVION_HEVTUN_DIR "${CMAKE_CURRENT_LIST_DIR}/../windows/hevtun")
+  file(GLOB OBLIVION_HEVTUN_PAYLOAD
+    "${OBLIVION_HEVTUN_DIR}/hev-socks5-tunnel.exe"
+    "${OBLIVION_HEVTUN_DIR}/*.dll")
+
+  if(OBLIVION_HEVTUN_PAYLOAD)
+    set(OBLIVION_HEVTUN_FILES "${OBLIVION_HEVTUN_PAYLOAD}" PARENT_SCOPE)
+  else()
+    set(OBLIVION_HEVTUN_FILES "" PARENT_SCOPE)
+    message(WARNING
+      "No tunnel helper in ${OBLIVION_HEVTUN_DIR}, this build will be proxy only")
+  endif()
+endif()

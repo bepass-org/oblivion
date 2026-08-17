@@ -243,6 +243,29 @@ jobs:
           key: ci-cargo-windows-${{ hashFiles('aetherproject/aether/Cargo.lock') }}
           restore-keys: ci-cargo-windows-
 
+      - name: Set up MSYS2 to build the tunnel helper
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MSYS
+          update: true
+          install: gcc make
+
+      - name: Build the tunnel helper
+        shell: msys2 {0}
+        run: |
+          set -e
+          root=$(cygpath "$GITHUB_WORKSPACE")
+          dest="$root/windows/hevtun"
+          mkdir -p "$dest"
+          cd "$root/android/aether-vpn/src/main/jni/hev-socks5-tunnel"
+          make -j"$(nproc)" CFLAGS=-Wno-error
+          cp bin/hev-socks5-tunnel.exe "$dest/"
+          cp third-part/wintun/bin/wintun.dll "$dest/"
+          ldd bin/hev-socks5-tunnel.exe | awk '/msys/ {print $3}' | while read -r dll; do
+            cp "$dll" "$dest/"
+          done
+          ls -la "$dest"
+
       - name: Build
         run: |
           flutter pub get
@@ -253,14 +276,19 @@ jobs:
         run: |
           $runner = "build/windows/x64/runner/Debug"
           $missing = $false
-          foreach ($artefact in @("oblivion.exe", "aether.exe", "oblivion_core.dll")) {
+          foreach ($artefact in @("oblivion.exe", "aether.exe", "oblivion_core.dll",
+                                  "hev-socks5-tunnel.exe", "wintun.dll")) {
             if (-not (Test-Path "$runner/$artefact")) {
               Write-Output "::error::$artefact is missing from the runner directory"
               $missing = $true
             }
           }
+          if (-not (Get-ChildItem "$runner/msys-*.dll" -ErrorAction SilentlyContinue)) {
+            Write-Output "::error::the msys runtime the helper needs is missing"
+            $missing = $true
+          }
           if ($missing) { Get-ChildItem $runner; exit 1 }
-          Write-Output "the app, the core and the bridge are all bundled"
+          Write-Output "the app, the core, the bridge and the tunnel helper are bundled"
 
       - uses: actions/upload-artifact@v5
         with:

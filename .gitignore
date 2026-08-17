@@ -39,3 +39,4 @@ app.*.map.json
 
 # cross compiled aether core, produced by the buildAetherCore task
 android/aether-vpn/src/main/jniLibs/
+windows/hevtun/
