@@ -154,7 +154,7 @@ jobs:
       - name: Install the build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang cmake ninja-build pkg-config \
+          sudo apt-get install -y clang cmake ninja-build pkg-config make gcc \
             libgtk-3-dev liblzma-dev libayatana-appindicator3-dev
 
       - name: Set up Flutter
@@ -188,9 +188,20 @@ jobs:
           restore-keys: cargo-linux-${{ matrix.arch }}-
 
       - name: Build
+        env:
+          OBLIVION_REQUIRE_HEV: "1"
         run: |
           flutter pub get
           flutter build linux --release
+
+      - name: Check that tunnel mode is embedded
+        run: |
+          lib="build/linux/${{ matrix.arch }}/release/bundle/lib/liboblivion_core.so"
+          if ! grep -qa HevSocks5ClientTCP "$lib"; then
+            echo "::error::the bridge carries no tunnel device, the release would be proxy only"
+            exit 1
+          fi
+          echo "hev-socks5-tunnel is linked, tunnel mode is available"
 
       - name: Package
         run: |
