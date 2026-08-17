@@ -269,10 +269,49 @@ jobs:
           key: cargo-windows-${{ matrix.arch }}-${{ hashFiles('aetherproject/aether/Cargo.lock') }}
           restore-keys: cargo-windows-${{ matrix.arch }}-
 
+      - name: Set up MSYS2 to build the tunnel helper
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MSYS
+          update: true
+          install: gcc make
+
+      - name: Build the tunnel helper
+        shell: msys2 {0}
+        run: |
+          set -e
+          root=$(cygpath "$GITHUB_WORKSPACE")
+          dest="$root/windows/hevtun"
+          mkdir -p "$dest"
+          cd "$root/android/aether-vpn/src/main/jni/hev-socks5-tunnel"
+          make -j"$(nproc)" CFLAGS=-Wno-error
+          cp bin/hev-socks5-tunnel.exe "$dest/"
+          cp third-part/wintun/bin/wintun.dll "$dest/"
+          ldd bin/hev-socks5-tunnel.exe | awk '/msys/ {print $3}' | while read -r dll; do
+            cp "$dll" "$dest/"
+          done
+          ls -la "$dest"
+
       - name: Build
         run: |
           flutter pub get
           flutter build windows --release
+
+      - name: Check that the tunnel helper shipped
+        shell: pwsh
+        run: |
+          $runner = "build/windows/${{ matrix.arch }}/runner/Release"
+          foreach ($artefact in @("hev-socks5-tunnel.exe", "wintun.dll")) {
+            if (-not (Test-Path "$runner/$artefact")) {
+              Write-Output "::error::$artefact is missing, the release would be proxy only"
+              exit 1
+            }
+          }
+          if (-not (Get-ChildItem "$runner/msys-*.dll" -ErrorAction SilentlyContinue)) {
+            Write-Output "::error::the msys runtime the helper needs is missing"
+            exit 1
+          }
+          Write-Output "the tunnel helper shipped, tunnel mode is available"
 
       - name: Package
         shell: pwsh
