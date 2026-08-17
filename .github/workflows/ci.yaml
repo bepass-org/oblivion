@@ -1,0 +1,264 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+    paths-ignore:
+      - "**.md"
+      - "Docs/**"
+      - "LICENSE"
+  pull_request:
+    branches: ["main"]
+    paths-ignore:
+      - "**.md"
+      - "Docs/**"
+      - "LICENSE"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: "3.44.3"
+
+jobs:
+  analyze:
+    name: Analyze and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            native/oblivion_core/target
+          key: ci-bridge-${{ hashFiles('native/oblivion_core/Cargo.lock') }}
+          restore-keys: ci-bridge-
+
+      - name: Fetch dependencies
+        run: flutter pub get
+
+      - name: Analyze the dart sources
+        run: flutter analyze
+
+      - name: Run the dart tests
+        run: flutter test
+
+      - name: Run the ffi bridge tests
+        working-directory: native/oblivion_core
+        run: cargo test
+
+  android:
+    name: Android debug
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout with the core and hev-socks5-tunnel
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: "17"
+          distribution: "zulu"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Set up Rust with the Android target
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            aetherproject/aether/target
+          key: ci-cargo-android-${{ hashFiles('aetherproject/aether/Cargo.lock') }}
+          restore-keys: ci-cargo-android-
+
+      - name: Install the NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r27c
+          link-to-sdk: true
+
+      - name: Pin both modules to the NDK that was installed
+        run: |
+          version=$(basename "$(ls -d "$ANDROID_HOME"/ndk/*/ | head -1)")
+          echo "ANDROID_NDK_VERSION=$version" >> "$GITHUB_ENV"
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/$version" >> "$GITHUB_ENV"
+          echo "using ndk $version"
+
+      - name: Build
+        run: |
+          flutter pub get
+          flutter build apk --debug --target-platform android-arm64
+
+      - name: Check that the core rode along
+        run: |
+          apk=build/app/outputs/flutter-apk/app-debug.apk
+          if ! unzip -l "$apk" | grep -q 'lib/arm64-v8a/libaether.so'; then
+            echo "::error::the apk carries no aether core, the tunnel cannot start"
+            unzip -l "$apk" | grep 'lib/' || true
+            exit 1
+          fi
+          echo "the aether core is inside the apk"
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: oblivion-android-arm64-debug
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 14
+
+  linux:
+    name: Linux debug
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout with the core
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Install the build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config make gcc \
+            libgtk-3-dev liblzma-dev libayatana-appindicator3-dev
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            aetherproject/aether/target
+            native/oblivion_core/target
+          key: ci-cargo-linux-${{ hashFiles('aetherproject/aether/Cargo.lock') }}
+          restore-keys: ci-cargo-linux-
+
+      - name: Build
+        env:
+          OBLIVION_REQUIRE_HEV: "1"
+        run: |
+          flutter pub get
+          flutter build linux --debug
+
+      - name: Check that the native pieces were bundled
+        run: |
+          bundle=build/linux/x64/debug/bundle
+          missing=0
+          for artefact in oblivion aether lib/liboblivion_core.so; do
+            if [ ! -e "$bundle/$artefact" ]; then
+              echo "::error::$artefact is missing from the bundle"
+              missing=1
+            fi
+          done
+          [ "$missing" -eq 0 ] || exit 1
+          echo "the app, the core and the bridge are all bundled"
+
+      - name: Check that tunnel mode is embedded
+        run: |
+          lib=build/linux/x64/debug/bundle/lib/liboblivion_core.so
+          for symbol in hev_socks5_tunnel_main_from_str hev_socks5_tunnel_quit \
+                        hev_socks5_tunnel_stats; do
+            if ! nm -a "$lib" | grep -q " $symbol\$"; then
+              echo "::error::$symbol is not linked, the app would be proxy only"
+              exit 1
+            fi
+          done
+          echo "hev-socks5-tunnel is linked, tunnel mode is available"
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: oblivion-linux-x64-debug
+          path: build/linux/x64/debug/bundle
+          retention-days: 14
+
+  windows:
+    name: Windows debug
+    runs-on: windows-latest
+    steps:
+      - name: Checkout with the core
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install NASM, needed to build BoringSSL
+        uses: ilammy/setup-nasm@v1
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            aetherproject/aether/target
+            native/oblivion_core/target
+          key: ci-cargo-windows-${{ hashFiles('aetherproject/aether/Cargo.lock') }}
+          restore-keys: ci-cargo-windows-
+
+      - name: Build
+        run: |
+          flutter pub get
+          flutter build windows --debug
+
+      - name: Check that the native pieces were bundled
+        shell: pwsh
+        run: |
+          $runner = "build/windows/x64/runner/Debug"
+          $missing = $false
+          foreach ($artefact in @("oblivion.exe", "aether.exe", "oblivion_core.dll")) {
+            if (-not (Test-Path "$runner/$artefact")) {
+              Write-Output "::error::$artefact is missing from the runner directory"
+              $missing = $true
+            }
+          }
+          if ($missing) { Get-ChildItem $runner; exit 1 }
+          Write-Output "the app, the core and the bridge are all bundled"
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: oblivion-windows-x64-debug
+          path: build/windows/x64/runner/Debug
+          retention-days: 14
