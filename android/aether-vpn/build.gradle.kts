@@ -213,6 +213,9 @@ val buildAetherCore by tasks.registering {
 
             val envTriple = triple.uppercase().replace('-', '_')
             val sysroot = File(toolchainBin, "../sysroot").canonicalFile
+            // The clang target the versioned wrapper resolves to, e.g.
+            // aarch64-linux-android24 for aarch64-linux-android24-clang.
+            val clangTarget = clangName.removeSuffix("-clang")
 
             val environment = mapOf(
                 "ANDROID_NDK_HOME" to ndkDir.absolutePath,
@@ -220,7 +223,18 @@ val buildAetherCore by tasks.registering {
                 "CARGO_TARGET_${envTriple}_LINKER" to clang.absolutePath,
                 "CARGO_TARGET_${envTriple}_RUSTFLAGS" to
                     "-C link-arg=-Wl,-z,max-page-size=16384",
-                "CC_${triple.replace('-', '_')}" to clang.absolutePath,
+                // CC must be the unversioned clang: boring-sys forwards it to
+                // CMake as CMAKE_C_COMPILER, and the NDK toolchain file caches
+                // the unversioned clang. A versioned wrapper makes BoringSSL's
+                // second configure think the compiler changed, so CMake wipes
+                // its cache and reconfigures against the macOS host SDK.
+                // The API level is kept via the --target flag below instead.
+                "CC_${triple.replace('-', '_')}" to
+                    File(toolchainBin, "clang").absolutePath,
+                "CXX_${triple.replace('-', '_')}" to
+                    File(toolchainBin, "clang++").absolutePath,
+                "CFLAGS_${triple.replace('-', '_')}" to "--target=$clangTarget",
+                "CXXFLAGS_${triple.replace('-', '_')}" to "--target=$clangTarget",
                 "AR_${triple.replace('-', '_')}" to
                     File(toolchainBin, "llvm-ar").absolutePath,
                 "BINDGEN_EXTRA_CLANG_ARGS_${triple.replace('-', '_')}" to
