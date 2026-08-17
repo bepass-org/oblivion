@@ -242,6 +242,15 @@ val buildAetherCore by tasks.registering {
                 "RUST_LIBC_UNSTABLE_MUSL_V1_2_3" to "1",
             )
 
+            // A BoringSSL CMake cache left by a previous run (or restored by
+            // CI) can record different compiler settings; CMake then deletes
+            // the cache mid-configure and loses the NDK toolchain, silently
+            // building host-architecture objects. Always configure fresh.
+            File(aetherCoreDir, "target/$triple/release/build")
+                .listFiles()
+                ?.filter { it.name.startsWith("boring-sys-") }
+                ?.forEach { File(it, "out/build").deleteRecursively() }
+
             logger.lifecycle("[aether] building the core for $abi ($triple)")
             val (status, output) = runCommand(
                 listOf("cargo", "build", "--release", "--target", triple, "--bin", "aether"),
