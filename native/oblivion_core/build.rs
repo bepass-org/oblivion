@@ -3,7 +3,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-const HEV_CFLAGS: &str = "-fPIC";
+const HEV_CFLAGS: &str = "-fPIC -Wno-error";
 
 const ARCHIVES: [(&str, &str); 4] = [
     ("bin", "hev-socks5-tunnel"),
