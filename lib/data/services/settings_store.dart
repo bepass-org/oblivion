@@ -1,12 +1,26 @@
+import 'dart:ui' show PlatformDispatcher;
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/tunnel_settings.dart';
 
+const List<String> supportedLocaleCodes = <String>['en', 'fa'];
+
+const String fallbackLocaleCode = 'en';
+
+String resolveDeviceLocaleCode() {
+  for (final locale in PlatformDispatcher.instance.locales) {
+    final code = locale.languageCode.toLowerCase();
+    if (supportedLocaleCodes.contains(code)) return code;
+  }
+  return fallbackLocaleCode;
+}
+
 class AppPreferences {
   const AppPreferences({
     this.themeMode = ThemeMode.dark,
-    this.localeCode = 'fa',
+    this.localeCode = fallbackLocaleCode,
     this.introSeen = false,
   });
 
@@ -39,6 +53,13 @@ class SettingsStore {
 
   static const String _prefix = 'core.';
   static const List<String> _coreKeys = <String>[
+    'core',
+    'psiphonCountry',
+    'psiphonMode',
+    'psiphonCdnIps',
+    'psiphonCdnSni',
+    'psiphonConduitPeers',
+    'psiphonRejectCensoredPeers',
     'protocol',
     'transport',
     'scanMode',
@@ -65,6 +86,7 @@ class SettingsStore {
     'fragmentSize',
     'fragmentDelay',
     'quickReconnect',
+    'fastFirstConnect',
     'dataCheck',
     'validateSeconds',
     'reconnectSeconds',
@@ -90,6 +112,17 @@ class SettingsStore {
     const fallback = TunnelSettings();
 
     return TunnelSettings(
+      core: CoreEngine.fromWire(_string('core')),
+      psiphonCountry: _string('psiphonCountry') ?? fallback.psiphonCountry,
+      psiphonMode: PsiphonMode.fromWire(_string('psiphonMode')),
+      psiphonCdnIps: _string('psiphonCdnIps') ?? fallback.psiphonCdnIps,
+      psiphonCdnSni: _string('psiphonCdnSni') ?? fallback.psiphonCdnSni,
+      psiphonConduitPeers: ConduitPeers.fromWire(
+        _string('psiphonConduitPeers'),
+      ),
+      psiphonRejectCensoredPeers:
+          _prefs.getBool('${_prefix}psiphonRejectCensoredPeers') ??
+          fallback.psiphonRejectCensoredPeers,
       protocol: CoreProtocol.fromWire(_string('protocol')),
       transport: MasqueTransport.fromWire(_string('transport')),
       scanMode: ScanMode.fromWire(_string('scanMode')),
@@ -109,25 +142,30 @@ class SettingsStore {
       socksPort: _prefs.getInt('${_prefix}socksPort') ?? fallback.socksPort,
       allowLan: _prefs.getBool('${_prefix}allowLan') ?? fallback.allowLan,
       routingMode: RoutingMode.fromWire(_string('routingMode')),
-      tunnelInterface: _prefs.getString('${_prefix}tunnelInterface') ??
+      tunnelInterface:
+          _prefs.getString('${_prefix}tunnelInterface') ??
           fallback.tunnelInterface,
-      tunnelMtu:
-          _prefs.getInt('${_prefix}tunnelMtu') ?? fallback.tunnelMtu,
+      tunnelMtu: _prefs.getInt('${_prefix}tunnelMtu') ?? fallback.tunnelMtu,
       overrideDns:
           _prefs.getBool('${_prefix}overrideDns') ?? fallback.overrideDns,
       dnsPrimary:
           _prefs.getString('${_prefix}dnsPrimary') ?? fallback.dnsPrimary,
-      dnsSecondary: _prefs.getString('${_prefix}dnsSecondary') ??
-          fallback.dnsSecondary,
+      dnsSecondary:
+          _prefs.getString('${_prefix}dnsSecondary') ?? fallback.dnsSecondary,
       fragment: _prefs.getBool('${_prefix}fragment') ?? fallback.fragment,
       fragmentSize: _string('fragmentSize') ?? fallback.fragmentSize,
       fragmentDelay: _string('fragmentDelay') ?? fallback.fragmentDelay,
       quickReconnect:
           _prefs.getBool('${_prefix}quickReconnect') ?? fallback.quickReconnect,
+      fastFirstConnect:
+          _prefs.getBool('${_prefix}fastFirstConnect') ??
+          fallback.fastFirstConnect,
       dataCheck: _prefs.getBool('${_prefix}dataCheck') ?? fallback.dataCheck,
-      validateSeconds: _prefs.getInt('${_prefix}validateSeconds') ??
+      validateSeconds:
+          _prefs.getInt('${_prefix}validateSeconds') ??
           fallback.validateSeconds,
-      reconnectSeconds: _prefs.getInt('${_prefix}reconnectSeconds') ??
+      reconnectSeconds:
+          _prefs.getInt('${_prefix}reconnectSeconds') ??
           fallback.reconnectSeconds,
       wgKeepalive:
           _prefs.getInt('${_prefix}wgKeepalive') ?? fallback.wgKeepalive,
@@ -146,6 +184,19 @@ class SettingsStore {
   }
 
   Future<void> writeTunnelSettings(TunnelSettings settings) async {
+    await _prefs.setString('${_prefix}core', settings.core.wire);
+    await _prefs.setString('${_prefix}psiphonCountry', settings.psiphonCountry);
+    await _prefs.setString('${_prefix}psiphonMode', settings.psiphonMode.wire);
+    await _prefs.setString('${_prefix}psiphonCdnIps', settings.psiphonCdnIps);
+    await _prefs.setString('${_prefix}psiphonCdnSni', settings.psiphonCdnSni);
+    await _prefs.setString(
+      '${_prefix}psiphonConduitPeers',
+      settings.psiphonConduitPeers.wire,
+    );
+    await _prefs.setBool(
+      '${_prefix}psiphonRejectCensoredPeers',
+      settings.psiphonRejectCensoredPeers,
+    );
     await _prefs.setString('${_prefix}protocol', settings.protocol.wire);
     await _prefs.setString('${_prefix}transport', settings.transport.wire);
     await _prefs.setString('${_prefix}scanMode', settings.scanMode.wire);
@@ -181,9 +232,16 @@ class SettingsStore {
     await _prefs.setString('${_prefix}fragmentSize', settings.fragmentSize);
     await _prefs.setString('${_prefix}fragmentDelay', settings.fragmentDelay);
     await _prefs.setBool('${_prefix}quickReconnect', settings.quickReconnect);
+    await _prefs.setBool(
+      '${_prefix}fastFirstConnect',
+      settings.fastFirstConnect,
+    );
     await _prefs.setBool('${_prefix}dataCheck', settings.dataCheck);
     await _prefs.setInt('${_prefix}validateSeconds', settings.validateSeconds);
-    await _prefs.setInt('${_prefix}reconnectSeconds', settings.reconnectSeconds);
+    await _prefs.setInt(
+      '${_prefix}reconnectSeconds',
+      settings.reconnectSeconds,
+    );
     await _prefs.setInt('${_prefix}wgKeepalive', settings.wgKeepalive);
     await _prefs.setBool('${_prefix}wgProfileRetry', settings.wgProfileRetry);
     await _prefs.setString('${_prefix}routeBlock', settings.routeBlock);
@@ -209,14 +267,19 @@ class SettingsStore {
         (mode) => mode.name == themeName,
         orElse: () => ThemeMode.dark,
       ),
-      localeCode: _prefs.getString(_kLocale) ?? 'fa',
+      localeCode: _prefs.getString(_kLocale) ?? resolveDeviceLocaleCode(),
       introSeen: _prefs.getBool(_kIntroSeen) ?? false,
     );
   }
 
   Future<void> writeAppPreferences(AppPreferences prefs) async {
     await _prefs.setString(_kThemeMode, prefs.themeMode.name);
-    await _prefs.setString(_kLocale, prefs.localeCode);
     await _prefs.setBool(_kIntroSeen, prefs.introSeen);
+  }
+
+  bool get hasLocaleOverride => _prefs.getString(_kLocale) != null;
+
+  Future<void> writeLocaleOverride(String code) async {
+    await _prefs.setString(_kLocale, code);
   }
 }
