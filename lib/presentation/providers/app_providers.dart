@@ -31,7 +31,7 @@ class AppPreferencesController extends StateNotifier<AppPreferences> {
 
   Future<void> setLocale(String code) async {
     state = state.copyWith(localeCode: code);
-    await _store.writeAppPreferences(state);
+    await _store.writeLocaleOverride(code);
   }
 
   Future<void> markIntroSeen() async {
@@ -43,8 +43,8 @@ class AppPreferencesController extends StateNotifier<AppPreferences> {
 
 final appPreferencesProvider =
     StateNotifierProvider<AppPreferencesController, AppPreferences>((ref) {
-  return AppPreferencesController(ref.watch(settingsStoreProvider));
-});
+      return AppPreferencesController(ref.watch(settingsStoreProvider));
+    });
 
 final coreVersionProvider = FutureProvider<String>((ref) async {
   try {
