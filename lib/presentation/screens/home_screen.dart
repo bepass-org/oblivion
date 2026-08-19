@@ -19,13 +19,13 @@ class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   String _stateLabel(L10n l10n, TunnelStage stage) => switch (stage) {
-        TunnelStage.disconnected => l10n.stateDisconnected,
-        TunnelStage.connecting => l10n.stateConnecting,
-        TunnelStage.validating => l10n.stateValidating,
-        TunnelStage.connected => l10n.stateConnected,
-        TunnelStage.disconnecting => l10n.stateDisconnecting,
-        TunnelStage.failed => l10n.stateFailed,
-      };
+    TunnelStage.disconnected => l10n.stateDisconnected,
+    TunnelStage.connecting => l10n.stateConnecting,
+    TunnelStage.validating => l10n.stateValidating,
+    TunnelStage.connected => l10n.stateConnected,
+    TunnelStage.disconnecting => l10n.stateDisconnecting,
+    TunnelStage.failed => l10n.stateFailed,
+  };
 
   Future<void> _connect(BuildContext context, WidgetRef ref) async {
     final granted = await ref.read(tunnelProvider.notifier).connect();
@@ -51,9 +51,9 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  void _open(BuildContext context, Widget page) {
+  void _open(BuildContext context, Widget page, {bool asSheet = false}) {
     Navigator.of(context).push(
-      CupertinoPageRoute<void>(builder: (_) => page),
+      CupertinoPageRoute<void>(builder: (_) => page, fullscreenDialog: asSheet),
     );
   }
 
@@ -70,7 +70,8 @@ class HomeScreen extends ConsumerWidget {
       if (next != null) showLoginCodeDialog(context);
     });
 
-    final degraded = DesktopShell.isSupported &&
+    final degraded =
+        DesktopShell.isSupported &&
         status.stage.isActive &&
         settings.tunnelMode &&
         !status.tunnelDeviceUp;
@@ -86,7 +87,8 @@ class HomeScreen extends ConsumerWidget {
                 children: <Widget>[
                   IconButtonPlain(
                     icon: CupertinoIcons.info_circle,
-                    onTap: () => _open(context, const AboutScreen()),
+                    onTap: () =>
+                        _open(context, const AboutScreen(), asSheet: true),
                   ),
                   const Spacer(),
                   IconButtonPlain(
@@ -185,9 +187,6 @@ class _Detail extends StatelessWidget {
     final l10n = L10n.of(context);
 
     if (!status.stage.isActive) {
-      if (status.stage.isBusy) {
-        return const Center(child: CupertinoActivityIndicator(radius: 9));
-      }
       return const SizedBox.shrink();
     }
 
@@ -269,10 +268,9 @@ class _WarpBadge extends StatelessWidget {
       child: Text(
         label,
         textDirection: TextDirection.ltr,
-        style: AppText.caption(tone).copyWith(
-          fontSize: 10,
-          fontWeight: FontWeight.w700,
-        ),
+        style: AppText.caption(
+          tone,
+        ).copyWith(fontSize: 10, fontWeight: FontWeight.w700),
       ),
     );
   }
