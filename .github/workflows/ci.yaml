@@ -162,13 +162,16 @@ jobs:
         with:
           repository: CluvexStudio/psiphon-tunnel-core
           ref: shirokhorshid
-          path: psiphon-tunnel-core
+          path: psiphon-temp
+
+      - name: Move Psiphon to correct location for CMake
+        run: mv psiphon-temp ../psiphon-tunnel-core
 
       - name: Set up Go for Psiphon build
         uses: actions/setup-go@v5
         with:
           go-version: '1.23'
-          cache-dependency-path: psiphon-tunnel-core/go.sum
+          cache-dependency-path: ../psiphon-tunnel-core/go.sum
 
       - name: Install the build dependencies
         run: |
@@ -248,13 +251,16 @@ jobs:
         with:
           repository: CluvexStudio/psiphon-tunnel-core
           ref: shirokhorshid
-          path: psiphon-tunnel-core
+          path: psiphon-temp
+
+      - name: Move Psiphon to correct location for CMake
+        run: mv psiphon-temp ../psiphon-tunnel-core
 
       - name: Set up Go for Psiphon build
         uses: actions/setup-go@v5
         with:
           go-version: '1.23'
-          cache-dependency-path: psiphon-tunnel-core/go.sum
+          cache-dependency-path: ../psiphon-tunnel-core/go.sum
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2

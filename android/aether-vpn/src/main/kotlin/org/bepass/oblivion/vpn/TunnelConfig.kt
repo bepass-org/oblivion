@@ -1,6 +1,13 @@
 package org.bepass.oblivion.vpn
 
 data class TunnelConfig(
+    val core: String,
+    val psiphonCountry: String,
+    val psiphonMode: String,
+    val psiphonCdnIps: String,
+    val psiphonCdnSni: String,
+    val psiphonConduitPeers: String,
+    val psiphonRejectCensoredPeers: Boolean,
     val protocol: String,
     val transport: String,
     val scanMode: String,

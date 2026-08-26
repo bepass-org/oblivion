@@ -4,6 +4,13 @@ import android.os.Bundle
 
 object TunnelBundle {
     fun encode(config: TunnelConfig): Bundle = Bundle().apply {
+        putString("core", config.core)
+        putString("psiphonCountry", config.psiphonCountry)
+        putString("psiphonMode", config.psiphonMode)
+        putString("psiphonCdnIps", config.psiphonCdnIps)
+        putString("psiphonCdnSni", config.psiphonCdnSni)
+        putString("psiphonConduitPeers", config.psiphonConduitPeers)
+        putBoolean("psiphonRejectCensoredPeers", config.psiphonRejectCensoredPeers)
         putString("protocol", config.protocol)
         putString("transport", config.transport)
         putString("scanMode", config.scanMode)
@@ -34,6 +41,13 @@ object TunnelBundle {
     }
 
     fun decode(bundle: Bundle): TunnelConfig = TunnelConfig(
+        core = bundle.getString("core", "aether"),
+        psiphonCountry = bundle.getString("psiphonCountry", ""),
+        psiphonMode = bundle.getString("psiphonMode", "auto"),
+        psiphonCdnIps = bundle.getString("psiphonCdnIps", ""),
+        psiphonCdnSni = bundle.getString("psiphonCdnSni", ""),
+        psiphonConduitPeers = bundle.getString("psiphonConduitPeers", "auto"),
+        psiphonRejectCensoredPeers = bundle.getBoolean("psiphonRejectCensoredPeers", true),
         protocol = bundle.getString("protocol", "masque"),
         transport = bundle.getString("transport", "h3"),
         scanMode = bundle.getString("scanMode", "balanced"),
