@@ -229,7 +229,7 @@ val buildAetherCore by tasks.registering {
                 "ANDROID_NDK_ROOT" to ndkDir.absolutePath,
                 "CARGO_TARGET_${envTriple}_LINKER" to clang.absolutePath,
                 "CARGO_TARGET_${envTriple}_RUSTFLAGS" to
-                    "-C link-arg=-Wl,-z,max-page-size=16384",
+                    "-C link-arg=-Wl,-z,max-page-size=16384 -C link-arg=-Wl,-z,common-page-size=16384",
                 // CC must be the unversioned clang: boring-sys forwards it to
                 // CMake as CMAKE_C_COMPILER, and the NDK toolchain file caches
                 // the unversioned clang. A versioned wrapper makes BoringSSL's
@@ -333,6 +333,7 @@ val buildPsiphonCore by tasks.registering {
                 "GOARCH" to goArch,
                 "CGO_ENABLED" to "1",
                 "CC" to clang.absolutePath,
+                "CGO_LDFLAGS" to "-Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384",
                 "ANDROID_NDK_HOME" to ndkDir.absolutePath,
             )
             if (goArch == "arm") {
