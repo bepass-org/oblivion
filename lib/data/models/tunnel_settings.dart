@@ -1,5 +1,78 @@
 import 'dart:io';
 
+enum CoreEngine {
+  aether('aether'),
+  psiphon('psiphon');
+
+  const CoreEngine(this.wire);
+
+  final String wire;
+
+  static CoreEngine fromWire(String? value) =>
+      values.firstWhere((e) => e.wire == value, orElse: () => aether);
+}
+
+enum PsiphonMode {
+  auto('auto'),
+  cdn('cdn'),
+  conduit('conduit'),
+  direct('direct');
+
+  const PsiphonMode(this.wire);
+
+  final String wire;
+
+  static PsiphonMode fromWire(String? value) =>
+      values.firstWhere((e) => e.wire == value, orElse: () => auto);
+}
+
+enum ConduitPeers {
+  auto('auto'),
+  private('private'),
+  public('public');
+
+  const ConduitPeers(this.wire);
+
+  final String wire;
+
+  static ConduitPeers fromWire(String? value) =>
+      values.firstWhere((e) => e.wire == value, orElse: () => auto);
+}
+
+const psiphonCountries = <String>[
+  'AT',
+  'AU',
+  'BE',
+  'BG',
+  'CA',
+  'CH',
+  'CZ',
+  'DE',
+  'DK',
+  'EE',
+  'ES',
+  'FI',
+  'FR',
+  'GB',
+  'HR',
+  'HU',
+  'IE',
+  'IN',
+  'IT',
+  'JP',
+  'LV',
+  'NL',
+  'NO',
+  'PL',
+  'PT',
+  'RO',
+  'RS',
+  'SE',
+  'SG',
+  'SK',
+  'US',
+];
+
 enum CoreProtocol {
   masque('masque'),
   wireguard('wg'),
@@ -133,6 +206,13 @@ enum SplitTunnelMode {
 
 class TunnelSettings {
   const TunnelSettings({
+    this.core = CoreEngine.aether,
+    this.psiphonCountry = '',
+    this.psiphonMode = PsiphonMode.auto,
+    this.psiphonCdnIps = '',
+    this.psiphonCdnSni = '',
+    this.psiphonConduitPeers = ConduitPeers.auto,
+    this.psiphonRejectCensoredPeers = true,
     this.protocol = CoreProtocol.masque,
     this.transport = MasqueTransport.http3,
     this.scanMode = ScanMode.balanced,
@@ -159,6 +239,7 @@ class TunnelSettings {
     this.fragmentSize = '16-32',
     this.fragmentDelay = '2-10',
     this.quickReconnect = true,
+    this.fastFirstConnect = true,
     this.dataCheck = true,
     this.validateSeconds = 10,
     this.reconnectSeconds = 2,
@@ -173,6 +254,14 @@ class TunnelSettings {
     this.accessEmail = '',
     this.gatewayProxy = false,
   });
+
+  final CoreEngine core;
+  final String psiphonCountry;
+  final PsiphonMode psiphonMode;
+  final String psiphonCdnIps;
+  final String psiphonCdnSni;
+  final ConduitPeers psiphonConduitPeers;
+  final bool psiphonRejectCensoredPeers;
 
   final CoreProtocol protocol;
   final MasqueTransport transport;
@@ -204,6 +293,7 @@ class TunnelSettings {
   final String fragmentDelay;
 
   final bool quickReconnect;
+  final bool fastFirstConnect;
   final bool dataCheck;
   final int validateSeconds;
   final int reconnectSeconds;
@@ -220,6 +310,14 @@ class TunnelSettings {
   final String accessSecret;
   final String accessEmail;
   final bool gatewayProxy;
+
+  bool get usesPsiphon => core == CoreEngine.psiphon;
+
+  bool get usesAether => core == CoreEngine.aether;
+
+  bool get psiphonUsesCdnFronting => psiphonMode != PsiphonMode.conduit;
+
+  bool get psiphonUsesConduit => psiphonMode == PsiphonMode.conduit;
 
   bool get isMasque => protocol == CoreProtocol.masque;
 
@@ -285,6 +383,13 @@ class TunnelSettings {
   }
 
   TunnelSettings copyWith({
+    CoreEngine? core,
+    String? psiphonCountry,
+    PsiphonMode? psiphonMode,
+    String? psiphonCdnIps,
+    String? psiphonCdnSni,
+    ConduitPeers? psiphonConduitPeers,
+    bool? psiphonRejectCensoredPeers,
     CoreProtocol? protocol,
     MasqueTransport? transport,
     ScanMode? scanMode,
@@ -311,6 +416,7 @@ class TunnelSettings {
     String? fragmentSize,
     String? fragmentDelay,
     bool? quickReconnect,
+    bool? fastFirstConnect,
     bool? dataCheck,
     int? validateSeconds,
     int? reconnectSeconds,
@@ -326,6 +432,14 @@ class TunnelSettings {
     bool? gatewayProxy,
   }) {
     return TunnelSettings(
+      core: core ?? this.core,
+      psiphonCountry: psiphonCountry ?? this.psiphonCountry,
+      psiphonMode: psiphonMode ?? this.psiphonMode,
+      psiphonCdnIps: psiphonCdnIps ?? this.psiphonCdnIps,
+      psiphonCdnSni: psiphonCdnSni ?? this.psiphonCdnSni,
+      psiphonConduitPeers: psiphonConduitPeers ?? this.psiphonConduitPeers,
+      psiphonRejectCensoredPeers:
+          psiphonRejectCensoredPeers ?? this.psiphonRejectCensoredPeers,
       protocol: protocol ?? this.protocol,
       transport: transport ?? this.transport,
       scanMode: scanMode ?? this.scanMode,
@@ -352,6 +466,7 @@ class TunnelSettings {
       fragmentSize: fragmentSize ?? this.fragmentSize,
       fragmentDelay: fragmentDelay ?? this.fragmentDelay,
       quickReconnect: quickReconnect ?? this.quickReconnect,
+      fastFirstConnect: fastFirstConnect ?? this.fastFirstConnect,
       dataCheck: dataCheck ?? this.dataCheck,
       validateSeconds: validateSeconds ?? this.validateSeconds,
       reconnectSeconds: reconnectSeconds ?? this.reconnectSeconds,
@@ -369,53 +484,61 @@ class TunnelSettings {
   }
 
   Map<String, dynamic> toPlatformPayload() => <String, dynamic>{
-        'protocol': protocol.wire,
-        'transport': transport.wire,
-        'scanMode': scanMode.wire,
-        'obfuscation': obfuscation.wire,
-        'noizeProfile': noizeProfile,
-        'ipVersion': ipVersion.wire,
-        'logLevel': logLevel.wire,
-        'perfProfile': perfProfile.wire,
-        'echMode': echMode.wire,
-        'endpoint': endpoint.trim(),
-        'wgEndpoint': wgEndpoint.trim(),
-        'h2Endpoint': h2Endpoint.trim(),
-        'tlsGroups': tlsGroups.trim(),
-        'socksPort': socksPort,
-        'bindAddress': bindAddress,
-        'httpProxyPort': httpProxyPort,
-        'httpProxyAddress': httpProxyAddress,
-        'allowLan': allowLan,
-        'proxyOnly': proxyOnly,
-        'systemProxy': systemProxy,
-        'routingMode': routingMode.wire,
-        'tunnelInterface': tunnelInterface,
-        'tunnelMtu': tunnelMtu,
-        'overrideDns': overrideDns,
-        'dnsPrimary': dnsPrimary.trim(),
-        'dnsSecondary': dnsSecondary.trim(),
-        if (bypassUid != null) 'bypassUid': bypassUid,
-        'fragment': fragment,
-        'fragmentSize': fragmentSize,
-        'fragmentDelay': fragmentDelay,
-        'quickReconnect': quickReconnect,
-        'dataCheck': dataCheck,
-        'validateSeconds': validateSeconds,
-        'reconnectSeconds': reconnectSeconds,
-        'wgKeepalive': wgKeepalive,
-        'wgProfileRetry': wgProfileRetry,
-        'routeBlock': routeRules(routeBlock).join(','),
-        'routeDirect': routeRules(routeDirect).join(','),
-        'team': teamName,
-        'accessToken': accessToken.trim(),
-        'accessId': accessId.trim(),
-        'accessSecret': accessSecret.trim(),
-        'accessEmail': accessEmail.trim(),
-        'gatewayProxy': gatewayProxy,
-        'splitTunnelMode': splitTunnelMode.name,
-        'bypassedApps': bypassedApps.toList(),
-      };
+    'core': core.wire,
+    'psiphonCountry': psiphonCountry.trim(),
+    'psiphonMode': psiphonMode.wire,
+    'psiphonCdnIps': psiphonCdnIps.trim(),
+    'psiphonCdnSni': psiphonCdnSni.trim(),
+    'psiphonConduitPeers': psiphonConduitPeers.wire,
+    'psiphonRejectCensoredPeers': psiphonRejectCensoredPeers,
+    'protocol': protocol.wire,
+    'transport': transport.wire,
+    'scanMode': scanMode.wire,
+    'obfuscation': obfuscation.wire,
+    'noizeProfile': noizeProfile,
+    'ipVersion': ipVersion.wire,
+    'logLevel': logLevel.wire,
+    'perfProfile': perfProfile.wire,
+    'echMode': echMode.wire,
+    'endpoint': endpoint.trim(),
+    'wgEndpoint': wgEndpoint.trim(),
+    'h2Endpoint': h2Endpoint.trim(),
+    'tlsGroups': tlsGroups.trim(),
+    'socksPort': socksPort,
+    'bindAddress': bindAddress,
+    'httpProxyPort': httpProxyPort,
+    'httpProxyAddress': httpProxyAddress,
+    'allowLan': allowLan,
+    'proxyOnly': proxyOnly,
+    'systemProxy': systemProxy,
+    'routingMode': routingMode.wire,
+    'tunnelInterface': tunnelInterface,
+    'tunnelMtu': tunnelMtu,
+    'overrideDns': overrideDns,
+    'dnsPrimary': dnsPrimary.trim(),
+    'dnsSecondary': dnsSecondary.trim(),
+    if (bypassUid != null) 'bypassUid': bypassUid,
+    'fragment': fragment,
+    'fragmentSize': fragmentSize,
+    'fragmentDelay': fragmentDelay,
+    'quickReconnect': quickReconnect,
+    'fastFirstConnect': fastFirstConnect,
+    'dataCheck': dataCheck,
+    'validateSeconds': validateSeconds,
+    'reconnectSeconds': reconnectSeconds,
+    'wgKeepalive': wgKeepalive,
+    'wgProfileRetry': wgProfileRetry,
+    'routeBlock': routeRules(routeBlock).join(','),
+    'routeDirect': routeRules(routeDirect).join(','),
+    'team': teamName,
+    'accessToken': accessToken.trim(),
+    'accessId': accessId.trim(),
+    'accessSecret': accessSecret.trim(),
+    'accessEmail': accessEmail.trim(),
+    'gatewayProxy': gatewayProxy,
+    'splitTunnelMode': splitTunnelMode.name,
+    'bypassedApps': bypassedApps.toList(),
+  };
 
   static List<String> routeRules(String raw) => raw
       .split(RegExp(r'[\n,;]+'))
@@ -424,6 +547,8 @@ class TunnelSettings {
       .toList();
 
   List<String> toCoreArguments() {
+    if (usesPsiphon) return const <String>[];
+
     final args = <String>[
       '--bind',
       bindAddress,
@@ -484,9 +609,10 @@ class TunnelSettings {
       args.addAll(<String>['--peer', manualGateway]);
     }
     if (overrideDns) {
-      final resolvers = <String>[dnsPrimary.trim(), dnsSecondary.trim()]
-          .where((entry) => entry.isNotEmpty)
-          .toList();
+      final resolvers = <String>[
+        dnsPrimary.trim(),
+        dnsSecondary.trim(),
+      ].where((entry) => entry.isNotEmpty).toList();
       if (resolvers.isNotEmpty) {
         args.addAll(<String>['--dns', resolvers.join(',')]);
       }

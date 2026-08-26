@@ -1782,6 +1782,234 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Oblivion needs a notification to keep the tunnel alive in the background'**
   String get notificationPermissionBody;
+
+  /// No description provided for @coreEngine.
+  ///
+  /// In en, this message translates to:
+  /// **'Core'**
+  String get coreEngine;
+
+  /// No description provided for @coreEngineDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Which tunnel engine to run'**
+  String get coreEngineDesc;
+
+  /// No description provided for @coreAether.
+  ///
+  /// In en, this message translates to:
+  /// **'Aether'**
+  String get coreAether;
+
+  /// No description provided for @coreAetherDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloudflare WARP and MASQUE'**
+  String get coreAetherDesc;
+
+  /// No description provided for @corePsiphon.
+  ///
+  /// In en, this message translates to:
+  /// **'Psiphon'**
+  String get corePsiphon;
+
+  /// No description provided for @corePsiphonDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Psiphon network with CDN fronting'**
+  String get corePsiphonDesc;
+
+  /// No description provided for @psiphonSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Psiphon'**
+  String get psiphonSettings;
+
+  /// No description provided for @psiphonCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get psiphonCountry;
+
+  /// No description provided for @psiphonCountryAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get psiphonCountryAuto;
+
+  /// No description provided for @psiphonCountryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Where traffic leaves the Psiphon network'**
+  String get psiphonCountryDesc;
+
+  /// No description provided for @psiphonMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode'**
+  String get psiphonMode;
+
+  /// No description provided for @psiphonModeCdn.
+  ///
+  /// In en, this message translates to:
+  /// **'CDN fronting'**
+  String get psiphonModeCdn;
+
+  /// No description provided for @psiphonModeCdnDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Reach servers through CDN edges'**
+  String get psiphonModeCdnDesc;
+
+  /// No description provided for @psiphonModeConduit.
+  ///
+  /// In en, this message translates to:
+  /// **'Conduit'**
+  String get psiphonModeConduit;
+
+  /// No description provided for @psiphonModeConduitDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Route through volunteer in-proxy peers'**
+  String get psiphonModeConduitDesc;
+
+  /// No description provided for @psiphonModeAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get psiphonModeAuto;
+
+  /// No description provided for @psiphonModeAutoDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Let Psiphon pick any protocol it can reach'**
+  String get psiphonModeAutoDesc;
+
+  /// No description provided for @psiphonModeDirect.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct'**
+  String get psiphonModeDirect;
+
+  /// No description provided for @psiphonModeDirectDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect straight to Psiphon servers'**
+  String get psiphonModeDirectDesc;
+
+  /// No description provided for @psiphonCdnFronting.
+  ///
+  /// In en, this message translates to:
+  /// **'CDN fronting'**
+  String get psiphonCdnFronting;
+
+  /// No description provided for @psiphonCdnIps.
+  ///
+  /// In en, this message translates to:
+  /// **'Edge addresses'**
+  String get psiphonCdnIps;
+
+  /// No description provided for @psiphonCdnIpsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Extra IPv4 addresses or CIDR ranges to scan, one per line'**
+  String get psiphonCdnIpsDesc;
+
+  /// No description provided for @psiphonCdnSni.
+  ///
+  /// In en, this message translates to:
+  /// **'SNI names'**
+  String get psiphonCdnSni;
+
+  /// No description provided for @psiphonCdnSniDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Domain names to present in TLS, one per line'**
+  String get psiphonCdnSniDesc;
+
+  /// No description provided for @psiphonConduitPeers.
+  ///
+  /// In en, this message translates to:
+  /// **'Peers'**
+  String get psiphonConduitPeers;
+
+  /// No description provided for @psiphonConduitPeersAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get psiphonConduitPeersAuto;
+
+  /// No description provided for @psiphonConduitPeersAutoDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefer private peers, fall back to public ones'**
+  String get psiphonConduitPeersAutoDesc;
+
+  /// No description provided for @psiphonConduitPeersPrivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Private only'**
+  String get psiphonConduitPeersPrivate;
+
+  /// No description provided for @psiphonConduitPeersPrivateDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Only peers paired with this build'**
+  String get psiphonConduitPeersPrivateDesc;
+
+  /// No description provided for @psiphonConduitPeersPublic.
+  ///
+  /// In en, this message translates to:
+  /// **'Public only'**
+  String get psiphonConduitPeersPublic;
+
+  /// No description provided for @psiphonConduitPeersPublicDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Only volunteer peers open to everyone'**
+  String get psiphonConduitPeersPublicDesc;
+
+  /// No description provided for @psiphonRejectCensoredPeers.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip censored regions'**
+  String get psiphonRejectCensoredPeers;
+
+  /// No description provided for @psiphonRejectCensoredPeersDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Refuse peers hosted in heavily censored countries'**
+  String get psiphonRejectCensoredPeersDesc;
+
+  /// No description provided for @psiphonUnprovisioned.
+  ///
+  /// In en, this message translates to:
+  /// **'This build carries no Psiphon credentials, so the Psiphon core cannot connect'**
+  String get psiphonUnprovisioned;
+
+  /// No description provided for @psiphonNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Psiphon settings apply only when the Psiphon core is selected'**
+  String get psiphonNotAvailable;
+
+  /// No description provided for @aetherOnlySection.
+  ///
+  /// In en, this message translates to:
+  /// **'These settings apply to the Aether core'**
+  String get aetherOnlySection;
+
+  /// No description provided for @fastFirstConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast first connect'**
+  String get fastFirstConnect;
+
+  /// No description provided for @fastFirstConnectDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a plain connection first, then fall back to obfuscation'**
+  String get fastFirstConnectDesc;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

@@ -9,9 +9,9 @@ enum WarpStatus {
   final String wire;
 
   static WarpStatus fromWire(String? value) => values.firstWhere(
-        (entry) => entry.wire == value?.trim().toLowerCase(),
-        orElse: () => WarpStatus.unknown,
-      );
+    (entry) => entry.wire == value?.trim().toLowerCase(),
+    orElse: () => WarpStatus.unknown,
+  );
 
   bool get isProtected => this == WarpStatus.on || this == WarpStatus.plus;
 }
@@ -62,17 +62,20 @@ class GeoEndpoint {
     if (ip == null || ip.isEmpty) return null;
 
     final rawCountry = _text(json['country']);
-    final code = _text(json['countryCode']) ??
+    final code =
+        _text(json['countryCode']) ??
         _text(json['country_code']) ??
         (rawCountry != null && rawCountry.length == 2 ? rawCountry : null);
 
-    final name = _text(json['country_name']) ??
+    final name =
+        _text(json['country_name']) ??
         (rawCountry != null && rawCountry.length > 2 ? rawCountry : null);
 
     final connection = json['connection'];
     final asn = json['asn'];
 
-    final isp = _text(json['isp']) ??
+    final isp =
+        _text(json['isp']) ??
         _text(json['org']) ??
         (connection is Map
             ? _text(connection['isp']) ?? _text(connection['org'])
@@ -103,22 +106,22 @@ class GeoEndpoint {
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'ip': ip,
-        'countryCode': countryCode,
-        'country': country,
-        'city': city,
-        'isp': isp,
-        'colo': colo,
-        'warp': warp.wire,
-      };
+    'ip': ip,
+    'countryCode': countryCode,
+    'country': country,
+    'city': city,
+    'isp': isp,
+    'colo': colo,
+    'warp': warp.wire,
+  };
 
   factory GeoEndpoint.fromJson(Map<String, dynamic> json) => GeoEndpoint(
-        ip: json['ip'] as String,
-        countryCode: json['countryCode'] as String,
-        country: json['country'] as String?,
-        city: json['city'] as String?,
-        isp: json['isp'] as String?,
-        colo: json['colo'] as String?,
-        warp: WarpStatus.fromWire(json['warp'] as String?),
-      );
+    ip: json['ip'] as String,
+    countryCode: json['countryCode'] as String,
+    country: json['country'] as String?,
+    city: json['city'] as String?,
+    isp: json['isp'] as String?,
+    colo: json['colo'] as String?,
+    warp: WarpStatus.fromWire(json['warp'] as String?),
+  );
 }

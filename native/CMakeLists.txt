@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 
 set(OBLIVION_CORE_DIR "${CMAKE_CURRENT_LIST_DIR}/oblivion_core")
 set(AETHER_CORE_DIR "${CMAKE_CURRENT_LIST_DIR}/../aetherproject/aether")
+set(PSIPHON_CORE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../psiphon-tunnel-core")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(OBLIVION_CARGO_PROFILE_DIR "debug")
@@ -14,26 +15,38 @@ endif()
 if(WIN32)
   set(OBLIVION_CORE_LIB_NAME "oblivion_core.dll")
   set(AETHER_BIN_NAME "aether.exe")
+  set(PSIPHON_BIN_NAME "psiphon.exe")
 elseif(APPLE)
   set(OBLIVION_CORE_LIB_NAME "liboblivion_core.dylib")
   set(AETHER_BIN_NAME "aether")
+  set(PSIPHON_BIN_NAME "psiphon")
 else()
   set(OBLIVION_CORE_LIB_NAME "liboblivion_core.so")
   set(AETHER_BIN_NAME "aether")
+  set(PSIPHON_BIN_NAME "psiphon")
+endif()
+
+if(WIN32)
+  set(OBLIVION_HELPER_NAME "oblivion-helper.exe")
+else()
+  set(OBLIVION_HELPER_NAME "oblivion-helper")
 endif()
 
 set(OBLIVION_CORE_LIB
   "${OBLIVION_CORE_DIR}/target/${OBLIVION_CARGO_PROFILE_DIR}/${OBLIVION_CORE_LIB_NAME}")
+set(OBLIVION_HELPER_BIN
+  "${OBLIVION_CORE_DIR}/target/${OBLIVION_CARGO_PROFILE_DIR}/${OBLIVION_HELPER_NAME}")
 
 add_custom_command(
-  OUTPUT "${OBLIVION_CORE_LIB}"
+  OUTPUT "${OBLIVION_CORE_LIB}" "${OBLIVION_HELPER_BIN}"
   COMMAND cargo build ${OBLIVION_CARGO_FLAGS}
   WORKING_DIRECTORY "${OBLIVION_CORE_DIR}"
-  COMMENT "Building the Oblivion FFI bridge"
+  COMMENT "Building the Oblivion FFI bridge and the privileged helper"
   VERBATIM
 )
 
-add_custom_target(oblivion_core_build ALL DEPENDS "${OBLIVION_CORE_LIB}")
+add_custom_target(oblivion_core_build ALL
+  DEPENDS "${OBLIVION_CORE_LIB}" "${OBLIVION_HELPER_BIN}")
 
 set(AETHER_BIN "${AETHER_CORE_DIR}/target/release/${AETHER_BIN_NAME}")
 
@@ -53,7 +66,27 @@ else()
   set(OBLIVION_AETHER_BIN "" PARENT_SCOPE)
 endif()
 
+set(PSIPHON_BIN "${CMAKE_CURRENT_BINARY_DIR}/${PSIPHON_BIN_NAME}")
+
+if(EXISTS "${PSIPHON_CORE_DIR}/go.mod")
+  add_custom_command(
+    OUTPUT "${PSIPHON_BIN}"
+    COMMAND go build -trimpath -ldflags "-s -w" -o "${PSIPHON_BIN}" ./ConsoleClient
+    WORKING_DIRECTORY "${PSIPHON_CORE_DIR}"
+    COMMENT "Building the Psiphon tunnel engine"
+    VERBATIM
+  )
+  add_custom_target(psiphon_core_build ALL DEPENDS "${PSIPHON_BIN}")
+  set(OBLIVION_PSIPHON_BIN "${PSIPHON_BIN}" PARENT_SCOPE)
+else()
+  message(WARNING
+    "Psiphon engine sources not found at ${PSIPHON_CORE_DIR}")
+  set(OBLIVION_PSIPHON_BIN "" PARENT_SCOPE)
+endif()
+
 set(OBLIVION_CORE_BUNDLED_LIB "${OBLIVION_CORE_LIB}" PARENT_SCOPE)
+
+set(OBLIVION_HELPER_BUNDLED_BIN "${OBLIVION_HELPER_BIN}" PARENT_SCOPE)
 
 if(WIN32)
   set(OBLIVION_HEVTUN_DIR "${CMAKE_CURRENT_LIST_DIR}/../windows/hevtun")

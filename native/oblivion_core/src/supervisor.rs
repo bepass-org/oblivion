@@ -9,11 +9,16 @@ use std::thread;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use crate::dns::DnsOverride;
+use crate::helper;
 use crate::net;
 use crate::probe;
+use crate::psiphon;
 use crate::settings::TunnelSettings;
 use crate::sysproxy::SystemProxy;
 use crate::tunnel::TunnelDevice;
+
+const HELPER_READY_TIMEOUT: Duration = Duration::from_secs(120);
+const HELPER_STOP_TIMEOUT: Duration = Duration::from_secs(10);
 
 const POST_SCAN_HEADROOM: Duration = Duration::from_secs(60);
 
@@ -27,6 +32,70 @@ fn validation_budget(scan_mode: &str) -> Duration {
     };
     scan_budget + POST_SCAN_HEADROOM
 }
+const FAST_ATTEMPT_BUDGET: Duration = Duration::from_secs(30);
+
+#[derive(Debug, Clone)]
+struct Attempt {
+    label: &'static str,
+    noize: String,
+    scan: String,
+    budget: Duration,
+}
+
+fn attempt_ladder(settings: &TunnelSettings) -> Vec<Attempt> {
+    let configured = Attempt {
+        label: "configured",
+        noize: settings.noize(),
+        scan: settings.scan_mode.clone(),
+        budget: validation_budget(&settings.scan_mode),
+    };
+
+    if settings.uses_psiphon() || !settings.fast_first_connect {
+        return vec![configured];
+    }
+
+    let fast = Attempt {
+        label: "fast",
+        noize: "off".to_string(),
+        scan: "turbo".to_string(),
+        budget: FAST_ATTEMPT_BUDGET,
+    };
+
+    if fast.noize == configured.noize && fast.scan == configured.scan {
+        return vec![configured];
+    }
+
+    vec![fast, configured]
+}
+
+fn stage_attempt(
+    settings: &TunnelSettings,
+    arguments: &[String],
+    attempt: &Attempt,
+) -> (TunnelSettings, Vec<String>) {
+    let mut staged = settings.clone();
+    staged.obfuscation = attempt.noize.clone();
+    staged.noize_profile = attempt.noize.clone();
+    staged.scan_mode = attempt.scan.clone();
+
+    let mut staged_arguments = arguments.to_vec();
+    override_flag(&mut staged_arguments, "--noize", &attempt.noize);
+    override_flag(&mut staged_arguments, "--scan", &attempt.scan);
+
+    (staged, staged_arguments)
+}
+
+fn override_flag(arguments: &mut Vec<String>, flag: &str, value: &str) {
+    if let Some(position) = arguments.iter().position(|entry| entry == flag) {
+        if position + 1 < arguments.len() {
+            arguments[position + 1] = value.to_string();
+            return;
+        }
+    }
+    arguments.push(flag.to_string());
+    arguments.push(value.to_string());
+}
+
 const VALIDATION_INTERVAL: Duration = Duration::from_secs(1);
 const RETAINED_LOG_LINES: usize = 2500;
 const MAX_TAILED_LOG_BYTES: u64 = 2 * 1024 * 1024;
@@ -118,7 +187,10 @@ pub struct Supervisor {
     log_rx: Mutex<Receiver<String>>,
     shutting_down: Arc<AtomicBool>,
     core_binary: Mutex<Option<PathBuf>>,
+    psiphon_binary: Mutex<Option<PathBuf>>,
     device: TunnelDevice,
+    helper: Mutex<Option<net::ElevatedProcess>>,
+    helper_state: Mutex<Option<helper::Paths>>,
     active: Mutex<Option<TunnelSettings>>,
     resolver: Mutex<DnsOverride>,
     proxy: Mutex<SystemProxy>,
@@ -137,7 +209,10 @@ impl Supervisor {
             log_rx: Mutex::new(log_rx),
             shutting_down: Arc::new(AtomicBool::new(false)),
             core_binary: Mutex::new(None),
+            psiphon_binary: Mutex::new(None),
             device: TunnelDevice::new(),
+            helper: Mutex::new(None),
+            helper_state: Mutex::new(None),
             active: Mutex::new(None),
             resolver: Mutex::new(DnsOverride::new()),
             proxy: Mutex::new(SystemProxy::new()),
@@ -161,7 +236,7 @@ impl Supervisor {
         match writeln!(input, "{trimmed}").and_then(|()| input.flush()) {
             Ok(()) => true,
             Err(error) => {
-                self.log_from("aether", format!("[-] could not reach the core: {error}"));
+                self.log_from(self.active_core(), format!("[-] could not reach the core: {error}"));
                 false
             }
         }
@@ -172,11 +247,11 @@ impl Supervisor {
             return;
         }
         if crate::dns::recover_stale_override() {
-            self.log_from("aether", "[!] restored a resolver left behind by an earlier run");
+            self.log_from(self.active_core(), "[!] restored a resolver left behind by an earlier run");
         }
         if net::tunnel_default_installed() {
             net::revert_tunnel_routes(true);
-            self.log_from("aether", "[!] cleared routes left behind by an earlier run");
+            self.log_from(self.active_core(), "[!] cleared routes left behind by an earlier run");
         }
     }
 
@@ -184,9 +259,32 @@ impl Supervisor {
         *self.core_binary.lock().unwrap() = Some(path);
     }
 
+    pub fn set_psiphon_binary(&self, path: PathBuf) {
+        *self.psiphon_binary.lock().unwrap() = Some(path);
+    }
+
+    fn active_core(&self) -> &'static str {
+        self.active
+            .lock()
+            .unwrap()
+            .as_ref()
+            .map(TunnelSettings::core_name)
+            .unwrap_or(psiphon::CORE_AETHER)
+    }
+
+    fn binary_for(&self, settings: &TunnelSettings) -> Option<PathBuf> {
+        if settings.uses_psiphon() {
+            self.psiphon_binary.lock().unwrap().clone()
+        } else {
+            self.core_binary.lock().unwrap().clone()
+        }
+    }
+
     pub fn snapshot_json(&self) -> String {
         let snapshot = self.snapshot.lock().unwrap().clone();
-        let counters = self.device.counters();
+        let counters = self
+            .helper_counters()
+            .unwrap_or_else(|| self.device.counters());
 
         let gateway = snapshot
             .gateway
@@ -214,7 +312,7 @@ impl Supervisor {
             connected_at = snapshot.connected_at_millis,
             message = message,
             tunnel_mode = snapshot.tunnel_mode,
-            device_up = self.device.is_running(),
+            device_up = self.device.is_running() || self.helper_running(),
         )
     }
 
@@ -246,6 +344,25 @@ impl Supervisor {
         if trimmed.is_empty() {
             return;
         }
+
+        if source == psiphon::CORE_PSIPHON {
+            if let Some(notice) = psiphon::parse_notice(trimmed) {
+                if let psiphon::Notice::RouteBypass(address) = &notice {
+                    let mut observed = self.observed_gateway.lock().unwrap();
+                    if observed.as_deref() != Some(address.as_str()) {
+                        *observed = Some(address.clone());
+                        drop(observed);
+                        let mut snapshot = self.snapshot.lock().unwrap();
+                        snapshot.gateway = Some(address.clone());
+                    }
+                }
+                if let Some(readable) = psiphon::describe(trimmed) {
+                    self.log(format!("[{source}] {readable}"));
+                }
+                return;
+            }
+        }
+
         if let Some(peer) = gateway_from_log(trimmed) {
             let mut observed = self.observed_gateway.lock().unwrap();
             if observed.as_deref() != Some(peer.as_str()) {
@@ -299,14 +416,47 @@ impl Supervisor {
         };
     }
 
+    fn stage_psiphon_config(&self, settings: &TunnelSettings) -> Result<Vec<String>, String> {
+        let config = psiphon::build_config(settings)?;
+        let path = psiphon::config_path(settings);
+
+        std::fs::write(&path, config)
+            .map_err(|error| format!("could not write the psiphon config: {error}"))?;
+
+        let directory = psiphon::data_directory(settings);
+
+        Ok(vec![
+            "-config".to_string(),
+            path.to_string_lossy().to_string(),
+            "-dataRootDirectory".to_string(),
+            directory.to_string_lossy().to_string(),
+        ])
+    }
+
     pub fn core_version(&self) -> String {
-        let binary = match self.core_binary.lock().unwrap().clone() {
+        let uses_psiphon = self
+            .active
+            .lock()
+            .unwrap()
+            .as_ref()
+            .map(TunnelSettings::uses_psiphon)
+            .unwrap_or(false);
+
+        let binary = if uses_psiphon {
+            self.psiphon_binary.lock().unwrap().clone()
+        } else {
+            self.core_binary.lock().unwrap().clone()
+        };
+
+        let binary = match binary {
             Some(path) => path,
             None => return "unavailable".to_string(),
         };
 
+        let flag = if uses_psiphon { "-v" } else { "--version" };
+
         Command::new(&binary)
-            .arg("--version")
+            .arg(flag)
             .output()
             .ok()
             .and_then(|output| String::from_utf8(output.stdout).ok())
@@ -321,10 +471,57 @@ impl Supervisor {
         *self.observed_gateway.lock().unwrap() = settings.manual_gateway();
         *self.active.lock().unwrap() = Some(settings.clone());
 
-        let binary = match self.core_binary.lock().unwrap().clone() {
+        let ladder = attempt_ladder(&settings);
+        self.start_attempt(settings, arguments, ladder, 0);
+    }
+
+    fn start_attempt(
+        self: &Arc<Self>,
+        settings: TunnelSettings,
+        arguments: Vec<String>,
+        ladder: Vec<Attempt>,
+        index: usize,
+    ) {
+        let attempt = match ladder.get(index) {
+            Some(attempt) => attempt.clone(),
+            None => return,
+        };
+
+        let (settings, staged_arguments) = stage_attempt(&settings, &arguments, &attempt);
+        *self.active.lock().unwrap() = Some(settings.clone());
+
+        if ladder.len() > 1 {
+            self.log_from(
+                settings.core_name(),
+                format!(
+                    "[*] attempt {} of {}: {} strategy, obfuscation {}, scan {}",
+                    index + 1,
+                    ladder.len(),
+                    attempt.label,
+                    attempt.noize,
+                    attempt.scan
+                ),
+            );
+        }
+
+        self.spawn_core(settings, staged_arguments, arguments, ladder, index, attempt);
+    }
+
+    fn spawn_core(
+        self: &Arc<Self>,
+        settings: TunnelSettings,
+        arguments: Vec<String>,
+        base_arguments: Vec<String>,
+        ladder: Vec<Attempt>,
+        index: usize,
+        attempt: Attempt,
+    ) {
+        let core = settings.core_name();
+
+        let binary = match self.binary_for(&settings) {
             Some(path) => path,
             None => {
-                self.log_from("aether", "[-] aether core binary path was never registered");
+                self.log_from(core, format!("[-] {core} core binary path was never registered"));
                 self.publish(Stage::Failed, Some("core binary missing".into()), None);
                 return;
             }
@@ -332,11 +529,23 @@ impl Supervisor {
 
         if !binary.exists() {
             self.log(format!(
-                "[-] aether core binary not found at {}",
+                "[-] {core} core binary not found at {}",
                 binary.display()
             ));
             self.publish(Stage::Failed, Some("core binary missing".into()), None);
             return;
+        }
+
+        let mut arguments = arguments;
+        if settings.uses_psiphon() {
+            match self.stage_psiphon_config(&settings) {
+                Ok(prepared) => arguments = prepared,
+                Err(error) => {
+                    self.log_from(core, format!("[-] {error}"));
+                    self.publish(Stage::Failed, Some(error), None);
+                    return;
+                }
+            }
         }
 
         self.publish(Stage::Connecting, None, None);
@@ -348,8 +557,10 @@ impl Supervisor {
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
 
-        for (key, value) in settings.core_environment() {
-            command.env(key, value);
+        if !settings.uses_psiphon() {
+            for (key, value) in settings.core_environment() {
+                command.env(key, value);
+            }
         }
 
         #[cfg(unix)]
@@ -367,33 +578,78 @@ impl Supervisor {
                         Ok(())
                     });
                 }
-                self.log_from("aether", format!("[+] aether core will run as uid {uid}"));
+                self.log_from(self.active_core(), format!("[+] core will run as uid {uid}"));
             }
         }
 
         let mut child = match command.spawn() {
             Ok(child) => child,
             Err(error) => {
-                self.log_from("aether", format!("[-] failed to launch the aether core: {error}"));
+                self.log_from(core, format!("[-] failed to launch the {core} core: {error}"));
                 self.publish(Stage::Failed, Some(error.to_string()), None);
                 return;
             }
         };
 
-        self.log_from("aether", format!("[+] aether core started: {}", arguments.join(" ")));
+        self.log_from(core, format!("[+] {core} core started: {}", arguments.join(" ")));
 
         if let Some(stdout) = child.stdout.take() {
-            self.spawn_log_reader(stdout, "aether");
+            self.spawn_log_reader(stdout, core);
         }
         if let Some(stderr) = child.stderr.take() {
-            self.spawn_log_reader(stderr, "aether");
+            self.spawn_log_reader(stderr, core);
         }
 
         *self.core_input.lock().unwrap() = child.stdin.take();
         *self.core.lock().unwrap() = Some(child);
 
         let supervisor = Arc::clone(self);
-        thread::spawn(move || supervisor.await_validation(settings));
+        thread::spawn(move || {
+            supervisor.await_validation(settings, base_arguments, ladder, index, attempt)
+        });
+    }
+
+    fn stop_core(&self) {
+        drop(self.core_input.lock().unwrap().take());
+
+        let mut guard = self.core.lock().unwrap();
+        if let Some(mut child) = guard.take() {
+            let _ = child.kill();
+            let _ = child.wait();
+        }
+    }
+
+    fn escalate(
+        self: &Arc<Self>,
+        settings: &TunnelSettings,
+        base_arguments: &[String],
+        ladder: &[Attempt],
+        index: usize,
+    ) -> bool {
+        if index + 1 >= ladder.len() {
+            return false;
+        }
+        if self.shutting_down.load(Ordering::SeqCst) {
+            return false;
+        }
+
+        self.log_from(
+            settings.core_name(),
+            "[*] that strategy did not land, moving on to the next one",
+        );
+
+        self.stop_core();
+        *self.observed_gateway.lock().unwrap() = settings.manual_gateway();
+
+        let supervisor = Arc::clone(self);
+        let settings = settings.clone();
+        let base_arguments = base_arguments.to_vec();
+        let ladder = ladder.to_vec();
+        thread::spawn(move || {
+            supervisor.start_attempt(settings, base_arguments, ladder, index + 1)
+        });
+
+        true
     }
 
     fn spawn_log_reader<R: std::io::Read + Send + 'static>(
@@ -481,10 +737,17 @@ impl Supervisor {
         });
     }
 
-    fn await_validation(self: Arc<Self>, settings: TunnelSettings) {
+    fn await_validation(
+        self: Arc<Self>,
+        settings: TunnelSettings,
+        base_arguments: Vec<String>,
+        ladder: Vec<Attempt>,
+        index: usize,
+        attempt: Attempt,
+    ) {
         self.publish(Stage::Validating, None, None);
 
-        let budget = validation_budget(&settings.scan_mode);
+        let budget = attempt.budget;
         self.log_from(
             "aether",
             format!(
@@ -501,14 +764,17 @@ impl Supervisor {
             }
 
             if !self.core_alive() {
-                self.log_from("aether", "[-] the core stopped before the tunnel came up");
+                self.log_from(self.active_core(), "[-] the core stopped before the tunnel came up");
+                if self.escalate(&settings, &base_arguments, &ladder, index) {
+                    return;
+                }
                 self.disconnect();
                 self.publish(Stage::Failed, Some("core stopped".into()), None);
                 return;
             }
 
             if probe::socks_reachable(settings.socks_port) {
-                self.log_from("aether", "[+] socks5 proxy answered a real request");
+                self.log_from(self.active_core(), "[+] socks5 proxy answered a real request");
                 let gateway = if settings.endpoint.trim().is_empty() {
                     None
                 } else {
@@ -517,7 +783,7 @@ impl Supervisor {
 
                 if settings.tunnel_mode() {
                     if let Err(error) = self.raise_device(&settings) {
-                        self.log_from("aether", format!("[-] tunnel mode unavailable: {error}"));
+                        self.log_from(self.active_core(), format!("[-] tunnel mode unavailable: {error}"));
                         self.publish(Stage::Connected, Some(error), gateway);
                         return;
                     }
@@ -547,6 +813,9 @@ impl Supervisor {
                 settings.scan_mode
             ),
         );
+        if self.escalate(&settings, &base_arguments, &ladder, index) {
+            return;
+        }
         self.disconnect();
         self.publish(Stage::Failed, Some("validation timeout".into()), None);
     }
@@ -571,10 +840,7 @@ impl Supervisor {
         }
 
         if !net::is_privileged() {
-            return Err(
-                "tunnel mode needs elevated privileges, staying in proxy mode"
-                    .to_string(),
-            );
+            return self.raise_device_elevated(settings);
         }
 
         let log_path = hev_log_path(settings);
@@ -611,27 +877,38 @@ impl Supervisor {
         }
 
         let bypass_uid = settings.bypass_uid.unwrap_or_else(net::effective_uid);
-        self.log_from(
-            "aether",
-            format!("[+] traffic from uid {bypass_uid} stays outside the tunnel"),
-        );
+        let edge = self
+            .edge_address()
+            .and_then(|raw| crate::settings::edge_ip(&raw));
+
+        match edge {
+            Some(address) => self.log_from(
+                "aether",
+                format!("[+] {address} stays outside the tunnel so the engine can reach it"),
+            ),
+            None => self.log_from(
+                "aether",
+                format!("[!] no edge address seen yet; traffic from uid {bypass_uid} bypasses instead"),
+            ),
+        }
 
         let outcome = net::apply_tunnel_routes(
             &settings.tunnel_interface,
             bypass_uid,
             settings.dual_stack(),
+            edge,
         );
 
         for entry in &outcome.applied {
-            self.log_from("aether", format!("[+] {entry}"));
+            self.log_from(self.active_core(), format!("[+] {entry}"));
         }
         for entry in &outcome.failures {
-            self.log_from("aether", format!("[-] {entry}"));
+            self.log_from(self.active_core(), format!("[-] {entry}"));
         }
 
         if !outcome.bypass_ready {
             self.device.stop();
-            net::revert_tunnel_routes(settings.dual_stack());
+            net::revert_tunnel_routes_with_edge(settings.dual_stack(), edge);
             return Err(
                 "the engine bypass rule could not be installed, refusing to \
                  route traffic into a loop"
@@ -641,7 +918,7 @@ impl Supervisor {
 
         if !net::tunnel_default_installed() {
             self.device.stop();
-            net::revert_tunnel_routes(settings.dual_stack());
+            net::revert_tunnel_routes_with_edge(settings.dual_stack(), edge);
             return Err(format!(
                 "the default route could not be installed on {}",
                 settings.tunnel_interface
@@ -662,7 +939,7 @@ impl Supervisor {
             }
         }
 
-        self.log_from("aether", "[+] system traffic is now routed through the tunnel");
+        self.log_from(self.active_core(), "[+] system traffic is now routed through the tunnel");
         Ok(())
     }
 
@@ -697,10 +974,177 @@ impl Supervisor {
         }
         proxy.restore();
         drop(proxy);
-        self.log_from("aether", "[-] system proxy settings restored");
+        self.log_from(self.active_core(), "[-] system proxy settings restored");
+    }
+
+    fn edge_address(&self) -> Option<String> {
+        let observed = self.observed_gateway.lock().unwrap().clone();
+        let raw = observed.or_else(|| {
+            self.active
+                .lock()
+                .unwrap()
+                .as_ref()
+                .map(|settings| settings.endpoint.clone())
+        })?;
+
+        crate::settings::edge_ip(&raw).map(|ip| ip.to_string())
+    }
+
+    fn helper_paths(&self, settings: &TunnelSettings) -> helper::Paths {
+        let root = if settings.data_dir.trim().is_empty() {
+            std::env::temp_dir().join("oblivion")
+        } else {
+            PathBuf::from(settings.data_dir.trim()).join("tunnel")
+        };
+        let _ = std::fs::create_dir_all(&root);
+        helper::Paths::new(root)
+    }
+
+    fn helper_binary(&self) -> Option<PathBuf> {
+        let executable = std::env::current_exe().ok()?;
+        let directory = executable.parent()?;
+
+        let name = if cfg!(windows) {
+            "oblivion-helper.exe"
+        } else {
+            "oblivion-helper"
+        };
+
+        for candidate in [directory.join(name), directory.join("lib").join(name)] {
+            if candidate.is_file() {
+                return Some(candidate);
+            }
+        }
+        None
+    }
+
+    fn raise_device_elevated(
+        self: &Arc<Self>,
+        settings: &TunnelSettings,
+    ) -> Result<(), String> {
+        let helper_binary = self.helper_binary().ok_or_else(|| {
+            "the privileged helper is missing, tunnel mode is unavailable".to_string()
+        })?;
+
+        let elevator = net::elevator().ok_or_else(|| {
+            "no way to ask for administrator rights was found on this system".to_string()
+        })?;
+
+        let paths = self.helper_paths(settings);
+        paths.clear();
+
+        let mut staged = settings.clone();
+        staged.bypass_uid = Some(staged.bypass_uid.unwrap_or_else(net::effective_uid));
+        staged.edge_endpoint = self.edge_address().unwrap_or_default();
+
+        let request = serde_json::to_string(&staged)
+            .map_err(|error| format!("could not describe the tunnel: {error}"))?;
+        std::fs::write(paths.request(), request)
+            .map_err(|error| format!("could not stage the tunnel request: {error}"))?;
+
+        self.log_from(self.active_core(), "[*] asking for administrator rights");
+
+        let mut child = net::spawn_elevated(&elevator, &helper_binary, &paths.root)
+            .map_err(|error| format!("the rights prompt could not open: {error}"))?;
+
+        if let Some(stdout) = child.take_stdout() {
+            self.spawn_log_reader(stdout, "aether");
+        }
+        if let Some(stderr) = child.take_stderr() {
+            self.spawn_log_reader(stderr, "aether");
+        }
+
+        *self.helper.lock().unwrap() = Some(child);
+
+        let deadline = Instant::now() + HELPER_READY_TIMEOUT;
+        while Instant::now() < deadline {
+            if paths.ready().exists() {
+                self.spawn_log_tail(paths.log(), "hevtun");
+                *self.helper_state.lock().unwrap() = Some(paths);
+                self.log_from(self.active_core(), "[+] tunnel mode is live with elevated rights");
+                return Ok(());
+            }
+
+            if let Ok(reason) = std::fs::read_to_string(paths.error()) {
+                let reason = reason.trim().to_string();
+                self.stop_helper();
+                return Err(if reason.is_empty() {
+                    "the privileged helper refused to start".to_string()
+                } else {
+                    reason
+                });
+            }
+
+            if !self.helper_alive() {
+                self.stop_helper();
+                return Err(
+                    "the rights prompt was dismissed, staying in proxy mode".to_string()
+                );
+            }
+
+            thread::sleep(Duration::from_millis(200));
+        }
+
+        self.stop_helper();
+        Err("the privileged helper never came up".to_string())
+    }
+
+    fn helper_alive(&self) -> bool {
+        let mut guard = match self.helper.lock() {
+            Ok(guard) => guard,
+            Err(_) => return true,
+        };
+        match guard.as_mut() {
+            Some(child) => child.is_running(),
+            None => false,
+        }
+    }
+
+    fn stop_helper(&self) {
+        let paths = self.helper_state.lock().unwrap().take();
+
+        if let Some(paths) = &paths {
+            let _ = std::fs::write(paths.stop(), b"1");
+        }
+
+        if let Some(mut child) = self.helper.lock().unwrap().take() {
+            let deadline = Instant::now() + HELPER_STOP_TIMEOUT;
+            while Instant::now() < deadline {
+                if !child.is_running() {
+                    break;
+                }
+                thread::sleep(Duration::from_millis(100));
+            }
+        }
+
+        if let Some(paths) = &paths {
+            paths.clear();
+        }
+    }
+
+    fn helper_counters(&self) -> Option<crate::tunnel::Counters> {
+        let guard = self.helper_state.lock().unwrap();
+        let paths = guard.as_ref()?;
+        let (tx_packets, tx_bytes, rx_packets, rx_bytes) = helper::read_stats(&paths.stats())?;
+        Some(crate::tunnel::Counters {
+            tx_packets,
+            tx_bytes,
+            rx_packets,
+            rx_bytes,
+        })
+    }
+
+    fn helper_running(&self) -> bool {
+        self.helper_state.lock().unwrap().is_some()
     }
 
     fn lower_device(&self) {
+        if self.helper_running() {
+            self.stop_helper();
+            self.log_from(self.active_core(), "[-] tunnel mode stopped and routes restored");
+            return;
+        }
+
         if !self.device.is_running() {
             return;
         }
@@ -716,13 +1160,13 @@ impl Supervisor {
         let mut resolver = self.resolver.lock().unwrap();
         if resolver.is_active() {
             resolver.restore();
-            self.log_from("aether", "[-] resolver restored");
+            self.log_from(self.active_core(), "[-] resolver restored");
         }
         drop(resolver);
 
         net::revert_tunnel_routes(dual);
         self.device.stop();
-        self.log_from("aether", "[-] tunnel device stopped and routes restored");
+        self.log_from(self.active_core(), "[-] tunnel device stopped and routes restored");
     }
 
     pub fn disconnect(&self) {
@@ -737,7 +1181,7 @@ impl Supervisor {
             self.publish(Stage::Disconnecting, None, None);
             let _ = child.kill();
             let _ = child.wait();
-            self.log_from("aether", "[-] aether core stopped");
+            self.log_from(self.active_core(), "[-] core stopped");
         }
         drop(guard);
 
@@ -749,5 +1193,106 @@ impl Supervisor {
 impl Default for Supervisor {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+mod strategy_tests {
+    use super::*;
+
+    fn settings_from(json: &str) -> TunnelSettings {
+        serde_json::from_str(json).expect("settings should parse")
+    }
+
+    #[test]
+    fn a_fresh_install_tries_a_fast_attempt_first() {
+        let ladder = attempt_ladder(&settings_from("{}"));
+        assert_eq!(ladder.len(), 2);
+        assert_eq!(ladder[0].label, "fast");
+        assert_eq!(ladder[0].noize, "off");
+        assert_eq!(ladder[0].scan, "turbo");
+        assert!(ladder[0].budget < ladder[1].budget);
+        assert_eq!(ladder[1].label, "configured");
+        assert_eq!(ladder[1].noize, "balanced");
+        assert_eq!(ladder[1].scan, "balanced");
+    }
+
+    #[test]
+    fn turning_the_strategy_off_leaves_one_attempt() {
+        let ladder = attempt_ladder(&settings_from(r#"{"fastFirstConnect":false}"#));
+        assert_eq!(ladder.len(), 1);
+        assert_eq!(ladder[0].label, "configured");
+    }
+
+    #[test]
+    fn settings_that_already_match_the_fast_attempt_are_not_repeated() {
+        let ladder =
+            attempt_ladder(&settings_from(r#"{"obfuscation":"off","scanMode":"turbo"}"#));
+        assert_eq!(ladder.len(), 1);
+        assert_eq!(ladder[0].label, "configured");
+    }
+
+    #[test]
+    fn psiphon_has_no_obfuscation_ladder() {
+        let ladder = attempt_ladder(&settings_from(r#"{"core":"psiphon"}"#));
+        assert_eq!(ladder.len(), 1);
+    }
+
+    #[test]
+    fn staging_an_attempt_rewrites_the_core_arguments() {
+        let settings = settings_from("{}");
+        let arguments = vec![
+            "--bind".to_string(),
+            "127.0.0.1:1819".to_string(),
+            "--noize".to_string(),
+            "balanced".to_string(),
+            "--scan".to_string(),
+            "balanced".to_string(),
+        ];
+
+        let ladder = attempt_ladder(&settings);
+        let (staged, staged_arguments) = stage_attempt(&settings, &arguments, &ladder[0]);
+
+        assert_eq!(staged.noize(), "off");
+        assert_eq!(staged.scan_mode, "turbo");
+        assert_eq!(
+            staged_arguments,
+            vec![
+                "--bind".to_string(),
+                "127.0.0.1:1819".to_string(),
+                "--noize".to_string(),
+                "off".to_string(),
+                "--scan".to_string(),
+                "turbo".to_string(),
+            ]
+        );
+    }
+
+    #[test]
+    fn a_missing_flag_is_appended_rather_than_dropped() {
+        let mut arguments = vec!["--bind".to_string(), "127.0.0.1:1819".to_string()];
+        override_flag(&mut arguments, "--noize", "off");
+        assert_eq!(arguments.last(), Some(&"off".to_string()));
+        assert!(arguments.contains(&"--noize".to_string()));
+    }
+
+    #[test]
+    fn the_environment_follows_the_staged_attempt() {
+        let settings = settings_from("{}");
+        let ladder = attempt_ladder(&settings);
+        let (staged, _) = stage_attempt(&settings, &[], &ladder[0]);
+
+        let environment = staged.core_environment();
+        let noize = environment
+            .iter()
+            .find(|(key, _)| key == "AETHER_NOIZE")
+            .map(|(_, value)| value.as_str());
+        let scan = environment
+            .iter()
+            .find(|(key, _)| key == "AETHER_SCAN")
+            .map(|(_, value)| value.as_str());
+
+        assert_eq!(noize, Some("off"));
+        assert_eq!(scan, Some("turbo"));
     }
 }

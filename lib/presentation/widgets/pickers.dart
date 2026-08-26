@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 import '../../core/theme/app_theme.dart';
+import 'flag_icon.dart';
 
 class PickerOption<T> {
   const PickerOption({required this.value, required this.title, this.subtitle});
@@ -37,12 +38,15 @@ Future<void> showChoiceSheet<T>({
               Text(
                 option.title,
                 textAlign: TextAlign.center,
-                style: AppText.rowTitle(
-                  isSelected ? palette.primary : palette.label,
-                ).copyWith(
-                  fontSize: 17,
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
-                ),
+                style:
+                    AppText.rowTitle(
+                      isSelected ? palette.primary : palette.label,
+                    ).copyWith(
+                      fontSize: 17,
+                      fontWeight: isSelected
+                          ? FontWeight.w700
+                          : FontWeight.w400,
+                    ),
               ),
               if (option.subtitle != null) ...<Widget>[
                 const SizedBox(height: 2),
@@ -124,8 +128,8 @@ Future<void> showTextEditorSheet({
                   keyboardType: digitsOnly
                       ? TextInputType.number
                       : (multiline
-                          ? TextInputType.multiline
-                          : TextInputType.text),
+                            ? TextInputType.multiline
+                            : TextInputType.text),
                   inputFormatters: digitsOnly
                       ? <TextInputFormatter>[
                           FilteringTextInputFormatter.digitsOnly,
@@ -142,8 +146,9 @@ Future<void> showTextEditorSheet({
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: palette.separator),
                   ),
-                  onSubmitted:
-                      multiline ? null : (_) => Navigator.of(sheetContext).pop(true),
+                  onSubmitted: multiline
+                      ? null
+                      : (_) => Navigator.of(sheetContext).pop(true),
                 ),
                 const SizedBox(height: 16),
                 Row(
@@ -217,4 +222,96 @@ Future<bool> showConfirmDialog({
     ),
   );
   return result ?? false;
+}
+
+Future<void> showCountrySheet({
+  required BuildContext context,
+  required String title,
+  required String selected,
+  required String autoLabel,
+  required List<String> countryCodes,
+  required ValueChanged<String> onSelected,
+}) async {
+  final palette = context.palette;
+
+  final chosen = await showCupertinoModalPopup<String>(
+    context: context,
+    builder: (sheetContext) {
+      return Container(
+        height: MediaQuery.of(sheetContext).size.height * 0.7,
+        decoration: BoxDecoration(
+          color: palette.canvas,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(18, 16, 18, 10),
+                child: Text(title, style: AppText.title(palette.label)),
+              ),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: countryCodes.length + 1,
+                  separatorBuilder: (_, _) => Padding(
+                    padding: const EdgeInsetsDirectional.only(start: 56),
+                    child: Container(height: 0.5, color: palette.separator),
+                  ),
+                  itemBuilder: (itemContext, index) {
+                    final code = index == 0 ? '' : countryCodes[index - 1];
+                    final isSelected = code == selected;
+
+                    return CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      borderRadius: BorderRadius.zero,
+                      onPressed: () => Navigator.of(itemContext).pop(code),
+                      child: Container(
+                        color: palette.card,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 13,
+                        ),
+                        child: Row(
+                          children: <Widget>[
+                            SizedBox(
+                              width: 26,
+                              child: code.isEmpty
+                                  ? Icon(
+                                      CupertinoIcons.globe,
+                                      size: 20,
+                                      color: palette.labelSecondary,
+                                    )
+                                  : FlagIcon(countryCode: code),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Text(
+                                code.isEmpty ? autoLabel : code,
+                                style: AppText.rowTitle(
+                                  isSelected ? palette.primary : palette.label,
+                                ),
+                              ),
+                            ),
+                            if (isSelected)
+                              Icon(
+                                CupertinoIcons.check_mark,
+                                size: 18,
+                                color: palette.primary,
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+
+  if (chosen != null) onSelected(chosen);
 }

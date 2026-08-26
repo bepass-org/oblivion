@@ -13,59 +13,69 @@ import '../widgets/pickers.dart';
 import '../widgets/screen_header.dart';
 import '../widgets/settings_list.dart';
 import 'advanced_screen.dart';
+import 'psiphon_screen.dart';
 import 'split_tunnel_screen.dart';
 import 'zero_trust_screen.dart';
 
+String coreTitle(L10n l10n, CoreEngine value) => switch (value) {
+  CoreEngine.aether => l10n.coreAether,
+  CoreEngine.psiphon => l10n.corePsiphon,
+};
+
+String coreDesc(L10n l10n, CoreEngine value) => switch (value) {
+  CoreEngine.aether => l10n.coreAetherDesc,
+  CoreEngine.psiphon => l10n.corePsiphonDesc,
+};
+
 String protocolTitle(L10n l10n, CoreProtocol value) => switch (value) {
-      CoreProtocol.masque => l10n.protocolMasque,
-      CoreProtocol.wireguard => l10n.protocolWireGuard,
-      CoreProtocol.gool => l10n.protocolGool,
-    };
+  CoreProtocol.masque => l10n.protocolMasque,
+  CoreProtocol.wireguard => l10n.protocolWireGuard,
+  CoreProtocol.gool => l10n.protocolGool,
+};
 
 String protocolDesc(L10n l10n, CoreProtocol value) => switch (value) {
-      CoreProtocol.masque => l10n.protocolMasqueDesc,
-      CoreProtocol.wireguard => l10n.protocolWireGuardDesc,
-      CoreProtocol.gool => l10n.protocolGoolDesc,
-    };
+  CoreProtocol.masque => l10n.protocolMasqueDesc,
+  CoreProtocol.wireguard => l10n.protocolWireGuardDesc,
+  CoreProtocol.gool => l10n.protocolGoolDesc,
+};
 
 String scanTitle(L10n l10n, ScanMode value) => switch (value) {
-      ScanMode.turbo => l10n.scanTurbo,
-      ScanMode.balanced => l10n.scanBalanced,
-      ScanMode.thorough => l10n.scanThorough,
-      ScanMode.stealth => l10n.scanStealth,
-      ScanMode.ironclad => l10n.scanIronclad,
-    };
+  ScanMode.turbo => l10n.scanTurbo,
+  ScanMode.balanced => l10n.scanBalanced,
+  ScanMode.thorough => l10n.scanThorough,
+  ScanMode.stealth => l10n.scanStealth,
+  ScanMode.ironclad => l10n.scanIronclad,
+};
 
 String scanDesc(L10n l10n, ScanMode value) => switch (value) {
-      ScanMode.turbo => l10n.scanTurboDesc,
-      ScanMode.balanced => l10n.scanBalancedDesc,
-      ScanMode.thorough => l10n.scanThoroughDesc,
-      ScanMode.stealth => l10n.scanStealthDesc,
-      ScanMode.ironclad => l10n.scanIroncladDesc,
-    };
+  ScanMode.turbo => l10n.scanTurboDesc,
+  ScanMode.balanced => l10n.scanBalancedDesc,
+  ScanMode.thorough => l10n.scanThoroughDesc,
+  ScanMode.stealth => l10n.scanStealthDesc,
+  ScanMode.ironclad => l10n.scanIroncladDesc,
+};
 
 String obfuscationTitle(L10n l10n, ObfuscationProfile value) => switch (value) {
-      ObfuscationProfile.off => l10n.obfuscationOff,
-      ObfuscationProfile.light => l10n.obfuscationLight,
-      ObfuscationProfile.balanced => l10n.obfuscationBalanced,
-      ObfuscationProfile.aggressive => l10n.obfuscationAggressive,
-    };
+  ObfuscationProfile.off => l10n.obfuscationOff,
+  ObfuscationProfile.light => l10n.obfuscationLight,
+  ObfuscationProfile.balanced => l10n.obfuscationBalanced,
+  ObfuscationProfile.aggressive => l10n.obfuscationAggressive,
+};
 
 String routingTitle(L10n l10n, RoutingMode value) => switch (value) {
-      RoutingMode.socksOnly => l10n.routingSocks,
-      RoutingMode.systemProxy => l10n.routingSystem,
-      RoutingMode.fullTunnel => l10n.tunnelModeActive,
-    };
+  RoutingMode.socksOnly => l10n.routingSocks,
+  RoutingMode.systemProxy => l10n.routingSystem,
+  RoutingMode.fullTunnel => l10n.tunnelModeActive,
+};
 
 bool get isMobilePlatform => Platform.isAndroid || Platform.isIOS;
 
 String routingDesc(L10n l10n, RoutingMode value) => switch (value) {
-      RoutingMode.socksOnly => l10n.routingSocksDesc,
-      RoutingMode.systemProxy => l10n.routingSystemDesc,
-      RoutingMode.fullTunnel => isMobilePlatform
-          ? l10n.routingTunnelDescMobile
-          : l10n.routingTunnelDesc,
-    };
+  RoutingMode.socksOnly => l10n.routingSocksDesc,
+  RoutingMode.systemProxy => l10n.routingSystemDesc,
+  RoutingMode.fullTunnel =>
+    isMobilePlatform ? l10n.routingTunnelDescMobile : l10n.routingTunnelDesc,
+};
 
 bool isIpAddress(String value) {
   final trimmed = value.trim();
@@ -100,90 +110,155 @@ class SettingsScreen extends ConsumerWidget {
                 SettingsGroup(
                   children: <Widget>[
                     SettingsRow(
-                      title: l10n.protocol,
-                      subtitle: protocolDesc(l10n, settings.protocol),
-                      value: protocolTitle(l10n, settings.protocol),
-                      onTap: () => showChoiceSheet<CoreProtocol>(
+                      title: l10n.coreEngine,
+                      subtitle: coreDesc(l10n, settings.core),
+                      value: coreTitle(l10n, settings.core),
+                      onTap: () => showChoiceSheet<CoreEngine>(
                         context: context,
+                        title: l10n.coreEngine,
+                        selected: settings.core,
+                        options: CoreEngine.values
+                            .map(
+                              (v) => PickerOption<CoreEngine>(
+                                value: v,
+                                title: coreTitle(l10n, v),
+                                subtitle: coreDesc(l10n, v),
+                              ),
+                            )
+                            .toList(),
+                        onSelected: (v) =>
+                            controller.update((s) => s.copyWith(core: v)),
+                      ),
+                    ),
+                    if (settings.usesPsiphon)
+                      SettingsRow(
+                        title: l10n.psiphonSettings,
+                        subtitle: psiphonModeDesc(l10n, settings.psiphonMode),
+                        value: psiphonModeTitle(l10n, settings.psiphonMode),
+                        onTap: () => Navigator.of(context).push(
+                          CupertinoPageRoute<void>(
+                            builder: (_) => const PsiphonScreen(),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                if (settings.usesAether)
+                  SettingsGroup(
+                    header: l10n.aetherOnlySection,
+                    children: <Widget>[
+                      SettingsRow(
                         title: l10n.protocol,
-                        selected: settings.protocol,
-                        options: CoreProtocol.values
-                            .map(
-                              (v) => PickerOption<CoreProtocol>(
-                                value: v,
-                                title: protocolTitle(l10n, v),
-                                subtitle: protocolDesc(l10n, v),
-                              ),
-                            )
-                            .toList(),
-                        onSelected: (v) =>
-                            controller.update((s) => s.copyWith(protocol: v)),
+                        subtitle: protocolDesc(l10n, settings.protocol),
+                        value: protocolTitle(l10n, settings.protocol),
+                        onTap: () => showChoiceSheet<CoreProtocol>(
+                          context: context,
+                          title: l10n.protocol,
+                          selected: settings.protocol,
+                          options: CoreProtocol.values
+                              .map(
+                                (v) => PickerOption<CoreProtocol>(
+                                  value: v,
+                                  title: protocolTitle(l10n, v),
+                                  subtitle: protocolDesc(l10n, v),
+                                ),
+                              )
+                              .toList(),
+                          onSelected: (v) =>
+                              controller.update((s) => s.copyWith(protocol: v)),
+                        ),
                       ),
-                    ),
-                    SettingsRow(
-                      title: l10n.transport,
-                      value: settings.usesHttp2 ? 'HTTP/2' : 'HTTP/3',
-                      enabled: settings.isMasque,
-                      onTap: () => showChoiceSheet<MasqueTransport>(
-                        context: context,
+                      SettingsRow(
                         title: l10n.transport,
-                        selected: settings.transport,
-                        options: <PickerOption<MasqueTransport>>[
-                          PickerOption(
-                            value: MasqueTransport.http3,
-                            title: l10n.transportH3,
-                            subtitle: l10n.transportH3Desc,
+                        value: settings.usesHttp2 ? 'HTTP/2' : 'HTTP/3',
+                        enabled: settings.isMasque,
+                        onTap: () => showChoiceSheet<MasqueTransport>(
+                          context: context,
+                          title: l10n.transport,
+                          selected: settings.transport,
+                          options: <PickerOption<MasqueTransport>>[
+                            PickerOption(
+                              value: MasqueTransport.http3,
+                              title: l10n.transportH3,
+                              subtitle: l10n.transportH3Desc,
+                            ),
+                            PickerOption(
+                              value: MasqueTransport.http2,
+                              title: l10n.transportH2,
+                              subtitle: l10n.transportH2Desc,
+                            ),
+                          ],
+                          onSelected: (v) => controller.update(
+                            (s) => s.copyWith(transport: v),
                           ),
-                          PickerOption(
-                            value: MasqueTransport.http2,
-                            title: l10n.transportH2,
-                            subtitle: l10n.transportH2Desc,
-                          ),
-                        ],
-                        onSelected: (v) =>
-                            controller.update((s) => s.copyWith(transport: v)),
+                        ),
                       ),
-                    ),
-                    SettingsRow(
-                      title: l10n.scanMode,
-                      subtitle: scanDesc(l10n, settings.scanMode),
-                      value: scanTitle(l10n, settings.scanMode),
-                      onTap: () => showChoiceSheet<ScanMode>(
-                        context: context,
+                      SettingsRow(
                         title: l10n.scanMode,
-                        selected: settings.scanMode,
-                        options: ScanMode.values
-                            .map(
-                              (v) => PickerOption<ScanMode>(
-                                value: v,
-                                title: scanTitle(l10n, v),
-                                subtitle: scanDesc(l10n, v),
-                              ),
-                            )
-                            .toList(),
-                        onSelected: (v) =>
-                            controller.update((s) => s.copyWith(scanMode: v)),
+                        subtitle: scanDesc(l10n, settings.scanMode),
+                        value: scanTitle(l10n, settings.scanMode),
+                        onTap: () => showChoiceSheet<ScanMode>(
+                          context: context,
+                          title: l10n.scanMode,
+                          selected: settings.scanMode,
+                          options: ScanMode.values
+                              .map(
+                                (v) => PickerOption<ScanMode>(
+                                  value: v,
+                                  title: scanTitle(l10n, v),
+                                  subtitle: scanDesc(l10n, v),
+                                ),
+                              )
+                              .toList(),
+                          onSelected: (v) =>
+                              controller.update((s) => s.copyWith(scanMode: v)),
+                        ),
                       ),
-                    ),
-                    SettingsRow(
-                      title: l10n.obfuscation,
-                      value: obfuscationTitle(l10n, settings.obfuscation),
-                      onTap: () => showChoiceSheet<ObfuscationProfile>(
-                        context: context,
+                      SettingsRow(
                         title: l10n.obfuscation,
-                        selected: settings.obfuscation,
-                        options: ObfuscationProfile.values
-                            .map(
-                              (v) => PickerOption<ObfuscationProfile>(
-                                value: v,
-                                title: obfuscationTitle(l10n, v),
-                              ),
-                            )
-                            .toList(),
-                        onSelected: (v) => controller
-                            .update((s) => s.copyWith(obfuscation: v)),
+                        value: obfuscationTitle(l10n, settings.obfuscation),
+                        onTap: () => showChoiceSheet<ObfuscationProfile>(
+                          context: context,
+                          title: l10n.obfuscation,
+                          selected: settings.obfuscation,
+                          options: ObfuscationProfile.values
+                              .map(
+                                (v) => PickerOption<ObfuscationProfile>(
+                                  value: v,
+                                  title: obfuscationTitle(l10n, v),
+                                ),
+                              )
+                              .toList(),
+                          onSelected: (v) => controller.update(
+                            (s) => s.copyWith(obfuscation: v),
+                          ),
+                        ),
                       ),
-                    ),
+                      SettingsRow(
+                        title: l10n.endpoint,
+                        subtitle: settings.scannerBypassed
+                            ? l10n.scannerOff
+                            : l10n.endpointManualHint,
+                        value: settings.endpoint.isEmpty
+                            ? l10n.endpointAuto
+                            : settings.endpoint,
+                        onTap: () => showTextEditorSheet(
+                          context: context,
+                          title: l10n.endpoint,
+                          description: l10n.endpointDesc,
+                          initial: settings.endpoint,
+                          placeholder: '162.159.198.1:443',
+                          cancelLabel: l10n.cancel,
+                          saveLabel: l10n.save,
+                          onSaved: (v) => controller.update(
+                            (s) => s.copyWith(endpoint: v.trim()),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                SettingsGroup(
+                  children: <Widget>[
                     SettingsRow(
                       title: l10n.routingMode,
                       subtitle: routingDesc(l10n, settings.routingMode),
@@ -206,36 +281,17 @@ class SettingsScreen extends ConsumerWidget {
                               ),
                             )
                             .toList(),
-                        onSelected: (v) => controller
-                            .update((s) => s.copyWith(routingMode: v)),
-                      ),
-                    ),
-                    SettingsRow(
-                      title: l10n.endpoint,
-                      subtitle: settings.scannerBypassed
-                          ? l10n.scannerOff
-                          : l10n.endpointManualHint,
-                      value: settings.endpoint.isEmpty
-                          ? l10n.endpointAuto
-                          : settings.endpoint,
-                      onTap: () => showTextEditorSheet(
-                        context: context,
-                        title: l10n.endpoint,
-                        description: l10n.endpointDesc,
-                        initial: settings.endpoint,
-                        placeholder: '162.159.198.1:443',
-                        cancelLabel: l10n.cancel,
-                        saveLabel: l10n.save,
-                        onSaved: (v) => controller
-                            .update((s) => s.copyWith(endpoint: v.trim())),
+                        onSelected: (v) => controller.update(
+                          (s) => s.copyWith(routingMode: v),
+                        ),
                       ),
                     ),
                     if (Platform.isAndroid)
                       SettingsRow(
                         title: l10n.splitTunnel,
                         subtitle: l10n.splitTunnelDesc,
-                        value: settings.splitTunnelMode ==
-                                SplitTunnelMode.disabled
+                        value:
+                            settings.splitTunnelMode == SplitTunnelMode.disabled
                             ? l10n.splitTunnelDisabled
                             : '${settings.bypassedApps.length}',
                         onTap: () => Navigator.of(context).push(
@@ -291,18 +347,19 @@ class SettingsScreen extends ConsumerWidget {
                         onSelected: prefsController.setThemeMode,
                       ),
                     ),
-                    SettingsRow(
-                      title: l10n.zeroTrust,
-                      subtitle: l10n.zeroTrustDesc,
-                      value: settings.usesZeroTrust
-                          ? settings.teamName
-                          : l10n.zeroTrustOff,
-                      onTap: () => Navigator.of(context).push(
-                        CupertinoPageRoute<void>(
-                          builder: (_) => const ZeroTrustScreen(),
+                    if (settings.usesAether)
+                      SettingsRow(
+                        title: l10n.zeroTrust,
+                        subtitle: l10n.zeroTrustDesc,
+                        value: settings.usesZeroTrust
+                            ? settings.teamName
+                            : l10n.zeroTrustOff,
+                        onTap: () => Navigator.of(context).push(
+                          CupertinoPageRoute<void>(
+                            builder: (_) => const ZeroTrustScreen(),
+                          ),
                         ),
                       ),
-                    ),
                     SettingsRow(
                       title: l10n.sectionAdvanced,
                       subtitle: l10n.advancedDesc,

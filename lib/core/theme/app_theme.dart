@@ -59,7 +59,8 @@ class AppPalette {
   );
 
   static AppPalette of(BuildContext context) {
-    final brightness = CupertinoTheme.of(context).brightness ??
+    final brightness =
+        CupertinoTheme.of(context).brightness ??
         MediaQuery.platformBrightnessOf(context);
     return brightness == Brightness.dark ? dark : light;
   }
@@ -73,76 +74,77 @@ class AppText {
   const AppText._();
 
   static TextStyle wordmark(Color color) => TextStyle(
-        fontFamily: kFontFamily,
-        fontSize: 42,
-        height: 1.1,
-        fontWeight: FontWeight.w800,
-        letterSpacing: 2,
-        color: color,
-      );
+    fontFamily: kFontFamily,
+    fontSize: 42,
+    height: 1.1,
+    fontWeight: FontWeight.w800,
+    letterSpacing: 2,
+    color: color,
+  );
 
   static TextStyle brand(Color color) => TextStyle(
-        fontFamily: kFontFamily,
-        fontSize: 32,
-        height: 1.2,
-        fontWeight: FontWeight.w700,
-        color: color,
-      );
+    fontFamily: kFontFamily,
+    fontSize: 32,
+    height: 1.2,
+    fontWeight: FontWeight.w700,
+    color: color,
+  );
 
   static TextStyle title(Color color) => TextStyle(
-        fontFamily: kFontFamily,
-        fontSize: 26,
-        height: 1.2,
-        fontWeight: FontWeight.w700,
-        color: color,
-      );
+    fontFamily: kFontFamily,
+    fontSize: 26,
+    height: 1.2,
+    fontWeight: FontWeight.w700,
+    color: color,
+  );
 
   static TextStyle state(Color color) => TextStyle(
-        fontFamily: kFontFamily,
-        fontSize: 21,
-        height: 1.3,
-        fontWeight: FontWeight.w500,
-        color: color,
-      );
+    fontFamily: kFontFamily,
+    fontSize: 21,
+    height: 1.3,
+    fontWeight: FontWeight.w500,
+    color: color,
+  );
 
   static TextStyle rowTitle(Color color) => TextStyle(
-        fontFamily: kFontFamily,
-        fontSize: 16,
-        height: 1.3,
-        fontWeight: FontWeight.w500,
-        color: color,
-      );
+    fontFamily: kFontFamily,
+    fontSize: 16,
+    height: 1.3,
+    fontWeight: FontWeight.w500,
+    color: color,
+  );
 
   static TextStyle rowValue(Color color) => TextStyle(
-        fontFamily: kFontFamily,
-        fontSize: 15,
-        height: 1.3,
-        fontWeight: FontWeight.w400,
-        color: color,
-      );
+    fontFamily: kFontFamily,
+    fontSize: 15,
+    height: 1.3,
+    fontWeight: FontWeight.w400,
+    color: color,
+  );
 
   static TextStyle caption(Color color) => TextStyle(
-        fontFamily: kFontFamily,
-        fontSize: 13,
-        height: 1.4,
-        fontWeight: FontWeight.w400,
-        color: color,
-      );
+    fontFamily: kFontFamily,
+    fontSize: 13,
+    height: 1.4,
+    fontWeight: FontWeight.w400,
+    color: color,
+  );
 
   static TextStyle mono(Color color) => TextStyle(
-        fontFamily: 'monospace',
-        fontSize: 12,
-        height: 1.5,
-        color: color,
-      );
+    fontFamily: 'monospace',
+    fontSize: 12,
+    height: 1.5,
+    color: color,
+  );
 }
 
 class AppTheme {
   const AppTheme._();
 
   static CupertinoThemeData build(Brightness brightness) {
-    final palette =
-        brightness == Brightness.dark ? AppPalette.dark : AppPalette.light;
+    final palette = brightness == Brightness.dark
+        ? AppPalette.dark
+        : AppPalette.light;
 
     return CupertinoThemeData(
       brightness: brightness,

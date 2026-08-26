@@ -6,7 +6,11 @@ publish = false
 
 [lib]
 name = "oblivion_core"
-crate-type = ["cdylib", "staticlib"]
+crate-type = ["cdylib", "staticlib", "rlib"]
+
+[[bin]]
+name = "oblivion-helper"
+path = "src/bin/oblivion-helper.rs"
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
@@ -20,6 +24,10 @@ libc = "0.2"
 windows-sys = { version = "0.59", features = [
     "Win32_Foundation",
     "Win32_System_Threading",
+    "Win32_Security",
+    "Win32_System_Registry",
+    "Win32_UI_Shell",
+    "Win32_UI_WindowsAndMessaging",
 ] }
 
 [profile.release]

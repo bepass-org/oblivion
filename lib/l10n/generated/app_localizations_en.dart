@@ -909,4 +909,128 @@ class L10nEn extends L10n {
   @override
   String get notificationPermissionBody =>
       'Oblivion needs a notification to keep the tunnel alive in the background';
+
+  @override
+  String get coreEngine => 'Core';
+
+  @override
+  String get coreEngineDesc => 'Which tunnel engine to run';
+
+  @override
+  String get coreAether => 'Aether';
+
+  @override
+  String get coreAetherDesc => 'Cloudflare WARP and MASQUE';
+
+  @override
+  String get corePsiphon => 'Psiphon';
+
+  @override
+  String get corePsiphonDesc => 'Psiphon network with CDN fronting';
+
+  @override
+  String get psiphonSettings => 'Psiphon';
+
+  @override
+  String get psiphonCountry => 'Country';
+
+  @override
+  String get psiphonCountryAuto => 'Automatic';
+
+  @override
+  String get psiphonCountryDesc => 'Where traffic leaves the Psiphon network';
+
+  @override
+  String get psiphonMode => 'Mode';
+
+  @override
+  String get psiphonModeCdn => 'CDN fronting';
+
+  @override
+  String get psiphonModeCdnDesc => 'Reach servers through CDN edges';
+
+  @override
+  String get psiphonModeConduit => 'Conduit';
+
+  @override
+  String get psiphonModeConduitDesc => 'Route through volunteer in-proxy peers';
+
+  @override
+  String get psiphonModeAuto => 'Automatic';
+
+  @override
+  String get psiphonModeAutoDesc =>
+      'Let Psiphon pick any protocol it can reach';
+
+  @override
+  String get psiphonModeDirect => 'Direct';
+
+  @override
+  String get psiphonModeDirectDesc => 'Connect straight to Psiphon servers';
+
+  @override
+  String get psiphonCdnFronting => 'CDN fronting';
+
+  @override
+  String get psiphonCdnIps => 'Edge addresses';
+
+  @override
+  String get psiphonCdnIpsDesc =>
+      'Extra IPv4 addresses or CIDR ranges to scan, one per line';
+
+  @override
+  String get psiphonCdnSni => 'SNI names';
+
+  @override
+  String get psiphonCdnSniDesc =>
+      'Domain names to present in TLS, one per line';
+
+  @override
+  String get psiphonConduitPeers => 'Peers';
+
+  @override
+  String get psiphonConduitPeersAuto => 'Automatic';
+
+  @override
+  String get psiphonConduitPeersAutoDesc =>
+      'Prefer private peers, fall back to public ones';
+
+  @override
+  String get psiphonConduitPeersPrivate => 'Private only';
+
+  @override
+  String get psiphonConduitPeersPrivateDesc =>
+      'Only peers paired with this build';
+
+  @override
+  String get psiphonConduitPeersPublic => 'Public only';
+
+  @override
+  String get psiphonConduitPeersPublicDesc =>
+      'Only volunteer peers open to everyone';
+
+  @override
+  String get psiphonRejectCensoredPeers => 'Skip censored regions';
+
+  @override
+  String get psiphonRejectCensoredPeersDesc =>
+      'Refuse peers hosted in heavily censored countries';
+
+  @override
+  String get psiphonUnprovisioned =>
+      'This build carries no Psiphon credentials, so the Psiphon core cannot connect';
+
+  @override
+  String get psiphonNotAvailable =>
+      'Psiphon settings apply only when the Psiphon core is selected';
+
+  @override
+  String get aetherOnlySection => 'These settings apply to the Aether core';
+
+  @override
+  String get fastFirstConnect => 'Fast first connect';
+
+  @override
+  String get fastFirstConnectDesc =>
+      'Try a plain connection first, then fall back to obfuscation';
 }

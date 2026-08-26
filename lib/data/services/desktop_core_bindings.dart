@@ -20,54 +20,58 @@ typedef _FreeStringDart = void Function(Pointer<Utf8>);
 
 class DesktopCoreBindings {
   DesktopCoreBindings._(DynamicLibrary library)
-      : _setCorePath =
-            library.lookupFunction<_SetCorePathNative, _SetCorePathDart>(
-          'oblivion_set_core_path',
-        ),
-        _connect = library.lookupFunction<_ConnectNative, _ConnectDart>(
-          'oblivion_connect',
-        ),
-        _disconnect =
-            library.lookupFunction<_VoidReturnsIntNative, _VoidReturnsIntDart>(
-          'oblivion_disconnect',
-        ),
-        _submitLine = library.lookupFunction<_ConnectNative, _ConnectDart>(
-          'oblivion_submit_line',
-        ),
-        _statusJson =
-            library.lookupFunction<_StringGetterNative, _StringGetterDart>(
-          'oblivion_status_json',
-        ),
-        _drainLogs =
-            library.lookupFunction<_StringGetterNative, _StringGetterDart>(
-          'oblivion_drain_logs',
-        ),
-        _readLogs =
-            library.lookupFunction<_StringGetterNative, _StringGetterDart>(
-          'oblivion_read_logs',
-        ),
-        _clearLogs =
-            library.lookupFunction<_VoidReturnsIntNative, _VoidReturnsIntDart>(
-          'oblivion_clear_logs',
-        ),
-        _coreVersion =
-            library.lookupFunction<_StringGetterNative, _StringGetterDart>(
-          'oblivion_core_version',
-        ),
-        _tunnelAvailable =
-            library.lookupFunction<_VoidReturnsIntNative, _VoidReturnsIntDart>(
-          'oblivion_tunnel_available',
-        ),
-        _isPrivileged =
-            library.lookupFunction<_VoidReturnsIntNative, _VoidReturnsIntDart>(
-          'oblivion_is_privileged',
-        ),
-        _freeString =
-            library.lookupFunction<_FreeStringNative, _FreeStringDart>(
-          'oblivion_string_free',
-        );
+    : _setCorePath = library
+          .lookupFunction<_SetCorePathNative, _SetCorePathDart>(
+            'oblivion_set_core_path',
+          ),
+      _setPsiphonPath = library
+          .lookupFunction<_SetCorePathNative, _SetCorePathDart>(
+            'oblivion_set_psiphon_path',
+          ),
+      _connect = library.lookupFunction<_ConnectNative, _ConnectDart>(
+        'oblivion_connect',
+      ),
+      _disconnect = library
+          .lookupFunction<_VoidReturnsIntNative, _VoidReturnsIntDart>(
+            'oblivion_disconnect',
+          ),
+      _submitLine = library.lookupFunction<_ConnectNative, _ConnectDart>(
+        'oblivion_submit_line',
+      ),
+      _statusJson = library
+          .lookupFunction<_StringGetterNative, _StringGetterDart>(
+            'oblivion_status_json',
+          ),
+      _drainLogs = library
+          .lookupFunction<_StringGetterNative, _StringGetterDart>(
+            'oblivion_drain_logs',
+          ),
+      _readLogs = library
+          .lookupFunction<_StringGetterNative, _StringGetterDart>(
+            'oblivion_read_logs',
+          ),
+      _clearLogs = library
+          .lookupFunction<_VoidReturnsIntNative, _VoidReturnsIntDart>(
+            'oblivion_clear_logs',
+          ),
+      _coreVersion = library
+          .lookupFunction<_StringGetterNative, _StringGetterDart>(
+            'oblivion_core_version',
+          ),
+      _tunnelAvailable = library
+          .lookupFunction<_VoidReturnsIntNative, _VoidReturnsIntDart>(
+            'oblivion_tunnel_available',
+          ),
+      _isPrivileged = library
+          .lookupFunction<_VoidReturnsIntNative, _VoidReturnsIntDart>(
+            'oblivion_is_privileged',
+          ),
+      _freeString = library.lookupFunction<_FreeStringNative, _FreeStringDart>(
+        'oblivion_string_free',
+      );
 
   final _SetCorePathDart _setCorePath;
+  final _SetCorePathDart _setPsiphonPath;
   final _ConnectDart _connect;
   final _VoidReturnsIntDart _disconnect;
   final _ConnectDart _submitLine;
@@ -138,6 +142,15 @@ class DesktopCoreBindings {
     final native = path.toNativeUtf8();
     try {
       return _setCorePath(native) == 0;
+    } finally {
+      calloc.free(native);
+    }
+  }
+
+  bool setPsiphonPath(String path) {
+    final native = path.toNativeUtf8();
+    try {
+      return _setPsiphonPath(native) == 0;
     } finally {
       calloc.free(native);
     }

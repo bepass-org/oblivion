@@ -910,4 +910,127 @@ class L10nFa extends L10n {
   @override
   String get notificationPermissionBody =>
       'اوبلیوین برای زنده نگه داشتن تونل در پس‌زمینه به نوتیفیکیشن نیاز دارد';
+
+  @override
+  String get coreEngine => 'هسته';
+
+  @override
+  String get coreEngineDesc => 'کدام موتور تانل اجرا شود';
+
+  @override
+  String get coreAether => 'Aether';
+
+  @override
+  String get coreAetherDesc => 'وارپ کلادفلر و MASQUE';
+
+  @override
+  String get corePsiphon => 'سایفون';
+
+  @override
+  String get corePsiphonDesc => 'شبکه سایفون با CDN fronting';
+
+  @override
+  String get psiphonSettings => 'سایفون';
+
+  @override
+  String get psiphonCountry => 'کشور';
+
+  @override
+  String get psiphonCountryAuto => 'خودکار';
+
+  @override
+  String get psiphonCountryDesc =>
+      'ترافیک از کدام کشور از شبکه سایفون بیرون بزند';
+
+  @override
+  String get psiphonMode => 'حالت';
+
+  @override
+  String get psiphonModeCdn => 'CDN fronting';
+
+  @override
+  String get psiphonModeCdnDesc => 'رسیدن به سرورها از طریق لبه‌های CDN';
+
+  @override
+  String get psiphonModeConduit => 'Conduit';
+
+  @override
+  String get psiphonModeConduitDesc => 'عبور از همتاهای داوطلب in-proxy';
+
+  @override
+  String get psiphonModeAuto => 'خودکار';
+
+  @override
+  String get psiphonModeAutoDesc => 'سایفون خودش هر پروتکلی که برسد انتخاب کند';
+
+  @override
+  String get psiphonModeDirect => 'مستقیم';
+
+  @override
+  String get psiphonModeDirectDesc => 'اتصال مستقیم به سرورهای سایفون';
+
+  @override
+  String get psiphonCdnFronting => 'CDN fronting';
+
+  @override
+  String get psiphonCdnIps => 'آدرس‌های لبه';
+
+  @override
+  String get psiphonCdnIpsDesc =>
+      'آدرس‌های IPv4 یا بازه CIDR برای اسکن، هر خط یکی';
+
+  @override
+  String get psiphonCdnSni => 'نام‌های SNI';
+
+  @override
+  String get psiphonCdnSniDesc =>
+      'نام دامنه‌هایی که در TLS نشان داده شوند، هر خط یکی';
+
+  @override
+  String get psiphonConduitPeers => 'همتاها';
+
+  @override
+  String get psiphonConduitPeersAuto => 'خودکار';
+
+  @override
+  String get psiphonConduitPeersAutoDesc => 'اول همتاهای خصوصی، اگر نشد عمومی';
+
+  @override
+  String get psiphonConduitPeersPrivate => 'فقط خصوصی';
+
+  @override
+  String get psiphonConduitPeersPrivateDesc =>
+      'فقط همتاهایی که با این نسخه جفت شده‌اند';
+
+  @override
+  String get psiphonConduitPeersPublic => 'فقط عمومی';
+
+  @override
+  String get psiphonConduitPeersPublicDesc =>
+      'فقط همتاهای داوطلب که برای همه بازند';
+
+  @override
+  String get psiphonRejectCensoredPeers => 'رد کردن مناطق سانسورشده';
+
+  @override
+  String get psiphonRejectCensoredPeersDesc =>
+      'همتاهایی که در کشورهای پرسانسور میزبانی می‌شوند رد شوند';
+
+  @override
+  String get psiphonUnprovisioned =>
+      'این نسخه اعتبارنامه سایفون ندارد، پس هسته سایفون نمی‌تواند وصل شود';
+
+  @override
+  String get psiphonNotAvailable =>
+      'تنظیمات سایفون فقط وقتی هسته سایفون انتخاب شده اعمال می‌شود';
+
+  @override
+  String get aetherOnlySection => 'این تنظیمات به هسته Aether مربوط است';
+
+  @override
+  String get fastFirstConnect => 'اتصال اول سریع';
+
+  @override
+  String get fastFirstConnectDesc =>
+      'اول اتصال ساده امتحان شود، اگر نشد سراغ مبهم‌سازی برود';
 }
