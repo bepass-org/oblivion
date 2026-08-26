@@ -18,9 +18,7 @@ val hasReleaseKey = signingProperties.getProperty("storeFile") != null
 android {
     namespace = "org.bepass.oblivion"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = (project.findProperty("ndkVersion") as String?)
-        ?: System.getenv("ANDROID_NDK_VERSION")
-        ?: flutter.ndkVersion
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
