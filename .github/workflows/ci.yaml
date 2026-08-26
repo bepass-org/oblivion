@@ -82,7 +82,7 @@ jobs:
         with:
           repository: CluvexStudio/psiphon-tunnel-core
           ref: shirokhorshid
-          path: psiphon-tunnel-core
+          path: ../psiphon-tunnel-core
 
       - name: Set up JDK
         uses: actions/setup-java@v5
