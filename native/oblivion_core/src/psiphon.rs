@@ -666,6 +666,7 @@ mod tests {
     fn identifiers_can_be_overridden_at_build_or_run_time() {
         std::env::set_var("OBLIVION_PSIPHON_SPONSOR_ID", "OVERRIDDEN");
         let parsed = provisioned(r#"{"core":"psiphon"}"#);
+        assert_eq!(parsed["PropagationChannelId"], json!("FFFFFFFFFFFFFFFF"));
         assert_eq!(parsed["SponsorId"], json!("OVERRIDDEN"));
         std::env::remove_var("OBLIVION_PSIPHON_SPONSOR_ID");
     }
