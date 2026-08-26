@@ -22,8 +22,8 @@ class ZeroTrustScreen extends ConsumerWidget {
     final status = !settings.usesZeroTrust
         ? l10n.zeroTrustOff
         : (settings.zeroTrustReady
-            ? l10n.zeroTrustReady
-            : l10n.zeroTrustNeedsToken);
+              ? l10n.zeroTrustReady
+              : l10n.zeroTrustNeedsToken);
 
     return CupertinoPageScaffold(
       backgroundColor: palette.canvas,
@@ -59,14 +59,12 @@ class ZeroTrustScreen extends ConsumerWidget {
                         placeholder: 'my-team',
                         cancelLabel: l10n.cancel,
                         saveLabel: l10n.save,
-                        onSaved: (v) =>
-                            controller.update((s) => s.copyWith(team: v.trim())),
+                        onSaved: (v) => controller.update(
+                          (s) => s.copyWith(team: v.trim()),
+                        ),
                       ),
                     ),
-                    SettingsRow(
-                      title: l10n.tunnelDeviceState,
-                      value: status,
-                    ),
+                    SettingsRow(title: l10n.tunnelDeviceState, value: status),
                   ],
                 ),
                 SettingsGroup(
@@ -87,8 +85,9 @@ class ZeroTrustScreen extends ConsumerWidget {
                         placeholder: 'me@example.com',
                         cancelLabel: l10n.cancel,
                         saveLabel: l10n.save,
-                        onSaved: (v) => controller
-                            .update((s) => s.copyWith(accessEmail: v.trim())),
+                        onSaved: (v) => controller.update(
+                          (s) => s.copyWith(accessEmail: v.trim()),
+                        ),
                       ),
                     ),
                   ],
@@ -111,8 +110,9 @@ class ZeroTrustScreen extends ConsumerWidget {
                         multiline: true,
                         cancelLabel: l10n.cancel,
                         saveLabel: l10n.save,
-                        onSaved: (v) => controller
-                            .update((s) => s.copyWith(accessToken: v.trim())),
+                        onSaved: (v) => controller.update(
+                          (s) => s.copyWith(accessToken: v.trim()),
+                        ),
                       ),
                     ),
                   ],
@@ -132,8 +132,9 @@ class ZeroTrustScreen extends ConsumerWidget {
                         initial: settings.accessId,
                         cancelLabel: l10n.cancel,
                         saveLabel: l10n.save,
-                        onSaved: (v) => controller
-                            .update((s) => s.copyWith(accessId: v.trim())),
+                        onSaved: (v) => controller.update(
+                          (s) => s.copyWith(accessId: v.trim()),
+                        ),
                       ),
                     ),
                     SettingsRow(
@@ -148,8 +149,9 @@ class ZeroTrustScreen extends ConsumerWidget {
                         initial: settings.accessSecret,
                         cancelLabel: l10n.cancel,
                         saveLabel: l10n.save,
-                        onSaved: (v) => controller
-                            .update((s) => s.copyWith(accessSecret: v.trim())),
+                        onSaved: (v) => controller.update(
+                          (s) => s.copyWith(accessSecret: v.trim()),
+                        ),
                       ),
                     ),
                   ],
@@ -163,8 +165,9 @@ class ZeroTrustScreen extends ConsumerWidget {
                       trailing: AppSwitch(
                         value: settings.gatewayProxy,
                         onChanged: settings.usesZeroTrust
-                            ? (v) => controller
-                                .update((s) => s.copyWith(gatewayProxy: v))
+                            ? (v) => controller.update(
+                                (s) => s.copyWith(gatewayProxy: v),
+                              )
                             : null,
                       ),
                     ),

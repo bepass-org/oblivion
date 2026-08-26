@@ -110,8 +110,7 @@ class DesktopShell with TrayListener, WindowListener {
       TunnelStage.connected => ShellIcon.active,
       TunnelStage.connecting ||
       TunnelStage.validating ||
-      TunnelStage.disconnecting =>
-        ShellIcon.busy,
+      TunnelStage.disconnecting => ShellIcon.busy,
       TunnelStage.disconnected || TunnelStage.failed => ShellIcon.idle,
     };
 

@@ -85,9 +85,13 @@ class _SplitTunnelScreenState extends ConsumerState<SplitTunnelScreen> {
                       trailing: AppSwitch(
                         value: showSystem,
                         onChanged: enabled
-                            ? (value) => ref
-                                .read(_showSystemAppsProvider.notifier)
-                                .state = value
+                            ? (value) =>
+                                  ref
+                                          .read(
+                                            _showSystemAppsProvider.notifier,
+                                          )
+                                          .state =
+                                      value
                             : null,
                       ),
                     ),
@@ -111,8 +115,7 @@ class _SplitTunnelScreenState extends ConsumerState<SplitTunnelScreen> {
                       vertical: 11,
                     ),
                     style: AppText.rowTitle(palette.label),
-                    placeholderStyle:
-                        AppText.rowTitle(palette.labelSecondary),
+                    placeholderStyle: AppText.rowTitle(palette.labelSecondary),
                     decoration: BoxDecoration(
                       color: palette.card,
                       borderRadius: BorderRadius.circular(10),
@@ -137,14 +140,16 @@ class _SplitTunnelScreenState extends ConsumerState<SplitTunnelScreen> {
                       final visible = _query.isEmpty
                           ? list
                           : list
-                              .where(
-                                (app) =>
-                                    app.label.toLowerCase().contains(_query) ||
-                                    app.packageName
-                                        .toLowerCase()
-                                        .contains(_query),
-                              )
-                              .toList();
+                                .where(
+                                  (app) =>
+                                      app.label.toLowerCase().contains(
+                                        _query,
+                                      ) ||
+                                      app.packageName.toLowerCase().contains(
+                                        _query,
+                                      ),
+                                )
+                                .toList();
 
                       if (visible.isEmpty) {
                         return Center(
@@ -159,23 +164,20 @@ class _SplitTunnelScreenState extends ConsumerState<SplitTunnelScreen> {
                         itemCount: visible.length,
                         separatorBuilder: (_, _) => Padding(
                           padding: const EdgeInsetsDirectional.only(start: 16),
-                          child: Container(
-                            height: 1,
-                            color: palette.separator,
-                          ),
+                          child: Container(height: 1, color: palette.separator),
                         ),
                         itemBuilder: (context, index) {
                           final app = visible[index];
-                          final bypassed =
-                              settings.bypassedApps.contains(app.packageName);
+                          final bypassed = settings.bypassedApps.contains(
+                            app.packageName,
+                          );
 
                           return _AppRow(
                             app: app,
                             enabled: enabled,
                             bypassed: bypassed,
                             onChanged: (value) {
-                              final next =
-                                  settings.bypassedApps.toSet();
+                              final next = settings.bypassedApps.toSet();
                               if (value) {
                                 next.add(app.packageName);
                               } else {
@@ -248,10 +250,7 @@ class _AppRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          AppSwitch(
-            value: bypassed,
-            onChanged: enabled ? onChanged : null,
-          ),
+          AppSwitch(value: bypassed, onChanged: enabled ? onChanged : null),
         ],
       ),
     );

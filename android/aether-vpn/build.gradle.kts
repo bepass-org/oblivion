@@ -32,6 +32,13 @@ val selectedAbis: Map<String, String> = when {
 }
 
 val aetherCoreDir = file("../../aetherproject/aether")
+val psiphonCoreDir = file("../../../psiphon-tunnel-core")
+
+val goArchTargets = mapOf(
+    "arm64-v8a" to "arm64",
+    "armeabi-v7a" to "arm",
+    "x86_64" to "amd64",
+)
 val ndkRelease = (project.findProperty("ndkVersion") as String?)
     ?: System.getenv("ANDROID_NDK_VERSION")
     ?: "29.0.13846066"
@@ -251,5 +258,88 @@ val buildAetherCore by tasks.registering {
     }
 }
 
+val buildPsiphonCore by tasks.registering {
+    group = "aether"
+    description = "Cross compiles the Psiphon Go core for every Android ABI"
+
+    val outputDir = file("src/main/jniLibs")
+    outputs.dir(outputDir)
+    inputs.dir(File(psiphonCoreDir, "psiphon"))
+    inputs.file(File(psiphonCoreDir, "go.mod"))
+    inputs.property("abis", selectedAbis.keys.sorted().joinToString(","))
+
+    doLast {
+        if (!psiphonCoreDir.exists()) {
+            throw GradleException(
+                "Psiphon core sources not found at ${psiphonCoreDir.absolutePath}",
+            )
+        }
+
+        val (goStatus, goOutput) = runCommand(listOf("go", "version"), psiphonCoreDir)
+        if (goStatus != 0) {
+            throw GradleException("go is not usable, install the Go toolchain: $goOutput")
+        }
+
+        val ndkDir = resolveNdkDir()
+            ?: throw GradleException("Android NDK not found, set ANDROID_NDK_HOME")
+        val toolchainBin = File(ndkDir, "toolchains/llvm/prebuilt/${hostTag(ndkDir)}/bin")
+
+        val destRoot = outputDir.apply { mkdirs() }
+        val apiLevel = 24
+
+        logger.lifecycle("[psiphon] building for ${selectedAbis.keys.joinToString(", ")}")
+
+        for (abi in selectedAbis.keys) {
+            val goArch = goArchTargets[abi]
+                ?: throw GradleException("no Go architecture mapped for $abi")
+
+            val abiDir = File(destRoot, abi).apply { mkdirs() }
+            val produced = File(abiDir, "libpsiphon.so")
+
+            val clangName = when (abi) {
+                "armeabi-v7a" -> "armv7a-linux-androideabi$apiLevel-clang"
+                else -> "${abiTargets[abi]}$apiLevel-clang"
+            }
+            val clang = File(toolchainBin, clangName)
+            if (!clang.exists()) {
+                throw GradleException("NDK clang not found: ${clang.absolutePath}")
+            }
+
+            val environment = mutableMapOf(
+                "GOOS" to "android",
+                "GOARCH" to goArch,
+                "CGO_ENABLED" to "1",
+                "CC" to clang.absolutePath,
+                "ANDROID_NDK_HOME" to ndkDir.absolutePath,
+            )
+            if (goArch == "arm") {
+                environment["GOARM"] = "7"
+            }
+
+            logger.lifecycle("[psiphon] building the core for $abi ($goArch, api $apiLevel)")
+
+            val (status, output) = runCommand(
+                listOf(
+                    "go", "build",
+                    "-trimpath",
+                    "-ldflags", "-s -w -checklinkname=0",
+                    "-o", produced.absolutePath,
+                    "./ConsoleClient",
+                ),
+                psiphonCoreDir,
+                environment,
+            )
+            if (status != 0) {
+                throw GradleException("go build failed for $abi:\n$output")
+            }
+            if (!produced.exists()) {
+                throw GradleException(
+                    "psiphon binary missing for $abi: ${produced.absolutePath}",
+                )
+            }
+        }
+    }
+}
+
 tasks.matching { it.name.startsWith("merge") && it.name.endsWith("JniLibFolders") }
-    .configureEach { dependsOn(buildAetherCore) }
+    .configureEach { dependsOn(buildAetherCore, buildPsiphonCore) }

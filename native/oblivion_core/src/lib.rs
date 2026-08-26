@@ -1,14 +1,16 @@
 #[cfg(unix)]
-mod dns;
+pub mod dns;
 #[cfg(not(unix))]
 #[path = "dns_windows.rs"]
-mod dns;
-mod net;
+pub mod dns;
+pub mod helper;
+pub mod net;
 mod probe;
-mod settings;
+pub mod psiphon;
+pub mod settings;
 mod supervisor;
 mod sysproxy;
-mod tunnel;
+pub mod tunnel;
 
 use std::ffi::{c_char, CStr, CString};
 use std::path::PathBuf;
@@ -44,6 +46,17 @@ pub unsafe extern "C" fn oblivion_set_core_path(path: *const c_char) -> i32 {
     match read_string(path) {
         Some(value) => {
             supervisor().set_core_binary(PathBuf::from(value));
+            0
+        }
+        None => -1,
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn oblivion_set_psiphon_path(path: *const c_char) -> i32 {
+    match read_string(path) {
+        Some(value) => {
+            supervisor().set_psiphon_binary(PathBuf::from(value));
             0
         }
         None => -1,

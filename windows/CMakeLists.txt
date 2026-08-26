@@ -43,6 +43,9 @@ add_dependencies(${BINARY_NAME} oblivion_core_build)
 if(TARGET aether_core_build)
   add_dependencies(${BINARY_NAME} aether_core_build)
 endif()
+if(TARGET psiphon_core_build)
+  add_dependencies(${BINARY_NAME} psiphon_core_build)
+endif()
 
 
 include(flutter/generated_plugins.cmake)
@@ -82,11 +85,21 @@ if(OBLIVION_AETHER_BIN)
     COMPONENT Runtime)
 endif()
 
+if(OBLIVION_PSIPHON_BIN)
+  install(PROGRAMS "${OBLIVION_PSIPHON_BIN}"
+    DESTINATION "${CMAKE_INSTALL_PREFIX}"
+    COMPONENT Runtime)
+endif()
+
 if(OBLIVION_HEVTUN_FILES)
   install(PROGRAMS ${OBLIVION_HEVTUN_FILES}
     DESTINATION "${CMAKE_INSTALL_PREFIX}"
     COMPONENT Runtime)
 endif()
+
+install(PROGRAMS "${OBLIVION_HELPER_BUNDLED_BIN}"
+  DESTINATION "${CMAKE_INSTALL_PREFIX}"
+  COMPONENT Runtime)
 
 set(NATIVE_ASSETS_DIR "${PROJECT_BUILD_DIR}native_assets/windows/")
 install(DIRECTORY "${NATIVE_ASSETS_DIR}"

@@ -33,9 +33,9 @@ class SettingsGroup extends StatelessWidget {
             padding: const EdgeInsetsDirectional.fromSTEB(16, 24, 16, 8),
             child: Text(
               header!,
-              style: AppText.caption(palette.primary).copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+              style: AppText.caption(
+                palette.primary,
+              ).copyWith(fontWeight: FontWeight.w700),
             ),
           )
         else
@@ -172,8 +172,8 @@ class StatusDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      );
+    width: size,
+    height: size,
+    decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+  );
 }

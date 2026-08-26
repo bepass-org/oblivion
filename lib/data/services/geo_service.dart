@@ -58,11 +58,15 @@ class GeoService {
     for (final provider in _providers) {
       final host = provider.uri.host;
       try {
-        final response =
-            await _client.get(provider.uri, headers: const <String, String>{
-          'accept': 'application/json, text/plain, */*',
-          'user-agent': 'Oblivion/1.0',
-        }).timeout(_timeout);
+        final response = await _client
+            .get(
+              provider.uri,
+              headers: const <String, String>{
+                'accept': 'application/json, text/plain, */*',
+                'user-agent': 'Oblivion/1.0',
+              },
+            )
+            .timeout(_timeout);
         if (response.statusCode < 200 || response.statusCode > 299) {
           _report('origin lookup: $host returned ${response.statusCode}');
           continue;
@@ -119,7 +123,9 @@ class GeoService {
       client.close(force: true);
     }
 
-    _report('exit lookup: every provider failed on all $_roundsThroughProxy rounds');
+    _report(
+      'exit lookup: every provider failed on all $_roundsThroughProxy rounds',
+    );
     return null;
   }
 
@@ -144,7 +150,10 @@ class GeoService {
     request.followRedirects = true;
 
     final response = await request.close().timeout(_timeout);
-    final body = await response.transform(utf8.decoder).join().timeout(_timeout);
+    final body = await response
+        .transform(utf8.decoder)
+        .join()
+        .timeout(_timeout);
 
     if (response.statusCode < 200 || response.statusCode > 299) {
       throw HttpException('status ${response.statusCode}', uri: uri);
@@ -186,8 +195,9 @@ class GeoService {
     for (final line in body.split('\n')) {
       final separator = line.indexOf('=');
       if (separator <= 0) continue;
-      fields[line.substring(0, separator).trim()] =
-          line.substring(separator + 1).trim();
+      fields[line.substring(0, separator).trim()] = line
+          .substring(separator + 1)
+          .trim();
     }
 
     final ip = fields['ip'];

@@ -44,6 +44,7 @@ class DesktopTunnelBackend {
 
     final backend = DesktopTunnelBackend._(bindings);
     await backend._registerCoreBinary();
+    await backend._registerPsiphonBinary();
     backend._startPolling();
     return _instance = backend;
   }
@@ -54,23 +55,9 @@ class DesktopTunnelBackend {
   }
 
   Future<void> _registerCoreBinary() async {
-    final executableDir = File(Platform.resolvedExecutable).parent;
-    final binaryName = Platform.isWindows ? 'aether.exe' : 'aether';
-
-    final candidates = <String>[
-      '${executableDir.path}${Platform.pathSeparator}$binaryName',
-      '${executableDir.path}${Platform.pathSeparator}lib'
-          '${Platform.pathSeparator}$binaryName',
-    ];
-
-    try {
-      final support = await getApplicationSupportDirectory();
-      candidates.add(
-        '${support.path}${Platform.pathSeparator}$binaryName',
-      );
-    } catch (_) {
-      candidates.add(binaryName);
-    }
+    final candidates = await _binaryCandidates(
+      Platform.isWindows ? 'aether.exe' : 'aether',
+    );
 
     for (final candidate in candidates) {
       if (File(candidate).existsSync()) {
@@ -82,6 +69,40 @@ class DesktopTunnelBackend {
     _bindings.setCorePath(candidates.first);
   }
 
+  Future<void> _registerPsiphonBinary() async {
+    final candidates = await _binaryCandidates(
+      Platform.isWindows ? 'psiphon.exe' : 'psiphon',
+    );
+
+    for (final candidate in candidates) {
+      if (File(candidate).existsSync()) {
+        _bindings.setPsiphonPath(candidate);
+        return;
+      }
+    }
+
+    _bindings.setPsiphonPath(candidates.first);
+  }
+
+  Future<List<String>> _binaryCandidates(String binaryName) async {
+    final executableDir = File(Platform.resolvedExecutable).parent;
+
+    final candidates = <String>[
+      '${executableDir.path}${Platform.pathSeparator}$binaryName',
+      '${executableDir.path}${Platform.pathSeparator}lib'
+          '${Platform.pathSeparator}$binaryName',
+    ];
+
+    try {
+      final support = await getApplicationSupportDirectory();
+      candidates.add('${support.path}${Platform.pathSeparator}$binaryName');
+    } catch (_) {
+      candidates.add(binaryName);
+    }
+
+    return candidates;
+  }
+
   void _startPolling() {
     _poller?.cancel();
     _poller = Timer.periodic(const Duration(milliseconds: 700), (_) {
@@ -89,7 +110,9 @@ class DesktopTunnelBackend {
       if (statusJson.isNotEmpty && statusJson != _lastStatusJson) {
         _lastStatusJson = statusJson;
         final decoded = jsonDecode(statusJson);
-        if (decoded is Map) _statusController.add(TunnelStatus.fromMap(decoded));
+        if (decoded is Map) {
+          _statusController.add(TunnelStatus.fromMap(decoded));
+        }
       }
 
       final logs = _bindings.drainLogs();
@@ -132,8 +155,7 @@ class DesktopTunnelBackend {
 
   Future<void> disconnect() async => _bindings.disconnect();
 
-  Future<bool> submitLoginCode(String code) async =>
-      _bindings.submitLine(code);
+  Future<bool> submitLoginCode(String code) async => _bindings.submitLine(code);
 
   Future<TunnelStatus> currentStatus() async {
     final statusJson = _bindings.statusJson();

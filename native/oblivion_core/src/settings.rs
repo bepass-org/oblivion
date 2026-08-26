@@ -1,8 +1,22 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TunnelSettings {
+    #[serde(default = "default_core")]
+    pub core: String,
+    #[serde(default)]
+    pub psiphon_country: String,
+    #[serde(default = "default_psiphon_mode")]
+    pub psiphon_mode: String,
+    #[serde(default)]
+    pub psiphon_cdn_ips: String,
+    #[serde(default)]
+    pub psiphon_cdn_sni: String,
+    #[serde(default = "default_conduit_peers")]
+    pub psiphon_conduit_peers: String,
+    #[serde(default = "default_true")]
+    pub psiphon_reject_censored_peers: bool,
     #[serde(default = "default_protocol")]
     pub protocol: String,
     #[serde(default = "default_transport")]
@@ -35,12 +49,16 @@ pub struct TunnelSettings {
     pub fragment: bool,
     #[serde(default = "default_true")]
     pub quick_reconnect: bool,
+    #[serde(default = "default_true")]
+    pub fast_first_connect: bool,
     #[serde(default = "default_tunnel_interface")]
     pub tunnel_interface: String,
     #[serde(default = "default_mtu")]
     pub tunnel_mtu: u16,
     #[serde(default)]
     pub bypass_uid: Option<u32>,
+    #[serde(default)]
+    pub edge_endpoint: String,
     #[serde(default = "default_true")]
     pub override_dns: bool,
     #[serde(default)]
@@ -69,6 +87,18 @@ fn default_tunnel_interface() -> String {
 
 fn default_mtu() -> u16 {
     8500
+}
+
+fn default_core() -> String {
+    crate::psiphon::CORE_AETHER.to_string()
+}
+
+fn default_psiphon_mode() -> String {
+    crate::psiphon::MODE_AUTO.to_string()
+}
+
+fn default_conduit_peers() -> String {
+    crate::psiphon::CONDUIT_PEERS_AUTO.to_string()
 }
 
 fn default_protocol() -> String {
@@ -111,6 +141,18 @@ pub struct ConnectRequest {
 }
 
 impl TunnelSettings {
+    pub fn uses_psiphon(&self) -> bool {
+        self.core.trim().eq_ignore_ascii_case(crate::psiphon::CORE_PSIPHON)
+    }
+
+    pub fn core_name(&self) -> &'static str {
+        if self.uses_psiphon() {
+            crate::psiphon::CORE_PSIPHON
+        } else {
+            crate::psiphon::CORE_AETHER
+        }
+    }
+
     pub fn bind_host(&self) -> &'static str {
         if self.allow_lan {
             "0.0.0.0"
@@ -443,5 +485,77 @@ mod zero_trust_tests {
     fn the_gateway_proxy_needs_a_team_to_apply() {
         let env = settings_from(r#"{"gatewayProxy":true}"#).core_environment();
         assert!(value_of(&env, "AETHER_GATEWAY").is_none());
+    }
+}
+
+pub fn edge_ip(raw: &str) -> Option<std::net::IpAddr> {
+    let trimmed = raw.trim();
+    if trimmed.is_empty() {
+        return None;
+    }
+
+    if let Ok(address) = trimmed.parse::<std::net::SocketAddr>() {
+        return Some(address.ip());
+    }
+    if let Ok(ip) = trimmed.parse::<std::net::IpAddr>() {
+        return Some(ip);
+    }
+
+    if let Some(rest) = trimmed.strip_prefix('[') {
+        if let Some((host, _)) = rest.split_once(']') {
+            return host.parse::<std::net::IpAddr>().ok();
+        }
+    }
+
+    if let Some((host, _)) = trimmed.rsplit_once(':') {
+        if let Ok(ip) = host.parse::<std::net::IpAddr>() {
+            return Some(ip);
+        }
+    }
+
+    None
+}
+
+#[cfg(test)]
+mod edge_tests {
+    use super::edge_ip;
+
+    #[test]
+    fn an_endpoint_with_a_port_gives_up_its_address() {
+        assert_eq!(
+            edge_ip("162.159.195.1:2408").map(|ip| ip.to_string()),
+            Some("162.159.195.1".to_string())
+        );
+    }
+
+    #[test]
+    fn a_bare_address_is_accepted() {
+        assert_eq!(
+            edge_ip("162.159.195.1").map(|ip| ip.to_string()),
+            Some("162.159.195.1".to_string())
+        );
+    }
+
+    #[test]
+    fn a_bracketed_ipv6_endpoint_is_read() {
+        assert_eq!(
+            edge_ip("[2606:4700:d0::a29f:c001]:2408").map(|ip| ip.to_string()),
+            Some("2606:4700:d0::a29f:c001".to_string())
+        );
+    }
+
+    #[test]
+    fn a_bare_ipv6_address_is_accepted() {
+        assert_eq!(
+            edge_ip("2606:4700:d0::a29f:c001").map(|ip| ip.to_string()),
+            Some("2606:4700:d0::a29f:c001".to_string())
+        );
+    }
+
+    #[test]
+    fn nothing_usable_gives_nothing() {
+        for raw in ["", "   ", "not-an-address", "example.com:443"] {
+            assert_eq!(edge_ip(raw), None, "{raw}");
+        }
     }
 }

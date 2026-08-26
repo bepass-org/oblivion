@@ -34,8 +34,8 @@ class TunnelSettingsController extends StateNotifier<TunnelSettings> {
 
 final tunnelSettingsProvider =
     StateNotifierProvider<TunnelSettingsController, TunnelSettings>((ref) {
-  return TunnelSettingsController(ref.watch(settingsStoreProvider));
-});
+      return TunnelSettingsController(ref.watch(settingsStoreProvider));
+    });
 
 class GeoSnapshot {
   const GeoSnapshot({
@@ -151,8 +151,7 @@ class TunnelController extends StateNotifier<TunnelStatus> {
   Future<void> _syncInitialStatus() async {
     try {
       _onStatus(await _channel.currentStatus());
-    } catch (_) {
-    }
+    } catch (_) {}
   }
 
   void _onStatus(TunnelStatus status) {
@@ -234,8 +233,9 @@ class TunnelController extends StateNotifier<TunnelStatus> {
   }
 }
 
-final tunnelProvider =
-    StateNotifierProvider<TunnelController, TunnelStatus>((ref) {
+final tunnelProvider = StateNotifierProvider<TunnelController, TunnelStatus>((
+  ref,
+) {
   return TunnelController(ref, ref.watch(tunnelChannelProvider));
 });
 
@@ -257,8 +257,9 @@ class LoginCodeController extends StateNotifier<LoginCodeRequest?> {
     _subscription = _channel.logStream.listen(_onLine);
   }
 
-  static final RegExp _marker =
-      RegExp(r'login-code-needed\s+attempt=(\d+)\s+email=(\S+)');
+  static final RegExp _marker = RegExp(
+    r'login-code-needed\s+attempt=(\d+)\s+email=(\S+)',
+  );
 
   final TunnelChannel _channel;
   StreamSubscription<String>? _subscription;
@@ -292,8 +293,8 @@ class LoginCodeController extends StateNotifier<LoginCodeRequest?> {
 
 final loginCodeProvider =
     StateNotifierProvider<LoginCodeController, LoginCodeRequest?>((ref) {
-  return LoginCodeController(ref.watch(tunnelChannelProvider));
-});
+      return LoginCodeController(ref.watch(tunnelChannelProvider));
+    });
 
 final tunnelCapabilityProvider = FutureProvider<TunnelCapability>((ref) {
   return ref.watch(tunnelChannelProvider).capability();

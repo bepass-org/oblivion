@@ -6,16 +6,17 @@ enum TunnelStage {
   disconnecting,
   failed;
 
-  bool get isBusy => this == connecting || this == validating || this == disconnecting;
+  bool get isBusy =>
+      this == connecting || this == validating || this == disconnecting;
 
   bool get isActive => this == connected;
 
   bool get isIdle => this == disconnected || this == failed;
 
   static TunnelStage fromName(String? value) => values.firstWhere(
-        (e) => e.name == value,
-        orElse: () => TunnelStage.disconnected,
-      );
+    (e) => e.name == value,
+    orElse: () => TunnelStage.disconnected,
+  );
 }
 
 class TunnelStats {
@@ -110,16 +111,15 @@ class TunnelStatus {
 }
 
 class TunnelCapability {
-  const TunnelCapability({
-    required this.embedded,
-    required this.privileged,
-  });
+  const TunnelCapability({required this.embedded, required this.privileged});
 
   final bool embedded;
   final bool privileged;
 
   bool get ready => embedded && privileged;
 
-  static const TunnelCapability unknown =
-      TunnelCapability(embedded: false, privileged: false);
+  static const TunnelCapability unknown = TunnelCapability(
+    embedded: false,
+    privileged: false,
+  );
 }

@@ -64,10 +64,7 @@ class AboutScreen extends ConsumerWidget {
                 ),
                 SettingsGroup(
                   children: <Widget>[
-                    SettingsRow(
-                      title: l10n.aboutVersion,
-                      value: kAppVersion,
-                    ),
+                    SettingsRow(title: l10n.aboutVersion, value: kAppVersion),
                     SettingsRow(
                       title: l10n.aboutCore,
                       value: coreVersion.maybeWhen(
@@ -101,8 +98,8 @@ class AboutScreen extends ConsumerWidget {
 class _LinkIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Icon(
-        CupertinoIcons.arrow_up_right_square,
-        size: 17,
-        color: context.palette.primary,
-      );
+    CupertinoIcons.arrow_up_right_square,
+    size: 17,
+    color: context.palette.primary,
+  );
 }

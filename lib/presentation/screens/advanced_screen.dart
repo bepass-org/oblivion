@@ -14,25 +14,25 @@ class AdvancedScreen extends ConsumerWidget {
   const AdvancedScreen({super.key});
 
   String _ipTitle(L10n l10n, IpVersion value) => switch (value) {
-        IpVersion.v4 => l10n.ipV4,
-        IpVersion.v6 => l10n.ipV6,
-        IpVersion.dual => l10n.ipDual,
-      };
+    IpVersion.v4 => l10n.ipV4,
+    IpVersion.v6 => l10n.ipV6,
+    IpVersion.dual => l10n.ipDual,
+  };
 
   String _logTitle(L10n l10n, CoreLogLevel value) => switch (value) {
-        CoreLogLevel.error => l10n.logLevelError,
-        CoreLogLevel.warn => l10n.logLevelWarn,
-        CoreLogLevel.info => l10n.logLevelInfo,
-        CoreLogLevel.debug => l10n.logLevelDebug,
-        CoreLogLevel.trace => l10n.logLevelTrace,
-      };
+    CoreLogLevel.error => l10n.logLevelError,
+    CoreLogLevel.warn => l10n.logLevelWarn,
+    CoreLogLevel.info => l10n.logLevelInfo,
+    CoreLogLevel.debug => l10n.logLevelDebug,
+    CoreLogLevel.trace => l10n.logLevelTrace,
+  };
 
   String _perfTitle(L10n l10n, PerfProfile value) => switch (value) {
-        PerfProfile.auto => l10n.perfAuto,
-        PerfProfile.low => l10n.perfLow,
-        PerfProfile.medium => l10n.perfMedium,
-        PerfProfile.high => l10n.perfHigh,
-      };
+    PerfProfile.auto => l10n.perfAuto,
+    PerfProfile.low => l10n.perfLow,
+    PerfProfile.medium => l10n.perfMedium,
+    PerfProfile.high => l10n.perfHigh,
+  };
 
   String _ruleSummary(L10n l10n, String raw) {
     final count = TunnelSettings.routeRules(raw).length;
@@ -108,8 +108,9 @@ class AdvancedScreen extends ConsumerWidget {
                         multiline: true,
                         cancelLabel: l10n.cancel,
                         saveLabel: l10n.save,
-                        onSaved: (v) => controller
-                            .update((s) => s.copyWith(routeDirect: v)),
+                        onSaved: (v) => controller.update(
+                          (s) => s.copyWith(routeDirect: v),
+                        ),
                       ),
                     ),
                   ],
@@ -153,8 +154,9 @@ class AdvancedScreen extends ConsumerWidget {
                       subtitle: l10n.dnsOverrideDesc,
                       trailing: AppSwitch(
                         value: settings.overrideDns,
-                        onChanged: (v) =>
-                            controller.update((s) => s.copyWith(overrideDns: v)),
+                        onChanged: (v) => controller.update(
+                          (s) => s.copyWith(overrideDns: v),
+                        ),
                       ),
                     ),
                     SettingsRow(
@@ -200,8 +202,9 @@ class AdvancedScreen extends ConsumerWidget {
                         placeholder: '162.159.192.1:2408',
                         cancelLabel: l10n.cancel,
                         saveLabel: l10n.save,
-                        onSaved: (v) => controller
-                            .update((s) => s.copyWith(wgEndpoint: v.trim())),
+                        onSaved: (v) => controller.update(
+                          (s) => s.copyWith(wgEndpoint: v.trim()),
+                        ),
                       ),
                     ),
                     SettingsRow(
@@ -217,8 +220,9 @@ class AdvancedScreen extends ConsumerWidget {
                         initial: settings.h2Endpoint,
                         cancelLabel: l10n.cancel,
                         saveLabel: l10n.save,
-                        onSaved: (v) => controller
-                            .update((s) => s.copyWith(h2Endpoint: v.trim())),
+                        onSaved: (v) => controller.update(
+                          (s) => s.copyWith(h2Endpoint: v.trim()),
+                        ),
                       ),
                     ),
                     SettingsRow(
@@ -254,10 +258,10 @@ class AdvancedScreen extends ConsumerWidget {
                         value: settings.echMode == EchMode.auto,
                         onChanged: settings.isMasque
                             ? (v) => controller.update(
-                                  (s) => s.copyWith(
-                                    echMode: v ? EchMode.auto : EchMode.off,
-                                  ),
-                                )
+                                (s) => s.copyWith(
+                                  echMode: v ? EchMode.auto : EchMode.off,
+                                ),
+                              )
                             : null,
                       ),
                     ),
@@ -270,8 +274,9 @@ class AdvancedScreen extends ConsumerWidget {
                       trailing: AppSwitch(
                         value: settings.fragment,
                         onChanged: settings.usesHttp2
-                            ? (v) =>
-                                controller.update((s) => s.copyWith(fragment: v))
+                            ? (v) => controller.update(
+                                (s) => s.copyWith(fragment: v),
+                              )
                             : null,
                       ),
                     ),
@@ -330,8 +335,9 @@ class AdvancedScreen extends ConsumerWidget {
                         placeholder: 'X25519:P-256',
                         cancelLabel: l10n.cancel,
                         saveLabel: l10n.save,
-                        onSaved: (v) => controller
-                            .update((s) => s.copyWith(tlsGroups: v.trim())),
+                        onSaved: (v) => controller.update(
+                          (s) => s.copyWith(tlsGroups: v.trim()),
+                        ),
                       ),
                     ),
                   ],
@@ -340,13 +346,25 @@ class AdvancedScreen extends ConsumerWidget {
                 SettingsGroup(
                   header: l10n.sectionReliability,
                   children: <Widget>[
+                    if (settings.usesAether)
+                      SettingsRow(
+                        title: l10n.fastFirstConnect,
+                        subtitle: l10n.fastFirstConnectDesc,
+                        trailing: AppSwitch(
+                          value: settings.fastFirstConnect,
+                          onChanged: (v) => controller.update(
+                            (s) => s.copyWith(fastFirstConnect: v),
+                          ),
+                        ),
+                      ),
                     SettingsRow(
                       title: l10n.quickReconnect,
                       subtitle: l10n.quickReconnectDesc,
                       trailing: AppSwitch(
                         value: settings.quickReconnect,
-                        onChanged: (v) => controller
-                            .update((s) => s.copyWith(quickReconnect: v)),
+                        onChanged: (v) => controller.update(
+                          (s) => s.copyWith(quickReconnect: v),
+                        ),
                       ),
                     ),
                     SettingsRow(
@@ -413,8 +431,9 @@ class AdvancedScreen extends ConsumerWidget {
                         onSaved: (v) {
                           final secs = int.tryParse(v.trim());
                           if (secs == null || secs < 1 || secs > 120) return;
-                          controller
-                              .update((s) => s.copyWith(wgKeepalive: secs));
+                          controller.update(
+                            (s) => s.copyWith(wgKeepalive: secs),
+                          );
                         },
                       ),
                     ),
@@ -425,8 +444,9 @@ class AdvancedScreen extends ConsumerWidget {
                       trailing: AppSwitch(
                         value: settings.wgProfileRetry,
                         onChanged: settings.usesWireGuard
-                            ? (v) => controller
-                                .update((s) => s.copyWith(wgProfileRetry: v))
+                            ? (v) => controller.update(
+                                (s) => s.copyWith(wgProfileRetry: v),
+                              )
                             : null,
                       ),
                     ),
@@ -495,8 +515,9 @@ class AdvancedScreen extends ConsumerWidget {
                               ),
                             )
                             .toList(),
-                        onSelected: (v) => controller
-                            .update((s) => s.copyWith(perfProfile: v)),
+                        onSelected: (v) => controller.update(
+                          (s) => s.copyWith(perfProfile: v),
+                        ),
                       ),
                     ),
                   ],

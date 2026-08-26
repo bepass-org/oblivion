@@ -22,11 +22,11 @@ class InstalledApp {
   final Uint8List? icon;
 
   factory InstalledApp.fromMap(Map<dynamic, dynamic> map) => InstalledApp(
-        packageName: map['packageName'] as String,
-        label: (map['label'] as String?) ?? map['packageName'] as String,
-        isSystem: (map['isSystem'] as bool?) ?? false,
-        icon: map['icon'] as Uint8List?,
-      );
+    packageName: map['packageName'] as String,
+    label: (map['label'] as String?) ?? map['packageName'] as String,
+    isSystem: (map['isSystem'] as bool?) ?? false,
+    icon: map['icon'] as Uint8List?,
+  );
 }
 
 class TunnelChannel {
@@ -34,12 +34,15 @@ class TunnelChannel {
 
   static final TunnelChannel instance = TunnelChannel._();
 
-  static const MethodChannel _methods =
-      MethodChannel('org.bepass.oblivion/tunnel');
-  static const EventChannel _statusEvents =
-      EventChannel('org.bepass.oblivion/tunnel_status');
-  static const EventChannel _logEvents =
-      EventChannel('org.bepass.oblivion/tunnel_logs');
+  static const MethodChannel _methods = MethodChannel(
+    'org.bepass.oblivion/tunnel',
+  );
+  static const EventChannel _statusEvents = EventChannel(
+    'org.bepass.oblivion/tunnel_status',
+  );
+  static const EventChannel _logEvents = EventChannel(
+    'org.bepass.oblivion/tunnel_logs',
+  );
 
   Stream<TunnelStatus>? _statusStream;
   Stream<String>? _logStream;
@@ -203,8 +206,7 @@ class TunnelChannel {
 
   Future<bool> requestNotifications() async {
     if (!_usesNativeChannels) return true;
-    final granted =
-        await _methods.invokeMethod<bool>('requestNotifications');
+    final granted = await _methods.invokeMethod<bool>('requestNotifications');
     return granted ?? false;
   }
 
