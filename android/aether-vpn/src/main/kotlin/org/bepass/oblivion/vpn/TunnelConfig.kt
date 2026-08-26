@@ -98,6 +98,13 @@ data class TunnelConfig(
             fun int(key: String, fallback: Int) = (settings[key] as? Number)?.toInt() ?: fallback
 
             return TunnelConfig(
+                core = str("core", "aether"),
+                psiphonCountry = str("psiphonCountry"),
+                psiphonMode = str("psiphonMode", "auto"),
+                psiphonCdnIps = str("psiphonCdnIps"),
+                psiphonCdnSni = str("psiphonCdnSni"),
+                psiphonConduitPeers = str("psiphonConduitPeers", "auto"),
+                psiphonRejectCensoredPeers = bool("psiphonRejectCensoredPeers", true),
                 protocol = str("protocol", "masque"),
                 transport = str("transport", "h3"),
                 scanMode = str("scanMode", "balanced"),

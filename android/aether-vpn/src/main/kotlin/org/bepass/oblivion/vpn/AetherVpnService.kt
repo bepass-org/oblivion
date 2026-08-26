@@ -102,7 +102,14 @@ class AetherVpnService : VpnService() {
         val psiphonRunner = PsiphonCore(
             context = applicationContext,
             onLog = { line -> TunnelBus.log(line) },
-            onNotice = { notice -> handlePsiphonNotice(notice) },
+            onExit = { code ->
+                if (code != 0) {
+                    stopTunnel(TunnelStage.FAILED, "psiphon exited with code $code")
+                }
+            },
+            onSocksPort = { port -> TunnelBus.log("psiphon", "[+] socks proxy listening on $port") },
+            onTunnels = { count -> TunnelBus.log("psiphon", "[+] $count tunnel(s) established") },
+            onRouteBypass = { address -> TunnelBus.log("psiphon", "[+] server $address outside tunnel") },
         )
         psiphon = psiphonRunner
         psiphonRunner.start(configJson)
@@ -180,10 +187,6 @@ class AetherVpnService : VpnService() {
         }
 
         return org.json.JSONObject(config).toString()
-    }
-
-    private fun handlePsiphonNotice(notice: String) {
-        TunnelBus.log("psiphon", notice)
     }
 
     private fun coreEnvironment(target: TunnelConfig): Map<String, String> {
