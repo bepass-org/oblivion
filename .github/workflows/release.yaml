@@ -21,6 +21,13 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Checkout Psiphon core (fork with udpgw support)
+        uses: actions/checkout@v6
+        with:
+          repository: CluvexStudio/psiphon-tunnel-core
+          ref: shirokhorshid
+          path: psiphon-tunnel-core
+
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:

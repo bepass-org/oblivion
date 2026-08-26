@@ -195,6 +195,7 @@ pub struct Supervisor {
     resolver: Mutex<DnsOverride>,
     proxy: Mutex<SystemProxy>,
     observed_gateway: Mutex<Option<String>>,
+    tunnel_count: Mutex<u32>,
 }
 
 impl Supervisor {
@@ -217,6 +218,7 @@ impl Supervisor {
             resolver: Mutex::new(DnsOverride::new()),
             proxy: Mutex::new(SystemProxy::new()),
             observed_gateway: Mutex::new(None),
+            tunnel_count: Mutex::new(0),
         }
     }
 
@@ -355,6 +357,9 @@ impl Supervisor {
                         let mut snapshot = self.snapshot.lock().unwrap();
                         snapshot.gateway = Some(address.clone());
                     }
+                }
+                if let psiphon::Notice::Tunnels(count) = notice {
+                    *self.tunnel_count.lock().unwrap() = count;
                 }
                 if let Some(readable) = psiphon::describe(trimmed) {
                     self.log(format!("[{source}] {readable}"));
@@ -775,6 +780,20 @@ impl Supervisor {
 
             if probe::socks_reachable(settings.socks_port) {
                 self.log_from(self.active_core(), "[+] socks5 proxy answered a real request");
+                
+                // For psiphon tunnel mode, wait for the Tunnels notice with count > 0
+                // which means at least one tunnel is active
+                if settings.tunnel_mode() && settings.core == psiphon::CORE_PSIPHON {
+                    let start = Instant::now();
+                    let deadline = start + Duration::from_secs(3);
+                    while Instant::now() < deadline {
+                        if *self.tunnel_count.lock().unwrap() > 0 {
+                            break;
+                        }
+                        thread::sleep(Duration::from_millis(50));
+                    }
+                }
+                
                 let gateway = if settings.endpoint.trim().is_empty() {
                     None
                 } else {
@@ -979,6 +998,7 @@ impl Supervisor {
 
     fn edge_address(&self) -> Option<String> {
         let observed = self.observed_gateway.lock().unwrap().clone();
+        
         let raw = observed.or_else(|| {
             self.active
                 .lock()
@@ -987,7 +1007,10 @@ impl Supervisor {
                 .map(|settings| settings.endpoint.clone())
         })?;
 
-        crate::settings::edge_ip(&raw).map(|ip| ip.to_string())
+        // Remove regex escapes that psiphon adds (e.g., "1\.2\.3\.4" -> "1.2.3.4")
+        let unescaped = raw.replace(r"\.", ".");
+        
+        crate::settings::edge_ip(&unescaped).map(|ip| ip.to_string())
     }
 
     fn helper_paths(&self, settings: &TunnelSettings) -> helper::Paths {

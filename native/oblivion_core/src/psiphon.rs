@@ -86,9 +86,9 @@ const FASTLY_VERIFY_NAMES: [&str; 9] = [
     "githubusercontent.com",
 ];
 
-const DEFAULT_PROPAGATION_CHANNEL_ID: &str = "24BCA4EE20BEB92C";
+const DEFAULT_PROPAGATION_CHANNEL_ID: &str = "FFFFFFFFFFFFFFFF";
 
-const DEFAULT_SPONSOR_ID: &str = "721AE60D76700F5A";
+const DEFAULT_SPONSOR_ID: &str = "FFFFFFFFFFFFFFFF";
 
 const DEFAULT_SERVER_LIST_URL: &str =
     "https://s3.amazonaws.com//psiphon/web/mjr4-p23r-puwl/server_list_compressed";
@@ -633,8 +633,8 @@ mod tests {
         assert!(is_provisioned());
 
         let parsed = provisioned(r#"{"core":"psiphon"}"#);
-        assert_eq!(parsed["PropagationChannelId"], json!("24BCA4EE20BEB92C"));
-        assert_eq!(parsed["SponsorId"], json!("721AE60D76700F5A"));
+        assert_eq!(parsed["PropagationChannelId"], json!("FFFFFFFFFFFFFFFF"));
+        assert_eq!(parsed["SponsorId"], json!("FFFFFFFFFFFFFFFF"));
         assert!(parsed["RemoteServerListSignaturePublicKey"]
             .as_str()
             .unwrap()
@@ -833,5 +833,22 @@ mod tests {
             Some(Notice::Failure(_))
         ));
         assert_eq!(parse_notice("starting up"), None);
+    }
+
+    #[test]
+    fn defaults_are_set() {
+        let propagation = propagation_channel_id();
+        let sponsor = sponsor_id();
+        let url = server_list_url();
+        let key = server_list_signature_key();
+
+        assert!(!propagation.is_empty(), "propagation channel id should not be empty");
+        assert!(!sponsor.is_empty(), "sponsor id should not be empty");
+        assert!(!url.is_empty(), "server list url should not be empty");
+        assert!(!key.is_empty(), "signature key should not be empty");
+
+        // Check the warp-plus values
+        assert_eq!(propagation, "FFFFFFFFFFFFFFFF", "expected FFFFFFFFFFFFFFFF");
+        assert_eq!(sponsor, "FFFFFFFFFFFFFFFF", "expected FFFFFFFFFFFFFFFF");
     }
 }
