@@ -22,6 +22,7 @@ class AetherVpnService : VpnService() {
 
     private var tunInterface: ParcelFileDescriptor? = null
     private var core: AetherCore? = null
+    private var psiphon: PsiphonCore? = null
     private var config: TunnelConfig? = null
 
     private var validator: ScheduledExecutorService? = null
@@ -71,6 +72,14 @@ class AetherVpnService : VpnService() {
         publish(TunnelStage.CONNECTING, null)
         startForegroundNotification(TunnelStage.CONNECTING)
 
+        if (target.core == "psiphon") {
+            startPsiphonTunnel(target)
+        } else {
+            startAetherTunnel(target)
+        }
+    }
+
+    private fun startAetherTunnel(target: TunnelConfig) {
         val runner = AetherCore(
             context = applicationContext,
             onLog = { line -> TunnelBus.log(line) },
@@ -86,6 +95,95 @@ class AetherVpnService : VpnService() {
         if (!runner.isRunning) return
 
         scheduleValidation(target)
+    }
+
+    private fun startPsiphonTunnel(target: TunnelConfig) {
+        val configJson = buildPsiphonConfig(target)
+        val psiphonRunner = PsiphonCore(
+            context = applicationContext,
+            onLog = { line -> TunnelBus.log(line) },
+            onNotice = { notice -> handlePsiphonNotice(notice) },
+        )
+        psiphon = psiphonRunner
+        psiphonRunner.start(configJson)
+        if (!psiphonRunner.isRunning) return
+
+        scheduleValidation(target)
+    }
+
+    private fun buildPsiphonConfig(target: TunnelConfig): String {
+        val dataDir = File(cacheDir, "psiphon").apply { mkdirs() }
+        
+        val config = mapOf(
+            "PropagationChannelId" to "FFFFFFFFFFFFFFFF",
+            "SponsorId" to "FFFFFFFFFFFFFFFF",
+            "ClientPlatform" to "Android_oblivion",
+            "ClientVersion" to "1",
+            "DataRootDirectory" to dataDir.absolutePath,
+            "LocalSocksProxyPort" to target.socksPort,
+            "LocalHttpProxyPort" to target.httpProxyPort,
+            "EmitDiagnosticNotices" to true,
+            "EmitDiagnosticNetworkParameters" to true,
+            "EmitServerAlerts" to true,
+        ).toMutableMap<String, Any>()
+
+        if (target.allowLan) {
+            config["ListenInterface"] = "any"
+        }
+
+        val region = target.psiphonCountry.trim().uppercase()
+        if (region.isNotEmpty()) {
+            config["EgressRegion"] = region
+        }
+
+        if (target.psiphonMode != "conduit") {
+            config["FrontedMeekCDNScanUseBuiltInSpec"] = true
+            config["FrontedMeekDialOverridesProbability"] = 1.0
+        }
+
+        when (target.psiphonMode.trim()) {
+            "cdn" -> {
+                config["LimitTunnelProtocols"] = listOf(
+                    "FRONTED-MEEK-CDN-OSSH",
+                    "FRONTED-MEEK-CDN-HTTP-OSSH",
+                    "FRONTED-MEEK-CDN-QUIC-OSSH"
+                )
+                config["DisableTactics"] = true
+            }
+            "direct" -> {
+                config["LimitTunnelProtocols"] = listOf(
+                    "SSH", "OSSH", "TLS-OSSH", "UNFRONTED-MEEK-OSSH",
+                    "UNFRONTED-MEEK-HTTPS-OSSH", "UNFRONTED-MEEK-SESSION-TICKET-OSSH",
+                    "QUIC-OSSH", "SHADOWSOCKS-OSSH", "FRONTED-MEEK-OSSH",
+                    "FRONTED-MEEK-CDN-OSSH", "FRONTED-MEEK-HTTP-OSSH",
+                    "FRONTED-MEEK-CDN-HTTP-OSSH", "FRONTED-MEEK-QUIC-OSSH",
+                    "FRONTED-MEEK-CDN-QUIC-OSSH"
+                )
+                config["DisableTactics"] = true
+            }
+            "conduit" -> {
+                config["LimitTunnelProtocols"] = listOf(
+                    "INPROXY-WEBRTC-OSSH", "INPROXY-WEBRTC-TLS-OSSH",
+                    "INPROXY-WEBRTC-UNFRONTED-MEEK-OSSH",
+                    "INPROXY-WEBRTC-UNFRONTED-MEEK-HTTPS-OSSH",
+                    "INPROXY-WEBRTC-UNFRONTED-MEEK-SESSION-TICKET-OSSH",
+                    "INPROXY-WEBRTC-FRONTED-MEEK-OSSH",
+                    "INPROXY-WEBRTC-FRONTED-MEEK-HTTP-OSSH",
+                    "INPROXY-WEBRTC-QUIC-OSSH",
+                    "INPROXY-WEBRTC-SHADOWSOCKS-OSSH"
+                )
+                
+                if (target.psiphonRejectCensoredPeers) {
+                    config["InproxyRejectProxyCountryCodes"] = listOf("IR", "CN", "RU", "TM", "BY", "MM")
+                }
+            }
+        }
+
+        return org.json.JSONObject(config).toString()
+    }
+
+    private fun handlePsiphonNotice(notice: String) {
+        TunnelBus.log("psiphon", notice)
     }
 
     private fun coreEnvironment(target: TunnelConfig): Map<String, String> {
@@ -304,6 +402,8 @@ class AetherVpnService : VpnService() {
         TunnelBus.bindCodeSink(null)
         core?.stop()
         core = null
+        psiphon?.stop()
+        psiphon = null
 
         tunInterface?.let { descriptor ->
             runCatching { descriptor.close() }
