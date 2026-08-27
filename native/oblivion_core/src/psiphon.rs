@@ -630,6 +630,7 @@ mod tests {
 
     #[test]
     fn a_plain_build_can_already_reach_the_psiphon_network() {
+        let _guard = crate::testenv::lock();
         assert!(is_provisioned());
 
         let parsed = provisioned(r#"{"core":"psiphon"}"#);
@@ -643,6 +644,7 @@ mod tests {
 
     #[test]
     fn the_server_list_url_is_base64_encoded_as_a_transfer_url() {
+        let _guard = crate::testenv::lock();
         let parsed = provisioned(r#"{"core":"psiphon"}"#);
         let encoded = parsed["RemoteServerListURLs"][0]["URL"].as_str().unwrap();
         assert_eq!(
@@ -664,6 +666,7 @@ mod tests {
 
     #[test]
     fn identifiers_can_be_overridden_at_build_or_run_time() {
+        let _guard = crate::testenv::lock();
         std::env::set_var("OBLIVION_PSIPHON_SPONSOR_ID", "OVERRIDDEN");
         let parsed = provisioned(r#"{"core":"psiphon"}"#);
         assert_eq!(parsed["PropagationChannelId"], json!("FFFFFFFFFFFFFFFF"));
@@ -673,6 +676,7 @@ mod tests {
 
     #[test]
     fn auto_mode_does_not_limit_protocols_but_keeps_cdn_fronting() {
+        let _guard = crate::testenv::lock();
         let parsed = provisioned(r#"{"core":"psiphon"}"#);
         assert!(parsed.get("LimitTunnelProtocols").is_none());
         assert!(parsed.get("DisableTactics").is_none());
@@ -684,6 +688,7 @@ mod tests {
 
     #[test]
     fn cdn_mode_limits_protocols_and_disables_tactics() {
+        let _guard = crate::testenv::lock();
         let parsed = provisioned(r#"{"core":"psiphon","psiphonMode":"cdn"}"#);
         let protocols = parsed["LimitTunnelProtocols"].as_array().unwrap();
         assert_eq!(protocols.len(), 3);
@@ -692,6 +697,7 @@ mod tests {
 
     #[test]
     fn direct_mode_uses_the_direct_protocol_list() {
+        let _guard = crate::testenv::lock();
         let parsed = provisioned(r#"{"core":"psiphon","psiphonMode":"direct"}"#);
         let protocols = parsed["LimitTunnelProtocols"].as_array().unwrap();
         assert_eq!(protocols.len(), 14);
@@ -700,6 +706,7 @@ mod tests {
 
     #[test]
     fn conduit_mode_uses_inproxy_only_and_drops_cdn_fronting() {
+        let _guard = crate::testenv::lock();
         let parsed = provisioned(r#"{"core":"psiphon","psiphonMode":"conduit"}"#);
         let protocols = parsed["LimitTunnelProtocols"].as_array().unwrap();
         assert!(protocols
@@ -711,6 +718,7 @@ mod tests {
 
     #[test]
     fn public_conduit_peers_drop_the_compartment_id() {
+        let _guard = crate::testenv::lock();
         std::env::set_var("OBLIVION_PSIPHON_CONDUIT_COMPARTMENT_ID", "COMPARTMENT");
 
         let private = provisioned(r#"{"core":"psiphon","psiphonMode":"conduit"}"#);
@@ -729,6 +737,7 @@ mod tests {
 
     #[test]
     fn censored_peers_are_rejected_by_default() {
+        let _guard = crate::testenv::lock();
         let on = provisioned(r#"{"core":"psiphon","psiphonMode":"conduit"}"#);
         let codes = on["InproxyRejectProxyCountryCodes"].as_array().unwrap();
         assert!(codes.iter().any(|entry| entry == "IR"));
@@ -741,6 +750,7 @@ mod tests {
 
     #[test]
     fn custom_edge_addresses_become_a_scan_spec() {
+        let _guard = crate::testenv::lock();
         let parsed = provisioned(
             r#"{"core":"psiphon","psiphonMode":"cdn",
                 "psiphonCdnIps":"23.215.0.1, 104.16.0.0/13 bogus 999.1.1.1",
@@ -759,12 +769,14 @@ mod tests {
 
     #[test]
     fn without_custom_addresses_there_is_no_scan_spec() {
+        let _guard = crate::testenv::lock();
         let parsed = provisioned(r#"{"core":"psiphon","psiphonMode":"cdn"}"#);
         assert!(parsed.get("FrontedMeekCDNScanSpec").is_none());
     }
 
     #[test]
     fn a_custom_sni_replaces_the_edge_sni() {
+        let _guard = crate::testenv::lock();
         let parsed = provisioned(
             r#"{"core":"psiphon","psiphonCdnSni":"cdn.example.com"}"#,
         );
@@ -782,6 +794,7 @@ mod tests {
 
     #[test]
     fn an_edge_without_a_custom_sni_uses_its_own_address() {
+        let _guard = crate::testenv::lock();
         let parsed = provisioned(r#"{"core":"psiphon"}"#);
         let overrides = parsed["FrontedMeekDialOverrides"].as_array().unwrap();
         let edge = overrides
@@ -793,6 +806,7 @@ mod tests {
 
     #[test]
     fn a_country_becomes_an_egress_region() {
+        let _guard = crate::testenv::lock();
         let parsed = provisioned(r#"{"core":"psiphon","psiphonCountry":"de"}"#);
         assert_eq!(parsed["EgressRegion"], json!("DE"));
 

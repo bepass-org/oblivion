@@ -12,6 +12,9 @@ mod supervisor;
 mod sysproxy;
 pub mod tunnel;
 
+#[cfg(test)]
+pub(crate) mod testenv;
+
 use std::ffi::{c_char, CStr, CString};
 use std::path::PathBuf;
 use std::sync::{Arc, OnceLock};

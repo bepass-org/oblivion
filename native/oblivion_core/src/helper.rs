@@ -236,12 +236,14 @@ mod tests {
 
     #[test]
     fn a_uid_named_in_the_request_is_used_as_is() {
+        let _guard = crate::testenv::lock();
         clear_env();
         assert_eq!(invoking_uid(Some(1000)), Some(1000));
     }
 
     #[test]
     fn pkexec_tells_the_helper_who_asked() {
+        let _guard = crate::testenv::lock();
         clear_env();
         std::env::set_var("PKEXEC_UID", "1000");
         assert_eq!(invoking_uid(None), Some(1000));
@@ -250,6 +252,7 @@ mod tests {
 
     #[test]
     fn sudo_is_accepted_when_pkexec_is_absent() {
+        let _guard = crate::testenv::lock();
         clear_env();
         std::env::set_var("SUDO_UID", "1001");
         assert_eq!(invoking_uid(None), Some(1001));
@@ -258,6 +261,7 @@ mod tests {
 
     #[test]
     fn root_is_never_taken_as_the_account_to_bypass() {
+        let _guard = crate::testenv::lock();
         clear_env();
         std::env::set_var("PKEXEC_UID", "0");
         assert_eq!(
@@ -270,12 +274,14 @@ mod tests {
 
     #[test]
     fn an_unknown_account_is_reported_rather_than_guessed() {
+        let _guard = crate::testenv::lock();
         clear_env();
         assert_eq!(invoking_uid(None), None);
     }
 
     #[test]
     fn nonsense_in_the_environment_is_ignored() {
+        let _guard = crate::testenv::lock();
         clear_env();
         std::env::set_var("PKEXEC_UID", "not-a-uid");
         assert_eq!(invoking_uid(None), None);
