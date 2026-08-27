@@ -22,12 +22,14 @@ class AetherVpnService : VpnService() {
 
     private var tunInterface: ParcelFileDescriptor? = null
     private var core: AetherCore? = null
-    private var psiphon: PsiphonCore? = null
+    private var psiphon: PsiphonTunnelWrapper? = null
     private var config: TunnelConfig? = null
 
     private var validator: ScheduledExecutorService? = null
     private var statsPoller: ScheduledExecutorService? = null
     private var hevLogTail: ScheduledExecutorService? = null
+
+    private val control = Executors.newSingleThreadExecutor()
 
     private var connectedAtMillis = 0L
 
@@ -53,13 +55,14 @@ class AetherVpnService : VpnService() {
     }
 
     override fun onRevoke() {
-        TunnelBus.log("aether", "[-] vpn permission revoked by the system")
+        TunnelBus.log(logSource(), "[-] vpn permission revoked by the system")
         stopTunnel(TunnelStage.DISCONNECTED, "revoked")
         super.onRevoke()
     }
 
     override fun onDestroy() {
         teardown()
+        control.shutdown()
         TunnelBus.unbindService(this)
         super.onDestroy()
     }
@@ -72,7 +75,7 @@ class AetherVpnService : VpnService() {
         publish(TunnelStage.CONNECTING, null)
         startForegroundNotification(TunnelStage.CONNECTING)
 
-        if (target.core == "psiphon") {
+        if (target.core == CORE_PSIPHON) {
             startPsiphonTunnel(target)
         } else {
             startAetherTunnel(target)
@@ -98,95 +101,35 @@ class AetherVpnService : VpnService() {
     }
 
     private fun startPsiphonTunnel(target: TunnelConfig) {
-        val configJson = buildPsiphonConfig(target)
-        val psiphonRunner = PsiphonCore(
-            context = applicationContext,
+        val dataDir = File(filesDir, PSIPHON_DATA_DIR)
+        if (!dataDir.exists() && !dataDir.mkdirs()) {
+            stopTunnel(TunnelStage.FAILED, "could not prepare the psiphon data directory")
+            return
+        }
+
+        val configJson = runCatching { PsiphonConfig.build(target, dataDir) }.getOrElse { error ->
+            stopTunnel(TunnelStage.FAILED, "could not build the psiphon config: ${error.message}")
+            return
+        }
+
+        val psiphonRunner = PsiphonTunnelWrapper(
+            service = this,
+            configJson = configJson,
             onLog = { line -> TunnelBus.log(line) },
-            onExit = { code ->
-                if (code != 0) {
-                    stopTunnel(TunnelStage.FAILED, "psiphon exited with code $code")
+            onStopped = { reason ->
+                control.execute {
+                    stopTunnel(
+                        TunnelStage.FAILED,
+                        reason ?: "the psiphon core stopped before the tunnel came up",
+                    )
                 }
             },
-            onSocksPort = { port -> TunnelBus.log("psiphon", "[+] socks proxy listening on $port") },
-            onTunnels = { count -> TunnelBus.log("psiphon", "[+] $count tunnel(s) established") },
-            onRouteBypass = { address -> TunnelBus.log("psiphon", "[+] server $address outside tunnel") },
         )
         psiphon = psiphonRunner
-        psiphonRunner.start(configJson)
+        psiphonRunner.start()
         if (!psiphonRunner.isRunning) return
 
         scheduleValidation(target)
-    }
-
-    private fun buildPsiphonConfig(target: TunnelConfig): String {
-        val dataDir = File(cacheDir, "psiphon").apply { mkdirs() }
-        
-        val config = mapOf(
-            "PropagationChannelId" to "FFFFFFFFFFFFFFFF",
-            "SponsorId" to "FFFFFFFFFFFFFFFF",
-            "ClientPlatform" to "Android_oblivion",
-            "ClientVersion" to "1",
-            "DataRootDirectory" to dataDir.absolutePath,
-            "LocalSocksProxyPort" to target.socksPort,
-            "LocalHttpProxyPort" to target.httpProxyPort,
-            "EmitDiagnosticNotices" to true,
-            "EmitDiagnosticNetworkParameters" to true,
-            "EmitServerAlerts" to true,
-        ).toMutableMap<String, Any>()
-
-        if (target.allowLan) {
-            config["ListenInterface"] = "any"
-        }
-
-        val region = target.psiphonCountry.trim().uppercase()
-        if (region.isNotEmpty()) {
-            config["EgressRegion"] = region
-        }
-
-        if (target.psiphonMode != "conduit") {
-            config["FrontedMeekCDNScanUseBuiltInSpec"] = true
-            config["FrontedMeekDialOverridesProbability"] = 1.0
-        }
-
-        when (target.psiphonMode.trim()) {
-            "cdn" -> {
-                config["LimitTunnelProtocols"] = listOf(
-                    "FRONTED-MEEK-CDN-OSSH",
-                    "FRONTED-MEEK-CDN-HTTP-OSSH",
-                    "FRONTED-MEEK-CDN-QUIC-OSSH"
-                )
-                config["DisableTactics"] = true
-            }
-            "direct" -> {
-                config["LimitTunnelProtocols"] = listOf(
-                    "SSH", "OSSH", "TLS-OSSH", "UNFRONTED-MEEK-OSSH",
-                    "UNFRONTED-MEEK-HTTPS-OSSH", "UNFRONTED-MEEK-SESSION-TICKET-OSSH",
-                    "QUIC-OSSH", "SHADOWSOCKS-OSSH", "FRONTED-MEEK-OSSH",
-                    "FRONTED-MEEK-CDN-OSSH", "FRONTED-MEEK-HTTP-OSSH",
-                    "FRONTED-MEEK-CDN-HTTP-OSSH", "FRONTED-MEEK-QUIC-OSSH",
-                    "FRONTED-MEEK-CDN-QUIC-OSSH"
-                )
-                config["DisableTactics"] = true
-            }
-            "conduit" -> {
-                config["LimitTunnelProtocols"] = listOf(
-                    "INPROXY-WEBRTC-OSSH", "INPROXY-WEBRTC-TLS-OSSH",
-                    "INPROXY-WEBRTC-UNFRONTED-MEEK-OSSH",
-                    "INPROXY-WEBRTC-UNFRONTED-MEEK-HTTPS-OSSH",
-                    "INPROXY-WEBRTC-UNFRONTED-MEEK-SESSION-TICKET-OSSH",
-                    "INPROXY-WEBRTC-FRONTED-MEEK-OSSH",
-                    "INPROXY-WEBRTC-FRONTED-MEEK-HTTP-OSSH",
-                    "INPROXY-WEBRTC-QUIC-OSSH",
-                    "INPROXY-WEBRTC-SHADOWSOCKS-OSSH"
-                )
-                
-                if (target.psiphonRejectCensoredPeers) {
-                    config["InproxyRejectProxyCountryCodes"] = listOf("IR", "CN", "RU", "TM", "BY", "MM")
-                }
-            }
-        }
-
-        return org.json.JSONObject(config).toString()
     }
 
     private fun coreEnvironment(target: TunnelConfig): Map<String, String> {
@@ -230,21 +173,39 @@ class AetherVpnService : VpnService() {
         return environment
     }
 
+    private fun logSource(): String =
+        config?.core?.trim()?.takeIf { it.isNotEmpty() } ?: CORE_AETHER
+
+    private fun activeCoreIsRunning(): Boolean = when {
+        psiphon != null -> psiphon?.isRunning == true
+        else -> core?.isRunning == true
+    }
+
     private fun scheduleValidation(target: TunnelConfig) {
         val scheduler = Executors.newSingleThreadScheduledExecutor()
         validator = scheduler
 
-        val budgetMs = validationBudgetMs(target.scanMode)
+        val usesPsiphon = target.core == CORE_PSIPHON
+        val budgetMs = if (usesPsiphon) {
+            PSIPHON_VALIDATION_BUDGET_MS
+        } else {
+            validationBudgetMs(target.scanMode)
+        }
         val deadline = System.currentTimeMillis() + budgetMs
         var announcedValidating = false
+        val budgetSeconds = budgetMs / 1000
 
         TunnelBus.log(
-            "aether",
-            "[*] waiting up to ${budgetMs / 1000}s for the tunnel on scan mode ${target.scanMode}",
+            logSource(),
+            if (usesPsiphon) {
+                "[*] waiting up to ${budgetSeconds}s for the tunnel"
+            } else {
+                "[*] waiting up to ${budgetSeconds}s for the tunnel on scan mode ${target.scanMode}"
+            },
         )
 
         scheduler.scheduleWithFixedDelay({
-            if (core?.isRunning != true) {
+            if (!activeCoreIsRunning()) {
                 stopTunnel(TunnelStage.FAILED, "the core stopped before the tunnel came up")
                 return@scheduleWithFixedDelay
             }
@@ -252,7 +213,11 @@ class AetherVpnService : VpnService() {
             if (System.currentTimeMillis() > deadline) {
                 stopTunnel(
                     TunnelStage.FAILED,
-                    "no working tunnel after ${budgetMs / 1000}s on scan mode ${target.scanMode}",
+                    if (usesPsiphon) {
+                        "no working tunnel after ${budgetSeconds}s"
+                    } else {
+                        "no working tunnel after ${budgetSeconds}s on scan mode ${target.scanMode}"
+                    },
                 )
                 return@scheduleWithFixedDelay
             }
@@ -264,7 +229,7 @@ class AetherVpnService : VpnService() {
 
             if (!SocksProbe.reachable(target.socksPort)) return@scheduleWithFixedDelay
 
-            TunnelBus.log("aether", "[+] socks5 proxy answered a real request")
+            TunnelBus.log(logSource(), "[+] socks5 proxy answered a real request")
             if (target.proxyOnly) {
                 onTunnelReady(target)
             } else if (establishTun(target)) {
@@ -307,7 +272,7 @@ class AetherVpnService : VpnService() {
                 try {
                     builder.addDisallowedApplication(bypassed)
                 } catch (_: PackageManager.NameNotFoundException) {
-                    TunnelBus.log("aether", "[-] split tunnel skipped missing package $bypassed")
+                    TunnelBus.log(logSource(), "[-] split tunnel skipped missing package $bypassed")
                 }
             }
         }
@@ -318,7 +283,7 @@ class AetherVpnService : VpnService() {
 
         val descriptor = runCatching { builder.establish() }.getOrNull()
         if (descriptor == null) {
-            TunnelBus.log("aether", "[-] the system refused to create the tun interface")
+            TunnelBus.log(logSource(), "[-] the system refused to create the tun interface")
             return false
         }
         tunInterface = descriptor
@@ -333,7 +298,7 @@ class AetherVpnService : VpnService() {
         val started = runCatching {
             TProxyService.start(configFile.absolutePath, descriptor.fd)
         }.getOrElse { error ->
-            TunnelBus.log("aether", "[-] hev tunnel failed to start: ${error.message}")
+            TunnelBus.log(logSource(), "[-] hev tunnel failed to start: ${error.message}")
             false
         }
 
@@ -344,7 +309,7 @@ class AetherVpnService : VpnService() {
         }
 
         startHevLogTail(hevLog)
-        TunnelBus.log("aether", "[+] tun interface up, routing through 127.0.0.1:${target.socksPort}")
+        TunnelBus.log(logSource(), "[+] tun interface up, routing through 127.0.0.1:${target.socksPort}")
         return true
     }
 
@@ -384,7 +349,7 @@ class AetherVpnService : VpnService() {
 
     private fun stopTunnel(stage: TunnelStage, message: String?) {
         if (stage == TunnelStage.FAILED && message != null) {
-            TunnelBus.log("aether", "[-] $message")
+            TunnelBus.log(logSource(), "[-] $message")
         }
         publish(TunnelStage.DISCONNECTING, message)
         teardown()
@@ -546,6 +511,10 @@ class AetherVpnService : VpnService() {
         private const val SESSION_NAME = "Oblivion"
         private const val HEV_CONFIG_NAME = "hev-tunnel.yml"
         private const val HEV_LOG_NAME = "hev-tunnel.log"
+        private const val CORE_AETHER = "aether"
+        private const val CORE_PSIPHON = "psiphon"
+        private const val PSIPHON_DATA_DIR = "psiphon"
+        private const val PSIPHON_VALIDATION_BUDGET_MS = 180_000L
 
 
         private const val POST_SCAN_HEADROOM_MS = 60_000L
