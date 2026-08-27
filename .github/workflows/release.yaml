@@ -10,6 +10,9 @@ permissions:
 
 env:
   FLUTTER_VERSION: "3.44.3"
+  PSIPHON_REF: shirokhorshid
+  GO_VERSION: "1.26"
+  GOMOBILE_VERSION: v0.0.0-20260821190718-4776eadac327
 
 jobs:
   android:
@@ -25,11 +28,16 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: CluvexStudio/psiphon-tunnel-core
-          ref: shirokhorshid
+          ref: ${{ env.PSIPHON_REF }}
           path: psiphon-temp
 
       - name: Move Psiphon to correct location for Android build
-        run: mv psiphon-temp ../psiphon-tunnel-core
+        id: psiphon
+        run: |
+          mv psiphon-temp ../psiphon-tunnel-core
+          sha=$(git -C ../psiphon-tunnel-core rev-parse HEAD)
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "psiphon fork at $sha"
 
       - name: Set up JDK
         uses: actions/setup-java@v5
@@ -92,6 +100,26 @@ jobs:
             echo "keyPassword=$KEY_PASSWORD"
           } > key.properties
 
+      - name: Cache the psiphon library
+        id: psiphon-aar
+        uses: actions/cache@v4
+        with:
+          path: android/psiphon/ca.psiphon.aar
+          key: psiphon-aar-release-${{ steps.psiphon.outputs.sha }}-api35-16kb
+
+      - name: Set up Go
+        if: steps.psiphon-aar.outputs.cache-hit != 'true'
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: ../psiphon-tunnel-core/go.sum
+
+      - name: Build the psiphon library
+        if: steps.psiphon-aar.outputs.cache-hit != 'true'
+        env:
+          PSIPHON_TARGETS: android/arm64,android/arm,android/amd64
+        run: tools/build-psiphon-aar.sh
+
       - name: Fetch dependencies
         run: flutter pub get
 
@@ -100,6 +128,20 @@ jobs:
 
       - name: Build the universal APK
         run: flutter build apk --release
+
+      - name: Check that both cores rode along
+        run: |
+          failed=0
+          for abi in arm64-v8a armeabi-v7a x86_64; do
+            apk="build/app/outputs/flutter-apk/app-$abi-release.apk"
+            for library in libaether.so libgojni.so; do
+              if ! unzip -l "$apk" | grep -q "lib/$abi/$library"; then
+                echo "::error::$abi apk carries no $library"
+                failed=1
+              fi
+            done
+          done
+          exit $failed
 
       - name: Collect the APKs
         run: |
