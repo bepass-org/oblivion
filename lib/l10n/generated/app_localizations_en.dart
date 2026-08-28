@@ -499,7 +499,10 @@ class L10nEn extends L10n {
       'Oblivion is a free and open source app for reaching the internet without censorship. It costs nothing, and selling it or using it commercially is not allowed.';
 
   @override
-  String get aboutCore => 'Core engine';
+  String get aboutCore => 'Aether engine';
+
+  @override
+  String get aboutPsiphonCore => 'Psiphon engine';
 
   @override
   String get aboutVersion => 'Version';

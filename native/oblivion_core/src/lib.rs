@@ -129,6 +129,11 @@ pub extern "C" fn oblivion_core_version() -> *mut c_char {
 }
 
 #[no_mangle]
+pub extern "C" fn oblivion_psiphon_version() -> *mut c_char {
+    into_c_string(supervisor().psiphon_version())
+}
+
+#[no_mangle]
 pub extern "C" fn oblivion_tunnel_available() -> i32 {
     if supervisor().tunnel_device_available() {
         1

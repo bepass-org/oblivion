@@ -58,6 +58,10 @@ class DesktopCoreBindings {
           .lookupFunction<_StringGetterNative, _StringGetterDart>(
             'oblivion_core_version',
           ),
+      _psiphonVersion = library
+          .lookupFunction<_StringGetterNative, _StringGetterDart>(
+            'oblivion_psiphon_version',
+          ),
       _tunnelAvailable = library
           .lookupFunction<_VoidReturnsIntNative, _VoidReturnsIntDart>(
             'oblivion_tunnel_available',
@@ -80,6 +84,7 @@ class DesktopCoreBindings {
   final _StringGetterDart _readLogs;
   final _VoidReturnsIntDart _clearLogs;
   final _StringGetterDart _coreVersion;
+  final _StringGetterDart _psiphonVersion;
   final _VoidReturnsIntDart _tunnelAvailable;
   final _VoidReturnsIntDart _isPrivileged;
   final _FreeStringDart _freeString;
@@ -186,6 +191,11 @@ class DesktopCoreBindings {
 
   String coreVersion() {
     final value = _consume(_coreVersion());
+    return value.isEmpty ? 'unavailable' : value;
+  }
+
+  String psiphonVersion() {
+    final value = _consume(_psiphonVersion());
     return value.isEmpty ? 'unavailable' : value;
   }
 

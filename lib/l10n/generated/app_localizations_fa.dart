@@ -500,7 +500,10 @@ class L10nFa extends L10n {
       'اوبلیوین یک برنامه آزاد و متن‌باز برای رسیدن به اینترنت بدون سانسور است. رایگان است و فروش یا استفاده تجاری از آن اجازه ندارد.';
 
   @override
-  String get aboutCore => 'هسته';
+  String get aboutCore => 'هسته ایتر';
+
+  @override
+  String get aboutPsiphonCore => 'هسته سایفون';
 
   @override
   String get aboutVersion => 'نسخه';

@@ -1,13 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Builds ca.psiphon.aar from the psiphon-tunnel-core fork and drops it where the
-# :psiphon gradle module expects it.
-#
-# The fork vendors its dependencies and pins golang.org/x/* deliberately, so the
-# golang.org/x/mobile requirement that gomobile needs is added to the checkout at
-# build time instead of being committed to the fork.
-
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd "$here/.." && pwd)"
 
@@ -28,8 +21,6 @@ if [ -z "${ANDROID_NDK_HOME:-}" ] && [ -z "${ANDROID_NDK_ROOT:-}" ]; then
   exit 1
 fi
 
-# make.bash compiles PsiphonTunnel.java against android.jar, so it needs the sdk
-# and a platform version. Neither is exported by default on CI runners.
 android_home="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
 if [ -z "$android_home" ] || [ ! -d "$android_home/platforms" ]; then
   echo "set ANDROID_HOME to an android sdk that has a platform installed" >&2
@@ -38,6 +29,14 @@ fi
 export ANDROID_HOME="$android_home"
 
 platform="${ANDROID_PLATFORM_VERSION:-}"
+if [ -z "$platform" ]; then
+  for candidate in $(ls "$android_home/platforms" |
+    sed -n 's/^android-\([0-9]\{1,\}\)$/\1/p' | sort -n); do
+    if [ -f "$android_home/platforms/android-$candidate/android.jar" ]; then
+      platform="$candidate"
+    fi
+  done
+fi
 if [ -z "$platform" ]; then
   for candidate in $(ls "$android_home/platforms" | sed -n 's/^android-//p' | sort -V); do
     if [ -f "$android_home/platforms/android-$candidate/android.jar" ]; then
@@ -64,8 +63,6 @@ export PATH="$(go env GOPATH)/bin:$PATH"
 
 cd "$psiphon_dir"
 
-# The tool directive below rewrites go.mod, so keep a copy and put it back on the
-# way out. A local checkout of the fork should not be left dirty by a build.
 manifests="$(mktemp -d)"
 cp go.mod go.sum "$manifests/"
 
@@ -76,13 +73,8 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# The fork ships a vendor directory, which go would otherwise prefer, and
-# golang.org/x/mobile is deliberately not vendored there. Resolving from the
-# module cache keeps the fork's vendored tree untouched.
 export GOFLAGS=-mod=mod
 
-# gomobile refuses to run unless the module records x/mobile as a tool
-# dependency, because the code it generates imports golang.org/x/mobile/bind.
 go get -tool "golang.org/x/mobile/cmd/gobind@$gomobile_version"
 
 gomobile init

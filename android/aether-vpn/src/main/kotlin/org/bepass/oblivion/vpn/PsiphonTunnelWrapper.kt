@@ -5,6 +5,8 @@ import android.net.VpnService
 import ca.psiphon.PsiphonTunnel
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
+import org.json.JSONObject
+import psi.Psi
 
 class PsiphonTunnelWrapper(
     private val service: VpnService,
@@ -124,5 +126,21 @@ class PsiphonTunnelWrapper(
             onLog("[psiphon] [-] $message")
             onStopped(message)
         }
+    }
+
+    companion object {
+        fun version(): String {
+            val info = runCatching { JSONObject(Psi.getBuildInfo()) }.getOrNull()
+                ?: return UNAVAILABLE
+
+            val revision = info.optString("buildRev").trim()
+            return if (revision.isEmpty()) {
+                "psiphon ($UNAVAILABLE revision)"
+            } else {
+                "psiphon $revision"
+            }
+        }
+
+        private const val UNAVAILABLE = "unavailable"
     }
 }
