@@ -44,7 +44,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache cargo
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -113,7 +113,7 @@ jobs:
           targets: aarch64-linux-android
 
       - name: Cache cargo
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -137,17 +137,17 @@ jobs:
 
       - name: Cache the psiphon library
         id: psiphon-aar
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: android/psiphon/ca.psiphon.aar
           key: psiphon-aar-arm64-${{ steps.psiphon.outputs.sha }}-api35-16kb
 
       - name: Set up Go
         if: steps.psiphon-aar.outputs.cache-hit != 'true'
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version: ${{ env.GO_VERSION }}
-          cache-dependency-path: ../psiphon-tunnel-core/go.sum
+          cache: false
 
       - name: Build the psiphon library
         if: steps.psiphon-aar.outputs.cache-hit != 'true'
@@ -198,7 +198,7 @@ jobs:
           done
           exit $failed
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: oblivion-android-arm64-debug
           path: build/app/outputs/flutter-apk/app-debug.apk
@@ -224,10 +224,10 @@ jobs:
         run: mv psiphon-temp ../psiphon-tunnel-core
 
       - name: Set up Go for Psiphon build
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v7
         with:
-          go-version: '1.23'
-          cache-dependency-path: ../psiphon-tunnel-core/go.sum
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
 
       - name: Install the build dependencies
         run: |
@@ -245,7 +245,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache cargo
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -287,7 +287,7 @@ jobs:
           done
           echo "hev-socks5-tunnel is linked, tunnel mode is available"
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: oblivion-linux-x64-debug
           path: build/linux/x64/debug/bundle
@@ -313,10 +313,10 @@ jobs:
         run: mv psiphon-temp ../psiphon-tunnel-core
 
       - name: Set up Go for Psiphon build
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v7
         with:
-          go-version: '1.23'
-          cache-dependency-path: ../psiphon-tunnel-core/go.sum
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -328,10 +328,19 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install NASM, needed to build BoringSSL
-        uses: ilammy/setup-nasm@v1
+        shell: pwsh
+        run: |
+          choco install nasm --no-progress -y
+          $nasm = Join-Path $env:ProgramFiles 'NASM'
+          if (-not (Test-Path (Join-Path $nasm 'nasm.exe'))) {
+            Write-Error "nasm.exe was not installed under $nasm"
+            exit 1
+          }
+          $nasm | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+          & (Join-Path $nasm 'nasm.exe') -v
 
       - name: Cache cargo
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -388,7 +397,7 @@ jobs:
           if ($missing) { Get-ChildItem $runner; exit 1 }
           Write-Output "the app, the core, the bridge and the tunnel helper are bundled"
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: oblivion-windows-x64-debug
           path: build/windows/x64/runner/Debug

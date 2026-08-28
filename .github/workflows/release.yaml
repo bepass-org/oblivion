@@ -57,7 +57,7 @@ jobs:
           targets: aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android
 
       - name: Cache cargo
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -102,17 +102,17 @@ jobs:
 
       - name: Cache the psiphon library
         id: psiphon-aar
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: android/psiphon/ca.psiphon.aar
           key: psiphon-aar-release-${{ steps.psiphon.outputs.sha }}-api35-16kb
 
       - name: Set up Go
         if: steps.psiphon-aar.outputs.cache-hit != 'true'
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version: ${{ env.GO_VERSION }}
-          cache-dependency-path: ../psiphon-tunnel-core/go.sum
+          cache: false
 
       - name: Build the psiphon library
         if: steps.psiphon-aar.outputs.cache-hit != 'true'
@@ -166,22 +166,22 @@ jobs:
         working-directory: android
         run: rm -f oblivion-release.jks key.properties
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: oblivion-android-universal
           path: dist/oblivion-android-universal.apk
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: oblivion-android-arm64-v8a
           path: dist/oblivion-android-arm64-v8a.apk
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: oblivion-android-armeabi-v7a
           path: dist/oblivion-android-armeabi-v7a.apk
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: oblivion-android-x86_64
           path: dist/oblivion-android-x86_64.apk
@@ -214,10 +214,10 @@ jobs:
         run: mv psiphon-temp ../psiphon-tunnel-core
 
       - name: Set up Go for Psiphon build
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v7
         with:
-          go-version: '1.23'
-          cache-dependency-path: ../psiphon-tunnel-core/go.sum
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
 
       - name: Install the build dependencies
         run: |
@@ -246,7 +246,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache cargo
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -280,7 +280,7 @@ jobs:
           echo "the archive holds:"
           tar -tzf "dist/oblivion-linux-${{ matrix.arch }}.tar.gz" | head -5
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: oblivion-linux-${{ matrix.arch }}
           path: dist/*.tar.gz
@@ -314,10 +314,10 @@ jobs:
         run: mv psiphon-temp ../psiphon-tunnel-core
 
       - name: Set up Go for Psiphon build
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v7
         with:
-          go-version: '1.23'
-          cache-dependency-path: ../psiphon-tunnel-core/go.sum
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
 
       - name: Set up Flutter
         if: matrix.arch == 'x64'
@@ -341,10 +341,19 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install NASM, needed to build BoringSSL
-        uses: ilammy/setup-nasm@v1
+        shell: pwsh
+        run: |
+          choco install nasm --no-progress -y
+          $nasm = Join-Path $env:ProgramFiles 'NASM'
+          if (-not (Test-Path (Join-Path $nasm 'nasm.exe'))) {
+            Write-Error "nasm.exe was not installed under $nasm"
+            exit 1
+          }
+          $nasm | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+          & (Join-Path $nasm 'nasm.exe') -v
 
       - name: Cache cargo
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -409,7 +418,7 @@ jobs:
                            -DestinationPath "dist/oblivion-windows-${{ matrix.arch }}.zip"
           Get-ChildItem dist
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: oblivion-windows-${{ matrix.arch }}
           path: dist/*.zip
@@ -420,7 +429,7 @@ jobs:
     needs: [android, linux, windows]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v8
         with:
           path: artifacts
 
