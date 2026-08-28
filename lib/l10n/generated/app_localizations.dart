@@ -1024,8 +1024,14 @@ abstract class L10n {
   /// No description provided for @aboutCore.
   ///
   /// In en, this message translates to:
-  /// **'Core engine'**
+  /// **'Aether engine'**
   String get aboutCore;
+
+  /// No description provided for @aboutPsiphonCore.
+  ///
+  /// In en, this message translates to:
+  /// **'Psiphon engine'**
+  String get aboutPsiphonCore;
 
   /// No description provided for @aboutVersion.
   ///

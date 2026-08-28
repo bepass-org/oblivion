@@ -174,6 +174,15 @@ class TunnelChannel {
     return version ?? 'unknown';
   }
 
+  Future<String> psiphonVersion() async {
+    if (!_usesNativeChannels) {
+      final backend = await _desktopBackend();
+      return backend?.psiphonVersion() ?? 'unavailable';
+    }
+    final version = await _methods.invokeMethod<String>('psiphonVersion');
+    return version ?? 'unknown';
+  }
+
   Future<TunnelCapability> capability() async {
     if (!_usesNativeChannels) {
       final backend = await _desktopBackend();

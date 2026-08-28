@@ -27,6 +27,7 @@ class AboutScreen extends ConsumerWidget {
     final l10n = L10n.of(context);
     final palette = context.palette;
     final coreVersion = ref.watch(coreVersionProvider);
+    final psiphonVersion = ref.watch(psiphonVersionProvider);
 
     return CupertinoPageScaffold(
       backgroundColor: palette.canvas,
@@ -68,6 +69,13 @@ class AboutScreen extends ConsumerWidget {
                     SettingsRow(
                       title: l10n.aboutCore,
                       value: coreVersion.maybeWhen(
+                        data: (version) => version,
+                        orElse: () => '—',
+                      ),
+                    ),
+                    SettingsRow(
+                      title: l10n.aboutPsiphonCore,
+                      value: psiphonVersion.maybeWhen(
                         data: (version) => version,
                         orElse: () => '—',
                       ),

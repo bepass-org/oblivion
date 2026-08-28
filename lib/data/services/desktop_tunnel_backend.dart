@@ -171,6 +171,8 @@ class DesktopTunnelBackend {
 
   Future<String> coreVersion() async => _bindings.coreVersion();
 
+  Future<String> psiphonVersion() async => _bindings.psiphonVersion();
+
   bool get tunnelDeviceAvailable => _bindings.tunnelDeviceAvailable;
 
   bool get isPrivileged => _bindings.isPrivileged;

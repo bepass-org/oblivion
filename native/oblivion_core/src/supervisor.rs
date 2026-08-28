@@ -1,6 +1,6 @@
 use std::fs::{File, OpenOptions};
 use std::io::{BufRead, BufReader, Read, Seek, SeekFrom, Write};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{channel, Receiver, Sender};
@@ -17,7 +17,38 @@ use crate::settings::TunnelSettings;
 use crate::sysproxy::SystemProxy;
 use crate::tunnel::TunnelDevice;
 
+const UNAVAILABLE: &str = "unavailable";
+
 const HELPER_READY_TIMEOUT: Duration = Duration::from_secs(120);
+
+fn run_version(binary: &Path, flag: &str) -> Option<String> {
+    let output = Command::new(binary).arg(flag).output().ok()?;
+    let text = String::from_utf8(output.stdout).ok()?;
+    let trimmed = text.trim().to_string();
+    if trimmed.is_empty() {
+        None
+    } else {
+        Some(trimmed)
+    }
+}
+
+fn summarise_psiphon_version(output: &str) -> String {
+    let field = |wanted: &str| {
+        output.lines().find_map(|line| {
+            let (name, value) = line.split_once(':')?;
+            if name.trim() != wanted {
+                return None;
+            }
+            let value = value.trim();
+            (!value.is_empty()).then(|| value.to_string())
+        })
+    };
+
+    match field("Revision") {
+        Some(revision) => format!("psiphon {revision}"),
+        None => format!("psiphon ({UNAVAILABLE} revision)"),
+    }
+}
 const HELPER_STOP_TIMEOUT: Duration = Duration::from_secs(10);
 
 const POST_SCAN_HEADROOM: Duration = Duration::from_secs(60);
@@ -439,35 +470,27 @@ impl Supervisor {
     }
 
     pub fn core_version(&self) -> String {
-        let uses_psiphon = self
-            .active
-            .lock()
-            .unwrap()
-            .as_ref()
-            .map(TunnelSettings::uses_psiphon)
-            .unwrap_or(false);
-
-        let binary = if uses_psiphon {
-            self.psiphon_binary.lock().unwrap().clone()
-        } else {
-            self.core_binary.lock().unwrap().clone()
-        };
-
-        let binary = match binary {
+        let binary = match self.core_binary.lock().unwrap().clone() {
             Some(path) => path,
-            None => return "unavailable".to_string(),
+            None => return UNAVAILABLE.to_string(),
         };
 
-        let flag = if uses_psiphon { "-v" } else { "--version" };
+        match run_version(&binary, "--version") {
+            Some(output) => output.lines().next().unwrap_or_default().trim().to_string(),
+            None => UNAVAILABLE.to_string(),
+        }
+    }
 
-        Command::new(&binary)
-            .arg(flag)
-            .output()
-            .ok()
-            .and_then(|output| String::from_utf8(output.stdout).ok())
-            .map(|value| value.trim().to_string())
-            .filter(|value| !value.is_empty())
-            .unwrap_or_else(|| "unavailable".to_string())
+    pub fn psiphon_version(&self) -> String {
+        let binary = match self.psiphon_binary.lock().unwrap().clone() {
+            Some(path) => path,
+            None => return UNAVAILABLE.to_string(),
+        };
+
+        match run_version(&binary, "-v") {
+            Some(output) => summarise_psiphon_version(&output),
+            None => UNAVAILABLE.to_string(),
+        }
     }
 
     pub fn connect(self: &Arc<Self>, settings: TunnelSettings, arguments: Vec<String>) {
@@ -1216,6 +1239,37 @@ impl Supervisor {
 impl Default for Supervisor {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+mod version_tests {
+    use super::*;
+
+    const STAMPED: &str = "Psiphon Console Client\n  \
+        Build Date: 2026-08-27T23:09:48+00:00\n  \
+        Built With: go1.26.7\n  \
+        Repository: https://github.com/CluvexStudio/psiphon-tunnel-core.git\n  \
+        Revision: 34e24fb\n";
+
+    const UNSTAMPED: &str =
+        "Psiphon Console Client\n  Build Date: \n  Built With: \n  Repository: \n  Revision: \n";
+
+    #[test]
+    fn the_revision_is_pulled_out_of_the_console_client_banner() {
+        assert_eq!(summarise_psiphon_version(STAMPED), "psiphon 34e24fb");
+    }
+
+    #[test]
+    fn a_build_without_ldflags_says_so_instead_of_echoing_the_banner() {
+        let summary = summarise_psiphon_version(UNSTAMPED);
+        assert_eq!(summary, "psiphon (unavailable revision)");
+        assert!(!summary.contains("Console Client"));
+    }
+
+    #[test]
+    fn a_repository_url_does_not_confuse_the_field_reader() {
+        assert!(!summarise_psiphon_version(STAMPED).contains("github.com"));
     }
 }
 

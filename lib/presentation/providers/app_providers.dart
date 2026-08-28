@@ -53,3 +53,11 @@ final coreVersionProvider = FutureProvider<String>((ref) async {
     return 'unavailable';
   }
 });
+
+final psiphonVersionProvider = FutureProvider<String>((ref) async {
+  try {
+    return await ref.watch(tunnelChannelProvider).psiphonVersion();
+  } catch (_) {
+    return 'unavailable';
+  }
+});

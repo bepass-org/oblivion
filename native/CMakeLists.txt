@@ -69,11 +69,35 @@ endif()
 set(PSIPHON_BIN "${CMAKE_CURRENT_BINARY_DIR}/${PSIPHON_BIN_NAME}")
 
 if(EXISTS "${PSIPHON_CORE_DIR}/go.mod")
+  set(PSIPHON_BUILDINFO
+    "github.com/Psiphon-Labs/psiphon-tunnel-core/psiphon/common/buildinfo")
+
+  execute_process(
+    COMMAND git rev-parse --short HEAD
+    WORKING_DIRECTORY "${PSIPHON_CORE_DIR}"
+    OUTPUT_VARIABLE PSIPHON_BUILD_REV
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+  )
+  execute_process(
+    COMMAND git config --get remote.origin.url
+    WORKING_DIRECTORY "${PSIPHON_CORE_DIR}"
+    OUTPUT_VARIABLE PSIPHON_BUILD_REPO
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+  )
+  if(NOT PSIPHON_BUILD_REV)
+    set(PSIPHON_BUILD_REV "unknown")
+  endif()
+  string(TIMESTAMP PSIPHON_BUILD_DATE "%Y-%m-%dT%H:%M:%SZ" UTC)
+
   add_custom_command(
     OUTPUT "${PSIPHON_BIN}"
-    COMMAND go build -trimpath -ldflags "-s -w" -o "${PSIPHON_BIN}" ./ConsoleClient
+    COMMAND go build -trimpath -ldflags
+      "-s -w -X ${PSIPHON_BUILDINFO}.buildDate=${PSIPHON_BUILD_DATE} -X ${PSIPHON_BUILDINFO}.buildRepo=${PSIPHON_BUILD_REPO} -X ${PSIPHON_BUILDINFO}.buildRev=${PSIPHON_BUILD_REV}"
+      -o "${PSIPHON_BIN}" ./ConsoleClient
     WORKING_DIRECTORY "${PSIPHON_CORE_DIR}"
-    COMMENT "Building the Psiphon tunnel engine"
+    COMMENT "Building the Psiphon tunnel engine (${PSIPHON_BUILD_REV})"
     VERBATIM
   )
   add_custom_target(psiphon_core_build ALL DEPENDS "${PSIPHON_BIN}")

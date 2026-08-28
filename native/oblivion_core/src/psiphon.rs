@@ -34,7 +34,7 @@ const CONDUIT_PROTOCOLS: [&str; 9] = [
     "INPROXY-WEBRTC-SHADOWSOCKS-OSSH",
 ];
 
-const DIRECT_PROTOCOLS: [&str; 14] = [
+const NON_INPROXY_PROTOCOLS: [&str; 14] = [
     "SSH",
     "OSSH",
     "TLS-OSSH",
@@ -52,39 +52,6 @@ const DIRECT_PROTOCOLS: [&str; 14] = [
 ];
 
 const CENSORED_COUNTRY_CODES: [&str; 6] = ["IR", "CN", "RU", "TM", "BY", "MM"];
-
-const EDGE_ADDRESSES: [(&str, &str); 9] = [
-    ("edge-a-1", "23.215.0.206"),
-    ("edge-a-2", "23.215.0.203"),
-    ("edge-b-1", "23.212.250.91"),
-    ("edge-b-2", "23.212.250.78"),
-    ("edge-c-1", "23.12.147.13"),
-    ("edge-c-2", "23.12.147.29"),
-    ("edge-d-1", "23.73.207.8"),
-    ("edge-d-2", "23.73.207.15"),
-    ("edge-original", "92.123.102.43"),
-];
-
-const EDGE_VERIFY_NAMES: [&str; 6] = [
-    "a248.e.akamai.net",
-    "a.akamaized.net",
-    "a.akamaized-staging.net",
-    "a.akamaihd.net",
-    "a.akamaihd-staging.net",
-    "www.akamai.com",
-];
-
-const FASTLY_VERIFY_NAMES: [&str; 9] = [
-    "www.python.org",
-    "pypi.org",
-    "fastly.com",
-    "www.fastly.com",
-    "developer.fastly.com",
-    "githubassets.com",
-    "github.com",
-    "github.io",
-    "githubusercontent.com",
-];
 
 const DEFAULT_PROPAGATION_CHANNEL_ID: &str = "FFFFFFFFFFFFFFFF";
 
@@ -180,6 +147,18 @@ fn base64_encode(input: &str) -> String {
     }
 
     encoded
+}
+
+pub fn server_entry_signature_key() -> String {
+    embedded(
+        "OBLIVION_PSIPHON_SERVER_ENTRY_SIGNATURE_KEY",
+        option_env!("OBLIVION_PSIPHON_SERVER_ENTRY_SIGNATURE_KEY"),
+        "",
+    )
+}
+
+pub fn supports_inproxy() -> bool {
+    !server_entry_signature_key().is_empty()
 }
 
 pub fn conduit_compartment_id() -> String {
@@ -284,125 +263,45 @@ pub fn cdn_sni_candidates(raw: &str) -> Vec<String> {
     candidates
 }
 
-fn make_override(
-    override_id: &str,
-    provider_regexes: Option<Vec<&str>>,
-    dial_address_regexes: Option<Vec<&str>>,
-    dial_address: &str,
-    sni_server_name: &str,
-    verify_server_names: Vec<String>,
-    alpn_protocols: Vec<&str>,
-) -> Value {
+fn user_override(dial_addresses: &[String], server_names: &[String]) -> Value {
     let mut entry = Map::new();
-    entry.insert("OverrideID".into(), json!(override_id));
-    if let Some(regexes) = provider_regexes {
-        entry.insert("MatchFrontingProviderIDRegexes".into(), json!(regexes));
-    }
-    if let Some(regexes) = dial_address_regexes {
-        entry.insert("MatchDialAddressRegexes".into(), json!(regexes));
-    }
-    entry.insert("DialAddresses".into(), json!([dial_address]));
-    entry.insert("SNIServerName".into(), json!(sni_server_name));
-    entry.insert("VerifyServerNames".into(), json!(verify_server_names));
-    entry.insert("ALPNProtocols".into(), json!(alpn_protocols));
-    entry.insert("TLSProfile".into(), json!("Chrome-83"));
+    entry.insert("OverrideID".into(), json!("user"));
+    entry.insert("MatchDialAddressRegexes".into(), json!([".*"]));
+    entry.insert("DialAddresses".into(), json!(dial_addresses));
+    entry.insert("SNIServerName".into(), json!(server_names[0]));
+    entry.insert("VerifyServerNames".into(), json!(server_names));
     Value::Object(entry)
 }
 
-fn unique_names(values: Vec<String>) -> Vec<String> {
-    let mut names: Vec<String> = Vec::new();
-    for value in values {
-        let trimmed = value.trim().to_string();
-        if trimmed.is_empty() || names.contains(&trimmed) {
-            continue;
-        }
-        names.push(trimmed);
-    }
-    names
-}
-
-fn dial_overrides(custom_sni: &str) -> Vec<Value> {
-    let edge_sni = cdn_sni_candidates(custom_sni)
-        .into_iter()
-        .next()
-        .unwrap_or_default();
-
-    let fastly_verify: Vec<String> =
-        FASTLY_VERIFY_NAMES.iter().map(|name| name.to_string()).collect();
-
-    let mut overrides = vec![
-        make_override(
-            "fastly-provider",
-            Some(vec!["(?i)fastly"]),
-            None,
-            "pypi.org",
-            "pypi.org",
-            fastly_verify.clone(),
-            vec!["h2", "http/1.1"],
-        ),
-        make_override(
-            "fastly-address",
-            None,
-            Some(vec!["(?i)(fastly|pypi|python|github)"]),
-            "pypi.org",
-            "pypi.org",
-            fastly_verify,
-            vec!["h2", "http/1.1"],
-        ),
-    ];
-
-    let mut seen: Vec<&str> = Vec::new();
-    for (override_id, address) in EDGE_ADDRESSES {
-        if seen.contains(&address) {
-            continue;
-        }
-        seen.push(address);
-
-        let sni_server_name = if edge_sni.is_empty() {
-            address.to_string()
-        } else {
-            edge_sni.clone()
-        };
-
-        let mut verify = vec![sni_server_name.clone(), address.to_string()];
-        verify.extend(EDGE_VERIFY_NAMES.iter().map(|name| name.to_string()));
-
-        overrides.push(make_override(
-            override_id,
-            None,
-            Some(vec![".*"]),
-            address,
-            &sni_server_name,
-            unique_names(verify),
-            vec!["http/1.1"],
-        ));
-    }
-
-    overrides
-}
-
 fn put_cdn_fronting(config: &mut Map<String, Value>, settings: &TunnelSettings) {
-    config.insert(
-        "FrontedMeekDialOverrides".into(),
-        json!(dial_overrides(&settings.psiphon_cdn_sni)),
-    );
-    config.insert("FrontedMeekDialOverridesProbability".into(), json!(1.0));
-    config.insert("FrontedMeekCDNScanUseBuiltInSpec".into(), json!(true));
+    let addresses = cdn_ip_candidates(&settings.psiphon_cdn_ips);
+    let server_names = cdn_sni_candidates(&settings.psiphon_cdn_sni);
 
-    let ip_candidates = cdn_ip_candidates(&settings.psiphon_cdn_ips);
-    if ip_candidates.is_empty() {
+    if addresses.is_empty() {
+        config.insert("FrontedMeekCDNScanUseBuiltInSpec".into(), json!(true));
+    } else {
+        let mut spec = Map::new();
+        spec.insert("IPCandidates".into(), json!(addresses.clone()));
+        if !server_names.is_empty() {
+            spec.insert("SNIServerNames".into(), json!(server_names.clone()));
+        }
+        config.insert("FrontedMeekCDNScanSpec".into(), Value::Object(spec));
+    }
+
+    let dial_addresses = if addresses.is_empty() {
+        server_names.clone()
+    } else {
+        addresses
+    };
+
+    if dial_addresses.is_empty() || server_names.is_empty() {
         return;
     }
 
-    let mut spec = Map::new();
-    spec.insert("IPCandidates".into(), json!(ip_candidates));
-
-    let sni_candidates = cdn_sni_candidates(&settings.psiphon_cdn_sni);
-    if !sni_candidates.is_empty() {
-        spec.insert("SNIServerNames".into(), json!(sni_candidates));
-    }
-
-    config.insert("FrontedMeekCDNScanSpec".into(), Value::Object(spec));
+    config.insert(
+        "FrontedMeekDialOverrides".into(),
+        json!([user_override(&dial_addresses, &server_names)]),
+    );
 }
 
 pub fn mode(settings: &TunnelSettings) -> &str {
@@ -471,11 +370,43 @@ pub fn build_config(settings: &TunnelSettings) -> Result<String, String> {
 
     let selected = mode(settings);
 
+    if supports_inproxy() {
+        config.insert(
+            "ServerEntrySignaturePublicKey".into(),
+            json!(server_entry_signature_key()),
+        );
+    } else if selected == MODE_CONDUIT {
+        return Err(
+            "conduit mode needs a server entry signature public key that this build does \
+             not embed, pick auto, cdn or direct instead"
+                .to_string(),
+        );
+    }
+
     if selected != MODE_CONDUIT {
         put_cdn_fronting(&mut config, settings);
     }
 
+    if !supports_inproxy() {
+        config.insert(
+            "InproxyTunnelProtocolPreferProbability".into(),
+            json!(0.0),
+        );
+        config.insert(
+            "InproxyTunnelProtocolSelectionProbability".into(),
+            json!(0.0),
+        );
+    }
+
     match selected {
+        MODE_AUTO => {
+            if !supports_inproxy() {
+                config.insert(
+                    "LimitTunnelProtocols".into(),
+                    json!(NON_INPROXY_PROTOCOLS.to_vec()),
+                );
+            }
+        }
         MODE_CDN => {
             config.insert("LimitTunnelProtocols".into(), json!(CDN_PROTOCOLS.to_vec()));
             config.insert("DisableTactics".into(), json!(true));
@@ -483,7 +414,7 @@ pub fn build_config(settings: &TunnelSettings) -> Result<String, String> {
         MODE_DIRECT => {
             config.insert(
                 "LimitTunnelProtocols".into(),
-                json!(DIRECT_PROTOCOLS.to_vec()),
+                json!(NON_INPROXY_PROTOCOLS.to_vec()),
             );
             config.insert("DisableTactics".into(), json!(true));
         }
@@ -628,6 +559,11 @@ mod tests {
         serde_json::from_str(&rendered).expect("rendered config should be json")
     }
 
+    fn rejected(json: &str) -> String {
+        let settings = settings_from(json);
+        build_config(&settings).expect_err("config should be refused")
+    }
+
     #[test]
     fn a_plain_build_can_already_reach_the_psiphon_network() {
         let _guard = crate::testenv::lock();
@@ -675,15 +611,27 @@ mod tests {
     }
 
     #[test]
-    fn auto_mode_does_not_limit_protocols_but_keeps_cdn_fronting() {
+    fn auto_mode_keeps_tactics_but_rules_out_inproxy() {
         let _guard = crate::testenv::lock();
         let parsed = provisioned(r#"{"core":"psiphon"}"#);
-        assert!(parsed.get("LimitTunnelProtocols").is_none());
+
         assert!(parsed.get("DisableTactics").is_none());
         assert_eq!(parsed["FrontedMeekCDNScanUseBuiltInSpec"], json!(true));
-        assert_eq!(parsed["FrontedMeekDialOverridesProbability"], json!(1.0));
-        let overrides = parsed["FrontedMeekDialOverrides"].as_array().unwrap();
-        assert_eq!(overrides.len(), 11);
+
+        let protocols = parsed["LimitTunnelProtocols"].as_array().unwrap();
+        assert_eq!(protocols.len(), NON_INPROXY_PROTOCOLS.len());
+        assert!(!protocols
+            .iter()
+            .any(|entry| entry.as_str().unwrap().starts_with("INPROXY-")));
+        assert_eq!(parsed["InproxyTunnelProtocolPreferProbability"], json!(0.0));
+    }
+
+    #[test]
+    fn nothing_is_fronted_until_the_user_supplies_an_address_or_a_name() {
+        let _guard = crate::testenv::lock();
+        let parsed = provisioned(r#"{"core":"psiphon"}"#);
+        assert!(parsed.get("FrontedMeekDialOverrides").is_none());
+        assert!(parsed.get("FrontedMeekCDNScanSpec").is_none());
     }
 
     #[test]
@@ -705,23 +653,25 @@ mod tests {
     }
 
     #[test]
-    fn conduit_mode_uses_inproxy_only_and_drops_cdn_fronting() {
+    fn conduit_mode_is_refused_while_the_signature_key_is_absent() {
         let _guard = crate::testenv::lock();
-        let parsed = provisioned(r#"{"core":"psiphon","psiphonMode":"conduit"}"#);
-        let protocols = parsed["LimitTunnelProtocols"].as_array().unwrap();
-        assert!(protocols
-            .iter()
-            .all(|entry| entry.as_str().unwrap().starts_with("INPROXY-WEBRTC-")));
-        assert!(parsed.get("FrontedMeekDialOverrides").is_none());
-        assert!(parsed.get("FrontedMeekCDNScanUseBuiltInSpec").is_none());
+        assert!(!supports_inproxy());
+
+        let message = rejected(r#"{"core":"psiphon","psiphonMode":"conduit"}"#);
+        assert!(
+            message.contains("server entry signature public key"),
+            "{message}"
+        );
     }
 
     #[test]
     fn public_conduit_peers_drop_the_compartment_id() {
         let _guard = crate::testenv::lock();
+        std::env::set_var("OBLIVION_PSIPHON_SERVER_ENTRY_SIGNATURE_KEY", "TESTKEY");
         std::env::set_var("OBLIVION_PSIPHON_CONDUIT_COMPARTMENT_ID", "COMPARTMENT");
 
         let private = provisioned(r#"{"core":"psiphon","psiphonMode":"conduit"}"#);
+        assert_eq!(private["ServerEntrySignaturePublicKey"], json!("TESTKEY"));
         assert_eq!(
             private["InproxyClientPersonalCompartmentID"],
             json!("COMPARTMENT")
@@ -733,11 +683,27 @@ mod tests {
         assert!(public.get("InproxyClientPersonalCompartmentID").is_none());
 
         std::env::remove_var("OBLIVION_PSIPHON_CONDUIT_COMPARTMENT_ID");
+        std::env::remove_var("OBLIVION_PSIPHON_SERVER_ENTRY_SIGNATURE_KEY");
+    }
+
+    #[test]
+    fn a_signature_key_reopens_inproxy_and_lifts_the_auto_protocol_limit() {
+        let _guard = crate::testenv::lock();
+        std::env::set_var("OBLIVION_PSIPHON_SERVER_ENTRY_SIGNATURE_KEY", "TESTKEY");
+
+        let parsed = provisioned(r#"{"core":"psiphon"}"#);
+        assert_eq!(parsed["ServerEntrySignaturePublicKey"], json!("TESTKEY"));
+        assert!(parsed.get("LimitTunnelProtocols").is_none());
+        assert!(parsed.get("InproxyTunnelProtocolPreferProbability").is_none());
+
+        std::env::remove_var("OBLIVION_PSIPHON_SERVER_ENTRY_SIGNATURE_KEY");
     }
 
     #[test]
     fn censored_peers_are_rejected_by_default() {
         let _guard = crate::testenv::lock();
+        std::env::set_var("OBLIVION_PSIPHON_SERVER_ENTRY_SIGNATURE_KEY", "TESTKEY");
+
         let on = provisioned(r#"{"core":"psiphon","psiphonMode":"conduit"}"#);
         let codes = on["InproxyRejectProxyCountryCodes"].as_array().unwrap();
         assert!(codes.iter().any(|entry| entry == "IR"));
@@ -746,6 +712,8 @@ mod tests {
             r#"{"core":"psiphon","psiphonMode":"conduit","psiphonRejectCensoredPeers":false}"#,
         );
         assert!(off.get("InproxyRejectProxyCountryCodes").is_none());
+
+        std::env::remove_var("OBLIVION_PSIPHON_SERVER_ENTRY_SIGNATURE_KEY");
     }
 
     #[test]
@@ -775,33 +743,35 @@ mod tests {
     }
 
     #[test]
-    fn a_custom_sni_replaces_the_edge_sni() {
+    fn a_user_address_and_name_become_the_only_override() {
         let _guard = crate::testenv::lock();
         let parsed = provisioned(
-            r#"{"core":"psiphon","psiphonCdnSni":"cdn.example.com"}"#,
+            r#"{"core":"psiphon","psiphonCdnIps":"23.215.0.206",
+                "psiphonCdnSni":"cdn.example.com"}"#,
         );
         let overrides = parsed["FrontedMeekDialOverrides"].as_array().unwrap();
-        let edge = overrides
-            .iter()
-            .find(|entry| entry["OverrideID"] == json!("edge-a-1"))
-            .unwrap();
-        assert_eq!(edge["SNIServerName"], json!("cdn.example.com"));
-        assert_eq!(edge["DialAddresses"], json!(["23.215.0.206"]));
-        let verify = edge["VerifyServerNames"].as_array().unwrap();
-        assert_eq!(verify[0], json!("cdn.example.com"));
-        assert!(verify.iter().any(|entry| entry == "a248.e.akamai.net"));
+        assert_eq!(overrides.len(), 1);
+
+        let entry = &overrides[0];
+        assert_eq!(entry["DialAddresses"], json!(["23.215.0.206"]));
+        assert_eq!(entry["SNIServerName"], json!("cdn.example.com"));
+        assert_eq!(entry["VerifyServerNames"], json!(["cdn.example.com"]));
     }
 
     #[test]
-    fn an_edge_without_a_custom_sni_uses_its_own_address() {
+    fn a_name_on_its_own_is_dialled_as_the_front() {
         let _guard = crate::testenv::lock();
-        let parsed = provisioned(r#"{"core":"psiphon"}"#);
+        let parsed = provisioned(r#"{"core":"psiphon","psiphonCdnSni":"cdn.example.com"}"#);
         let overrides = parsed["FrontedMeekDialOverrides"].as_array().unwrap();
-        let edge = overrides
-            .iter()
-            .find(|entry| entry["OverrideID"] == json!("edge-original"))
-            .unwrap();
-        assert_eq!(edge["SNIServerName"], json!("92.123.102.43"));
+        assert_eq!(overrides.len(), 1);
+        assert_eq!(overrides[0]["DialAddresses"], json!(["cdn.example.com"]));
+
+        let addresses_only = provisioned(r#"{"core":"psiphon","psiphonCdnIps":"23.215.0.206"}"#);
+        assert!(addresses_only.get("FrontedMeekDialOverrides").is_none());
+        assert_eq!(
+            addresses_only["FrontedMeekCDNScanSpec"]["IPCandidates"],
+            json!(["23.215.0.206"])
+        );
     }
 
     #[test]
