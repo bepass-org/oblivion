@@ -34,6 +34,19 @@ On Android the app runs as a VPN service and needs no root. On Windows and Linux
 it exposes a local SOCKS5 proxy, and full device routing needs administrator
 rights.
 
+## Using it from other devices on the LAN
+
+Turn on **Allow LAN access** in settings. The proxy then binds to `0.0.0.0`
+instead of localhost, so other machines on the same network can use this one.
+
+Default ports (the SOCKS port is configurable; HTTP is always that port plus one):
+
+- SOCKS5: `1819`
+- HTTP: `1820`
+
+On the other device, point the SOCKS5 or HTTP proxy at this computer's LAN IP
+and that port. Leave the toggle off if only this machine should use the tunnel.
+
 ## Building the Project
 
 ### Prerequisites
