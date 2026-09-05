@@ -50,8 +50,12 @@ class AetherVpnService : VpnService() {
                 startTunnel(TunnelBundle.decode(payload))
             }
             ACTION_STOP -> stopTunnel(TunnelStage.DISCONNECTED, null)
+            else -> {
+                stopForegroundCompat()
+                stopSelf()
+            }
         }
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     override fun onRevoke() {
