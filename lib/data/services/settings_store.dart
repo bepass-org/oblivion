@@ -73,6 +73,8 @@ class SettingsStore {
     'endpoint',
     'wgEndpoint',
     'h2Endpoint',
+    'wiwOuter',
+    'wiwInner',
     'tlsGroups',
     'socksPort',
     'allowLan',
@@ -138,6 +140,8 @@ class SettingsStore {
       endpoint: _string('endpoint') ?? fallback.endpoint,
       wgEndpoint: _string('wgEndpoint') ?? fallback.wgEndpoint,
       h2Endpoint: _string('h2Endpoint') ?? fallback.h2Endpoint,
+      wiwOuter: _string('wiwOuter') ?? fallback.wiwOuter,
+      wiwInner: _string('wiwInner') ?? fallback.wiwInner,
       tlsGroups: _string('tlsGroups') ?? fallback.tlsGroups,
       socksPort: _prefs.getInt('${_prefix}socksPort') ?? fallback.socksPort,
       allowLan: _prefs.getBool('${_prefix}allowLan') ?? fallback.allowLan,
@@ -216,6 +220,8 @@ class SettingsStore {
     await _prefs.setString('${_prefix}endpoint', settings.endpoint);
     await _prefs.setString('${_prefix}wgEndpoint', settings.wgEndpoint);
     await _prefs.setString('${_prefix}h2Endpoint', settings.h2Endpoint);
+    await _prefs.setString('${_prefix}wiwOuter', settings.wiwOuter);
+    await _prefs.setString('${_prefix}wiwInner', settings.wiwInner);
     await _prefs.setString('${_prefix}tlsGroups', settings.tlsGroups);
     await _prefs.setInt('${_prefix}socksPort', settings.socksPort);
     await _prefs.setBool('${_prefix}allowLan', settings.allowLan);

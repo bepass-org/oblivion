@@ -21,6 +21,8 @@ object TunnelBundle {
         putString("logLevel", config.logLevel)
         putString("perfProfile", config.perfProfile)
         putString("endpoint", config.endpoint)
+        putString("wiwOuter", config.wiwOuter)
+        putString("wiwInner", config.wiwInner)
         putInt("socksPort", config.socksPort)
         putBoolean("allowLan", config.allowLan)
         putBoolean("proxyOnly", config.proxyOnly)
@@ -58,6 +60,8 @@ object TunnelBundle {
         logLevel = bundle.getString("logLevel", "info"),
         perfProfile = bundle.getString("perfProfile", ""),
         endpoint = bundle.getString("endpoint", ""),
+        wiwOuter = bundle.getString("wiwOuter", ""),
+        wiwInner = bundle.getString("wiwInner", ""),
         socksPort = bundle.getInt("socksPort", 1819),
         allowLan = bundle.getBoolean("allowLan", false),
         proxyOnly = bundle.getBoolean("proxyOnly", false),

@@ -17,6 +17,8 @@ data class TunnelConfig(
     val logLevel: String,
     val perfProfile: String,
     val endpoint: String,
+    val wiwOuter: String,
+    val wiwInner: String,
     val socksPort: Int,
     val allowLan: Boolean,
     val proxyOnly: Boolean,
@@ -43,6 +45,14 @@ data class TunnelConfig(
     val bypassSelected: Boolean get() = splitTunnelMode == "bypassSelected"
 
     val usesZeroTrust: Boolean get() = team.isNotBlank()
+
+    val usesGool: Boolean get() = protocol == "gool"
+
+    val wiwOuterPeer: String get() = if (usesGool) wiwOuter.trim() else ""
+
+    val wiwInnerPeer: String get() = if (usesGool) wiwInner.trim() else ""
+
+    val wiwPinned: Boolean get() = wiwOuterPeer.isNotEmpty() || wiwInnerPeer.isNotEmpty()
 
     val dnsServers: List<String>
         get() {
@@ -114,6 +124,8 @@ data class TunnelConfig(
                 logLevel = str("logLevel", "info"),
                 perfProfile = str("perfProfile"),
                 endpoint = str("endpoint"),
+                wiwOuter = str("wiwOuter"),
+                wiwInner = str("wiwInner"),
                 socksPort = int("socksPort", 1819),
                 allowLan = bool("allowLan"),
                 proxyOnly = bool("proxyOnly"),

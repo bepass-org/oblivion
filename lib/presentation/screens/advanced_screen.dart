@@ -39,6 +39,55 @@ class AdvancedScreen extends ConsumerWidget {
     return count == 0 ? l10n.ruleNone : '$count';
   }
 
+  Future<void> _editHop({
+    required BuildContext context,
+    required L10n l10n,
+    required TunnelSettingsController controller,
+    required TunnelSettings settings,
+    required bool outer,
+  }) {
+    final title = outer ? l10n.wiwOuter : l10n.wiwInner;
+
+    return showTextEditorSheet(
+      context: context,
+      title: title,
+      description: '${outer ? l10n.wiwOuterDesc : l10n.wiwInnerDesc}\n\n'
+          '${l10n.wiwHint}',
+      initial: outer ? settings.wiwOuter : settings.wiwInner,
+      placeholder: outer ? '162.159.192.1:2408' : '188.114.96.1:2408',
+      cancelLabel: l10n.cancel,
+      saveLabel: l10n.save,
+      onSaved: (raw) async {
+        final value = raw.trim();
+
+        String? refusal;
+        if (value.isNotEmpty && !TunnelSettings.isValidEndpoint(value)) {
+          refusal = l10n.wiwInvalidEndpoint;
+        } else {
+          final next = outer
+              ? settings.copyWith(wiwOuter: value)
+              : settings.copyWith(wiwInner: value);
+          if (next.wiwHopsCollide) refusal = l10n.wiwSameEdge;
+        }
+
+        if (refusal != null) {
+          if (!context.mounted) return;
+          await showNoticeDialog(
+            context: context,
+            title: title,
+            message: refusal,
+            dismissLabel: l10n.confirm,
+          );
+          return;
+        }
+
+        await controller.update(
+          (s) => outer ? s.copyWith(wiwOuter: value) : s.copyWith(wiwInner: value),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = L10n.of(context);
@@ -193,7 +242,7 @@ class AdvancedScreen extends ConsumerWidget {
                       value: settings.wgEndpoint.isEmpty
                           ? l10n.endpointAuto
                           : settings.wgEndpoint,
-                      enabled: settings.usesWireGuard,
+                      enabled: settings.usesWireGuard && !settings.usesGool,
                       onTap: () => showTextEditorSheet(
                         context: context,
                         title: l10n.wgEndpoint,
@@ -246,6 +295,41 @@ class AdvancedScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
+
+                if (settings.usesAether && settings.usesGool)
+                  SettingsGroup(
+                    header: l10n.wiwSection,
+                    children: <Widget>[
+                      SettingsRow(
+                        title: l10n.wiwOuter,
+                        subtitle: l10n.wiwOuterDesc,
+                        value: settings.wiwOuterPeer.isEmpty
+                            ? l10n.wiwScanned
+                            : settings.wiwOuterPeer,
+                        onTap: () => _editHop(
+                          context: context,
+                          l10n: l10n,
+                          controller: controller,
+                          settings: settings,
+                          outer: true,
+                        ),
+                      ),
+                      SettingsRow(
+                        title: l10n.wiwInner,
+                        subtitle: l10n.wiwInnerDesc,
+                        value: settings.wiwInnerPeer.isEmpty
+                            ? l10n.wiwScanned
+                            : settings.wiwInnerPeer,
+                        onTap: () => _editHop(
+                          context: context,
+                          l10n: l10n,
+                          controller: controller,
+                          settings: settings,
+                          outer: false,
+                        ),
+                      ),
+                    ],
+                  ),
 
                 SettingsGroup(
                   header: l10n.sectionTls,

@@ -552,6 +552,49 @@ class L10nFa extends L10n {
   String get h2EndpointDesc => 'سروری که در حالت HTTP/2 استفاده می‌شود';
 
   @override
+  String get wiwSection => 'مسیرهای WARP در WARP';
+
+  @override
+  String get wiwSectionDesc =>
+      'به‌جای انتظار برای اسکن، دو مسیر را خودتان بدهید.';
+
+  @override
+  String get wiwOuter => 'مسیر بیرونی';
+
+  @override
+  String get wiwOuterDesc =>
+      'همان لبه‌ای که شبکه شما می‌بیند. خالی بگذارید تا اسکن خودش انتخاب کند.';
+
+  @override
+  String get wiwInner => 'مسیر درونی';
+
+  @override
+  String get wiwInnerDesc =>
+      'لبه‌ای که از راه مسیر بیرونی به آن می‌رسیم. خالی بگذارید تا اسکن خودش انتخاب کند.';
+
+  @override
+  String get wiwHint =>
+      'نشانی و پورت را با هم بنویسید، مثل 162.159.192.1:2408. پورت الزامی است و دو مسیر باید نشانی متفاوت داشته باشند.';
+
+  @override
+  String get wiwScanned => 'اسکن خودکار';
+
+  @override
+  String get wiwManual => 'دستی';
+
+  @override
+  String get wiwInvalidEndpoint =>
+      'این یک نشانی و پورت نیست. آن‌ها را با هم بنویسید، مثل 162.159.192.1:2408.';
+
+  @override
+  String get wiwSameEdge =>
+      'هر دو مسیر به یک لبه اشاره می‌کنند. WARP در WARP به دو نشانی متفاوت نیاز دارد.';
+
+  @override
+  String get endpointIgnoredOnGool =>
+      'در WARP در WARP استفاده نمی‌شود؛ به‌جایش دو مسیر را نام ببرید.';
+
+  @override
   String get ech => 'پنهان‌سازی نام سایت';
 
   @override

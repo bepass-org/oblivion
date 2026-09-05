@@ -553,6 +553,49 @@ class L10nEn extends L10n {
   String get h2EndpointDesc => 'The server used in HTTP/2 mode';
 
   @override
+  String get wiwSection => 'WARP-in-WARP hops';
+
+  @override
+  String get wiwSectionDesc =>
+      'Hand the two hops over instead of waiting for a sweep.';
+
+  @override
+  String get wiwOuter => 'Outer hop';
+
+  @override
+  String get wiwOuterDesc =>
+      'The edge your network sees. Leave blank to let the scan pick it.';
+
+  @override
+  String get wiwInner => 'Inner hop';
+
+  @override
+  String get wiwInnerDesc =>
+      'The edge reached through the outer one. Leave blank to let the scan pick it.';
+
+  @override
+  String get wiwHint =>
+      'Write an address and a port together, such as 162.159.192.1:2408. The port is required, and the two hops must be different addresses.';
+
+  @override
+  String get wiwScanned => 'Scanned';
+
+  @override
+  String get wiwManual => 'Manual';
+
+  @override
+  String get wiwInvalidEndpoint =>
+      'That is not an address and port. Write them together, such as 162.159.192.1:2408.';
+
+  @override
+  String get wiwSameEdge =>
+      'Both hops point at the same edge. WARP-in-WARP needs two different addresses.';
+
+  @override
+  String get endpointIgnoredOnGool =>
+      'Not used by WARP-in-WARP; name the two hops instead.';
+
+  @override
   String get ech => 'Hide the site name';
 
   @override

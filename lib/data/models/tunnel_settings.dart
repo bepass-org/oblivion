@@ -226,6 +226,8 @@ class TunnelSettings {
     this.endpoint = '',
     this.wgEndpoint = '',
     this.h2Endpoint = '',
+    this.wiwOuter = '',
+    this.wiwInner = '',
     this.tlsGroups = '',
     this.socksPort = 1819,
     this.allowLan = false,
@@ -277,6 +279,8 @@ class TunnelSettings {
   final String endpoint;
   final String wgEndpoint;
   final String h2Endpoint;
+  final String wiwOuter;
+  final String wiwInner;
   final String tlsGroups;
 
   final int socksPort;
@@ -343,6 +347,57 @@ class TunnelSettings {
   bool get usesWireGuard =>
       protocol == CoreProtocol.wireguard || protocol == CoreProtocol.gool;
 
+  bool get usesGool => protocol == CoreProtocol.gool;
+
+  String get wiwOuterPeer => wiwOuter.trim();
+
+  String get wiwInnerPeer => wiwInner.trim();
+
+  bool get wiwHopsCollide {
+    final outer = endpointHost(wiwOuterPeer);
+    final inner = endpointHost(wiwInnerPeer);
+    if (outer == null || inner == null) return false;
+    return outer == inner;
+  }
+
+  bool get wiwPinned => wiwOuterPeer.isNotEmpty || wiwInnerPeer.isNotEmpty;
+
+  static String? endpointHost(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return null;
+
+    String host;
+    String port;
+
+    if (trimmed.startsWith('[')) {
+      final close = trimmed.indexOf(']');
+      if (close < 0 || !trimmed.startsWith(':', close + 1)) return null;
+      host = trimmed.substring(1, close);
+      port = trimmed.substring(close + 2);
+    } else {
+      final separator = trimmed.lastIndexOf(':');
+      if (separator <= 0) return null;
+      host = trimmed.substring(0, separator);
+      port = trimmed.substring(separator + 1);
+      if (host.contains(':')) return null;
+    }
+
+    if (port.isEmpty ||
+        port.length > 5 ||
+        !port.codeUnits.every((unit) => unit >= 0x30 && unit <= 0x39)) {
+      return null;
+    }
+
+    final parsedPort = int.parse(port);
+    if (parsedPort < 1 || parsedPort > 65535) return null;
+
+    final address = InternetAddress.tryParse(host);
+    if (address == null) return null;
+    return address.address;
+  }
+
+  static bool isValidEndpoint(String value) => endpointHost(value) != null;
+
   static final RegExp rangePattern = RegExp(r'^\d{1,5}(-\d{1,5})?$');
 
   static bool isValidRange(String value) {
@@ -403,6 +458,8 @@ class TunnelSettings {
     String? endpoint,
     String? wgEndpoint,
     String? h2Endpoint,
+    String? wiwOuter,
+    String? wiwInner,
     String? tlsGroups,
     int? socksPort,
     bool? allowLan,
@@ -453,6 +510,8 @@ class TunnelSettings {
       endpoint: endpoint ?? this.endpoint,
       wgEndpoint: wgEndpoint ?? this.wgEndpoint,
       h2Endpoint: h2Endpoint ?? this.h2Endpoint,
+      wiwOuter: wiwOuter ?? this.wiwOuter,
+      wiwInner: wiwInner ?? this.wiwInner,
       tlsGroups: tlsGroups ?? this.tlsGroups,
       socksPort: socksPort ?? this.socksPort,
       allowLan: allowLan ?? this.allowLan,
@@ -503,6 +562,8 @@ class TunnelSettings {
     'endpoint': endpoint.trim(),
     'wgEndpoint': wgEndpoint.trim(),
     'h2Endpoint': h2Endpoint.trim(),
+    'wiwOuter': usesGool ? wiwOuterPeer : '',
+    'wiwInner': usesGool ? wiwInnerPeer : '',
     'tlsGroups': tlsGroups.trim(),
     'socksPort': socksPort,
     'bindAddress': bindAddress,
@@ -600,12 +661,20 @@ class TunnelSettings {
     if (usesWireGuard) {
       args.addAll(<String>['--keepalive', '$wgKeepalive']);
       if (!wgProfileRetry) args.add('--no-profile-retry');
-      if (wgEndpoint.trim().isNotEmpty) {
+      if (!usesGool && wgEndpoint.trim().isNotEmpty) {
         args.addAll(<String>['--wg-peer', wgEndpoint.trim()]);
       }
     }
 
-    if (manualGateway.isNotEmpty) {
+    if (usesGool) {
+      if (wiwOuterPeer.isNotEmpty) {
+        args.addAll(<String>['--wiw-outer', wiwOuterPeer]);
+      }
+      if (wiwInnerPeer.isNotEmpty) {
+        args.addAll(<String>['--wiw-inner', wiwInnerPeer]);
+      }
+      if (!wiwPinned) args.add('--wiw-scan');
+    } else if (manualGateway.isNotEmpty) {
       args.addAll(<String>['--peer', manualGateway]);
     }
     if (overrideDns) {

@@ -33,6 +33,10 @@ pub struct TunnelSettings {
     pub perf_profile: String,
     #[serde(default)]
     pub endpoint: String,
+    #[serde(default)]
+    pub wiw_outer: String,
+    #[serde(default)]
+    pub wiw_inner: String,
     #[serde(default = "default_socks_port")]
     pub socks_port: u16,
     #[serde(default)]
@@ -153,6 +157,22 @@ impl TunnelSettings {
         }
     }
 
+    pub fn uses_gool(&self) -> bool {
+        self.protocol.trim().eq_ignore_ascii_case("gool")
+    }
+
+    pub fn wiw_outer_peer(&self) -> &str {
+        if self.uses_gool() { self.wiw_outer.trim() } else { "" }
+    }
+
+    pub fn wiw_inner_peer(&self) -> &str {
+        if self.uses_gool() { self.wiw_inner.trim() } else { "" }
+    }
+
+    pub fn wiw_pinned(&self) -> bool {
+        !self.wiw_outer_peer().is_empty() || !self.wiw_inner_peer().is_empty()
+    }
+
     pub fn bind_host(&self) -> &'static str {
         if self.allow_lan {
             "0.0.0.0"
@@ -224,7 +244,19 @@ impl TunnelSettings {
             }
         }
 
-        if !self.endpoint.trim().is_empty() {
+        if self.uses_gool() {
+            let outer = self.wiw_outer_peer();
+            if !outer.is_empty() {
+                env.push(("AETHER_WIW_OUTER_PEER".to_string(), outer.to_string()));
+            }
+            let inner = self.wiw_inner_peer();
+            if !inner.is_empty() {
+                env.push(("AETHER_WIW_INNER_PEER".to_string(), inner.to_string()));
+            }
+            if !self.wiw_pinned() {
+                env.push(("AETHER_WIW_PEERS".to_string(), "auto".to_string()));
+            }
+        } else if !self.endpoint.trim().is_empty() {
             env.push(("AETHER_PEER".to_string(), self.endpoint.trim().to_string()));
         }
         if !self.perf_profile.trim().is_empty() {
@@ -485,6 +517,90 @@ mod zero_trust_tests {
     fn the_gateway_proxy_needs_a_team_to_apply() {
         let env = settings_from(r#"{"gatewayProxy":true}"#).core_environment();
         assert!(value_of(&env, "AETHER_GATEWAY").is_none());
+    }
+}
+
+#[cfg(test)]
+mod warp_in_warp_tests {
+    use super::*;
+
+    fn settings_from(json: &str) -> TunnelSettings {
+        serde_json::from_str(json).expect("settings should parse")
+    }
+
+    fn value_of<'a>(env: &'a [(String, String)], key: &str) -> Option<&'a str> {
+        env.iter()
+            .find(|(name, _)| name == key)
+            .map(|(_, value)| value.as_str())
+    }
+
+    #[test]
+    fn both_hops_reach_the_core_when_they_are_named_by_hand() {
+        let env = settings_from(
+            r#"{"protocol":"gool","wiwOuter":"162.159.192.1:2408","wiwInner":"188.114.96.1:894"}"#,
+        )
+        .core_environment();
+
+        assert_eq!(
+            value_of(&env, "AETHER_WIW_OUTER_PEER"),
+            Some("162.159.192.1:2408")
+        );
+        assert_eq!(
+            value_of(&env, "AETHER_WIW_INNER_PEER"),
+            Some("188.114.96.1:894")
+        );
+        assert!(value_of(&env, "AETHER_WIW_PEERS").is_none());
+    }
+
+    #[test]
+    fn naming_one_hop_leaves_the_other_to_the_scan() {
+        let env =
+            settings_from(r#"{"protocol":"gool","wiwOuter":"162.159.192.1:2408"}"#)
+                .core_environment();
+
+        assert_eq!(
+            value_of(&env, "AETHER_WIW_OUTER_PEER"),
+            Some("162.159.192.1:2408")
+        );
+        assert!(value_of(&env, "AETHER_WIW_INNER_PEER").is_none());
+        assert!(value_of(&env, "AETHER_WIW_PEERS").is_none());
+    }
+
+    #[test]
+    fn naming_neither_hop_asks_the_core_to_scan_for_both() {
+        let env = settings_from(r#"{"protocol":"gool"}"#).core_environment();
+        assert_eq!(value_of(&env, "AETHER_WIW_PEERS"), Some("auto"));
+    }
+
+    #[test]
+    fn the_masque_endpoint_never_becomes_a_gool_hop() {
+        let env = settings_from(r#"{"protocol":"gool","endpoint":"162.159.198.1:443"}"#)
+            .core_environment();
+
+        assert!(
+            value_of(&env, "AETHER_PEER").is_none(),
+            "AETHER_PEER doubles as the outer hop, so it must not survive into gool"
+        );
+        assert_eq!(value_of(&env, "AETHER_WIW_PEERS"), Some("auto"));
+    }
+
+    #[test]
+    fn hops_set_on_another_protocol_are_ignored() {
+        let env = settings_from(
+            r#"{"protocol":"masque","endpoint":"162.159.198.1:443","wiwOuter":"162.159.192.1:2408"}"#,
+        )
+        .core_environment();
+
+        assert!(value_of(&env, "AETHER_WIW_OUTER_PEER").is_none());
+        assert_eq!(value_of(&env, "AETHER_PEER"), Some("162.159.198.1:443"));
+    }
+
+    #[test]
+    fn surrounding_whitespace_is_trimmed_off_a_hop() {
+        let settings =
+            settings_from(r#"{"protocol":"gool","wiwInner":"  188.114.96.1:894  "}"#);
+        assert_eq!(settings.wiw_inner_peer(), "188.114.96.1:894");
+        assert!(settings.wiw_pinned());
     }
 }
 

@@ -1123,6 +1123,78 @@ abstract class L10n {
   /// **'The server used in HTTP/2 mode'**
   String get h2EndpointDesc;
 
+  /// No description provided for @wiwSection.
+  ///
+  /// In en, this message translates to:
+  /// **'WARP-in-WARP hops'**
+  String get wiwSection;
+
+  /// No description provided for @wiwSectionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Hand the two hops over instead of waiting for a sweep.'**
+  String get wiwSectionDesc;
+
+  /// No description provided for @wiwOuter.
+  ///
+  /// In en, this message translates to:
+  /// **'Outer hop'**
+  String get wiwOuter;
+
+  /// No description provided for @wiwOuterDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The edge your network sees. Leave blank to let the scan pick it.'**
+  String get wiwOuterDesc;
+
+  /// No description provided for @wiwInner.
+  ///
+  /// In en, this message translates to:
+  /// **'Inner hop'**
+  String get wiwInner;
+
+  /// No description provided for @wiwInnerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The edge reached through the outer one. Leave blank to let the scan pick it.'**
+  String get wiwInnerDesc;
+
+  /// No description provided for @wiwHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write an address and a port together, such as 162.159.192.1:2408. The port is required, and the two hops must be different addresses.'**
+  String get wiwHint;
+
+  /// No description provided for @wiwScanned.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanned'**
+  String get wiwScanned;
+
+  /// No description provided for @wiwManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual'**
+  String get wiwManual;
+
+  /// No description provided for @wiwInvalidEndpoint.
+  ///
+  /// In en, this message translates to:
+  /// **'That is not an address and port. Write them together, such as 162.159.192.1:2408.'**
+  String get wiwInvalidEndpoint;
+
+  /// No description provided for @wiwSameEdge.
+  ///
+  /// In en, this message translates to:
+  /// **'Both hops point at the same edge. WARP-in-WARP needs two different addresses.'**
+  String get wiwSameEdge;
+
+  /// No description provided for @endpointIgnoredOnGool.
+  ///
+  /// In en, this message translates to:
+  /// **'Not used by WARP-in-WARP; name the two hops instead.'**
+  String get endpointIgnoredOnGool;
+
   /// No description provided for @ech.
   ///
   /// In en, this message translates to:

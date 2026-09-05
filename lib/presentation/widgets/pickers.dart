@@ -192,6 +192,31 @@ Future<void> showTextEditorSheet({
   controller.dispose();
 }
 
+Future<void> showNoticeDialog({
+  required BuildContext context,
+  required String title,
+  required String message,
+  required String dismissLabel,
+}) async {
+  await showCupertinoDialog<void>(
+    context: context,
+    builder: (dialogContext) => CupertinoAlertDialog(
+      title: Text(title),
+      content: Padding(
+        padding: const EdgeInsets.only(top: 6),
+        child: Text(message),
+      ),
+      actions: <Widget>[
+        CupertinoDialogAction(
+          isDefaultAction: true,
+          onPressed: () => Navigator.of(dialogContext).pop(),
+          child: Text(dismissLabel),
+        ),
+      ],
+    ),
+  );
+}
+
 Future<bool> showConfirmDialog({
   required BuildContext context,
   required String title,

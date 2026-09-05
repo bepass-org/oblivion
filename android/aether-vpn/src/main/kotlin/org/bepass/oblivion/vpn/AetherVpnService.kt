@@ -148,7 +148,17 @@ class AetherVpnService : VpnService() {
             environment["AETHER_MASQUE_HTTP2"] = "1"
             if (target.fragment) environment["AETHER_MASQUE_H2_FRAGMENT"] = "1"
         }
-        if (target.endpoint.isNotBlank()) environment["AETHER_PEER"] = target.endpoint
+        if (target.usesGool) {
+            if (target.wiwOuterPeer.isNotEmpty()) {
+                environment["AETHER_WIW_OUTER_PEER"] = target.wiwOuterPeer
+            }
+            if (target.wiwInnerPeer.isNotEmpty()) {
+                environment["AETHER_WIW_INNER_PEER"] = target.wiwInnerPeer
+            }
+            if (!target.wiwPinned) environment["AETHER_WIW_PEERS"] = "auto"
+        } else if (target.endpoint.isNotBlank()) {
+            environment["AETHER_PEER"] = target.endpoint
+        }
         if (target.perfProfile.isNotBlank()) {
             environment["AETHER_PERF_PROFILE"] = target.perfProfile
         }

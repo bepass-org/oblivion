@@ -234,11 +234,27 @@ class SettingsScreen extends ConsumerWidget {
                           ),
                         ),
                       ),
+                      if (settings.usesGool)
+                        SettingsRow(
+                          title: l10n.wiwSection,
+                          subtitle: l10n.wiwSectionDesc,
+                          value: settings.wiwPinned
+                              ? l10n.wiwManual
+                              : l10n.wiwScanned,
+                          onTap: () => Navigator.of(context).push(
+                            CupertinoPageRoute<void>(
+                              builder: (_) => const AdvancedScreen(),
+                            ),
+                          ),
+                        ),
                       SettingsRow(
                         title: l10n.endpoint,
-                        subtitle: settings.scannerBypassed
-                            ? l10n.scannerOff
-                            : l10n.endpointManualHint,
+                        subtitle: settings.usesGool
+                            ? l10n.endpointIgnoredOnGool
+                            : (settings.scannerBypassed
+                                  ? l10n.scannerOff
+                                  : l10n.endpointManualHint),
+                        enabled: !settings.usesGool,
                         value: settings.endpoint.isEmpty
                             ? l10n.endpointAuto
                             : settings.endpoint,
