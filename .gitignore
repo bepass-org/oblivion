@@ -43,3 +43,16 @@ windows/hevtun/
 
 # psiphon android library, produced by tools/build-psiphon-aar.sh
 android/psiphon/*.aar
+
+# warp identities the core writes beside itself; these hold private keys and
+# access tokens, so they must never be committed
+aether.toml
+aether-masque.toml
+aether-secondary.toml
+aether-lastconn.toml
+aether-team-*.toml
+*.toml.corrupt
+
+# android release signing
+android/key.properties
+android/*.jks
