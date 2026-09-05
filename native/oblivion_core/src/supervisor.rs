@@ -2,7 +2,7 @@ use std::fs::{File, OpenOptions};
 use std::io::{BufRead, BufReader, Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::sync::{Arc, Mutex};
 use std::thread;
@@ -128,6 +128,7 @@ fn override_flag(arguments: &mut Vec<String>, flag: &str, value: &str) {
 }
 
 const VALIDATION_INTERVAL: Duration = Duration::from_secs(1);
+const CORE_WATCH_INTERVAL: Duration = Duration::from_secs(1);
 const RETAINED_LOG_LINES: usize = 2500;
 const MAX_TAILED_LOG_BYTES: u64 = 2 * 1024 * 1024;
 
@@ -182,12 +183,17 @@ fn hev_log_path(settings: &TunnelSettings) -> PathBuf {
 }
 
 fn gateway_from_log(line: &str) -> Option<String> {
-    const MARKERS: [&str; 5] = [
+    const MARKERS: [&str; 10] = [
         "using forced peer ",
-        "selected gateway ",
         "using cloudflare edge ",
+        "selected MASQUE gateway ",
+        "selected WireGuard endpoint ",
+        "the assigned endpoint ",
         "cached gateway ",
+        "cached endpoint ",
         "known-good gateway ",
+        "known-good WireGuard endpoint ",
+        "selected gateway ",
     ];
 
     for marker in MARKERS {
@@ -206,7 +212,23 @@ fn gateway_from_log(line: &str) -> Option<String> {
 }
 
 fn escape(value: &str) -> String {
-    value.replace('\\', "\\\\").replace('"', "\\\"")
+    let mut out = String::with_capacity(value.len() + 8);
+    for character in value.chars() {
+        match character {
+            '"' => out.push_str("\\\""),
+            '\\' => out.push_str("\\\\"),
+            '\n' => out.push_str("\\n"),
+            '\r' => out.push_str("\\r"),
+            '\t' => out.push_str("\\t"),
+            '\u{08}' => out.push_str("\\b"),
+            '\u{0c}' => out.push_str("\\f"),
+            c if (c as u32) < 0x20 => {
+                out.push_str(&format!("\\u{:04x}", c as u32));
+            }
+            c => out.push(c),
+        }
+    }
+    out
 }
 
 pub struct Supervisor {
@@ -217,6 +239,7 @@ pub struct Supervisor {
     log_tx: Sender<String>,
     log_rx: Mutex<Receiver<String>>,
     shutting_down: Arc<AtomicBool>,
+    session: AtomicU64,
     core_binary: Mutex<Option<PathBuf>>,
     psiphon_binary: Mutex<Option<PathBuf>>,
     device: TunnelDevice,
@@ -240,6 +263,7 @@ impl Supervisor {
             log_tx,
             log_rx: Mutex::new(log_rx),
             shutting_down: Arc::new(AtomicBool::new(false)),
+            session: AtomicU64::new(0),
             core_binary: Mutex::new(None),
             psiphon_binary: Mutex::new(None),
             device: TunnelDevice::new(),
@@ -495,6 +519,7 @@ impl Supervisor {
 
     pub fn connect(self: &Arc<Self>, settings: TunnelSettings, arguments: Vec<String>) {
         self.disconnect();
+        self.session.fetch_add(1, Ordering::SeqCst);
         self.shutting_down.store(false, Ordering::SeqCst);
         *self.observed_gateway.lock().unwrap() = settings.manual_gateway();
         *self.active.lock().unwrap() = Some(settings.clone());
@@ -840,7 +865,8 @@ impl Supervisor {
                     }
                 }
 
-                self.publish(Stage::Connected, None, gateway);
+                self.publish(Stage::Connected, None, gateway.clone());
+                self.watch_core(gateway);
                 return;
             }
 
@@ -860,6 +886,32 @@ impl Supervisor {
         }
         self.disconnect();
         self.publish(Stage::Failed, Some("validation timeout".into()), None);
+    }
+
+    fn watch_core(self: &Arc<Self>, gateway: Option<String>) {
+        let session = self.session.load(Ordering::SeqCst);
+
+        loop {
+            thread::sleep(CORE_WATCH_INTERVAL);
+
+            if self.shutting_down.load(Ordering::SeqCst)
+                || self.session.load(Ordering::SeqCst) != session
+            {
+                return;
+            }
+
+            if self.core_alive() {
+                continue;
+            }
+
+            self.log_from(
+                self.active_core(),
+                "[-] the core stopped after the tunnel was up",
+            );
+            self.disconnect();
+            self.publish(Stage::Failed, Some("core stopped".into()), gateway);
+            return;
+        }
     }
 
     fn core_alive(self: &Arc<Self>) -> bool {
@@ -1239,6 +1291,106 @@ impl Supervisor {
 impl Default for Supervisor {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+mod gateway_log_tests {
+    use super::gateway_from_log;
+
+    #[test]
+    fn every_line_the_core_uses_to_name_an_edge_is_recognised() {
+        let cases: [(&str, &str); 9] = [
+            (
+                "[aether] [+] using forced peer 162.159.198.1:443 (probe skipped)",
+                "162.159.198.1:443",
+            ),
+            (
+                "[aether] [+] using cloudflare edge 188.114.96.1:2408",
+                "188.114.96.1:2408",
+            ),
+            (
+                "[aether] [+] selected MASQUE gateway 162.159.197.3:443 (rtt 84ms)",
+                "162.159.197.3:443",
+            ),
+            (
+                "[aether] [+] selected WireGuard endpoint 162.159.192.1:894 (rtt 61ms)",
+                "162.159.192.1:894",
+            ),
+            (
+                "[aether] [+] the assigned endpoint 162.159.197.2:443 works; skipping the scan",
+                "162.159.197.2:443",
+            ),
+            (
+                "[aether] [+] cached gateway 162.159.196.1:443 still works; skipping scan",
+                "162.159.196.1:443",
+            ),
+            (
+                "[aether] [+] cached endpoint 188.114.97.1:500 still works (rtt 70ms); skipping scan",
+                "188.114.97.1:500",
+            ),
+            (
+                "[aether] [*] retrying last known-good gateway 162.159.195.1:443 before rescanning",
+                "162.159.195.1:443",
+            ),
+            (
+                "[aether] [*] retrying last known-good WireGuard endpoint 162.159.193.1:2408 before rescanning",
+                "162.159.193.1:2408",
+            ),
+        ];
+
+        for (line, expected) in cases {
+            assert_eq!(
+                gateway_from_log(line).as_deref(),
+                Some(expected),
+                "no edge was read out of: {line}"
+            );
+        }
+    }
+
+    #[test]
+    fn the_outer_hop_is_what_a_gool_line_yields() {
+        let line = "[aether] [+] using cloudflare edge 162.159.192.1:2408 (outer) \
+                    and 188.114.96.1:894 (inner)";
+        assert_eq!(gateway_from_log(line).as_deref(), Some("162.159.192.1:2408"));
+    }
+
+    #[test]
+    fn a_line_that_names_no_edge_yields_nothing() {
+        for line in [
+            "[aether] [+] selected protocol: WARP-in-WARP (gool)",
+            "[aether] [+] using ECHConfigList from AETHER_ECH",
+            "[aether] [*] scan mode=balanced ip=ipv4 candidates=812",
+            "",
+        ] {
+            assert_eq!(gateway_from_log(line), None, "unexpected edge in: {line}");
+        }
+    }
+}
+
+#[cfg(test)]
+mod snapshot_tests {
+    use super::escape;
+
+    #[test]
+    fn quotes_and_backslashes_are_escaped() {
+        assert_eq!(escape(r#"a "b" \c"#), r#"a \"b\" \\c"#);
+    }
+
+    #[test]
+    fn a_message_carrying_newlines_stays_valid_json() {
+        let rendered = format!("{{\"message\":\"{}\"}}", escape("line one\nline two\ttabbed"));
+        let parsed: serde_json::Value =
+            serde_json::from_str(&rendered).expect("the snapshot must stay parseable");
+        assert_eq!(parsed["message"], "line one\nline two\ttabbed");
+    }
+
+    #[test]
+    fn other_control_characters_are_escaped_rather_than_emitted_raw() {
+        let rendered = format!("{{\"message\":\"{}\"}}", escape("bell\u{07}here"));
+        let parsed: serde_json::Value =
+            serde_json::from_str(&rendered).expect("the snapshot must stay parseable");
+        assert_eq!(parsed["message"], "bell\u{07}here");
     }
 }
 

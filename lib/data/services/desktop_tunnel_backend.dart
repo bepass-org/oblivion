@@ -52,6 +52,7 @@ class DesktopTunnelBackend {
   void shutdown() {
     _poller?.cancel();
     _poller = null;
+    _bindings.disconnect();
   }
 
   Future<void> _registerCoreBinary() async {
