@@ -247,11 +247,40 @@ val buildAetherCore by tasks.registering {
             // A BoringSSL CMake cache left by a previous run (or restored by
             // CI) can record different compiler settings; CMake then deletes
             // the cache mid-configure and loses the NDK toolchain, silently
-            // building host-architecture objects. Always configure fresh.
-            File(aetherCoreDir, "target/$triple/release/build")
+            // building host-architecture objects. The archives live inside
+            // that cache, so it is only ever dropped together with the
+            // fingerprint: cargo would otherwise call boring-sys fresh, skip
+            // the build script, and leave quiche linking an ssl that is gone.
+            val releaseDir = File(aetherCoreDir, "target/$triple/release")
+            val wantedCompiler = File(toolchainBin, "clang").absolutePath
+
+            fun boringSysIn(group: String) = File(releaseDir, group)
                 .listFiles()
                 ?.filter { it.name.startsWith("boring-sys-") }
-                ?.forEach { File(it, "out/build").deleteRecursively() }
+                .orEmpty()
+
+            val boringBuilds = boringSysIn("build")
+            val healthy = boringBuilds.filter { candidate ->
+                val out = File(candidate, "out/build")
+                if (!File(out, "libssl.a").isFile) return@filter false
+                if (!File(out, "libcrypto.a").isFile) return@filter false
+
+                val cache = File(out, "CMakeCache.txt")
+                if (!cache.isFile) return@filter false
+                val recorded = cache.readLines()
+                    .firstOrNull { it.startsWith("CMAKE_C_COMPILER:") }
+                    ?.substringAfter('=')
+                recorded == null || recorded == wantedCompiler
+            }
+
+            val orphanFingerprint =
+                boringBuilds.isEmpty() && boringSysIn(".fingerprint").isNotEmpty()
+
+            if (healthy.size != boringBuilds.size || orphanFingerprint) {
+                logger.lifecycle("[aether] the boringssl cache for $abi is stale, rebuilding it")
+                boringBuilds.forEach { it.deleteRecursively() }
+                boringSysIn(".fingerprint").forEach { it.deleteRecursively() }
+            }
 
             logger.lifecycle("[aether] building the core for $abi ($triple)")
             val (status, output) = runCommand(
