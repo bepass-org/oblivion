@@ -6,6 +6,7 @@ use crate::settings::TunnelSettings;
 
 pub const CORE_AETHER: &str = "aether";
 pub const CORE_PSIPHON: &str = "psiphon";
+pub const CORE_CHAIN: &str = "chain";
 
 pub const MODE_AUTO: &str = "auto";
 pub const MODE_CDN: &str = "cdn";
@@ -49,6 +50,20 @@ const NON_INPROXY_PROTOCOLS: [&str; 14] = [
     "FRONTED-MEEK-CDN-HTTP-OSSH",
     "FRONTED-MEEK-QUIC-OSSH",
     "FRONTED-MEEK-CDN-QUIC-OSSH",
+];
+
+const CHAINED_PROTOCOLS: [&str; 11] = [
+    "SSH",
+    "OSSH",
+    "TLS-OSSH",
+    "UNFRONTED-MEEK-OSSH",
+    "UNFRONTED-MEEK-HTTPS-OSSH",
+    "UNFRONTED-MEEK-SESSION-TICKET-OSSH",
+    "SHADOWSOCKS-OSSH",
+    "FRONTED-MEEK-OSSH",
+    "FRONTED-MEEK-CDN-OSSH",
+    "FRONTED-MEEK-HTTP-OSSH",
+    "FRONTED-MEEK-CDN-HTTP-OSSH",
 ];
 
 const CENSORED_COUNTRY_CODES: [&str; 6] = ["IR", "CN", "RU", "TM", "BY", "MM"];
@@ -304,6 +319,31 @@ fn put_cdn_fronting(config: &mut Map<String, Value>, settings: &TunnelSettings) 
     );
 }
 
+pub fn chained_protocols(selected: &str) -> Vec<&'static str> {
+    let carries_udp = |name: &str| name.contains("QUIC") || name.starts_with("INPROXY");
+
+    match selected {
+        MODE_CDN => CDN_PROTOCOLS
+            .iter()
+            .copied()
+            .filter(|name| !carries_udp(name))
+            .collect(),
+        MODE_DIRECT => CHAINED_PROTOCOLS
+            .iter()
+            .copied()
+            .filter(|name| !name.starts_with("FRONTED"))
+            .collect(),
+        _ => CHAINED_PROTOCOLS.to_vec(),
+    }
+}
+
+pub fn chained_mode(settings: &TunnelSettings) -> &str {
+    match mode(settings) {
+        MODE_CONDUIT => MODE_AUTO,
+        other => other,
+    }
+}
+
 pub fn mode(settings: &TunnelSettings) -> &str {
     match settings.psiphon_mode.trim() {
         MODE_CDN => MODE_CDN,
@@ -368,7 +408,15 @@ pub fn build_config(settings: &TunnelSettings) -> Result<String, String> {
         config.insert("RemoteServerListSignaturePublicKey".into(), json!(list_key));
     }
 
-    let selected = mode(settings);
+    let chained = settings.uses_chain();
+    let selected = if chained { chained_mode(settings) } else { mode(settings) };
+
+    if chained {
+        config.insert(
+            "UpstreamProxyURL".into(),
+            json!(settings.chain_upstream_url()),
+        );
+    }
 
     if supports_inproxy() {
         config.insert(
@@ -396,6 +444,18 @@ pub fn build_config(settings: &TunnelSettings) -> Result<String, String> {
             "InproxyTunnelProtocolSelectionProbability".into(),
             json!(0.0),
         );
+    }
+
+    if chained {
+        config.insert(
+            "LimitTunnelProtocols".into(),
+            json!(chained_protocols(selected)),
+        );
+        if selected != MODE_AUTO {
+            config.insert("DisableTactics".into(), json!(true));
+        }
+        return serde_json::to_string_pretty(&Value::Object(config))
+            .map_err(|error| format!("could not render the psiphon config: {error}"));
     }
 
     match selected {
@@ -562,6 +622,64 @@ mod tests {
     fn rejected(json: &str) -> String {
         let settings = settings_from(json);
         build_config(&settings).expect_err("config should be refused")
+    }
+
+    fn protocols(config: &Value) -> Vec<String> {
+        config["LimitTunnelProtocols"]
+            .as_array()
+            .expect("the chain must pin the protocol list")
+            .iter()
+            .map(|entry| entry.as_str().unwrap().to_string())
+            .collect()
+    }
+
+    #[test]
+    fn a_chained_psiphon_dials_out_through_aether() {
+        let config = provisioned(r#"{"core":"chain","socksPort":1819}"#);
+        assert_eq!(config["UpstreamProxyURL"], "socks5://127.0.0.1:1829");
+        assert_eq!(config["LocalSocksProxyPort"], 1819);
+        assert_eq!(config["LocalHttpProxyPort"], 1820);
+    }
+
+    #[test]
+    fn an_unchained_psiphon_dials_out_on_its_own() {
+        let config = provisioned(r#"{"core":"psiphon"}"#);
+        assert!(config.get("UpstreamProxyURL").is_none());
+    }
+
+    #[test]
+    fn the_chain_keeps_to_protocols_a_socks_hop_can_carry() {
+        for entry in protocols(&provisioned(r#"{"core":"chain"}"#)) {
+            assert!(
+                !entry.contains("QUIC") && !entry.starts_with("INPROXY"),
+                "{entry} needs udp, which the socks hop cannot carry"
+            );
+        }
+    }
+
+    #[test]
+    fn a_chained_cdn_run_keeps_only_the_tcp_cdn_protocols() {
+        let entries = protocols(&provisioned(r#"{"core":"chain","psiphonMode":"cdn"}"#));
+        assert!(!entries.is_empty());
+        for entry in entries {
+            assert!(entry.contains("CDN"), "{entry} is not a cdn protocol");
+            assert!(!entry.contains("QUIC"), "{entry} needs udp");
+        }
+    }
+
+    #[test]
+    fn a_chained_direct_run_drops_the_fronted_protocols() {
+        for entry in protocols(&provisioned(r#"{"core":"chain","psiphonMode":"direct"}"#)) {
+            assert!(!entry.starts_with("FRONTED"), "{entry} is fronted");
+        }
+    }
+
+    #[test]
+    fn conduit_falls_back_to_auto_in_a_chain_rather_than_failing() {
+        let config = provisioned(r#"{"core":"chain","psiphonMode":"conduit"}"#);
+        for entry in protocols(&config) {
+            assert!(!entry.starts_with("INPROXY"), "{entry} cannot be chained");
+        }
     }
 
     #[test]

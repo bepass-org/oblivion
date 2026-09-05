@@ -975,6 +975,25 @@ class L10nEn extends L10n {
   String get corePsiphonDesc => 'Psiphon network with CDN fronting';
 
   @override
+  String get coreChain => 'Aether + Psiphon';
+
+  @override
+  String get coreChainDesc =>
+      'Bring up Aether first, then run Psiphon through it.';
+
+  @override
+  String get chainOrder => 'Chain order';
+
+  @override
+  String chainOrderDesc(String transport) {
+    return '$transport connects first, then Psiphon dials out through it.';
+  }
+
+  @override
+  String get chainNeedsTcp =>
+      'Chained through Aether, so Psiphon keeps to its TCP protocols.';
+
+  @override
   String get psiphonSettings => 'Psiphon';
 
   @override

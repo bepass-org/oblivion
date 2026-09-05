@@ -79,7 +79,7 @@ class AetherVpnService : VpnService() {
         publish(TunnelStage.CONNECTING, null)
         startForegroundNotification(TunnelStage.CONNECTING)
 
-        if (target.core == CORE_PSIPHON) {
+        if (target.psiphonOnly) {
             startPsiphonTunnel(target)
         } else {
             startAetherTunnel(target)
@@ -104,7 +104,7 @@ class AetherVpnService : VpnService() {
         scheduleValidation(target)
     }
 
-    private fun startPsiphonTunnel(target: TunnelConfig) {
+    private fun startPsiphonTunnel(target: TunnelConfig, validate: Boolean = true) {
         val dataDir = File(filesDir, PSIPHON_DATA_DIR)
         if (!dataDir.exists() && !dataDir.mkdirs()) {
             stopTunnel(TunnelStage.FAILED, "could not prepare the psiphon data directory")
@@ -131,15 +131,15 @@ class AetherVpnService : VpnService() {
         )
         psiphon = psiphonRunner
         psiphonRunner.start()
-        if (!psiphonRunner.isRunning) return
+        if (!psiphonRunner.isRunning || !validate) return
 
         scheduleValidation(target)
     }
 
     private fun coreEnvironment(target: TunnelConfig): Map<String, String> {
         val environment = mutableMapOf(
-            "AETHER_SOCKS" to "${target.bindHost}:${target.socksPort}",
-            "AETHER_HTTP_PROXY" to "${target.bindHost}:${target.httpProxyPort}",
+            "AETHER_SOCKS" to "${target.aetherBindHost}:${target.aetherSocksPort}",
+            "AETHER_HTTP_PROXY" to "${target.aetherBindHost}:${target.aetherHttpProxyPort}",
             "AETHER_PROTOCOL" to target.protocol,
             "AETHER_SCAN" to target.scanMode,
             "AETHER_NOIZE" to target.noizeProfile,
@@ -187,10 +187,14 @@ class AetherVpnService : VpnService() {
         return environment
     }
 
-    private fun logSource(): String =
-        config?.core?.trim()?.takeIf { it.isNotEmpty() } ?: CORE_AETHER
+    private fun logSource(): String {
+        val active = config ?: return CORE_AETHER
+        return if (active.psiphonOnly) CORE_PSIPHON else CORE_AETHER
+    }
 
     private fun activeCoreIsRunning(): Boolean = when {
+        core != null && psiphon != null ->
+            core?.isRunning == true && psiphon?.isRunning == true
         psiphon != null -> psiphon?.isRunning == true
         else -> core?.isRunning == true
     }
@@ -199,11 +203,12 @@ class AetherVpnService : VpnService() {
         val scheduler = Executors.newSingleThreadScheduledExecutor()
         validator = scheduler
 
-        val usesPsiphon = target.core == CORE_PSIPHON
-        val budgetMs = if (usesPsiphon) {
-            PSIPHON_VALIDATION_BUDGET_MS
-        } else {
-            validationBudgetMs(target.scanMode)
+        val usesPsiphon = target.psiphonOnly
+        val budgetMs = when {
+            usesPsiphon -> PSIPHON_VALIDATION_BUDGET_MS
+            target.usesChain ->
+                validationBudgetMs(target.scanMode) + PSIPHON_VALIDATION_BUDGET_MS
+            else -> validationBudgetMs(target.scanMode)
         }
         val deadline = System.currentTimeMillis() + budgetMs
         var announcedValidating = false
@@ -241,7 +246,24 @@ class AetherVpnService : VpnService() {
                 publish(TunnelStage.VALIDATING, null)
             }
 
-            if (!SocksProbe.reachable(target.socksPort)) return@scheduleWithFixedDelay
+            if (!SocksProbe.reachable(target.aetherSocksPort)) return@scheduleWithFixedDelay
+
+            if (target.usesChain) {
+                if (psiphon == null) {
+                    TunnelBus.log(
+                        CORE_PSIPHON,
+                        "[*] aether is up on ${target.aetherSocksPort}; " +
+                            "starting psiphon through it",
+                    )
+                    startPsiphonTunnel(target, validate = false)
+                    return@scheduleWithFixedDelay
+                }
+                if (!SocksProbe.reachable(target.socksPort)) return@scheduleWithFixedDelay
+                TunnelBus.log(
+                    CORE_PSIPHON,
+                    "[+] the chain is up: traffic goes through aether, then psiphon",
+                )
+            }
 
             TunnelBus.log(logSource(), "[+] socks5 proxy answered a real request")
             if (target.proxyOnly) {

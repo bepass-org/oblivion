@@ -81,7 +81,7 @@ fn attempt_ladder(settings: &TunnelSettings) -> Vec<Attempt> {
         budget: validation_budget(&settings.scan_mode),
     };
 
-    if settings.uses_psiphon() || !settings.fast_first_connect {
+    if settings.psiphon_only() || !settings.fast_first_connect {
         return vec![configured];
     }
 
@@ -129,6 +129,7 @@ fn override_flag(arguments: &mut Vec<String>, flag: &str, value: &str) {
 
 const VALIDATION_INTERVAL: Duration = Duration::from_secs(1);
 const CORE_WATCH_INTERVAL: Duration = Duration::from_secs(1);
+const CHAIN_PSIPHON_BUDGET: Duration = Duration::from_secs(180);
 const RETAINED_LOG_LINES: usize = 2500;
 const MAX_TAILED_LOG_BYTES: u64 = 2 * 1024 * 1024;
 
@@ -233,6 +234,7 @@ fn escape(value: &str) -> String {
 
 pub struct Supervisor {
     core: Mutex<Option<Child>>,
+    psiphon: Mutex<Option<Child>>,
     core_input: Mutex<Option<std::process::ChildStdin>>,
     snapshot: Mutex<Snapshot>,
     logs: Mutex<Vec<String>>,
@@ -257,6 +259,7 @@ impl Supervisor {
         let (log_tx, log_rx) = channel();
         Self {
             core: Mutex::new(None),
+            psiphon: Mutex::new(None),
             core_input: Mutex::new(None),
             snapshot: Mutex::new(Snapshot::disconnected()),
             logs: Mutex::new(Vec::new()),
@@ -330,7 +333,7 @@ impl Supervisor {
     }
 
     fn binary_for(&self, settings: &TunnelSettings) -> Option<PathBuf> {
-        if settings.uses_psiphon() {
+        if settings.psiphon_only() {
             self.psiphon_binary.lock().unwrap().clone()
         } else {
             self.core_binary.lock().unwrap().clone()
@@ -405,12 +408,14 @@ impl Supervisor {
         if source == psiphon::CORE_PSIPHON {
             if let Some(notice) = psiphon::parse_notice(trimmed) {
                 if let psiphon::Notice::RouteBypass(address) = &notice {
-                    let mut observed = self.observed_gateway.lock().unwrap();
-                    if observed.as_deref() != Some(address.as_str()) {
-                        *observed = Some(address.clone());
-                        drop(observed);
-                        let mut snapshot = self.snapshot.lock().unwrap();
-                        snapshot.gateway = Some(address.clone());
+                    if !self.chained() {
+                        let mut observed = self.observed_gateway.lock().unwrap();
+                        if observed.as_deref() != Some(address.as_str()) {
+                            *observed = Some(address.clone());
+                            drop(observed);
+                            let mut snapshot = self.snapshot.lock().unwrap();
+                            snapshot.gateway = Some(address.clone());
+                        }
                     }
                 }
                 if let psiphon::Notice::Tunnels(count) = notice {
@@ -590,7 +595,7 @@ impl Supervisor {
         }
 
         let mut arguments = arguments;
-        if settings.uses_psiphon() {
+        if settings.psiphon_only() {
             match self.stage_psiphon_config(&settings) {
                 Ok(prepared) => arguments = prepared,
                 Err(error) => {
@@ -610,7 +615,7 @@ impl Supervisor {
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
 
-        if !settings.uses_psiphon() {
+        if settings.runs_aether() {
             for (key, value) in settings.core_environment() {
                 command.env(key, value);
             }
@@ -663,6 +668,7 @@ impl Supervisor {
     }
 
     fn stop_core(&self) {
+        self.stop_psiphon();
         drop(self.core_input.lock().unwrap().take());
 
         let mut guard = self.core.lock().unwrap();
@@ -826,8 +832,20 @@ impl Supervisor {
                 return;
             }
 
-            if probe::socks_reachable(settings.socks_port) {
+            if probe::socks_reachable(settings.aether_socks_port()) {
                 self.log_from(self.active_core(), "[+] socks5 proxy answered a real request");
+
+                if settings.uses_chain() {
+                    if let Err(error) = self.raise_chain(&settings) {
+                        self.log_from(psiphon::CORE_PSIPHON, format!("[-] {error}"));
+                        if self.escalate(&settings, &base_arguments, &ladder, index) {
+                            return;
+                        }
+                        self.disconnect();
+                        self.publish(Stage::Failed, Some(error), None);
+                        return;
+                    }
+                }
                 
                 // For psiphon tunnel mode, wait for the Tunnels notice with count > 0
                 // which means at least one tunnel is active
@@ -888,6 +906,131 @@ impl Supervisor {
         self.publish(Stage::Failed, Some("validation timeout".into()), None);
     }
 
+    fn raise_chain(self: &Arc<Self>, settings: &TunnelSettings) -> Result<(), String> {
+        self.log_from(
+            psiphon::CORE_PSIPHON,
+            format!(
+                "[*] aether is up on {}; starting psiphon through it",
+                settings.aether_socks_port()
+            ),
+        );
+
+        self.spawn_psiphon(settings)?;
+
+        let deadline = Instant::now() + CHAIN_PSIPHON_BUDGET;
+        while Instant::now() < deadline {
+            if self.shutting_down.load(Ordering::SeqCst) {
+                return Err("cancelled".to_string());
+            }
+            if !self.psiphon_alive() {
+                return Err("the psiphon core stopped before the chain came up".to_string());
+            }
+            if probe::socks_reachable(settings.socks_port) {
+                self.log_from(
+                    psiphon::CORE_PSIPHON,
+                    "[+] the chain is up: traffic goes through aether, then psiphon",
+                );
+                return Ok(());
+            }
+            thread::sleep(VALIDATION_INTERVAL);
+        }
+
+        Err(format!(
+            "psiphon did not come up through aether within {}s",
+            CHAIN_PSIPHON_BUDGET.as_secs()
+        ))
+    }
+
+    fn spawn_psiphon(self: &Arc<Self>, settings: &TunnelSettings) -> Result<(), String> {
+        let binary = self
+            .psiphon_binary
+            .lock()
+            .unwrap()
+            .clone()
+            .ok_or_else(|| "the psiphon core binary path was never registered".to_string())?;
+
+        if !binary.exists() {
+            return Err(format!(
+                "psiphon core binary not found at {}",
+                binary.display()
+            ));
+        }
+
+        let arguments = self.stage_psiphon_config(settings)?;
+
+        let mut command = Command::new(&binary);
+        command
+            .args(&arguments)
+            .stdin(Stdio::null())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped());
+
+        #[cfg(unix)]
+        if settings.tunnel_mode() && net::is_privileged() {
+            let dedicated = settings
+                .bypass_uid
+                .filter(|uid| *uid != net::effective_uid());
+            if let Some(uid) = dedicated {
+                use std::os::unix::process::CommandExt;
+                unsafe {
+                    command.pre_exec(move || {
+                        if libc::setgid(uid) != 0 || libc::setuid(uid) != 0 {
+                            return Err(std::io::Error::last_os_error());
+                        }
+                        Ok(())
+                    });
+                }
+            }
+        }
+
+        let mut child = command
+            .spawn()
+            .map_err(|error| format!("failed to launch the psiphon core: {error}"))?;
+
+        self.log_from(
+            psiphon::CORE_PSIPHON,
+            format!("[+] psiphon core started: {}", arguments.join(" ")),
+        );
+
+        if let Some(stdout) = child.stdout.take() {
+            self.spawn_log_reader(stdout, psiphon::CORE_PSIPHON);
+        }
+        if let Some(stderr) = child.stderr.take() {
+            self.spawn_log_reader(stderr, psiphon::CORE_PSIPHON);
+        }
+
+        *self.psiphon.lock().unwrap() = Some(child);
+        Ok(())
+    }
+
+    fn psiphon_alive(&self) -> bool {
+        let mut guard = match self.psiphon.lock() {
+            Ok(guard) => guard,
+            Err(_) => return true,
+        };
+        match guard.as_mut() {
+            Some(child) => !matches!(child.try_wait(), Ok(Some(_))),
+            None => false,
+        }
+    }
+
+    fn stop_psiphon(&self) {
+        let mut guard = self.psiphon.lock().unwrap();
+        if let Some(mut child) = guard.take() {
+            let _ = child.kill();
+            let _ = child.wait();
+        }
+    }
+
+    fn chained(&self) -> bool {
+        self.active
+            .lock()
+            .unwrap()
+            .as_ref()
+            .map(TunnelSettings::uses_chain)
+            .unwrap_or(false)
+    }
+
     fn watch_core(self: &Arc<Self>, gateway: Option<String>) {
         let session = self.session.load(Ordering::SeqCst);
 
@@ -900,13 +1043,13 @@ impl Supervisor {
                 return;
             }
 
-            if self.core_alive() {
+            if self.core_alive() && (!self.chained() || self.psiphon_alive()) {
                 continue;
             }
 
             self.log_from(
                 self.active_core(),
-                "[-] the core stopped after the tunnel was up",
+                "[-] a core stopped after the tunnel was up",
             );
             self.disconnect();
             self.publish(Stage::Failed, Some("core stopped".into()), gateway);
@@ -1271,6 +1414,7 @@ impl Supervisor {
         self.shutting_down.store(true, Ordering::SeqCst);
         self.lower_system_proxy();
         self.lower_device();
+        self.stop_psiphon();
 
         drop(self.core_input.lock().unwrap().take());
 

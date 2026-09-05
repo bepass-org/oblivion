@@ -1897,6 +1897,36 @@ abstract class L10n {
   /// **'Psiphon network with CDN fronting'**
   String get corePsiphonDesc;
 
+  /// No description provided for @coreChain.
+  ///
+  /// In en, this message translates to:
+  /// **'Aether + Psiphon'**
+  String get coreChain;
+
+  /// No description provided for @coreChainDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Bring up Aether first, then run Psiphon through it.'**
+  String get coreChainDesc;
+
+  /// No description provided for @chainOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Chain order'**
+  String get chainOrder;
+
+  /// No description provided for @chainOrderDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'{transport} connects first, then Psiphon dials out through it.'**
+  String chainOrderDesc(String transport);
+
+  /// No description provided for @chainNeedsTcp.
+  ///
+  /// In en, this message translates to:
+  /// **'Chained through Aether, so Psiphon keeps to its TCP protocols.'**
+  String get chainNeedsTcp;
+
   /// No description provided for @psiphonSettings.
   ///
   /// In en, this message translates to:

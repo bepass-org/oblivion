@@ -976,6 +976,25 @@ class L10nFa extends L10n {
   String get corePsiphonDesc => 'شبکه سایفون با CDN fronting';
 
   @override
+  String get coreChain => 'Aether + سایفون';
+
+  @override
+  String get coreChainDesc =>
+      'اول Aether بالا می‌آید، بعد سایفون از داخل آن اجرا می‌شود.';
+
+  @override
+  String get chainOrder => 'ترتیب زنجیره';
+
+  @override
+  String chainOrderDesc(String transport) {
+    return 'اول $transport وصل می‌شود، بعد سایفون از داخل آن بیرون می‌رود.';
+  }
+
+  @override
+  String get chainNeedsTcp =>
+      'چون از داخل ایثر می‌رود، سایفون فقط پروتکل‌های TCP خود را به کار می‌گیرد.';
+
+  @override
   String get psiphonSettings => 'سایفون';
 
   @override

@@ -47,6 +47,20 @@ object PsiphonConfig {
         "FRONTED-MEEK-CDN-QUIC-OSSH",
     )
 
+    private val CHAINED_PROTOCOLS = listOf(
+        "SSH",
+        "OSSH",
+        "TLS-OSSH",
+        "UNFRONTED-MEEK-OSSH",
+        "UNFRONTED-MEEK-HTTPS-OSSH",
+        "UNFRONTED-MEEK-SESSION-TICKET-OSSH",
+        "SHADOWSOCKS-OSSH",
+        "FRONTED-MEEK-OSSH",
+        "FRONTED-MEEK-CDN-OSSH",
+        "FRONTED-MEEK-HTTP-OSSH",
+        "FRONTED-MEEK-CDN-HTTP-OSSH",
+    )
+
     private val CENSORED_COUNTRY_CODES = listOf("IR", "CN", "RU", "TM", "BY", "MM")
 
     private const val PROPAGATION_CHANNEL_ID = "FFFFFFFFFFFFFFFF"
@@ -70,6 +84,21 @@ object PsiphonConfig {
             "u/YtlwjjreZrGRmG8KMOzukV3lLmMppXFMvl4bxv6YFEmIuTsOhbLTwFgh7KYNjodLj/LsqRVfwz" +
             "31PgWQFTEPICV7GCvgVlPRxnofqKSjgTWI4mxDhBpVcATvaoBl1L/6WLbFvBsoAUBItWwctO2xal" +
             "KxF5szhGm8lccoc5MZr8kfE0uxMgsxz4er68iCID+rsCAQM="
+
+    fun chainedProtocols(selected: String): List<String> {
+        fun carriesUdp(name: String) = name.contains("QUIC") || name.startsWith("INPROXY")
+
+        return when (selected) {
+            MODE_CDN -> CDN_PROTOCOLS.filterNot(::carriesUdp)
+            MODE_DIRECT -> CHAINED_PROTOCOLS.filterNot { it.startsWith("FRONTED") }
+            else -> CHAINED_PROTOCOLS
+        }
+    }
+
+    fun chainedMode(raw: String): String = when (val selected = mode(raw)) {
+        MODE_CONDUIT -> MODE_AUTO
+        else -> selected
+    }
 
     fun mode(raw: String): String = when (raw.trim()) {
         MODE_CDN -> MODE_CDN
@@ -116,7 +145,12 @@ object PsiphonConfig {
             config.put("ServerEntrySignaturePublicKey", SERVER_ENTRY_SIGNATURE_PUBLIC_KEY)
         }
 
-        val selected = mode(target.psiphonMode)
+        val chained = target.usesChain
+        val selected = if (chained) chainedMode(target.psiphonMode) else mode(target.psiphonMode)
+
+        if (chained) {
+            config.put("UpstreamProxyURL", target.chainUpstreamUrl)
+        }
 
         if (selected == MODE_CONDUIT && !supportsInproxy) {
             throw IllegalStateException(
@@ -132,6 +166,12 @@ object PsiphonConfig {
         if (!supportsInproxy) {
             config.put("InproxyTunnelProtocolPreferProbability", 0.0)
             config.put("InproxyTunnelProtocolSelectionProbability", 0.0)
+        }
+
+        if (chained) {
+            config.put("LimitTunnelProtocols", JSONArray(chainedProtocols(selected)))
+            if (selected != MODE_AUTO) config.put("DisableTactics", true)
+            return config.toString()
         }
 
         when (selected) {

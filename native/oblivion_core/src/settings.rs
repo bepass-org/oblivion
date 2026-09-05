@@ -145,16 +145,62 @@ pub struct ConnectRequest {
 }
 
 impl TunnelSettings {
-    pub fn uses_psiphon(&self) -> bool {
+    pub fn uses_chain(&self) -> bool {
+        self.core.trim().eq_ignore_ascii_case(crate::psiphon::CORE_CHAIN)
+    }
+
+    pub fn psiphon_only(&self) -> bool {
         self.core.trim().eq_ignore_ascii_case(crate::psiphon::CORE_PSIPHON)
     }
 
+    pub fn runs_aether(&self) -> bool {
+        !self.psiphon_only()
+    }
+
+    pub fn runs_psiphon(&self) -> bool {
+        self.psiphon_only() || self.uses_chain()
+    }
+
     pub fn core_name(&self) -> &'static str {
-        if self.uses_psiphon() {
+        if self.psiphon_only() {
             crate::psiphon::CORE_PSIPHON
         } else {
             crate::psiphon::CORE_AETHER
         }
+    }
+
+    pub fn aether_socks_port(&self) -> u16 {
+        if !self.uses_chain() {
+            return self.socks_port;
+        }
+        match self.socks_port.checked_add(11) {
+            Some(_) => self.socks_port + 10,
+            None => self.socks_port.saturating_sub(10),
+        }
+    }
+
+    pub fn aether_http_port(&self) -> u16 {
+        self.aether_socks_port().saturating_add(1)
+    }
+
+    fn aether_bind_host(&self) -> &'static str {
+        if self.allow_lan && !self.uses_chain() {
+            "0.0.0.0"
+        } else {
+            "127.0.0.1"
+        }
+    }
+
+    pub fn aether_bind_address(&self) -> String {
+        format!("{}:{}", self.aether_bind_host(), self.aether_socks_port())
+    }
+
+    pub fn aether_http_address(&self) -> String {
+        format!("{}:{}", self.aether_bind_host(), self.aether_http_port())
+    }
+
+    pub fn chain_upstream_url(&self) -> String {
+        format!("socks5://127.0.0.1:{}", self.aether_socks_port())
     }
 
     pub fn uses_gool(&self) -> bool {
@@ -216,8 +262,8 @@ impl TunnelSettings {
 
     pub fn core_environment(&self) -> Vec<(String, String)> {
         let mut env = vec![
-            ("AETHER_SOCKS".to_string(), self.bind_address()),
-            ("AETHER_HTTP_PROXY".to_string(), self.http_proxy_address()),
+            ("AETHER_SOCKS".to_string(), self.aether_bind_address()),
+            ("AETHER_HTTP_PROXY".to_string(), self.aether_http_address()),
             ("AETHER_PROTOCOL".to_string(), self.protocol.clone()),
             ("AETHER_SCAN".to_string(), self.scan_mode.clone()),
             ("AETHER_NOIZE".to_string(), self.noize()),
@@ -517,6 +563,89 @@ mod zero_trust_tests {
     fn the_gateway_proxy_needs_a_team_to_apply() {
         let env = settings_from(r#"{"gatewayProxy":true}"#).core_environment();
         assert!(value_of(&env, "AETHER_GATEWAY").is_none());
+    }
+}
+
+#[cfg(test)]
+mod chain_tests {
+    use super::*;
+
+    fn settings_from(json: &str) -> TunnelSettings {
+        serde_json::from_str(json).expect("settings should parse")
+    }
+
+    fn value_of<'a>(env: &'a [(String, String)], key: &str) -> Option<&'a str> {
+        env.iter()
+            .find(|(name, _)| name == key)
+            .map(|(_, value)| value.as_str())
+    }
+
+    #[test]
+    fn a_plain_aether_run_keeps_the_public_ports() {
+        let settings = settings_from("{}");
+        assert!(!settings.uses_chain());
+        assert_eq!(settings.aether_socks_port(), settings.socks_port);
+        assert_eq!(settings.aether_bind_address(), settings.bind_address());
+    }
+
+    #[test]
+    fn chaining_moves_aether_aside_so_psiphon_holds_the_public_port() {
+        let settings = settings_from(r#"{"core":"chain","socksPort":1819}"#);
+        assert_eq!(settings.socks_port, 1819);
+        assert_eq!(settings.aether_socks_port(), 1829);
+        assert_eq!(settings.aether_http_port(), 1830);
+        assert_eq!(settings.http_proxy_port(), 1820);
+    }
+
+    #[test]
+    fn the_core_is_told_to_listen_on_the_inner_port() {
+        let env = settings_from(r#"{"core":"chain","socksPort":1819}"#).core_environment();
+        assert_eq!(value_of(&env, "AETHER_SOCKS"), Some("127.0.0.1:1829"));
+        assert_eq!(value_of(&env, "AETHER_HTTP_PROXY"), Some("127.0.0.1:1830"));
+    }
+
+    #[test]
+    fn a_chained_inner_port_stays_on_loopback_even_when_lan_is_allowed() {
+        let settings = settings_from(r#"{"core":"chain","allowLan":true}"#);
+        assert!(settings.aether_bind_address().starts_with("127.0.0.1:"));
+        assert!(settings.bind_address().starts_with("0.0.0.0:"));
+    }
+
+    #[test]
+    fn a_socks_port_near_the_ceiling_shifts_downwards_instead_of_overflowing() {
+        let settings = settings_from(r#"{"core":"chain","socksPort":65530}"#);
+        assert_eq!(settings.aether_socks_port(), 65520);
+        assert_eq!(settings.aether_http_port(), 65521);
+    }
+
+    #[test]
+    fn psiphon_is_pointed_at_the_port_aether_listens_on() {
+        let settings = settings_from(r#"{"core":"chain","socksPort":1819}"#);
+        assert_eq!(settings.chain_upstream_url(), "socks5://127.0.0.1:1829");
+    }
+
+    #[test]
+    fn a_chain_runs_both_cores_and_leads_with_aether() {
+        let settings = settings_from(r#"{"core":"chain"}"#);
+        assert!(settings.runs_aether());
+        assert!(settings.runs_psiphon());
+        assert!(!settings.psiphon_only());
+        assert_eq!(settings.core_name(), crate::psiphon::CORE_AETHER);
+    }
+
+    #[test]
+    fn psiphon_on_its_own_runs_no_aether() {
+        let settings = settings_from(r#"{"core":"psiphon"}"#);
+        assert!(!settings.runs_aether());
+        assert!(settings.runs_psiphon());
+        assert!(settings.psiphon_only());
+    }
+
+    #[test]
+    fn aether_on_its_own_runs_no_psiphon() {
+        let settings = settings_from(r#"{"core":"aether"}"#);
+        assert!(settings.runs_aether());
+        assert!(!settings.runs_psiphon());
     }
 }
 

@@ -338,6 +338,18 @@
   "coreAetherDesc": "Cloudflare WARP and MASQUE",
   "corePsiphon": "Psiphon",
   "corePsiphonDesc": "Psiphon network with CDN fronting",
+  "coreChain": "Aether + Psiphon",
+  "coreChainDesc": "Bring up Aether first, then run Psiphon through it.",
+  "chainOrder": "Chain order",
+  "chainOrderDesc": "{transport} connects first, then Psiphon dials out through it.",
+  "@chainOrderDesc": {
+    "placeholders": {
+      "transport": {
+        "type": "String"
+      }
+    }
+  },
+  "chainNeedsTcp": "Chained through Aether, so Psiphon keeps to its TCP protocols.",
   "psiphonSettings": "Psiphon",
   "psiphonCountry": "Country",
   "psiphonCountryAuto": "Automatic",

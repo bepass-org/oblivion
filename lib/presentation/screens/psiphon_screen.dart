@@ -61,6 +61,11 @@ class PsiphonScreen extends ConsumerWidget {
                 ScreenHeader(title: l10n.psiphonSettings),
                 SettingsGroup(
                   children: <Widget>[
+                    if (settings.usesChain)
+                      SettingsRow(
+                        title: l10n.coreChain,
+                        subtitle: l10n.chainNeedsTcp,
+                      ),
                     SettingsRow(
                       title: l10n.psiphonCountry,
                       subtitle: l10n.psiphonCountryDesc,
@@ -90,6 +95,11 @@ class PsiphonScreen extends ConsumerWidget {
                         title: l10n.psiphonMode,
                         selected: settings.psiphonMode,
                         options: PsiphonMode.values
+                            .where(
+                              (value) =>
+                                  !settings.usesChain ||
+                                  value != PsiphonMode.conduit,
+                            )
                             .map(
                               (value) => PickerOption<PsiphonMode>(
                                 value: value,

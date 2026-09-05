@@ -2,7 +2,8 @@ import 'dart:io';
 
 enum CoreEngine {
   aether('aether'),
-  psiphon('psiphon');
+  psiphon('psiphon'),
+  chain('chain');
 
   const CoreEngine(this.wire);
 
@@ -315,9 +316,27 @@ class TunnelSettings {
   final String accessEmail;
   final bool gatewayProxy;
 
-  bool get usesPsiphon => core == CoreEngine.psiphon;
+  bool get usesChain => core == CoreEngine.chain;
 
-  bool get usesAether => core == CoreEngine.aether;
+  bool get usesPsiphon => core == CoreEngine.psiphon || usesChain;
+
+  bool get usesAether => core == CoreEngine.aether || usesChain;
+
+  bool get psiphonOnly => core == CoreEngine.psiphon;
+
+  int get _chainPortShift => socksPort + 11 <= 65535 ? 10 : -10;
+
+  int get aetherSocksPort => usesChain ? socksPort + _chainPortShift : socksPort;
+
+  int get aetherHttpProxyPort => aetherSocksPort + 1;
+
+  String get aetherBindAddress =>
+      '${allowLan && !usesChain ? '0.0.0.0' : '127.0.0.1'}:$aetherSocksPort';
+
+  String get aetherHttpProxyAddress =>
+      '${allowLan && !usesChain ? '0.0.0.0' : '127.0.0.1'}:$aetherHttpProxyPort';
+
+  String get chainUpstreamUrl => 'socks5://127.0.0.1:$aetherSocksPort';
 
   bool get psiphonUsesCdnFronting => psiphonMode != PsiphonMode.conduit;
 
@@ -608,13 +627,13 @@ class TunnelSettings {
       .toList();
 
   List<String> toCoreArguments() {
-    if (usesPsiphon) return const <String>[];
+    if (psiphonOnly) return const <String>[];
 
     final args = <String>[
       '--bind',
-      bindAddress,
+      aetherBindAddress,
       '--http-proxy',
-      httpProxyAddress,
+      aetherHttpProxyAddress,
       '--scan',
       scanMode.wire,
       '--noize',

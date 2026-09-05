@@ -42,6 +42,28 @@ data class TunnelConfig(
 
     val httpProxyPort: Int get() = socksPort + 1
 
+    val usesChain: Boolean get() = core == CORE_CHAIN
+
+    val psiphonOnly: Boolean get() = core == CORE_PSIPHON
+
+    val runsAether: Boolean get() = !psiphonOnly
+
+    val runsPsiphon: Boolean get() = psiphonOnly || usesChain
+
+    val aetherSocksPort: Int
+        get() = when {
+            !usesChain -> socksPort
+            socksPort + 11 <= 65535 -> socksPort + 10
+            else -> socksPort - 10
+        }
+
+    val aetherHttpProxyPort: Int get() = aetherSocksPort + 1
+
+    val aetherBindHost: String
+        get() = if (allowLan && !usesChain) "0.0.0.0" else "127.0.0.1"
+
+    val chainUpstreamUrl: String get() = "socks5://127.0.0.1:$aetherSocksPort"
+
     val bypassSelected: Boolean get() = splitTunnelMode == "bypassSelected"
 
     val usesZeroTrust: Boolean get() = team.isNotBlank()
@@ -95,6 +117,10 @@ data class TunnelConfig(
     }
 
     companion object {
+        const val CORE_AETHER = "aether"
+        const val CORE_PSIPHON = "psiphon"
+        const val CORE_CHAIN = "chain"
+
         const val TUN_MTU = 8500
         const val TUN_IPV4 = "198.18.0.1"
         const val TUN_IPV6 = "fc00::1"

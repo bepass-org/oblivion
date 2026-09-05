@@ -20,11 +20,13 @@ import 'zero_trust_screen.dart';
 String coreTitle(L10n l10n, CoreEngine value) => switch (value) {
   CoreEngine.aether => l10n.coreAether,
   CoreEngine.psiphon => l10n.corePsiphon,
+  CoreEngine.chain => l10n.coreChain,
 };
 
 String coreDesc(L10n l10n, CoreEngine value) => switch (value) {
   CoreEngine.aether => l10n.coreAetherDesc,
   CoreEngine.psiphon => l10n.corePsiphonDesc,
+  CoreEngine.chain => l10n.coreChainDesc,
 };
 
 String protocolTitle(L10n l10n, CoreProtocol value) => switch (value) {
@@ -130,6 +132,15 @@ class SettingsScreen extends ConsumerWidget {
                             controller.update((s) => s.copyWith(core: v)),
                       ),
                     ),
+                    if (settings.usesChain)
+                      SettingsRow(
+                        title: l10n.chainOrder,
+                        subtitle: l10n.chainOrderDesc(
+                          protocolTitle(l10n, settings.protocol),
+                        ),
+                        value: '${settings.aetherSocksPort} → '
+                            '${settings.socksPort}',
+                      ),
                     if (settings.usesPsiphon)
                       SettingsRow(
                         title: l10n.psiphonSettings,
