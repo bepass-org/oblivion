@@ -15,7 +15,7 @@ class L10nEn extends L10n {
   String get appDisplayName => 'Oblivion';
 
   @override
-  String get appTagline => 'Internet for all, or no one';
+  String get appTagline => 'Free internet for all, or no one';
 
   @override
   String get introMeaning => 'Means \"unawareness, ignorance\"';
@@ -736,7 +736,7 @@ class L10nEn extends L10n {
   String get logsCopied => 'Copied to clipboard';
 
   @override
-  String get introSlogan => 'Internet for All, or No One';
+  String get introSlogan => 'Free Internet for All, or No One';
 
   @override
   String get trayShow => 'Show Oblivion';

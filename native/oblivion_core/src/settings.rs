@@ -625,6 +625,17 @@ mod chain_tests {
     }
 
     #[test]
+    fn a_chain_leaves_the_masque_transport_exactly_as_it_was_picked() {
+        let h3 = settings_from(r#"{"core":"chain","protocol":"masque","transport":"h3"}"#)
+            .core_environment();
+        assert!(value_of(&h3, "AETHER_MASQUE_HTTP2").is_none());
+
+        let h2 = settings_from(r#"{"core":"chain","protocol":"masque","transport":"h2"}"#)
+            .core_environment();
+        assert_eq!(value_of(&h2, "AETHER_MASQUE_HTTP2"), Some("1"));
+    }
+
+    #[test]
     fn a_chain_runs_both_cores_and_leads_with_aether() {
         let settings = settings_from(r#"{"core":"chain"}"#);
         assert!(settings.runs_aether());

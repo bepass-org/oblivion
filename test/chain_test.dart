@@ -74,6 +74,23 @@ void main() {
           'socks5://127.0.0.1:1829');
     });
 
+    test('a chain leaves the masque transport exactly as it was picked', () {
+      final h3 = TunnelSettings(
+        core: CoreEngine.chain,
+        transport: MasqueTransport.http3,
+      );
+      expect(h3.usesHttp2, isFalse);
+      expect(h3.toCoreArguments(), isNot(contains('--h2')));
+      expect(h3.toPlatformPayload()['transport'], 'h3');
+
+      final h2 = TunnelSettings(
+        core: CoreEngine.chain,
+        transport: MasqueTransport.http2,
+      );
+      expect(h2.usesHttp2, isTrue);
+      expect(h2.toCoreArguments(), contains('--h2'));
+    });
+
     test('the chain still carries the aether protocol flags', () {
       final args = TunnelSettings(
         core: CoreEngine.chain,

@@ -15,7 +15,7 @@ class L10nFa extends L10n {
   String get appDisplayName => 'اُوبلیویِن';
 
   @override
-  String get appTagline => 'اینترنت برای همه، یا هیچ‌کس';
+  String get appTagline => 'اینترنت آزاد برای همه، یا هیچ‌کس';
 
   @override
   String get introMeaning => 'به معنای «بی‌خبری، فراموشی»';
@@ -734,7 +734,7 @@ class L10nFa extends L10n {
   String get logsCopied => 'در کلیپ‌بورد کپی شد';
 
   @override
-  String get introSlogan => 'اینترنت برای همه، یا هیچ‌کس';
+  String get introSlogan => 'اینترنت آزاد برای همه، یا هیچ‌کس';
 
   @override
   String get trayShow => 'نمایش اوبلیوین';

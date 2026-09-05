@@ -112,7 +112,7 @@ abstract class L10n {
   /// No description provided for @appTagline.
   ///
   /// In en, this message translates to:
-  /// **'Internet for all, or no one'**
+  /// **'Free internet for all, or no one'**
   String get appTagline;
 
   /// No description provided for @introMeaning.
@@ -1462,7 +1462,7 @@ abstract class L10n {
   /// No description provided for @introSlogan.
   ///
   /// In en, this message translates to:
-  /// **'Internet for All, or No One'**
+  /// **'Free Internet for All, or No One'**
   String get introSlogan;
 
   /// No description provided for @trayShow.
