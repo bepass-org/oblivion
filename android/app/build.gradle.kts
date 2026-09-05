@@ -17,7 +17,7 @@ val hasReleaseKey = signingProperties.getProperty("storeFile") != null
 
 android {
     namespace = "org.bepass.oblivion"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 37
     ndkVersion = "28.2.13676358"
 
     compileOptions {
@@ -28,7 +28,7 @@ android {
     defaultConfig {
         applicationId = "org.bepass.oblivion"
         minSdk = 24
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = 37
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
