@@ -1,7 +1,7 @@
 name: oblivion
 description: Oblivion - a free and open internet client powered by the Aether core.
 publish_to: "none"
-version: 8.0.0+800
+version: 8.1.0+810
 
 environment:
   sdk: ^3.12.0
