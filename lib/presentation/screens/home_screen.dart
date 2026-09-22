@@ -156,7 +156,11 @@ class HomeScreen extends ConsumerWidget {
                       const SizedBox(height: 10),
                       SizedBox(
                         height: 44,
-                        child: _Detail(status: status, geo: geo),
+                        child: _Detail(
+                          status: status,
+                          geo: geo,
+                          mode: settings.modeLabel,
+                        ),
                       ),
                       if (degraded)
                         Padding(
@@ -193,10 +197,15 @@ class HomeScreen extends ConsumerWidget {
 }
 
 class _Detail extends StatelessWidget {
-  const _Detail({required this.status, required this.geo});
+  const _Detail({
+    required this.status,
+    required this.geo,
+    required this.mode,
+  });
 
   final TunnelStatus status;
   final GeoSnapshot geo;
+  final String mode;
 
   @override
   Widget build(BuildContext context) {
@@ -245,6 +254,8 @@ class _Detail extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 3),
+        _ModeBadge(mode: mode),
+        const SizedBox(height: 3),
         Text(
           <String>[
             if (place.isNotEmpty) place,
@@ -255,6 +266,34 @@ class _Detail extends StatelessWidget {
           style: AppText.caption(palette.labelSecondary),
         ),
       ],
+    );
+  }
+}
+
+class _ModeBadge extends StatelessWidget {
+  const _ModeBadge({required this.mode});
+
+  final String mode;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+
+    if (mode.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+      decoration: BoxDecoration(
+        color: palette.labelSecondary.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: Text(
+        mode,
+        textDirection: TextDirection.ltr,
+        style: AppText.caption(
+          palette.labelSecondary,
+        ).copyWith(fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.3),
+      ),
     );
   }
 }
