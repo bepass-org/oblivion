@@ -196,6 +196,49 @@ class SettingsScreen extends ConsumerWidget {
                           ),
                         ),
                       ),
+                    SettingsRow(
+                      title: l10n.torModeTitle,
+                      subtitle: torDesc(l10n, settings.torMode),
+                      value: torTitle(l10n, settings.torMode),
+                      onTap: () => showChoiceSheet<TorMode>(
+                        context: context,
+                        title: l10n.torModeTitle,
+                        selected: settings.torMode,
+                        options: TorMode.values
+                            .map(
+                              (v) => PickerOption<TorMode>(
+                                value: v,
+                                title: torTitle(l10n, v),
+                                subtitle: torDesc(l10n, v),
+                              ),
+                            )
+                            .toList(),
+                        onSelected: (v) =>
+                            controller.update((s) => s.copyWith(torMode: v)),
+                      ),
+                    ),
+                    if (settings.usesTor)
+                      SettingsRow(
+                        title: l10n.torRelaysTitle,
+                        subtitle: l10n.torRelaysDesc,
+                        value: torRelaysTitle(l10n, settings.torRelays),
+                        onTap: () => showChoiceSheet<TorRelays>(
+                          context: context,
+                          title: l10n.torRelaysTitle,
+                          selected: settings.torRelays,
+                          options: TorRelays.values
+                              .map(
+                                (v) => PickerOption<TorRelays>(
+                                  value: v,
+                                  title: torRelaysTitle(l10n, v),
+                                ),
+                              )
+                              .toList(),
+                          onSelected: (v) => controller.update(
+                            (s) => s.copyWith(torRelays: v),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
                 if (settings.usesAether)
@@ -348,54 +391,6 @@ class SettingsScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
-                SettingsGroup(
-                  header: l10n.torSection,
-                  children: <Widget>[
-                    SettingsRow(
-                      title: l10n.torModeTitle,
-                      subtitle: torDesc(l10n, settings.torMode),
-                      value: torTitle(l10n, settings.torMode),
-                      onTap: () => showChoiceSheet<TorMode>(
-                        context: context,
-                        title: l10n.torModeTitle,
-                        selected: settings.torMode,
-                        options: TorMode.values
-                            .map(
-                              (v) => PickerOption<TorMode>(
-                                value: v,
-                                title: torTitle(l10n, v),
-                                subtitle: torDesc(l10n, v),
-                              ),
-                            )
-                            .toList(),
-                        onSelected: (v) =>
-                            controller.update((s) => s.copyWith(torMode: v)),
-                      ),
-                    ),
-                    SettingsRow(
-                      title: l10n.torRelaysTitle,
-                      subtitle: l10n.torRelaysDesc,
-                      enabled: settings.usesTor,
-                      value: torRelaysTitle(l10n, settings.torRelays),
-                      onTap: () => showChoiceSheet<TorRelays>(
-                        context: context,
-                        title: l10n.torRelaysTitle,
-                        selected: settings.torRelays,
-                        options: TorRelays.values
-                            .map(
-                              (v) => PickerOption<TorRelays>(
-                                value: v,
-                                title: torRelaysTitle(l10n, v),
-                              ),
-                            )
-                            .toList(),
-                        onSelected: (v) => controller.update(
-                          (s) => s.copyWith(torRelays: v),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
                 SettingsGroup(
                   children: <Widget>[
                     SettingsRow(
