@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 
 set(OBLIVION_CORE_DIR "${CMAKE_CURRENT_LIST_DIR}/oblivion_core")
 set(AETHER_CORE_DIR "${CMAKE_CURRENT_LIST_DIR}/../aetherproject/aether")
-set(PSIPHON_CORE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../psiphon-tunnel-core")
+set(PSIPHON_BUILD_SCRIPT "${CMAKE_CURRENT_LIST_DIR}/../aetherproject/psiphon-build.sh")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(OBLIVION_CARGO_PROFILE_DIR "debug")
@@ -68,43 +68,45 @@ endif()
 
 set(PSIPHON_BIN "${CMAKE_CURRENT_BINARY_DIR}/${PSIPHON_BIN_NAME}")
 
-if(EXISTS "${PSIPHON_CORE_DIR}/go.mod")
-  set(PSIPHON_BUILDINFO
-    "github.com/Psiphon-Labs/psiphon-tunnel-core/psiphon/common/buildinfo")
+if(WIN32)
+  set(PSIPHON_GOOS "windows")
+elseif(APPLE)
+  set(PSIPHON_GOOS "darwin")
+else()
+  set(PSIPHON_GOOS "linux")
+endif()
 
-  execute_process(
-    COMMAND git rev-parse --short HEAD
-    WORKING_DIRECTORY "${PSIPHON_CORE_DIR}"
-    OUTPUT_VARIABLE PSIPHON_BUILD_REV
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    ERROR_QUIET
-  )
-  execute_process(
-    COMMAND git config --get remote.origin.url
-    WORKING_DIRECTORY "${PSIPHON_CORE_DIR}"
-    OUTPUT_VARIABLE PSIPHON_BUILD_REPO
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    ERROR_QUIET
-  )
-  if(NOT PSIPHON_BUILD_REV)
-    set(PSIPHON_BUILD_REV "unknown")
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|ARM64")
+  set(PSIPHON_GOARCH "arm64")
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "armv7|armhf")
+  set(PSIPHON_GOARCH "arm")
+  set(PSIPHON_GOARM "7")
+else()
+  set(PSIPHON_GOARCH "amd64")
+endif()
+
+if(EXISTS "${PSIPHON_BUILD_SCRIPT}")
+  set(PSIPHON_STAGING "${CMAKE_CURRENT_BINARY_DIR}/psiphon-staging")
+
+  if(WIN32)
+    set(PSIPHON_BUILT "${PSIPHON_STAGING}/psiphon-tunnel-core.exe")
+  else()
+    set(PSIPHON_BUILT "${PSIPHON_STAGING}/psiphon-tunnel-core")
   endif()
-  string(TIMESTAMP PSIPHON_BUILD_DATE "%Y-%m-%dT%H:%M:%SZ" UTC)
 
   add_custom_command(
     OUTPUT "${PSIPHON_BIN}"
-    COMMAND go build -trimpath -ldflags
-      "-s -w -X ${PSIPHON_BUILDINFO}.buildDate=${PSIPHON_BUILD_DATE} -X ${PSIPHON_BUILDINFO}.buildRepo=${PSIPHON_BUILD_REPO} -X ${PSIPHON_BUILDINFO}.buildRev=${PSIPHON_BUILD_REV}"
-      -o "${PSIPHON_BIN}" ./ConsoleClient
-    WORKING_DIRECTORY "${PSIPHON_CORE_DIR}"
-    COMMENT "Building the Psiphon tunnel engine (${PSIPHON_BUILD_REV})"
+    COMMAND bash "${PSIPHON_BUILD_SCRIPT}"
+      "${PSIPHON_GOOS}" "${PSIPHON_GOARCH}" "${PSIPHON_STAGING}" "${PSIPHON_GOARM}"
+    COMMAND "${CMAKE_COMMAND}" -E copy "${PSIPHON_BUILT}" "${PSIPHON_BIN}"
+    COMMENT "Building the psiphon engine the core launches, at the commit Aether pins"
     VERBATIM
   )
   add_custom_target(psiphon_core_build ALL DEPENDS "${PSIPHON_BIN}")
   set(OBLIVION_PSIPHON_BIN "${PSIPHON_BIN}" PARENT_SCOPE)
 else()
   message(WARNING
-    "Psiphon engine sources not found at ${PSIPHON_CORE_DIR}")
+    "psiphon-build.sh not found at ${PSIPHON_BUILD_SCRIPT}; the aetherproject submodule is missing")
   set(OBLIVION_PSIPHON_BIN "" PARENT_SCOPE)
 endif()
 

@@ -83,7 +83,6 @@ kotlin {
 
 dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
-    api(project(":psiphon"))
 }
 
 fun sdkDirectory(): File? {
@@ -158,6 +157,66 @@ fun runCommand(
     val process = builder.start()
     val output = process.inputStream.bufferedReader().readText()
     return process.waitFor() to output
+}
+
+val psiphonBuildScript = file("../../aetherproject/psiphon-build.sh")
+
+val goArches = mapOf(
+    "arm64-v8a" to Pair("arm64", ""),
+    "armeabi-v7a" to Pair("arm", "7"),
+    "x86_64" to Pair("amd64", ""),
+)
+
+val buildPsiphonCore by tasks.registering {
+    group = "aether"
+    description = "Builds the psiphon console client the core launches, one per Android ABI"
+
+    val outputDir = file("src/main/jniLibs")
+    outputs.dir(outputDir)
+    inputs.file(psiphonBuildScript)
+    inputs.property("abis", selectedAbis.keys.sorted().joinToString(","))
+
+    doLast {
+        if (!psiphonBuildScript.exists()) {
+            throw GradleException(
+                "psiphon-build.sh not found at ${psiphonBuildScript.absolutePath}; " +
+                    "the aetherproject submodule is missing",
+            )
+        }
+
+        for (abi in selectedAbis.keys) {
+            val (goarch, goarm) = goArches[abi]
+                ?: throw GradleException("no go architecture is known for $abi")
+
+            val staging = File(layout.buildDirectory.get().asFile, "psiphon/$abi")
+            staging.mkdirs()
+
+            logger.lifecycle("[psiphon] building for $abi")
+            val (status, output) = runCommand(
+                listOf(
+                    "bash",
+                    psiphonBuildScript.absolutePath,
+                    "linux",
+                    goarch,
+                    staging.absolutePath,
+                    goarm,
+                ),
+                projectDir,
+            )
+            if (status != 0) {
+                throw GradleException("psiphon build for $abi failed: $output")
+            }
+
+            val built = File(staging, "psiphon-tunnel-core")
+            if (!built.isFile) {
+                throw GradleException("psiphon build for $abi produced nothing")
+            }
+
+            val dest = File(outputDir, abi)
+            dest.mkdirs()
+            built.copyTo(File(dest, "libpsiphon.so"), overwrite = true)
+        }
+    }
 }
 
 val buildAetherCore by tasks.registering {
@@ -308,4 +367,4 @@ val buildAetherCore by tasks.registering {
 
 
 tasks.matching { it.name.startsWith("merge") && it.name.endsWith("JniLibFolders") }
-    .configureEach { dependsOn(buildAetherCore) }
+    .configureEach { dependsOn(buildAetherCore, buildPsiphonCore) }

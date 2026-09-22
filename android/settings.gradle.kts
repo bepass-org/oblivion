@@ -26,4 +26,3 @@ plugins {
 
 include(":app")
 include(":aether-vpn")
-include(":psiphon")

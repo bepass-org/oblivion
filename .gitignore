@@ -24,6 +24,7 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+android/build/
 /coverage/
 
 app.*.symbols
