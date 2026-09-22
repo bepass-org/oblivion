@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout with the core and hev-socks5-tunnel
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -170,7 +170,7 @@ jobs:
             runner: ubuntu-22.04-arm
     steps:
       - name: Checkout with the core
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -267,7 +267,7 @@ jobs:
             runner: windows-11-arm
     steps:
       - name: Checkout with the core
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
