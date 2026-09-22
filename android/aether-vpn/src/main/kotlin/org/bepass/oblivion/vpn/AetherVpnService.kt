@@ -19,6 +19,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+import org.json.JSONArray
+import org.json.JSONObject
 
 class AetherVpnService : VpnService() {
 
@@ -153,6 +155,7 @@ class AetherVpnService : VpnService() {
             }
             environment["AETHER_PSIPHON_DIR"] = File(filesDir, PSIPHON_DATA_DIR).absolutePath
             psiphonBinary()?.let { environment["AETHER_PSIPHON_BIN"] = it }
+            psiphonOverlay(target)?.let { environment["AETHER_PSIPHON_CONFIG"] = it }
         }
 
         if (target.usesTor) {
@@ -196,6 +199,16 @@ class AetherVpnService : VpnService() {
     private fun logSource(): String = CORE_AETHER
 
     private fun psiphonBinary(): String? = PsiphonBinary.path(applicationContext)
+
+    private fun psiphonOverlay(target: TunnelConfig): String? = runCatching {
+        val overlay = JSONObject()
+            .put("DNSResolverAlternateServers", JSONArray(target.dnsServers))
+        val directory = File(filesDir, PSIPHON_DATA_DIR).apply { mkdirs() }
+        File(directory, PSIPHON_OVERLAY_NAME).apply { writeText(overlay.toString()) }.absolutePath
+    }.getOrElse { error ->
+        Log.w(TAG, "psiphon overlay not written", error)
+        null
+    }
 
     private fun activeCoreIsRunning(): Boolean = core?.isRunning == true
 
@@ -599,6 +612,7 @@ class AetherVpnService : VpnService() {
         private const val CORE_AETHER = "aether"
         private const val CORE_PSIPHON = "psiphon"
         private const val PSIPHON_DATA_DIR = "psiphon"
+        private const val PSIPHON_OVERLAY_NAME = "oblivion-psiphon.json"
         private const val PSIPHON_VALIDATION_BUDGET_MS = 180_000L
 
 
