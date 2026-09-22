@@ -63,6 +63,7 @@ class AetherCore(
         builder.environment().apply {
             put("HOME", workDir.absolutePath)
             put("TMPDIR", context.cacheDir.absolutePath)
+            put("SSL_CERT_DIR", SYSTEM_CA_DIRS)
             put("AETHER_CONFIG", File(workDir, "aether.toml").absolutePath)
             put("AETHER_WG_CONFIG", File(workDir, "aether-wg.toml").absolutePath)
             put("AETHER_MASQUE_CONFIG", File(workDir, "aether-masque.toml").absolutePath)
@@ -152,6 +153,8 @@ class AetherCore(
         private const val TAG = "AetherCore"
         private const val BINARY_NAME = "libaether.so"
         private const val WORK_DIR = "aether"
+        private const val SYSTEM_CA_DIRS =
+            "/apex/com.android.conscrypt/cacerts:/system/etc/security/cacerts"
         private const val GRACEFUL_SHUTDOWN_MS = 1500L
     }
 }
