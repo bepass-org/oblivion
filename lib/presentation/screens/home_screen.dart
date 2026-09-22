@@ -156,7 +156,7 @@ class HomeScreen extends ConsumerWidget {
                       const SizedBox(height: 10),
                       SizedBox(
                         height: 44,
-                        child: _Detail(
+                        child: ConnectionDetail(
                           status: status,
                           geo: geo,
                           mode: settings.modeLabel,
@@ -196,8 +196,9 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class _Detail extends StatelessWidget {
-  const _Detail({
+class ConnectionDetail extends StatelessWidget {
+  const ConnectionDetail({
+    super.key,
     required this.status,
     required this.geo,
     required this.mode,
@@ -234,6 +235,11 @@ class _Detail extends StatelessWidget {
       if (exit.colo != null && exit.colo!.isNotEmpty) exit.colo!,
     ].join('  ·  ');
 
+    final details = <String>[
+      if (place.isNotEmpty) place,
+      if (exit.isp != null && exit.isp!.isNotEmpty) exit.isp!,
+    ].join('  ·  ');
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -244,26 +250,36 @@ class _Detail extends StatelessWidget {
               FlagIcon(countryCode: exit.countryCode),
               const SizedBox(width: 8),
             ],
-            Text(
-              exit.ip,
-              textDirection: TextDirection.ltr,
-              style: AppText.rowTitle(palette.label),
+            Flexible(
+              child: Text(
+                exit.ip,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textDirection: TextDirection.ltr,
+                style: AppText.rowTitle(palette.label),
+              ),
             ),
             const SizedBox(width: 8),
             _WarpBadge(status: exit.warp),
           ],
         ),
         const SizedBox(height: 3),
-        _ModeBadge(mode: mode),
-        const SizedBox(height: 3),
-        Text(
-          <String>[
-            if (place.isNotEmpty) place,
-            if (exit.isp != null && exit.isp!.isNotEmpty) exit.isp!,
-          ].join('  ·  '),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: AppText.caption(palette.labelSecondary),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            _ModeBadge(mode: mode),
+            if (details.isNotEmpty) ...<Widget>[
+              if (mode.isNotEmpty) const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  details,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppText.caption(palette.labelSecondary),
+                ),
+              ),
+            ],
+          ],
         ),
       ],
     );
