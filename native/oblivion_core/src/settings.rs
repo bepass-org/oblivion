@@ -17,6 +17,12 @@ pub struct TunnelSettings {
     pub psiphon_conduit_peers: String,
     #[serde(default = "default_true")]
     pub psiphon_reject_censored_peers: bool,
+    #[serde(default)]
+    pub tor_mode: String,
+    #[serde(default = "default_tor_relays")]
+    pub tor_relays: String,
+    #[serde(default)]
+    pub exit_loc: String,
     #[serde(default = "default_protocol")]
     pub protocol: String,
     #[serde(default = "default_transport")]
@@ -116,6 +122,10 @@ fn default_protocol() -> String {
     "masque".to_string()
 }
 
+fn default_tor_relays() -> String {
+    "auto".to_string()
+}
+
 fn default_transport() -> String {
     "h3".to_string()
 }
@@ -153,15 +163,19 @@ pub struct ConnectRequest {
 
 impl TunnelSettings {
     pub fn uses_chain(&self) -> bool {
-        self.core.trim().eq_ignore_ascii_case(crate::psiphon::CORE_CHAIN)
+        self.core
+            .trim()
+            .eq_ignore_ascii_case(crate::psiphon::CORE_CHAIN)
     }
 
     pub fn psiphon_only(&self) -> bool {
-        self.core.trim().eq_ignore_ascii_case(crate::psiphon::CORE_PSIPHON)
+        self.core
+            .trim()
+            .eq_ignore_ascii_case(crate::psiphon::CORE_PSIPHON)
     }
 
     pub fn runs_aether(&self) -> bool {
-        !self.psiphon_only()
+        true
     }
 
     pub fn runs_psiphon(&self) -> bool {
@@ -169,11 +183,7 @@ impl TunnelSettings {
     }
 
     pub fn core_name(&self) -> &'static str {
-        if self.psiphon_only() {
-            crate::psiphon::CORE_PSIPHON
-        } else {
-            crate::psiphon::CORE_AETHER
-        }
+        crate::psiphon::CORE_AETHER
     }
 
     pub fn aether_socks_port(&self) -> u16 {
@@ -210,16 +220,79 @@ impl TunnelSettings {
         format!("socks5://127.0.0.1:{}", self.aether_socks_port())
     }
 
+    pub fn tor_mode(&self) -> String {
+        let raw = self.tor_mode.trim().to_ascii_lowercase();
+        match raw.as_str() {
+            "" | "off" | "no" | "0" | "false" | "none" => String::new(),
+            "reverse" | "rev" => "reverse".to_string(),
+            "only" | "alone" => "only".to_string(),
+            _ => "chain".to_string(),
+        }
+    }
+
+    pub fn uses_tor(&self) -> bool {
+        !self.tor_mode().is_empty()
+    }
+
+    pub fn tor_only(&self) -> bool {
+        self.tor_mode() == "only"
+    }
+
+    pub fn aether_tor_port(&self) -> u16 {
+        self.aether_http_port().saturating_add(1)
+    }
+
+    pub fn aether_tor_address(&self) -> String {
+        format!("{}:{}", self.aether_bind_host(), self.aether_tor_port())
+    }
+
+    pub fn psiphon_listen_host(&self) -> &'static str {
+        if self.allow_lan {
+            "0.0.0.0"
+        } else {
+            "127.0.0.1"
+        }
+    }
+
+    pub fn psiphon_bind_address(&self) -> String {
+        format!("{}:{}", self.psiphon_listen_host(), self.socks_port)
+    }
+
+    pub fn psiphon_core_mode(&self) -> &'static str {
+        match self.psiphon_mode.trim().to_ascii_lowercase().as_str() {
+            "cdn" => "cdn",
+            "direct" => "direct",
+            _ => "auto",
+        }
+    }
+
+    pub fn uses_mim(&self) -> bool {
+        self.protocol.trim().eq_ignore_ascii_case("mim")
+    }
+
+    pub fn uses_masque(&self) -> bool {
+        let p = self.protocol.trim();
+        p.eq_ignore_ascii_case("masque") || p.eq_ignore_ascii_case("mim")
+    }
+
     pub fn uses_gool(&self) -> bool {
         self.protocol.trim().eq_ignore_ascii_case("gool")
     }
 
     pub fn wiw_outer_peer(&self) -> &str {
-        if self.uses_gool() { self.wiw_outer.trim() } else { "" }
+        if self.uses_gool() {
+            self.wiw_outer.trim()
+        } else {
+            ""
+        }
     }
 
     pub fn wiw_inner_peer(&self) -> &str {
-        if self.uses_gool() { self.wiw_inner.trim() } else { "" }
+        if self.uses_gool() {
+            self.wiw_inner.trim()
+        } else {
+            ""
+        }
     }
 
     pub fn wiw_pinned(&self) -> bool {
@@ -290,13 +363,13 @@ impl TunnelSettings {
             env.push(("AETHER_DNS".to_string(), self.dns_servers().join(",")));
         }
 
-        if self.protocol == "masque" {
+        if self.uses_masque() {
             if let Some(mtu) = self.inner_mtu() {
                 env.push(("AETHER_MASQUE_MTU".to_string(), mtu.to_string()));
             }
         }
 
-        if self.protocol == "masque" && self.transport == "h2" {
+        if self.uses_masque() && self.transport == "h2" {
             env.push(("AETHER_MASQUE_HTTP2".to_string(), "1".to_string()));
             if self.fragment {
                 env.push(("AETHER_MASQUE_H2_FRAGMENT".to_string(), "1".to_string()));
@@ -319,10 +392,59 @@ impl TunnelSettings {
             env.push(("AETHER_PEER".to_string(), self.endpoint.trim().to_string()));
         }
         if !self.perf_profile.trim().is_empty() {
+            env.push(("AETHER_PERF_PROFILE".to_string(), self.perf_profile.clone()));
+        }
+
+        if self.runs_psiphon() {
             env.push((
-                "AETHER_PERF_PROFILE".to_string(),
-                self.perf_profile.clone(),
+                "AETHER_PSIPHON".to_string(),
+                if self.psiphon_only() { "only" } else { "chain" }.to_string(),
             ));
+            env.push((
+                "AETHER_PSIPHON_BIND".to_string(),
+                self.psiphon_bind_address(),
+            ));
+            env.push((
+                "AETHER_PSIPHON_MODE".to_string(),
+                self.psiphon_core_mode().to_string(),
+            ));
+
+            let region = self.psiphon_country.trim();
+            if !region.is_empty() {
+                env.push(("AETHER_PSIPHON_REGION".to_string(), region.to_string()));
+            }
+
+            let ips = self.psiphon_cdn_ips.trim();
+            if !ips.is_empty() {
+                env.push(("AETHER_PSIPHON_CDN_IPS".to_string(), ips.to_string()));
+            }
+
+            let names = self.psiphon_cdn_sni.trim();
+            if !names.is_empty() {
+                env.push(("AETHER_PSIPHON_CDN_SNI".to_string(), names.to_string()));
+            }
+
+            let data = self.data_dir.trim();
+            if !data.is_empty() {
+                env.push(("AETHER_PSIPHON_DIR".to_string(), format!("{data}/psiphon")));
+            }
+        }
+
+        let tor = self.tor_mode();
+        if !tor.is_empty() {
+            env.push(("AETHER_TOR".to_string(), tor.clone()));
+            if tor != "only" {
+                env.push(("AETHER_TOR_BIND".to_string(), self.aether_tor_address()));
+            }
+            let relays = self.tor_relays.trim();
+            if !relays.is_empty() {
+                env.push(("AETHER_TOR_RELAYS".to_string(), relays.to_string()));
+            }
+        }
+
+        let wanted = self.exit_loc.trim();
+        if !wanted.is_empty() {
+            env.push(("AETHER_EXIT_LOC".to_string(), wanted.to_string()));
         }
 
         let blocked = route_rules(&self.route_block);
@@ -503,8 +625,7 @@ mod tests {
 
     #[test]
     fn newlines_from_the_editor_become_a_comma_list() {
-        let settings =
-            settings_from(r#"{"routeBlock":"one.example\ntwo.example\nthree.example"}"#);
+        let settings = settings_from(r#"{"routeBlock":"one.example\ntwo.example\nthree.example"}"#);
         let env = settings.core_environment();
         let blocked = env
             .iter()
@@ -600,19 +721,20 @@ mod zero_trust_tests {
 
     #[test]
     fn an_access_token_is_forwarded_with_the_team() {
-        let env = settings_from(r#"{"team":"example","accessToken":"a.b.c"}"#)
-            .core_environment();
+        let env = settings_from(r#"{"team":"example","accessToken":"a.b.c"}"#).core_environment();
         assert_eq!(value_of(&env, "AETHER_TEAM"), Some("example"));
         assert_eq!(value_of(&env, "AETHER_ACCESS_TOKEN"), Some("a.b.c"));
     }
 
     #[test]
     fn a_service_token_is_forwarded_when_there_is_no_jwt() {
-        let env =
-            settings_from(r#"{"team":"example","accessId":"id","accessSecret":"secret"}"#)
-                .core_environment();
+        let env = settings_from(r#"{"team":"example","accessId":"id","accessSecret":"secret"}"#)
+            .core_environment();
         assert_eq!(value_of(&env, "AETHER_ACCESS_CLIENT_ID"), Some("id"));
-        assert_eq!(value_of(&env, "AETHER_ACCESS_CLIENT_SECRET"), Some("secret"));
+        assert_eq!(
+            value_of(&env, "AETHER_ACCESS_CLIENT_SECRET"),
+            Some("secret")
+        );
     }
 
     #[test]
@@ -727,11 +849,12 @@ mod chain_tests {
     }
 
     #[test]
-    fn psiphon_on_its_own_runs_no_aether() {
+    fn psiphon_on_its_own_is_still_hosted_by_the_core() {
         let settings = settings_from(r#"{"core":"psiphon"}"#);
-        assert!(!settings.runs_aether());
+        assert!(settings.runs_aether());
         assert!(settings.runs_psiphon());
         assert!(settings.psiphon_only());
+        assert_eq!(settings.core_name(), crate::psiphon::CORE_AETHER);
     }
 
     #[test]
@@ -776,9 +899,8 @@ mod warp_in_warp_tests {
 
     #[test]
     fn naming_one_hop_leaves_the_other_to_the_scan() {
-        let env =
-            settings_from(r#"{"protocol":"gool","wiwOuter":"162.159.192.1:2408"}"#)
-                .core_environment();
+        let env = settings_from(r#"{"protocol":"gool","wiwOuter":"162.159.192.1:2408"}"#)
+            .core_environment();
 
         assert_eq!(
             value_of(&env, "AETHER_WIW_OUTER_PEER"),
@@ -819,8 +941,7 @@ mod warp_in_warp_tests {
 
     #[test]
     fn surrounding_whitespace_is_trimmed_off_a_hop() {
-        let settings =
-            settings_from(r#"{"protocol":"gool","wiwInner":"  188.114.96.1:894  "}"#);
+        let settings = settings_from(r#"{"protocol":"gool","wiwInner":"  188.114.96.1:894  "}"#);
         assert_eq!(settings.wiw_inner_peer(), "188.114.96.1:894");
         assert!(settings.wiw_pinned());
     }
@@ -894,6 +1015,155 @@ mod edge_tests {
     fn nothing_usable_gives_nothing() {
         for raw in ["", "   ", "not-an-address", "example.com:443"] {
             assert_eq!(edge_ip(raw), None, "{raw}");
+        }
+    }
+}
+
+#[cfg(test)]
+mod sync_tests {
+    use super::*;
+
+    fn settings(json: &str) -> TunnelSettings {
+        serde_json::from_str(json).expect("settings parse")
+    }
+
+    fn value<'a>(env: &'a [(String, String)], key: &str) -> Option<&'a str> {
+        env.iter().find(|(k, _)| k == key).map(|(_, v)| v.as_str())
+    }
+
+    #[test]
+    fn tor_is_off_until_it_is_chosen() {
+        let env = settings("{}").core_environment();
+        assert!(value(&env, "AETHER_TOR").is_none());
+        assert!(value(&env, "AETHER_TOR_BIND").is_none());
+    }
+
+    #[test]
+    fn every_tor_mode_reaches_the_core() {
+        for (given, expected) in [
+            ("chain", "chain"),
+            ("reverse", "reverse"),
+            ("rev", "reverse"),
+            ("only", "only"),
+        ] {
+            let env = settings(&format!(r#"{{"torMode":"{given}"}}"#)).core_environment();
+            assert_eq!(value(&env, "AETHER_TOR"), Some(expected), "{given}");
+        }
+    }
+
+    #[test]
+    fn tor_gets_a_listener_of_its_own_unless_it_is_the_only_thing_running() {
+        let chained = settings(r#"{"torMode":"chain","socksPort":1829}"#);
+        let env = chained.core_environment();
+        assert_eq!(
+            value(&env, "AETHER_TOR_BIND"),
+            Some(chained.aether_tor_address().as_str())
+        );
+        assert_ne!(chained.aether_tor_port(), chained.aether_socks_port());
+
+        let alone = settings(r#"{"torMode":"only"}"#).core_environment();
+        assert_eq!(value(&alone, "AETHER_TOR"), Some("only"));
+        assert!(value(&alone, "AETHER_TOR_BIND").is_none());
+    }
+
+    #[test]
+    fn an_unwanted_exit_country_is_passed_on_only_when_asked_for() {
+        let off = settings("{}").core_environment();
+        assert!(value(&off, "AETHER_EXIT_LOC").is_none());
+
+        let on = settings(r#"{"exitLoc":"!IR,AZ,RU"}"#).core_environment();
+        assert_eq!(value(&on, "AETHER_EXIT_LOC"), Some("!IR,AZ,RU"));
+    }
+
+    #[test]
+    fn masque_in_masque_is_treated_as_a_masque_carrier() {
+        let mim = settings(r#"{"protocol":"mim","transport":"h2"}"#);
+        assert!(mim.uses_mim());
+        assert!(mim.uses_masque());
+        let env = mim.core_environment();
+        assert_eq!(value(&env, "AETHER_PROTOCOL"), Some("mim"));
+        assert_eq!(value(&env, "AETHER_MASQUE_HTTP2"), Some("1"));
+    }
+
+    #[test]
+    fn the_relay_source_defaults_to_auto_and_travels_with_tor() {
+        let env = settings(r#"{"torMode":"chain"}"#).core_environment();
+        assert_eq!(value(&env, "AETHER_TOR_RELAYS"), Some("auto"));
+
+        let env = settings(r#"{"torMode":"chain","torRelays":"only"}"#).core_environment();
+        assert_eq!(value(&env, "AETHER_TOR_RELAYS"), Some("only"));
+    }
+}
+
+#[cfg(test)]
+mod psiphon_through_core_tests {
+    use super::*;
+
+    fn settings(json: &str) -> TunnelSettings {
+        serde_json::from_str(json).expect("settings parse")
+    }
+
+    fn value<'a>(env: &'a [(String, String)], key: &str) -> Option<&'a str> {
+        env.iter().find(|(k, _)| k == key).map(|(_, v)| v.as_str())
+    }
+
+    #[test]
+    fn plain_aether_never_mentions_psiphon() {
+        let env = settings("{}").core_environment();
+        assert!(value(&env, "AETHER_PSIPHON").is_none());
+        assert!(value(&env, "AETHER_PSIPHON_BIND").is_none());
+    }
+
+    #[test]
+    fn psiphon_on_its_own_is_the_only_thing_the_core_serves() {
+        let s = settings(r#"{"core":"psiphon","socksPort":1829}"#);
+        let env = s.core_environment();
+        assert_eq!(value(&env, "AETHER_PSIPHON"), Some("only"));
+        assert_eq!(value(&env, "AETHER_PSIPHON_BIND"), Some("127.0.0.1:1829"));
+        assert_eq!(value(&env, "AETHER_SOCKS"), Some("127.0.0.1:1829"));
+    }
+
+    #[test]
+    fn a_chain_puts_psiphon_on_the_port_people_connect_to() {
+        let s = settings(r#"{"core":"chain","socksPort":1829}"#);
+        let env = s.core_environment();
+        assert_eq!(value(&env, "AETHER_PSIPHON"), Some("chain"));
+        assert_eq!(value(&env, "AETHER_PSIPHON_BIND"), Some("127.0.0.1:1829"));
+        assert_eq!(value(&env, "AETHER_SOCKS"), Some("127.0.0.1:1839"));
+    }
+
+    #[test]
+    fn lan_sharing_reaches_the_psiphon_listener_too() {
+        let env = settings(r#"{"core":"psiphon","allowLan":true}"#).core_environment();
+        assert!(value(&env, "AETHER_PSIPHON_BIND").is_some_and(|a| a.starts_with("0.0.0.0:")));
+    }
+
+    #[test]
+    fn the_region_and_cdn_settings_travel_with_it() {
+        let env = settings(
+            r#"{"core":"psiphon","psiphonCountry":"DE","psiphonCdnIps":"1.2.3.4","psiphonCdnSni":"a.example"}"#,
+        )
+        .core_environment();
+        assert_eq!(value(&env, "AETHER_PSIPHON_REGION"), Some("DE"));
+        assert_eq!(value(&env, "AETHER_PSIPHON_CDN_IPS"), Some("1.2.3.4"));
+        assert_eq!(value(&env, "AETHER_PSIPHON_CDN_SNI"), Some("a.example"));
+    }
+
+    #[test]
+    fn conduit_falls_back_to_auto_because_the_core_has_no_inproxy() {
+        for (given, expected) in [
+            ("auto", "auto"),
+            ("cdn", "cdn"),
+            ("direct", "direct"),
+            ("conduit", "auto"),
+        ] {
+            let env = settings(&format!(r#"{{"core":"psiphon","psiphonMode":"{given}"}}"#))
+                .core_environment();
+            assert_eq!(
+                value(&env, "AETHER_PSIPHON_MODE"),
+                Some(expected),
+                "{given}"
+            );
         }
     }
 }

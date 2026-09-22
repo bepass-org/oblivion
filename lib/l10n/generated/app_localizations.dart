@@ -673,18 +673,6 @@ abstract class L10n {
   /// **'Deeper search, picks the lowest latency'**
   String get scanThoroughDesc;
 
-  /// No description provided for @scanStealth.
-  ///
-  /// In en, this message translates to:
-  /// **'Stealth'**
-  String get scanStealth;
-
-  /// No description provided for @scanStealthDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Quiet and patient, less traffic noise'**
-  String get scanStealthDesc;
-
   /// No description provided for @scanIronclad.
   ///
   /// In en, this message translates to:
@@ -2490,6 +2478,168 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Try a plain connection first, then fall back to obfuscation'**
   String get fastFirstConnectDesc;
+
+  /// No description provided for @protocolMim.
+  ///
+  /// In en, this message translates to:
+  /// **'MASQUE-in-MASQUE'**
+  String get protocolMim;
+
+  /// No description provided for @protocolMimDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Two MASQUE hops, for an exit address in a different range'**
+  String get protocolMimDesc;
+
+  /// No description provided for @scanVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get scanVerified;
+
+  /// No description provided for @scanVerifiedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Only edges measured to answer, never a guessed neighbour'**
+  String get scanVerifiedDesc;
+
+  /// No description provided for @obfuscationFirewall.
+  ///
+  /// In en, this message translates to:
+  /// **'Firewall'**
+  String get obfuscationFirewall;
+
+  /// No description provided for @obfuscationFirewallDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The MASQUE default, tuned for a filtering firewall'**
+  String get obfuscationFirewallDesc;
+
+  /// No description provided for @obfuscationGfw.
+  ///
+  /// In en, this message translates to:
+  /// **'GFW'**
+  String get obfuscationGfw;
+
+  /// No description provided for @obfuscationGfwDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The loudest profile, for when nothing else gets through'**
+  String get obfuscationGfwDesc;
+
+  /// No description provided for @torSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Tor'**
+  String get torSection;
+
+  /// No description provided for @torModeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tor'**
+  String get torModeTitle;
+
+  /// No description provided for @torOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get torOff;
+
+  /// No description provided for @torOffDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'No Tor'**
+  String get torOffDesc;
+
+  /// No description provided for @torChain.
+  ///
+  /// In en, this message translates to:
+  /// **'Tor inside the tunnel'**
+  String get torChain;
+
+  /// No description provided for @torChainDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You, WARP, Tor, the internet. The exit is a Tor exit'**
+  String get torChainDesc;
+
+  /// No description provided for @torReverse.
+  ///
+  /// In en, this message translates to:
+  /// **'Tunnel through Tor'**
+  String get torReverse;
+
+  /// No description provided for @torReverseDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'WARP is reached from a Tor exit, so your network never sees WARP'**
+  String get torReverseDesc;
+
+  /// No description provided for @torOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Tor only'**
+  String get torOnly;
+
+  /// No description provided for @torOnlyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'No tunnel underneath, plain Tor'**
+  String get torOnlyDesc;
+
+  /// No description provided for @torRelaysTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bridge source'**
+  String get torRelaysTitle;
+
+  /// No description provided for @torRelaysDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Where bridges come from when the network blocks Tor'**
+  String get torRelaysDesc;
+
+  /// No description provided for @torRelaysAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'BridgeDB and relays'**
+  String get torRelaysAuto;
+
+  /// No description provided for @torRelaysOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Relays only'**
+  String get torRelaysOnly;
+
+  /// No description provided for @torRelaysOff.
+  ///
+  /// In en, this message translates to:
+  /// **'BridgeDB only'**
+  String get torRelaysOff;
+
+  /// No description provided for @exitLocTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit country'**
+  String get exitLocTitle;
+
+  /// No description provided for @exitLocDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Refuse a tunnel that comes out in a country you do not want, and reconnect. Leave empty to accept any'**
+  String get exitLocDesc;
+
+  /// No description provided for @exitLocHint.
+  ///
+  /// In en, this message translates to:
+  /// **'!IR,AZ,RU'**
+  String get exitLocHint;
+
+  /// No description provided for @activeModeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode'**
+  String get activeModeLabel;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

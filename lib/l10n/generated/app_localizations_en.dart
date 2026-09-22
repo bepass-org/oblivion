@@ -317,12 +317,6 @@ class L10nEn extends L10n {
   String get scanThoroughDesc => 'Deeper search, picks the lowest latency';
 
   @override
-  String get scanStealth => 'Stealth';
-
-  @override
-  String get scanStealthDesc => 'Quiet and patient, less traffic noise';
-
-  @override
   String get scanIronclad => 'Ironclad';
 
   @override
@@ -1316,4 +1310,93 @@ class L10nEn extends L10n {
   @override
   String get fastFirstConnectDesc =>
       'Try a plain connection first, then fall back to obfuscation';
+
+  @override
+  String get protocolMim => 'MASQUE-in-MASQUE';
+
+  @override
+  String get protocolMimDesc =>
+      'Two MASQUE hops, for an exit address in a different range';
+
+  @override
+  String get scanVerified => 'Verified';
+
+  @override
+  String get scanVerifiedDesc =>
+      'Only edges measured to answer, never a guessed neighbour';
+
+  @override
+  String get obfuscationFirewall => 'Firewall';
+
+  @override
+  String get obfuscationFirewallDesc =>
+      'The MASQUE default, tuned for a filtering firewall';
+
+  @override
+  String get obfuscationGfw => 'GFW';
+
+  @override
+  String get obfuscationGfwDesc =>
+      'The loudest profile, for when nothing else gets through';
+
+  @override
+  String get torSection => 'Tor';
+
+  @override
+  String get torModeTitle => 'Tor';
+
+  @override
+  String get torOff => 'Off';
+
+  @override
+  String get torOffDesc => 'No Tor';
+
+  @override
+  String get torChain => 'Tor inside the tunnel';
+
+  @override
+  String get torChainDesc =>
+      'You, WARP, Tor, the internet. The exit is a Tor exit';
+
+  @override
+  String get torReverse => 'Tunnel through Tor';
+
+  @override
+  String get torReverseDesc =>
+      'WARP is reached from a Tor exit, so your network never sees WARP';
+
+  @override
+  String get torOnly => 'Tor only';
+
+  @override
+  String get torOnlyDesc => 'No tunnel underneath, plain Tor';
+
+  @override
+  String get torRelaysTitle => 'Bridge source';
+
+  @override
+  String get torRelaysDesc =>
+      'Where bridges come from when the network blocks Tor';
+
+  @override
+  String get torRelaysAuto => 'BridgeDB and relays';
+
+  @override
+  String get torRelaysOnly => 'Relays only';
+
+  @override
+  String get torRelaysOff => 'BridgeDB only';
+
+  @override
+  String get exitLocTitle => 'Exit country';
+
+  @override
+  String get exitLocDesc =>
+      'Refuse a tunnel that comes out in a country you do not want, and reconnect. Leave empty to accept any';
+
+  @override
+  String get exitLocHint => '!IR,AZ,RU';
+
+  @override
+  String get activeModeLabel => 'Mode';
 }

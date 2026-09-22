@@ -24,7 +24,6 @@ class AetherVpnService : VpnService() {
 
     private var tunInterface: ParcelFileDescriptor? = null
     private var core: AetherCore? = null
-    private var psiphon: PsiphonTunnelWrapper? = null
     private var config: TunnelConfig? = null
 
     private var validator: ScheduledExecutorService? = null
@@ -88,11 +87,7 @@ class AetherVpnService : VpnService() {
         config = target
         connectedAtMillis = 0L
 
-        if (target.psiphonOnly) {
-            startPsiphonTunnel(target)
-        } else {
-            startAetherTunnel(target)
-        }
+        startAetherTunnel(target)
     }
 
     private fun startAetherTunnel(target: TunnelConfig) {
@@ -113,36 +108,6 @@ class AetherVpnService : VpnService() {
         scheduleValidation(target)
     }
 
-    private fun startPsiphonTunnel(target: TunnelConfig, validate: Boolean = true) {
-        val dataDir = File(filesDir, PSIPHON_DATA_DIR)
-        if (!dataDir.exists() && !dataDir.mkdirs()) {
-            stopTunnel(TunnelStage.FAILED, "could not prepare the psiphon data directory")
-            return
-        }
-
-        val configJson = runCatching { PsiphonConfig.build(target, dataDir) }.getOrElse { error ->
-            stopTunnel(TunnelStage.FAILED, "could not build the psiphon config: ${error.message}")
-            return
-        }
-
-        val psiphonRunner = PsiphonTunnelWrapper(
-            service = this,
-            configJson = configJson,
-            onLog = { line -> TunnelBus.log(line) },
-            onStopped = { reason ->
-                requestStop(
-                    TunnelStage.FAILED,
-                    reason ?: "the psiphon core stopped before the tunnel came up",
-                )
-            },
-        )
-        psiphon = psiphonRunner
-        psiphonRunner.start()
-        if (!psiphonRunner.isRunning || !validate) return
-
-        scheduleValidation(target)
-    }
-
     private fun coreEnvironment(target: TunnelConfig): Map<String, String> {
         val environment = mutableMapOf(
             "AETHER_SOCKS" to "${target.aetherBindHost}:${target.aetherSocksPort}",
@@ -155,11 +120,11 @@ class AetherVpnService : VpnService() {
             "AETHER_QUICK_RECONNECT" to if (target.quickReconnect) "1" else "0",
         )
 
-        if (target.protocol == "masque" && target.transport == "h2") {
+        if (target.usesMasque && target.transport == "h2") {
             environment["AETHER_MASQUE_HTTP2"] = "1"
             if (target.fragment) environment["AETHER_MASQUE_H2_FRAGMENT"] = "1"
         }
-        if (target.protocol == "masque" && target.innerMtu > 0) {
+        if (target.usesMasque && target.innerMtu > 0) {
             environment["AETHER_MASQUE_MTU"] = target.innerMtu.toString()
         }
         if (target.usesGool) {
@@ -173,6 +138,37 @@ class AetherVpnService : VpnService() {
         } else if (target.endpoint.isNotBlank()) {
             environment["AETHER_PEER"] = target.endpoint
         }
+        if (target.runsPsiphon) {
+            environment["AETHER_PSIPHON"] = if (target.psiphonOnly) "only" else "chain"
+            environment["AETHER_PSIPHON_BIND"] = target.psiphonBindAddress
+            environment["AETHER_PSIPHON_MODE"] = target.psiphonCoreMode
+            if (target.psiphonCountry.isNotBlank()) {
+                environment["AETHER_PSIPHON_REGION"] = target.psiphonCountry
+            }
+            if (target.psiphonCdnIps.isNotBlank()) {
+                environment["AETHER_PSIPHON_CDN_IPS"] = target.psiphonCdnIps
+            }
+            if (target.psiphonCdnSni.isNotBlank()) {
+                environment["AETHER_PSIPHON_CDN_SNI"] = target.psiphonCdnSni
+            }
+            environment["AETHER_PSIPHON_DIR"] = File(filesDir, PSIPHON_DATA_DIR).absolutePath
+            psiphonBinary()?.let { environment["AETHER_PSIPHON_BIN"] = it }
+        }
+
+        if (target.usesTor) {
+            environment["AETHER_TOR"] = target.torWire
+            if (target.torWire != "only") {
+                environment["AETHER_TOR_BIND"] = target.aetherTorAddress
+            }
+            if (target.torRelays.isNotBlank()) {
+                environment["AETHER_TOR_RELAYS"] = target.torRelays
+            }
+        }
+
+        if (target.exitLoc.isNotBlank()) {
+            environment["AETHER_EXIT_LOC"] = target.exitLoc
+        }
+
         if (target.perfProfile.isNotBlank()) {
             environment["AETHER_PERF_PROFILE"] = target.perfProfile
         }
@@ -197,17 +193,11 @@ class AetherVpnService : VpnService() {
         return environment
     }
 
-    private fun logSource(): String {
-        val active = config ?: return CORE_AETHER
-        return if (active.psiphonOnly) CORE_PSIPHON else CORE_AETHER
-    }
+    private fun logSource(): String = CORE_AETHER
 
-    private fun activeCoreIsRunning(): Boolean = when {
-        core != null && psiphon != null ->
-            core?.isRunning == true && psiphon?.isRunning == true
-        psiphon != null -> psiphon?.isRunning == true
-        else -> core?.isRunning == true
-    }
+    private fun psiphonBinary(): String? = PsiphonBinary.path(applicationContext)
+
+    private fun activeCoreIsRunning(): Boolean = core?.isRunning == true
 
     private fun scheduleValidation(target: TunnelConfig) {
         val scheduler = Executors.newSingleThreadScheduledExecutor()
@@ -259,15 +249,6 @@ class AetherVpnService : VpnService() {
             if (!SocksProbe.reachable(target.aetherSocksPort)) return@scheduleWithFixedDelay
 
             if (target.usesChain) {
-                if (psiphon == null) {
-                    TunnelBus.log(
-                        CORE_PSIPHON,
-                        "[*] aether is up on ${target.aetherSocksPort}; " +
-                            "starting psiphon through it",
-                    )
-                    startPsiphonTunnel(target, validate = false)
-                    return@scheduleWithFixedDelay
-                }
                 if (!SocksProbe.reachable(target.socksPort)) return@scheduleWithFixedDelay
                 TunnelBus.log(
                     CORE_PSIPHON,
@@ -474,8 +455,6 @@ class AetherVpnService : VpnService() {
 
         runCatching { TProxyService.stop() }
         TunnelBus.bindCodeSink(null)
-        psiphon?.stop()
-        psiphon = null
         core?.stop()
         core = null
 

@@ -30,23 +30,45 @@ String coreDesc(L10n l10n, CoreEngine value) => switch (value) {
   CoreEngine.chain => l10n.coreChainDesc,
 };
 
+String torTitle(L10n l10n, TorMode value) => switch (value) {
+  TorMode.off => l10n.torOff,
+  TorMode.chain => l10n.torChain,
+  TorMode.reverse => l10n.torReverse,
+  TorMode.only => l10n.torOnly,
+};
+
+String torDesc(L10n l10n, TorMode value) => switch (value) {
+  TorMode.off => l10n.torOffDesc,
+  TorMode.chain => l10n.torChainDesc,
+  TorMode.reverse => l10n.torReverseDesc,
+  TorMode.only => l10n.torOnlyDesc,
+};
+
+String torRelaysTitle(L10n l10n, TorRelays value) => switch (value) {
+  TorRelays.auto => l10n.torRelaysAuto,
+  TorRelays.only => l10n.torRelaysOnly,
+  TorRelays.off => l10n.torRelaysOff,
+};
+
 String protocolTitle(L10n l10n, CoreProtocol value) => switch (value) {
   CoreProtocol.masque => l10n.protocolMasque,
   CoreProtocol.wireguard => l10n.protocolWireGuard,
   CoreProtocol.gool => l10n.protocolGool,
+  CoreProtocol.mim => l10n.protocolMim,
 };
 
 String protocolDesc(L10n l10n, CoreProtocol value) => switch (value) {
   CoreProtocol.masque => l10n.protocolMasqueDesc,
   CoreProtocol.wireguard => l10n.protocolWireGuardDesc,
   CoreProtocol.gool => l10n.protocolGoolDesc,
+  CoreProtocol.mim => l10n.protocolMimDesc,
 };
 
 String scanTitle(L10n l10n, ScanMode value) => switch (value) {
   ScanMode.turbo => l10n.scanTurbo,
   ScanMode.balanced => l10n.scanBalanced,
   ScanMode.thorough => l10n.scanThorough,
-  ScanMode.stealth => l10n.scanStealth,
+  ScanMode.verified => l10n.scanVerified,
   ScanMode.ironclad => l10n.scanIronclad,
 };
 
@@ -54,21 +76,25 @@ String scanDesc(L10n l10n, ScanMode value) => switch (value) {
   ScanMode.turbo => l10n.scanTurboDesc,
   ScanMode.balanced => l10n.scanBalancedDesc,
   ScanMode.thorough => l10n.scanThoroughDesc,
-  ScanMode.stealth => l10n.scanStealthDesc,
+  ScanMode.verified => l10n.scanVerifiedDesc,
   ScanMode.ironclad => l10n.scanIroncladDesc,
 };
 
 String obfuscationTitle(L10n l10n, ObfuscationProfile value) => switch (value) {
   ObfuscationProfile.off => l10n.obfuscationOff,
   ObfuscationProfile.light => l10n.obfuscationLight,
+  ObfuscationProfile.firewall => l10n.obfuscationFirewall,
   ObfuscationProfile.balanced => l10n.obfuscationBalanced,
+  ObfuscationProfile.gfw => l10n.obfuscationGfw,
   ObfuscationProfile.aggressive => l10n.obfuscationAggressive,
 };
 
 String obfuscationDesc(L10n l10n, ObfuscationProfile value) => switch (value) {
   ObfuscationProfile.off => l10n.obfuscationOffDesc,
   ObfuscationProfile.light => l10n.obfuscationLightDesc,
+  ObfuscationProfile.firewall => l10n.obfuscationFirewallDesc,
   ObfuscationProfile.balanced => l10n.obfuscationBalancedDesc,
+  ObfuscationProfile.gfw => l10n.obfuscationGfwDesc,
   ObfuscationProfile.aggressive => l10n.obfuscationAggressiveDesc,
 };
 
@@ -301,8 +327,75 @@ class SettingsScreen extends ConsumerWidget {
                           ),
                         ),
                       ),
+                      SettingsRow(
+                        title: l10n.exitLocTitle,
+                        subtitle: l10n.exitLocDesc,
+                        value: settings.exitLoc.isEmpty
+                            ? l10n.endpointAuto
+                            : settings.exitLoc,
+                        onTap: () => showTextEditorSheet(
+                          context: context,
+                          title: l10n.exitLocTitle,
+                          description: l10n.exitLocDesc,
+                          initial: settings.exitLoc,
+                          placeholder: l10n.exitLocHint,
+                          cancelLabel: l10n.cancel,
+                          saveLabel: l10n.save,
+                          onSaved: (v) => controller.update(
+                            (s) => s.copyWith(exitLoc: v.trim()),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
+                SettingsGroup(
+                  header: l10n.torSection,
+                  children: <Widget>[
+                    SettingsRow(
+                      title: l10n.torModeTitle,
+                      subtitle: torDesc(l10n, settings.torMode),
+                      value: torTitle(l10n, settings.torMode),
+                      onTap: () => showChoiceSheet<TorMode>(
+                        context: context,
+                        title: l10n.torModeTitle,
+                        selected: settings.torMode,
+                        options: TorMode.values
+                            .map(
+                              (v) => PickerOption<TorMode>(
+                                value: v,
+                                title: torTitle(l10n, v),
+                                subtitle: torDesc(l10n, v),
+                              ),
+                            )
+                            .toList(),
+                        onSelected: (v) =>
+                            controller.update((s) => s.copyWith(torMode: v)),
+                      ),
+                    ),
+                    SettingsRow(
+                      title: l10n.torRelaysTitle,
+                      subtitle: l10n.torRelaysDesc,
+                      enabled: settings.usesTor,
+                      value: torRelaysTitle(l10n, settings.torRelays),
+                      onTap: () => showChoiceSheet<TorRelays>(
+                        context: context,
+                        title: l10n.torRelaysTitle,
+                        selected: settings.torRelays,
+                        options: TorRelays.values
+                            .map(
+                              (v) => PickerOption<TorRelays>(
+                                value: v,
+                                title: torRelaysTitle(l10n, v),
+                              ),
+                            )
+                            .toList(),
+                        onSelected: (v) => controller.update(
+                          (s) => s.copyWith(torRelays: v),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 SettingsGroup(
                   children: <Widget>[
                     SettingsRow(

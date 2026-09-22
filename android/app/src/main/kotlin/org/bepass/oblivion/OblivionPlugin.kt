@@ -20,8 +20,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import org.bepass.oblivion.vpn.AetherCore
 import org.bepass.oblivion.vpn.AetherVpnService
-import org.bepass.oblivion.vpn.PsiphonConfig
-import org.bepass.oblivion.vpn.PsiphonTunnelWrapper
+import org.bepass.oblivion.vpn.PsiphonBinary
 import org.bepass.oblivion.vpn.TunnelBus
 import org.bepass.oblivion.vpn.TunnelConfig
 import org.bepass.oblivion.vpn.TunnelSnapshot
@@ -121,12 +120,12 @@ class OblivionPlugin(
             "coreVersion" -> reply(result) {
                 AetherCore(context, onLog = {}, onExit = {}).version()
             }
-            "psiphonVersion" -> reply(result) { PsiphonTunnelWrapper.version() }
+            "psiphonVersion" -> reply(result) { PsiphonBinary.version(context) }
             "capabilities" -> result.success(
                 mapOf(
                     "embedded" to true,
                     "privileged" to true,
-                    "conduit" to PsiphonConfig.supportsInproxy,
+                    "conduit" to false,
                 ),
             )
             "installedApps" -> handleInstalledApps(call, result)

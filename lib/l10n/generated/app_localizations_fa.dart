@@ -316,12 +316,6 @@ class L10nFa extends L10n {
   String get scanThoroughDesc => 'جست‌وجوی عمیق‌تر، انتخاب کم‌تأخیرترین';
 
   @override
-  String get scanStealth => 'پنهان';
-
-  @override
-  String get scanStealthDesc => 'آرام و صبور، سر و صدای کمتر روی شبکه';
-
-  @override
   String get scanIronclad => 'آیرون‌کلاد';
 
   @override
@@ -1316,4 +1310,91 @@ class L10nFa extends L10n {
   @override
   String get fastFirstConnectDesc =>
       'اول اتصال ساده امتحان شود، اگر نشد سراغ مبهم‌سازی برود';
+
+  @override
+  String get protocolMim => 'مسک در مسک';
+
+  @override
+  String get protocolMimDesc =>
+      'دو هاپ مسک، برای گرفتن آدرس خروج از یک رنج دیگر';
+
+  @override
+  String get scanVerified => 'تأییدشده';
+
+  @override
+  String get scanVerifiedDesc =>
+      'فقط لبه‌هایی که جوابشان سنجیده شده، نه همسایه‌ای که حدس زده شود';
+
+  @override
+  String get obfuscationFirewall => 'فایروال';
+
+  @override
+  String get obfuscationFirewallDesc =>
+      'پیش‌فرض مسک، تنظیم‌شده برای فایروال فیلترکننده';
+
+  @override
+  String get obfuscationGfw => 'GFW';
+
+  @override
+  String get obfuscationGfwDesc =>
+      'پرسروصداترین پروفایل، وقتی هیچ‌چیز دیگری رد نمی‌شود';
+
+  @override
+  String get torSection => 'تور';
+
+  @override
+  String get torModeTitle => 'تور';
+
+  @override
+  String get torOff => 'خاموش';
+
+  @override
+  String get torOffDesc => 'بدون تور';
+
+  @override
+  String get torChain => 'تور داخل تانل';
+
+  @override
+  String get torChainDesc => 'شما، وارپ، تور، اینترنت. خروجی یک exit تور است';
+
+  @override
+  String get torReverse => 'تانل از داخل تور';
+
+  @override
+  String get torReverseDesc =>
+      'وارپ از یک exit تور گرفته می‌شود، پس شبکه شما اصلا وارپ نمی‌بیند';
+
+  @override
+  String get torOnly => 'فقط تور';
+
+  @override
+  String get torOnlyDesc => 'بدون تانل، فقط تور خالی';
+
+  @override
+  String get torRelaysTitle => 'منبع بریج';
+
+  @override
+  String get torRelaysDesc => 'بریج‌ها از کجا گرفته شوند وقتی شبکه تور را بسته';
+
+  @override
+  String get torRelaysAuto => 'بریج‌دی‌بی و رله‌ها';
+
+  @override
+  String get torRelaysOnly => 'فقط رله‌ها';
+
+  @override
+  String get torRelaysOff => 'فقط بریج‌دی‌بی';
+
+  @override
+  String get exitLocTitle => 'کشور خروج';
+
+  @override
+  String get exitLocDesc =>
+      'تانلی که در کشور ناخواسته بیرون می‌آید را قبول نکن و دوباره وصل شو. خالی یعنی هر کشوری قبول است';
+
+  @override
+  String get exitLocHint => '!IR,AZ,RU';
+
+  @override
+  String get activeModeLabel => 'حالت';
 }

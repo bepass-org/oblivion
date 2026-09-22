@@ -8,6 +8,9 @@ data class TunnelConfig(
     val psiphonCdnSni: String,
     val psiphonConduitPeers: String,
     val psiphonRejectCensoredPeers: Boolean,
+    val torMode: String,
+    val torRelays: String,
+    val exitLoc: String,
     val protocol: String,
     val transport: String,
     val scanMode: String,
@@ -47,7 +50,7 @@ data class TunnelConfig(
 
     val psiphonOnly: Boolean get() = core == CORE_PSIPHON
 
-    val runsAether: Boolean get() = !psiphonOnly
+    val runsAether: Boolean get() = true
 
     val runsPsiphon: Boolean get() = psiphonOnly || usesChain
 
@@ -72,6 +75,35 @@ data class TunnelConfig(
     val usesZeroTrust: Boolean get() = team.isNotBlank()
 
     val usesGool: Boolean get() = protocol == "gool"
+
+    val usesMim: Boolean get() = protocol == "mim"
+
+    val usesMasque: Boolean get() = protocol == "masque" || usesMim
+
+    val torWire: String
+        get() = when (torMode.trim().lowercase()) {
+            "", "off", "no", "0", "false", "none" -> ""
+            "reverse", "rev" -> "reverse"
+            "only", "alone" -> "only"
+            else -> "chain"
+        }
+
+    val usesTor: Boolean get() = torWire.isNotEmpty()
+
+    val aetherTorPort: Int get() = aetherHttpProxyPort + 1
+
+    val aetherTorAddress: String get() = "$aetherBindHost:$aetherTorPort"
+
+    val psiphonListenHost: String get() = if (allowLan) "0.0.0.0" else "127.0.0.1"
+
+    val psiphonBindAddress: String get() = "$psiphonListenHost:$socksPort"
+
+    val psiphonCoreMode: String
+        get() = when (psiphonMode.trim().lowercase()) {
+            "cdn" -> "cdn"
+            "direct" -> "direct"
+            else -> "auto"
+        }
 
     val wiwOuterPeer: String get() = if (usesGool) wiwOuter.trim() else ""
 
@@ -154,6 +186,9 @@ data class TunnelConfig(
                 psiphonCdnSni = str("psiphonCdnSni"),
                 psiphonConduitPeers = str("psiphonConduitPeers", "auto"),
                 psiphonRejectCensoredPeers = bool("psiphonRejectCensoredPeers", true),
+                torMode = str("torMode", "off"),
+                torRelays = str("torRelays", "auto"),
+                exitLoc = str("exitLoc"),
                 protocol = str("protocol", "masque"),
                 transport = str("transport", "h3"),
                 scanMode = str("scanMode", "balanced"),

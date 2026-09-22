@@ -23,8 +23,10 @@ enum PsiphonMode {
 
   final String wire;
 
-  static PsiphonMode fromWire(String? value) =>
-      values.firstWhere((e) => e.wire == value, orElse: () => auto);
+  static PsiphonMode fromWire(String? value) {
+    if (value == 'conduit') return auto;
+    return values.firstWhere((e) => e.wire == value, orElse: () => auto);
+  }
 }
 
 enum ConduitPeers {
@@ -74,10 +76,40 @@ const psiphonCountries = <String>[
   'US',
 ];
 
+enum TorMode {
+  off('off'),
+  chain('chain'),
+  reverse('reverse'),
+  only('only');
+
+  const TorMode(this.wire);
+
+  final String wire;
+
+  bool get isOn => this != off;
+
+  static TorMode fromWire(String? value) =>
+      values.firstWhere((e) => e.wire == value, orElse: () => off);
+}
+
+enum TorRelays {
+  auto('auto'),
+  only('only'),
+  off('off');
+
+  const TorRelays(this.wire);
+
+  final String wire;
+
+  static TorRelays fromWire(String? value) =>
+      values.firstWhere((e) => e.wire == value, orElse: () => auto);
+}
+
 enum CoreProtocol {
   masque('masque'),
   wireguard('wg'),
-  gool('gool');
+  gool('gool'),
+  mim('mim');
 
   const CoreProtocol(this.wire);
 
@@ -103,21 +135,25 @@ enum ScanMode {
   turbo('turbo'),
   balanced('balanced'),
   thorough('thorough'),
-  stealth('stealth'),
+  verified('verified'),
   ironclad('ironclad');
 
   const ScanMode(this.wire);
 
   final String wire;
 
-  static ScanMode fromWire(String? value) =>
-      values.firstWhere((e) => e.wire == value, orElse: () => balanced);
+  static ScanMode fromWire(String? value) {
+    if (value == 'stealth') return verified;
+    return values.firstWhere((e) => e.wire == value, orElse: () => balanced);
+  }
 }
 
 enum ObfuscationProfile {
   off('off'),
   light('light'),
+  firewall('firewall'),
   balanced('balanced'),
+  gfw('gfw'),
   aggressive('aggressive');
 
   const ObfuscationProfile(this.wire);
@@ -217,6 +253,9 @@ class TunnelSettings {
     this.psiphonCdnSni = '',
     this.psiphonConduitPeers = ConduitPeers.auto,
     this.psiphonRejectCensoredPeers = true,
+    this.torMode = TorMode.off,
+    this.torRelays = TorRelays.auto,
+    this.exitLoc = '',
     this.protocol = CoreProtocol.masque,
     this.transport = MasqueTransport.http3,
     this.scanMode = ScanMode.balanced,
@@ -270,6 +309,10 @@ class TunnelSettings {
   final String psiphonCdnSni;
   final ConduitPeers psiphonConduitPeers;
   final bool psiphonRejectCensoredPeers;
+
+  final TorMode torMode;
+  final TorRelays torRelays;
+  final String exitLoc;
 
   final CoreProtocol protocol;
   final MasqueTransport transport;
@@ -355,7 +398,43 @@ class TunnelSettings {
 
   bool get psiphonUsesConduit => psiphonMode == PsiphonMode.conduit;
 
-  bool get isMasque => protocol == CoreProtocol.masque;
+  bool get isMasque =>
+      protocol == CoreProtocol.masque || protocol == CoreProtocol.mim;
+
+  bool get usesMim => protocol == CoreProtocol.mim;
+
+  bool get usesTor => torMode != TorMode.off;
+
+  String get modeLabel {
+    if (torMode == TorMode.only) return 'TOR';
+
+    final String carrier = switch (protocol) {
+      CoreProtocol.masque => usesHttp2 ? 'MASQUE H2' : 'MASQUE H3',
+      CoreProtocol.mim => usesHttp2 ? 'MIM H2' : 'MIM H3',
+      CoreProtocol.gool => 'GOOL',
+      CoreProtocol.wireguard => 'WARP',
+    };
+
+    final parts = <String>[];
+    if (psiphonOnly) {
+      parts.add('PSIPHON');
+    } else {
+      parts.add(carrier);
+      if (usesChain) parts.add('PSIPHON');
+    }
+
+    switch (torMode) {
+      case TorMode.chain:
+        parts.add('TOR');
+      case TorMode.reverse:
+        parts.insert(0, 'TOR');
+      case TorMode.off:
+      case TorMode.only:
+        break;
+    }
+
+    return parts.join(' + ');
+  }
 
   String get teamName => team.trim();
 
@@ -483,6 +562,9 @@ class TunnelSettings {
     String? psiphonCdnSni,
     ConduitPeers? psiphonConduitPeers,
     bool? psiphonRejectCensoredPeers,
+    TorMode? torMode,
+    TorRelays? torRelays,
+    String? exitLoc,
     CoreProtocol? protocol,
     MasqueTransport? transport,
     ScanMode? scanMode,
@@ -537,6 +619,9 @@ class TunnelSettings {
       psiphonConduitPeers: psiphonConduitPeers ?? this.psiphonConduitPeers,
       psiphonRejectCensoredPeers:
           psiphonRejectCensoredPeers ?? this.psiphonRejectCensoredPeers,
+      torMode: torMode ?? this.torMode,
+      torRelays: torRelays ?? this.torRelays,
+      exitLoc: exitLoc ?? this.exitLoc,
       protocol: protocol ?? this.protocol,
       transport: transport ?? this.transport,
       scanMode: scanMode ?? this.scanMode,
@@ -592,6 +677,9 @@ class TunnelSettings {
     'psiphonCdnSni': psiphonCdnSni.trim(),
     'psiphonConduitPeers': psiphonConduitPeers.wire,
     'psiphonRejectCensoredPeers': psiphonRejectCensoredPeers,
+    'torMode': torMode.wire,
+    'torRelays': torRelays.wire,
+    'exitLoc': exitLoc.trim(),
     'protocol': protocol.wire,
     'transport': transport.wire,
     'scanMode': scanMode.wire,
@@ -679,6 +767,8 @@ class TunnelSettings {
         args.add('--wg');
       case CoreProtocol.gool:
         args.add('--gool');
+      case CoreProtocol.mim:
+        args.add('--mim');
     }
 
     if (usesHttp2) {

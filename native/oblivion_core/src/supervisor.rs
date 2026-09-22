@@ -234,7 +234,6 @@ fn escape(value: &str) -> String {
 
 pub struct Supervisor {
     core: Mutex<Option<Child>>,
-    psiphon: Mutex<Option<Child>>,
     core_input: Mutex<Option<std::process::ChildStdin>>,
     snapshot: Mutex<Snapshot>,
     logs: Mutex<Vec<String>>,
@@ -259,7 +258,6 @@ impl Supervisor {
         let (log_tx, log_rx) = channel();
         Self {
             core: Mutex::new(None),
-            psiphon: Mutex::new(None),
             core_input: Mutex::new(None),
             snapshot: Mutex::new(Snapshot::disconnected()),
             logs: Mutex::new(Vec::new()),
@@ -296,7 +294,10 @@ impl Supervisor {
         match writeln!(input, "{trimmed}").and_then(|()| input.flush()) {
             Ok(()) => true,
             Err(error) => {
-                self.log_from(self.active_core(), format!("[-] could not reach the core: {error}"));
+                self.log_from(
+                    self.active_core(),
+                    format!("[-] could not reach the core: {error}"),
+                );
                 false
             }
         }
@@ -307,11 +308,17 @@ impl Supervisor {
             return;
         }
         if crate::dns::recover_stale_override() {
-            self.log_from(self.active_core(), "[!] restored a resolver left behind by an earlier run");
+            self.log_from(
+                self.active_core(),
+                "[!] restored a resolver left behind by an earlier run",
+            );
         }
         if net::tunnel_default_installed() {
             net::revert_tunnel_routes(true);
-            self.log_from(self.active_core(), "[!] cleared routes left behind by an earlier run");
+            self.log_from(
+                self.active_core(),
+                "[!] cleared routes left behind by an earlier run",
+            );
         }
     }
 
@@ -332,12 +339,8 @@ impl Supervisor {
             .unwrap_or(psiphon::CORE_AETHER)
     }
 
-    fn binary_for(&self, settings: &TunnelSettings) -> Option<PathBuf> {
-        if settings.psiphon_only() {
-            self.psiphon_binary.lock().unwrap().clone()
-        } else {
-            self.core_binary.lock().unwrap().clone()
-        }
+    fn binary_for(&self, _settings: &TunnelSettings) -> Option<PathBuf> {
+        self.core_binary.lock().unwrap().clone()
     }
 
     pub fn snapshot_json(&self) -> String {
@@ -481,23 +484,6 @@ impl Supervisor {
         };
     }
 
-    fn stage_psiphon_config(&self, settings: &TunnelSettings) -> Result<Vec<String>, String> {
-        let config = psiphon::build_config(settings)?;
-        let path = psiphon::config_path(settings);
-
-        std::fs::write(&path, config)
-            .map_err(|error| format!("could not write the psiphon config: {error}"))?;
-
-        let directory = psiphon::data_directory(settings);
-
-        Ok(vec![
-            "-config".to_string(),
-            path.to_string_lossy().to_string(),
-            "-dataRootDirectory".to_string(),
-            directory.to_string_lossy().to_string(),
-        ])
-    }
-
     pub fn core_version(&self) -> String {
         let binary = match self.core_binary.lock().unwrap().clone() {
             Some(path) => path,
@@ -562,7 +548,14 @@ impl Supervisor {
             );
         }
 
-        self.spawn_core(settings, staged_arguments, arguments, ladder, index, attempt);
+        self.spawn_core(
+            settings,
+            staged_arguments,
+            arguments,
+            ladder,
+            index,
+            attempt,
+        );
     }
 
     fn spawn_core(
@@ -579,7 +572,10 @@ impl Supervisor {
         let binary = match self.binary_for(&settings) {
             Some(path) => path,
             None => {
-                self.log_from(core, format!("[-] {core} core binary path was never registered"));
+                self.log_from(
+                    core,
+                    format!("[-] {core} core binary path was never registered"),
+                );
                 self.publish(Stage::Failed, Some("core binary missing".into()), None);
                 return;
             }
@@ -594,18 +590,6 @@ impl Supervisor {
             return;
         }
 
-        let mut arguments = arguments;
-        if settings.psiphon_only() {
-            match self.stage_psiphon_config(&settings) {
-                Ok(prepared) => arguments = prepared,
-                Err(error) => {
-                    self.log_from(core, format!("[-] {error}"));
-                    self.publish(Stage::Failed, Some(error), None);
-                    return;
-                }
-            }
-        }
-
         self.publish(Stage::Connecting, None, None);
 
         let mut command = Command::new(&binary);
@@ -615,9 +599,14 @@ impl Supervisor {
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
 
-        if settings.runs_aether() {
+        {
             for (key, value) in settings.core_environment() {
                 command.env(key, value);
+            }
+            if settings.runs_psiphon() {
+                if let Some(path) = self.psiphon_binary.lock().unwrap().clone() {
+                    command.env("AETHER_PSIPHON_BIN", path);
+                }
             }
         }
 
@@ -636,20 +625,29 @@ impl Supervisor {
                         Ok(())
                     });
                 }
-                self.log_from(self.active_core(), format!("[+] core will run as uid {uid}"));
+                self.log_from(
+                    self.active_core(),
+                    format!("[+] core will run as uid {uid}"),
+                );
             }
         }
 
         let mut child = match command.spawn() {
             Ok(child) => child,
             Err(error) => {
-                self.log_from(core, format!("[-] failed to launch the {core} core: {error}"));
+                self.log_from(
+                    core,
+                    format!("[-] failed to launch the {core} core: {error}"),
+                );
                 self.publish(Stage::Failed, Some(error.to_string()), None);
                 return;
             }
         };
 
-        self.log_from(core, format!("[+] {core} core started: {}", arguments.join(" ")));
+        self.log_from(
+            core,
+            format!("[+] {core} core started: {}", arguments.join(" ")),
+        );
 
         if let Some(stdout) = child.stdout.take() {
             self.spawn_log_reader(stdout, core);
@@ -668,7 +666,6 @@ impl Supervisor {
     }
 
     fn stop_core(&self) {
-        self.stop_psiphon();
         drop(self.core_input.lock().unwrap().take());
 
         let mut guard = self.core.lock().unwrap();
@@ -737,10 +734,7 @@ impl Supervisor {
 
                 match File::open(&path) {
                     Ok(mut file) => {
-                        let length = file
-                            .metadata()
-                            .map(|value| value.len())
-                            .unwrap_or(offset);
+                        let length = file.metadata().map(|value| value.len()).unwrap_or(offset);
                         if length < offset {
                             offset = 0;
                         }
@@ -760,19 +754,13 @@ impl Supervisor {
                                 continue;
                             }
                         }
-                        if length > offset
-                            && file.seek(SeekFrom::Start(offset)).is_ok()
-                        {
+                        if length > offset && file.seek(SeekFrom::Start(offset)).is_ok() {
                             let mut chunk = String::new();
-                            if BufReader::new(&mut file)
-                                .read_to_string(&mut chunk)
-                                .is_ok()
-                            {
+                            if BufReader::new(&mut file).read_to_string(&mut chunk).is_ok() {
                                 offset += chunk.len() as u64;
                                 pending.push_str(&chunk);
                                 while let Some(index) = pending.find('\n') {
-                                    let line: String =
-                                        pending.drain(..=index).collect();
+                                    let line: String = pending.drain(..=index).collect();
                                     let line = line.trim_end().to_string();
                                     if !line.is_empty() {
                                         supervisor.log_from(source, line);
@@ -823,7 +811,10 @@ impl Supervisor {
             }
 
             if !self.core_alive() {
-                self.log_from(self.active_core(), "[-] the core stopped before the tunnel came up");
+                self.log_from(
+                    self.active_core(),
+                    "[-] the core stopped before the tunnel came up",
+                );
                 if self.escalate(&settings, &base_arguments, &ladder, index) {
                     return;
                 }
@@ -833,7 +824,10 @@ impl Supervisor {
             }
 
             if probe::socks_reachable(settings.aether_socks_port()) {
-                self.log_from(self.active_core(), "[+] socks5 proxy answered a real request");
+                self.log_from(
+                    self.active_core(),
+                    "[+] socks5 proxy answered a real request",
+                );
 
                 if settings.uses_chain() {
                     if let Err(error) = self.raise_chain(&settings) {
@@ -846,7 +840,7 @@ impl Supervisor {
                         return;
                     }
                 }
-                
+
                 // For psiphon tunnel mode, wait for the Tunnels notice with count > 0
                 // which means at least one tunnel is active
                 if settings.tunnel_mode() && settings.core == psiphon::CORE_PSIPHON {
@@ -859,7 +853,7 @@ impl Supervisor {
                         thread::sleep(Duration::from_millis(50));
                     }
                 }
-                
+
                 let gateway = if settings.endpoint.trim().is_empty() {
                     None
                 } else {
@@ -868,16 +862,16 @@ impl Supervisor {
 
                 if settings.tunnel_mode() {
                     if let Err(error) = self.raise_device(&settings) {
-                        self.log_from(self.active_core(), format!("[-] tunnel mode unavailable: {error}"));
+                        self.log_from(
+                            self.active_core(),
+                            format!("[-] tunnel mode unavailable: {error}"),
+                        );
                         self.publish(Stage::Connected, Some(error), gateway);
                         return;
                     }
                 } else if settings.system_proxy_mode() {
                     if let Err(error) = self.raise_system_proxy(&settings) {
-                        self.log_from(
-                            "aether",
-                            format!("[-] system proxy unavailable: {error}"),
-                        );
+                        self.log_from("aether", format!("[-] system proxy unavailable: {error}"));
                         self.publish(Stage::Connected, Some(error), gateway);
                         return;
                     }
@@ -915,15 +909,13 @@ impl Supervisor {
             ),
         );
 
-        self.spawn_psiphon(settings)?;
-
         let deadline = Instant::now() + CHAIN_PSIPHON_BUDGET;
         while Instant::now() < deadline {
             if self.shutting_down.load(Ordering::SeqCst) {
                 return Err("cancelled".to_string());
             }
-            if !self.psiphon_alive() {
-                return Err("the psiphon core stopped before the chain came up".to_string());
+            if !self.core_alive() {
+                return Err("the core stopped before the chain came up".to_string());
             }
             if probe::socks_reachable(settings.socks_port) {
                 self.log_from(
@@ -939,87 +931,6 @@ impl Supervisor {
             "psiphon did not come up through aether within {}s",
             CHAIN_PSIPHON_BUDGET.as_secs()
         ))
-    }
-
-    fn spawn_psiphon(self: &Arc<Self>, settings: &TunnelSettings) -> Result<(), String> {
-        let binary = self
-            .psiphon_binary
-            .lock()
-            .unwrap()
-            .clone()
-            .ok_or_else(|| "the psiphon core binary path was never registered".to_string())?;
-
-        if !binary.exists() {
-            return Err(format!(
-                "psiphon core binary not found at {}",
-                binary.display()
-            ));
-        }
-
-        let arguments = self.stage_psiphon_config(settings)?;
-
-        let mut command = Command::new(&binary);
-        command
-            .args(&arguments)
-            .stdin(Stdio::null())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::piped());
-
-        #[cfg(unix)]
-        if settings.tunnel_mode() && net::is_privileged() {
-            let dedicated = settings
-                .bypass_uid
-                .filter(|uid| *uid != net::effective_uid());
-            if let Some(uid) = dedicated {
-                use std::os::unix::process::CommandExt;
-                unsafe {
-                    command.pre_exec(move || {
-                        if libc::setgid(uid) != 0 || libc::setuid(uid) != 0 {
-                            return Err(std::io::Error::last_os_error());
-                        }
-                        Ok(())
-                    });
-                }
-            }
-        }
-
-        let mut child = command
-            .spawn()
-            .map_err(|error| format!("failed to launch the psiphon core: {error}"))?;
-
-        self.log_from(
-            psiphon::CORE_PSIPHON,
-            format!("[+] psiphon core started: {}", arguments.join(" ")),
-        );
-
-        if let Some(stdout) = child.stdout.take() {
-            self.spawn_log_reader(stdout, psiphon::CORE_PSIPHON);
-        }
-        if let Some(stderr) = child.stderr.take() {
-            self.spawn_log_reader(stderr, psiphon::CORE_PSIPHON);
-        }
-
-        *self.psiphon.lock().unwrap() = Some(child);
-        Ok(())
-    }
-
-    fn psiphon_alive(&self) -> bool {
-        let mut guard = match self.psiphon.lock() {
-            Ok(guard) => guard,
-            Err(_) => return true,
-        };
-        match guard.as_mut() {
-            Some(child) => !matches!(child.try_wait(), Ok(Some(_))),
-            None => false,
-        }
-    }
-
-    fn stop_psiphon(&self) {
-        let mut guard = self.psiphon.lock().unwrap();
-        if let Some(mut child) = guard.take() {
-            let _ = child.kill();
-            let _ = child.wait();
-        }
     }
 
     fn chained(&self) -> bool {
@@ -1043,7 +954,7 @@ impl Supervisor {
                 return;
             }
 
-            if self.core_alive() && (!self.chained() || self.psiphon_alive()) {
+            if self.core_alive() {
                 continue;
             }
 
@@ -1068,10 +979,7 @@ impl Supervisor {
         }
     }
 
-    fn raise_device(
-        self: &Arc<Self>,
-        settings: &TunnelSettings,
-    ) -> Result<(), String> {
+    fn raise_device(self: &Arc<Self>, settings: &TunnelSettings) -> Result<(), String> {
         if !TunnelDevice::available() {
             return Err("this build does not embed the tunnel device".to_string());
         }
@@ -1098,8 +1006,7 @@ impl Supervisor {
         }
 
         self.device.watch_interface(&settings.tunnel_interface);
-        self.device
-            .start(settings.hev_config(log_path.to_str()))?;
+        self.device.start(settings.hev_config(log_path.to_str()))?;
         self.spawn_log_tail(log_path.clone(), "hevtun");
         self.log(format!(
             "[core] [+] tunnel device requested on {}",
@@ -1126,7 +1033,9 @@ impl Supervisor {
             ),
             None => self.log_from(
                 "aether",
-                format!("[!] no edge address seen yet; traffic from uid {bypass_uid} bypasses instead"),
+                format!(
+                    "[!] no edge address seen yet; traffic from uid {bypass_uid} bypasses instead"
+                ),
             ),
         }
 
@@ -1177,7 +1086,10 @@ impl Supervisor {
             }
         }
 
-        self.log_from(self.active_core(), "[+] system traffic is now routed through the tunnel");
+        self.log_from(
+            self.active_core(),
+            "[+] system traffic is now routed through the tunnel",
+        );
         Ok(())
     }
 
@@ -1217,7 +1129,7 @@ impl Supervisor {
 
     fn edge_address(&self) -> Option<String> {
         let observed = self.observed_gateway.lock().unwrap().clone();
-        
+
         let raw = observed.or_else(|| {
             self.active
                 .lock()
@@ -1228,7 +1140,7 @@ impl Supervisor {
 
         // Remove regex escapes that psiphon adds (e.g., "1\.2\.3\.4" -> "1.2.3.4")
         let unescaped = raw.replace(r"\.", ".");
-        
+
         crate::settings::edge_ip(&unescaped).map(|ip| ip.to_string())
     }
 
@@ -1260,10 +1172,7 @@ impl Supervisor {
         None
     }
 
-    fn raise_device_elevated(
-        self: &Arc<Self>,
-        settings: &TunnelSettings,
-    ) -> Result<(), String> {
+    fn raise_device_elevated(self: &Arc<Self>, settings: &TunnelSettings) -> Result<(), String> {
         let helper_binary = self.helper_binary().ok_or_else(|| {
             "the privileged helper is missing, tunnel mode is unavailable".to_string()
         })?;
@@ -1303,7 +1212,10 @@ impl Supervisor {
             if paths.ready().exists() {
                 self.spawn_log_tail(paths.log(), "hevtun");
                 *self.helper_state.lock().unwrap() = Some(paths);
-                self.log_from(self.active_core(), "[+] tunnel mode is live with elevated rights");
+                self.log_from(
+                    self.active_core(),
+                    "[+] tunnel mode is live with elevated rights",
+                );
                 return Ok(());
             }
 
@@ -1319,9 +1231,7 @@ impl Supervisor {
 
             if !self.helper_alive() {
                 self.stop_helper();
-                return Err(
-                    "the rights prompt was dismissed, staying in proxy mode".to_string()
-                );
+                return Err("the rights prompt was dismissed, staying in proxy mode".to_string());
             }
 
             thread::sleep(Duration::from_millis(200));
@@ -1383,7 +1293,10 @@ impl Supervisor {
     fn lower_device(&self) {
         if self.helper_running() {
             self.stop_helper();
-            self.log_from(self.active_core(), "[-] tunnel mode stopped and routes restored");
+            self.log_from(
+                self.active_core(),
+                "[-] tunnel mode stopped and routes restored",
+            );
             return;
         }
 
@@ -1408,14 +1321,16 @@ impl Supervisor {
 
         net::revert_tunnel_routes(dual);
         self.device.stop();
-        self.log_from(self.active_core(), "[-] tunnel device stopped and routes restored");
+        self.log_from(
+            self.active_core(),
+            "[-] tunnel device stopped and routes restored",
+        );
     }
 
     pub fn disconnect(&self) {
         self.shutting_down.store(true, Ordering::SeqCst);
         self.lower_system_proxy();
         self.lower_device();
-        self.stop_psiphon();
 
         drop(self.core_input.lock().unwrap().take());
 
@@ -1497,7 +1412,10 @@ mod gateway_log_tests {
     fn the_outer_hop_is_what_a_gool_line_yields() {
         let line = "[aether] [+] using cloudflare edge 162.159.192.1:2408 (outer) \
                     and 188.114.96.1:894 (inner)";
-        assert_eq!(gateway_from_log(line).as_deref(), Some("162.159.192.1:2408"));
+        assert_eq!(
+            gateway_from_log(line).as_deref(),
+            Some("162.159.192.1:2408")
+        );
     }
 
     #[test]
@@ -1524,7 +1442,10 @@ mod snapshot_tests {
 
     #[test]
     fn a_message_carrying_newlines_stays_valid_json() {
-        let rendered = format!("{{\"message\":\"{}\"}}", escape("line one\nline two\ttabbed"));
+        let rendered = format!(
+            "{{\"message\":\"{}\"}}",
+            escape("line one\nline two\ttabbed")
+        );
         let parsed: serde_json::Value =
             serde_json::from_str(&rendered).expect("the snapshot must stay parseable");
         assert_eq!(parsed["message"], "line one\nline two\ttabbed");
@@ -1600,8 +1521,9 @@ mod strategy_tests {
 
     #[test]
     fn settings_that_already_match_the_fast_attempt_are_not_repeated() {
-        let ladder =
-            attempt_ladder(&settings_from(r#"{"obfuscation":"off","scanMode":"turbo"}"#));
+        let ladder = attempt_ladder(&settings_from(
+            r#"{"obfuscation":"off","scanMode":"turbo"}"#,
+        ));
         assert_eq!(ladder.len(), 1);
         assert_eq!(ladder[0].label, "configured");
     }
