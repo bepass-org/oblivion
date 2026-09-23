@@ -53,7 +53,7 @@ set(AETHER_BIN "${AETHER_CORE_DIR}/target/release/${AETHER_BIN_NAME}")
 if(EXISTS "${AETHER_CORE_DIR}/Cargo.toml")
   add_custom_command(
     OUTPUT "${AETHER_BIN}"
-    COMMAND cargo build --release --bin aether
+    COMMAND cargo build --release --bin aether --features tor
     WORKING_DIRECTORY "${AETHER_CORE_DIR}"
     COMMENT "Building the Aether tunnel engine"
     VERBATIM

@@ -3,7 +3,11 @@ import 'dart:io';
 enum CoreEngine {
   aether('aether'),
   psiphon('psiphon'),
-  chain('chain');
+  chain('chain'),
+  psiphonReverse('psiphon-reverse'),
+  tor('tor'),
+  torChain('tor-chain'),
+  torReverse('tor-reverse');
 
   const CoreEngine(this.wire);
 
@@ -11,6 +15,14 @@ enum CoreEngine {
 
   static CoreEngine fromWire(String? value) =>
       values.firstWhere((e) => e.wire == value, orElse: () => aether);
+
+  static CoreEngine migrate(String? core, String? legacyTorMode) =>
+      switch (legacyTorMode?.trim().toLowerCase()) {
+        'only' => tor,
+        'chain' => torChain,
+        'reverse' => torReverse,
+        _ => fromWire(core),
+      };
 }
 
 enum PsiphonMode {
@@ -75,22 +87,6 @@ const psiphonCountries = <String>[
   'SK',
   'US',
 ];
-
-enum TorMode {
-  off('off'),
-  chain('chain'),
-  reverse('reverse'),
-  only('only');
-
-  const TorMode(this.wire);
-
-  final String wire;
-
-  bool get isOn => this != off;
-
-  static TorMode fromWire(String? value) =>
-      values.firstWhere((e) => e.wire == value, orElse: () => off);
-}
 
 enum TorRelays {
   auto('auto'),
@@ -253,7 +249,6 @@ class TunnelSettings {
     this.psiphonCdnSni = '',
     this.psiphonConduitPeers = ConduitPeers.auto,
     this.psiphonRejectCensoredPeers = true,
-    this.torMode = TorMode.off,
     this.torRelays = TorRelays.auto,
     this.exitLoc = '',
     this.protocol = CoreProtocol.masque,
@@ -310,7 +305,6 @@ class TunnelSettings {
   final ConduitPeers psiphonConduitPeers;
   final bool psiphonRejectCensoredPeers;
 
-  final TorMode torMode;
   final TorRelays torRelays;
   final String exitLoc;
 
@@ -373,24 +367,38 @@ class TunnelSettings {
 
   bool get usesChain => core == CoreEngine.chain;
 
-  bool get usesPsiphon => core == CoreEngine.psiphon || usesChain;
-
-  bool get usesAether => core == CoreEngine.aether || usesChain;
+  bool get psiphonReverse => core == CoreEngine.psiphonReverse;
 
   bool get psiphonOnly => core == CoreEngine.psiphon;
+
+  bool get usesPsiphon => psiphonOnly || usesChain || psiphonReverse;
+
+  bool get torOnly => core == CoreEngine.tor;
+
+  bool get torChain => core == CoreEngine.torChain;
+
+  bool get torReverse => core == CoreEngine.torReverse;
+
+  bool get usesTor => torOnly || torChain || torReverse;
+
+  bool get usesAether => !psiphonOnly && !torOnly;
+
+  bool get carriesInside => usesChain || torChain;
+
+  bool get dialsThrough => psiphonReverse || torReverse;
 
   int get _chainPortShift => socksPort + 11 <= 65535 ? 10 : -10;
 
   int get aetherSocksPort =>
-      usesChain ? socksPort + _chainPortShift : socksPort;
+      carriesInside ? socksPort + _chainPortShift : socksPort;
 
   int get aetherHttpProxyPort => aetherSocksPort + 1;
 
   String get aetherBindAddress =>
-      '${allowLan && !usesChain ? '0.0.0.0' : '127.0.0.1'}:$aetherSocksPort';
+      '${allowLan && !carriesInside ? '0.0.0.0' : '127.0.0.1'}:$aetherSocksPort';
 
   String get aetherHttpProxyAddress =>
-      '${allowLan && !usesChain ? '0.0.0.0' : '127.0.0.1'}:$aetherHttpProxyPort';
+      '${allowLan && !carriesInside ? '0.0.0.0' : '127.0.0.1'}:$aetherHttpProxyPort';
 
   String get chainUpstreamUrl => 'socks5://127.0.0.1:$aetherSocksPort';
 
@@ -398,42 +406,35 @@ class TunnelSettings {
 
   bool get psiphonUsesConduit => psiphonMode == PsiphonMode.conduit;
 
+  CoreProtocol get effectiveProtocol =>
+      dialsThrough &&
+          (protocol == CoreProtocol.wireguard || protocol == CoreProtocol.gool)
+      ? CoreProtocol.masque
+      : protocol;
+
   bool get isMasque =>
-      protocol == CoreProtocol.masque || protocol == CoreProtocol.mim;
+      effectiveProtocol == CoreProtocol.masque ||
+      effectiveProtocol == CoreProtocol.mim;
 
-  bool get usesMim => protocol == CoreProtocol.mim;
-
-  bool get usesTor => torMode != TorMode.off;
+  bool get usesMim => effectiveProtocol == CoreProtocol.mim;
 
   String get modeLabel {
-    if (torMode == TorMode.only) return 'TOR';
-
-    final String carrier = switch (protocol) {
+    final String carrier = switch (effectiveProtocol) {
       CoreProtocol.masque => usesHttp2 ? 'MASQUE H2' : 'MASQUE H3',
       CoreProtocol.mim => usesHttp2 ? 'MIM H2' : 'MIM H3',
       CoreProtocol.gool => 'GOOL',
       CoreProtocol.wireguard => 'WARP',
     };
 
-    final parts = <String>[];
-    if (psiphonOnly) {
-      parts.add('PSIPHON');
-    } else {
-      parts.add(carrier);
-      if (usesChain) parts.add('PSIPHON');
-    }
-
-    switch (torMode) {
-      case TorMode.chain:
-        parts.add('TOR');
-      case TorMode.reverse:
-        parts.insert(0, 'TOR');
-      case TorMode.off:
-      case TorMode.only:
-        break;
-    }
-
-    return parts.join(' + ');
+    return switch (core) {
+      CoreEngine.aether => carrier,
+      CoreEngine.psiphon => 'PSIPHON',
+      CoreEngine.chain => '$carrier + PSIPHON',
+      CoreEngine.psiphonReverse => 'PSIPHON + $carrier',
+      CoreEngine.tor => 'TOR',
+      CoreEngine.torChain => '$carrier + TOR',
+      CoreEngine.torReverse => 'TOR + $carrier',
+    };
   }
 
   String get teamName => team.trim();
@@ -453,12 +454,14 @@ class TunnelSettings {
   bool get zeroTrustReady =>
       usesZeroTrust && (hasAccessToken || hasServiceToken || hasAccessEmail);
 
-  bool get usesHttp2 => isMasque && transport == MasqueTransport.http2;
+  bool get usesHttp2 =>
+      isMasque && (dialsThrough || transport == MasqueTransport.http2);
 
   bool get usesWireGuard =>
-      protocol == CoreProtocol.wireguard || protocol == CoreProtocol.gool;
+      effectiveProtocol == CoreProtocol.wireguard ||
+      effectiveProtocol == CoreProtocol.gool;
 
-  bool get usesGool => protocol == CoreProtocol.gool;
+  bool get usesGool => effectiveProtocol == CoreProtocol.gool;
 
   String get wiwOuterPeer => wiwOuter.trim();
 
@@ -562,7 +565,6 @@ class TunnelSettings {
     String? psiphonCdnSni,
     ConduitPeers? psiphonConduitPeers,
     bool? psiphonRejectCensoredPeers,
-    TorMode? torMode,
     TorRelays? torRelays,
     String? exitLoc,
     CoreProtocol? protocol,
@@ -619,7 +621,6 @@ class TunnelSettings {
       psiphonConduitPeers: psiphonConduitPeers ?? this.psiphonConduitPeers,
       psiphonRejectCensoredPeers:
           psiphonRejectCensoredPeers ?? this.psiphonRejectCensoredPeers,
-      torMode: torMode ?? this.torMode,
       torRelays: torRelays ?? this.torRelays,
       exitLoc: exitLoc ?? this.exitLoc,
       protocol: protocol ?? this.protocol,
@@ -677,7 +678,6 @@ class TunnelSettings {
     'psiphonCdnSni': psiphonCdnSni.trim(),
     'psiphonConduitPeers': psiphonConduitPeers.wire,
     'psiphonRejectCensoredPeers': psiphonRejectCensoredPeers,
-    'torMode': torMode.wire,
     'torRelays': torRelays.wire,
     'exitLoc': exitLoc.trim(),
     'protocol': protocol.wire,
@@ -739,7 +739,7 @@ class TunnelSettings {
       .toList();
 
   List<String> toCoreArguments() {
-    if (psiphonOnly) return const <String>[];
+    if (psiphonOnly || torOnly) return const <String>[];
 
     final args = <String>[
       '--bind',
@@ -760,7 +760,7 @@ class TunnelSettings {
       '$reconnectSeconds',
     ];
 
-    switch (protocol) {
+    switch (effectiveProtocol) {
       case CoreProtocol.masque:
         args.add('--masque');
       case CoreProtocol.wireguard:

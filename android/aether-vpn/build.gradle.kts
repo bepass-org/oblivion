@@ -344,7 +344,10 @@ val buildAetherCore by tasks.registering {
 
             logger.lifecycle("[aether] building the core for $abi ($triple)")
             val (status, output) = runCommand(
-                listOf("cargo", "build", "--release", "--target", triple, "--bin", "aether"),
+                listOf(
+                    "cargo", "build", "--release", "--target", triple,
+                    "--bin", "aether", "--features", "tor",
+                ),
                 aetherCoreDir,
                 environment,
             )

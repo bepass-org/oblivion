@@ -8,7 +8,6 @@ data class TunnelConfig(
     val psiphonCdnSni: String,
     val psiphonConduitPeers: String,
     val psiphonRejectCensoredPeers: Boolean,
-    val torMode: String,
     val torRelays: String,
     val exitLoc: String,
     val protocol: String,
@@ -50,13 +49,27 @@ data class TunnelConfig(
 
     val psiphonOnly: Boolean get() = core == CORE_PSIPHON
 
+    val psiphonReverse: Boolean get() = core == CORE_PSIPHON_REVERSE
+
+    val torOnly: Boolean get() = core == CORE_TOR
+
+    val torChain: Boolean get() = core == CORE_TOR_CHAIN
+
+    val torReverse: Boolean get() = core == CORE_TOR_REVERSE
+
     val runsAether: Boolean get() = true
 
-    val runsPsiphon: Boolean get() = psiphonOnly || usesChain
+    val runsPsiphon: Boolean get() = psiphonOnly || usesChain || psiphonReverse
+
+    val runsAlone: Boolean get() = psiphonOnly || torOnly
+
+    val carriesInside: Boolean get() = usesChain || torChain
+
+    val dialsThrough: Boolean get() = psiphonReverse || torReverse
 
     val aetherSocksPort: Int
         get() = when {
-            !usesChain -> socksPort
+            !carriesInside -> socksPort
             socksPort + 11 <= 65535 -> socksPort + 10
             else -> socksPort - 10
         }
@@ -64,7 +77,7 @@ data class TunnelConfig(
     val aetherHttpProxyPort: Int get() = aetherSocksPort + 1
 
     val aetherBindHost: String
-        get() = if (allowLan && !usesChain) "0.0.0.0" else "127.0.0.1"
+        get() = if (allowLan && !carriesInside) "0.0.0.0" else "127.0.0.1"
 
     val chainUpstreamUrl: String get() = "socks5://127.0.0.1:$aetherSocksPort"
 
@@ -74,29 +87,44 @@ data class TunnelConfig(
 
     val usesZeroTrust: Boolean get() = team.isNotBlank()
 
-    val usesGool: Boolean get() = protocol == "gool"
+    val effectiveProtocol: String
+        get() = if (dialsThrough && protocol in setOf("wg", "wireguard", "gool")) "masque" else protocol
 
-    val usesMim: Boolean get() = protocol == "mim"
+    val usesGool: Boolean get() = effectiveProtocol == "gool"
 
-    val usesMasque: Boolean get() = protocol == "masque" || usesMim
+    val usesMim: Boolean get() = effectiveProtocol == "mim"
+
+    val usesMasque: Boolean get() = effectiveProtocol == "masque" || usesMim
+
+    val usesHttp2: Boolean get() = usesMasque && (transport == "h2" || dialsThrough)
 
     val torWire: String
-        get() = when (torMode.trim().lowercase()) {
-            "", "off", "no", "0", "false", "none" -> ""
-            "reverse", "rev" -> "reverse"
-            "only", "alone" -> "only"
-            else -> "chain"
+        get() = when {
+            torOnly -> "only"
+            torChain -> "chain"
+            torReverse -> "reverse"
+            else -> ""
         }
 
     val usesTor: Boolean get() = torWire.isNotEmpty()
 
-    val aetherTorPort: Int get() = aetherHttpProxyPort + 1
+    val psiphonWire: String
+        get() = when {
+            psiphonOnly -> "only"
+            usesChain -> "chain"
+            psiphonReverse -> "reverse"
+            else -> ""
+        }
 
-    val aetherTorAddress: String get() = "$aetherBindHost:$aetherTorPort"
+    val carrierSidePort: Int get() = aetherHttpProxyPort + 1
 
     val psiphonListenHost: String get() = if (allowLan) "0.0.0.0" else "127.0.0.1"
 
-    val psiphonBindAddress: String get() = "$psiphonListenHost:$socksPort"
+    val torBindAddress: String
+        get() = if (torChain) "$psiphonListenHost:$socksPort" else "127.0.0.1:$carrierSidePort"
+
+    val psiphonBindAddress: String
+        get() = if (psiphonReverse) "127.0.0.1:$carrierSidePort" else "$psiphonListenHost:$socksPort"
 
     val psiphonCoreMode: String
         get() = when (psiphonMode.trim().lowercase()) {
@@ -161,6 +189,10 @@ data class TunnelConfig(
         const val CORE_AETHER = "aether"
         const val CORE_PSIPHON = "psiphon"
         const val CORE_CHAIN = "chain"
+        const val CORE_PSIPHON_REVERSE = "psiphon-reverse"
+        const val CORE_TOR = "tor"
+        const val CORE_TOR_CHAIN = "tor-chain"
+        const val CORE_TOR_REVERSE = "tor-reverse"
 
         const val TUN_MTU = 8500
         const val TUN_MTU_MIN = 1280
@@ -186,7 +218,6 @@ data class TunnelConfig(
                 psiphonCdnSni = str("psiphonCdnSni"),
                 psiphonConduitPeers = str("psiphonConduitPeers", "auto"),
                 psiphonRejectCensoredPeers = bool("psiphonRejectCensoredPeers", true),
-                torMode = str("torMode", "off"),
                 torRelays = str("torRelays", "auto"),
                 exitLoc = str("exitLoc"),
                 protocol = str("protocol", "masque"),

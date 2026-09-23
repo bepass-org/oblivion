@@ -1179,18 +1179,55 @@ class L10nEn extends L10n {
   String get corePsiphonDesc => 'Psiphon network with CDN fronting';
 
   @override
-  String get coreChain => 'Aether + Psiphon';
+  String get coreChain => 'Psiphon inside the tunnel';
 
   @override
   String get coreChainDesc =>
-      'Bring up Aether first, then run Psiphon through it.';
+      'You, WARP, Psiphon, the internet. The exit is Psiphon, and a network that blocks Psiphon never sees it';
+
+  @override
+  String get corePsiphonReverse => 'Tunnel through Psiphon';
+
+  @override
+  String get corePsiphonReverseDesc =>
+      'You, Psiphon, WARP, the internet. The exit is WARP, reached from a Psiphon exit, and your network never sees WARP';
+
+  @override
+  String get coreTor => 'Tor';
+
+  @override
+  String get coreTorDesc => 'Plain Tor, with no tunnel underneath';
+
+  @override
+  String get coreTorChain => 'Tor inside the tunnel';
+
+  @override
+  String get coreTorChainDesc =>
+      'You, WARP, Tor, the internet. The exit is Tor, and a network that blocks Tor never sees it';
+
+  @override
+  String get coreTorReverse => 'Tunnel through Tor';
+
+  @override
+  String get coreTorReverseDesc =>
+      'You, Tor, WARP, the internet. The exit is WARP, reached from a Tor exit, and your network never sees WARP';
 
   @override
   String get chainOrder => 'Chain order';
 
   @override
-  String chainOrderDesc(String transport) {
-    return '$transport connects first, then Psiphon dials out through it.';
+  String chainOrderDesc(String transport, String engine) {
+    return '$transport connects first, then $engine dials out through it.';
+  }
+
+  @override
+  String chainOrderReverseDesc(String engine) {
+    return '$engine connects first, then WARP is reached through it with MASQUE over HTTP/2.';
+  }
+
+  @override
+  String protocolThroughCarrier(String engine) {
+    return 'Through $engine only MASQUE over HTTP/2 reaches WARP. Your own choice comes back with any other core';
   }
 
   @override
@@ -1338,38 +1375,6 @@ class L10nEn extends L10n {
   @override
   String get obfuscationGfwDesc =>
       'The loudest profile, for when nothing else gets through';
-
-  @override
-  String get torSection => 'Tor';
-
-  @override
-  String get torModeTitle => 'Tor';
-
-  @override
-  String get torOff => 'Off';
-
-  @override
-  String get torOffDesc => 'No Tor';
-
-  @override
-  String get torChain => 'Tor inside the tunnel';
-
-  @override
-  String get torChainDesc =>
-      'You, WARP, Tor, the internet. The exit is a Tor exit';
-
-  @override
-  String get torReverse => 'Tunnel through Tor';
-
-  @override
-  String get torReverseDesc =>
-      'WARP is reached from a Tor exit, so your network never sees WARP';
-
-  @override
-  String get torOnly => 'Tor only';
-
-  @override
-  String get torOnlyDesc => 'No tunnel underneath, plain Tor';
 
   @override
   String get torRelaysTitle => 'Bridge source';

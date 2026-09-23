@@ -2248,14 +2248,62 @@ abstract class L10n {
   /// No description provided for @coreChain.
   ///
   /// In en, this message translates to:
-  /// **'Aether + Psiphon'**
+  /// **'Psiphon inside the tunnel'**
   String get coreChain;
 
   /// No description provided for @coreChainDesc.
   ///
   /// In en, this message translates to:
-  /// **'Bring up Aether first, then run Psiphon through it.'**
+  /// **'You, WARP, Psiphon, the internet. The exit is Psiphon, and a network that blocks Psiphon never sees it'**
   String get coreChainDesc;
+
+  /// No description provided for @corePsiphonReverse.
+  ///
+  /// In en, this message translates to:
+  /// **'Tunnel through Psiphon'**
+  String get corePsiphonReverse;
+
+  /// No description provided for @corePsiphonReverseDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You, Psiphon, WARP, the internet. The exit is WARP, reached from a Psiphon exit, and your network never sees WARP'**
+  String get corePsiphonReverseDesc;
+
+  /// No description provided for @coreTor.
+  ///
+  /// In en, this message translates to:
+  /// **'Tor'**
+  String get coreTor;
+
+  /// No description provided for @coreTorDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Plain Tor, with no tunnel underneath'**
+  String get coreTorDesc;
+
+  /// No description provided for @coreTorChain.
+  ///
+  /// In en, this message translates to:
+  /// **'Tor inside the tunnel'**
+  String get coreTorChain;
+
+  /// No description provided for @coreTorChainDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You, WARP, Tor, the internet. The exit is Tor, and a network that blocks Tor never sees it'**
+  String get coreTorChainDesc;
+
+  /// No description provided for @coreTorReverse.
+  ///
+  /// In en, this message translates to:
+  /// **'Tunnel through Tor'**
+  String get coreTorReverse;
+
+  /// No description provided for @coreTorReverseDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You, Tor, WARP, the internet. The exit is WARP, reached from a Tor exit, and your network never sees WARP'**
+  String get coreTorReverseDesc;
 
   /// No description provided for @chainOrder.
   ///
@@ -2266,8 +2314,20 @@ abstract class L10n {
   /// No description provided for @chainOrderDesc.
   ///
   /// In en, this message translates to:
-  /// **'{transport} connects first, then Psiphon dials out through it.'**
-  String chainOrderDesc(String transport);
+  /// **'{transport} connects first, then {engine} dials out through it.'**
+  String chainOrderDesc(String transport, String engine);
+
+  /// No description provided for @chainOrderReverseDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'{engine} connects first, then WARP is reached through it with MASQUE over HTTP/2.'**
+  String chainOrderReverseDesc(String engine);
+
+  /// No description provided for @protocolThroughCarrier.
+  ///
+  /// In en, this message translates to:
+  /// **'Through {engine} only MASQUE over HTTP/2 reaches WARP. Your own choice comes back with any other core'**
+  String protocolThroughCarrier(String engine);
 
   /// No description provided for @chainNeedsTcp.
   ///
@@ -2526,66 +2586,6 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'The loudest profile, for when nothing else gets through'**
   String get obfuscationGfwDesc;
-
-  /// No description provided for @torSection.
-  ///
-  /// In en, this message translates to:
-  /// **'Tor'**
-  String get torSection;
-
-  /// No description provided for @torModeTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Tor'**
-  String get torModeTitle;
-
-  /// No description provided for @torOff.
-  ///
-  /// In en, this message translates to:
-  /// **'Off'**
-  String get torOff;
-
-  /// No description provided for @torOffDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'No Tor'**
-  String get torOffDesc;
-
-  /// No description provided for @torChain.
-  ///
-  /// In en, this message translates to:
-  /// **'Tor inside the tunnel'**
-  String get torChain;
-
-  /// No description provided for @torChainDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'You, WARP, Tor, the internet. The exit is a Tor exit'**
-  String get torChainDesc;
-
-  /// No description provided for @torReverse.
-  ///
-  /// In en, this message translates to:
-  /// **'Tunnel through Tor'**
-  String get torReverse;
-
-  /// No description provided for @torReverseDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'WARP is reached from a Tor exit, so your network never sees WARP'**
-  String get torReverseDesc;
-
-  /// No description provided for @torOnly.
-  ///
-  /// In en, this message translates to:
-  /// **'Tor only'**
-  String get torOnly;
-
-  /// No description provided for @torOnlyDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'No tunnel underneath, plain Tor'**
-  String get torOnlyDesc;
 
   /// No description provided for @torRelaysTitle.
   ///

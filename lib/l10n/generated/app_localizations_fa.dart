@@ -1180,18 +1180,55 @@ class L10nFa extends L10n {
   String get corePsiphonDesc => 'شبکه سایفون با CDN fronting';
 
   @override
-  String get coreChain => 'Aether + سایفون';
+  String get coreChain => 'سایفون داخل تانل';
 
   @override
   String get coreChainDesc =>
-      'اول Aether بالا می‌آید، بعد سایفون از داخل آن اجرا می‌شود.';
+      'شما، وارپ، سایفون، اینترنت. خروجی سایفون است و شبکه‌ای که سایفون را بسته اصلا آن را نمی‌بیند';
+
+  @override
+  String get corePsiphonReverse => 'تانل از داخل سایفون';
+
+  @override
+  String get corePsiphonReverseDesc =>
+      'شما، سایفون، وارپ، اینترنت. خروجی وارپ است که از یک exit سایفون گرفته می‌شود و شبکه شما اصلا وارپ نمی‌بیند';
+
+  @override
+  String get coreTor => 'تور';
+
+  @override
+  String get coreTorDesc => 'تور خالی، بدون تانل زیرش';
+
+  @override
+  String get coreTorChain => 'تور داخل تانل';
+
+  @override
+  String get coreTorChainDesc =>
+      'شما، وارپ، تور، اینترنت. خروجی تور است و شبکه‌ای که تور را بسته اصلا آن را نمی‌بیند';
+
+  @override
+  String get coreTorReverse => 'تانل از داخل تور';
+
+  @override
+  String get coreTorReverseDesc =>
+      'شما، تور، وارپ، اینترنت. خروجی وارپ است که از یک exit تور گرفته می‌شود و شبکه شما اصلا وارپ نمی‌بیند';
 
   @override
   String get chainOrder => 'ترتیب زنجیره';
 
   @override
-  String chainOrderDesc(String transport) {
-    return 'اول $transport وصل می‌شود، بعد سایفون از داخل آن بیرون می‌رود.';
+  String chainOrderDesc(String transport, String engine) {
+    return 'اول $transport وصل می‌شود، بعد $engine از داخل آن بیرون می‌رود.';
+  }
+
+  @override
+  String chainOrderReverseDesc(String engine) {
+    return 'اول $engine وصل می‌شود، بعد وارپ از داخل آن با MASQUE روی HTTP/2 گرفته می‌شود.';
+  }
+
+  @override
+  String protocolThroughCarrier(String engine) {
+    return 'از داخل $engine فقط MASQUE روی HTTP/2 به وارپ می‌رسد. انتخاب خودتان با هر هستهٔ دیگری برمی‌گردد';
   }
 
   @override
@@ -1338,37 +1375,6 @@ class L10nFa extends L10n {
   @override
   String get obfuscationGfwDesc =>
       'پرسروصداترین پروفایل، وقتی هیچ‌چیز دیگری رد نمی‌شود';
-
-  @override
-  String get torSection => 'تور';
-
-  @override
-  String get torModeTitle => 'تور';
-
-  @override
-  String get torOff => 'خاموش';
-
-  @override
-  String get torOffDesc => 'بدون تور';
-
-  @override
-  String get torChain => 'تور داخل تانل';
-
-  @override
-  String get torChainDesc => 'شما، وارپ، تور، اینترنت. خروجی یک exit تور است';
-
-  @override
-  String get torReverse => 'تانل از داخل تور';
-
-  @override
-  String get torReverseDesc =>
-      'وارپ از یک exit تور گرفته می‌شود، پس شبکه شما اصلا وارپ نمی‌بیند';
-
-  @override
-  String get torOnly => 'فقط تور';
-
-  @override
-  String get torOnlyDesc => 'بدون تانل، فقط تور خالی';
 
   @override
   String get torRelaysTitle => 'منبع بریج';

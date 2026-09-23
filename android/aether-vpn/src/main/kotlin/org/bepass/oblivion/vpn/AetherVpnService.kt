@@ -114,7 +114,7 @@ class AetherVpnService : VpnService() {
         val environment = mutableMapOf(
             "AETHER_SOCKS" to "${target.aetherBindHost}:${target.aetherSocksPort}",
             "AETHER_HTTP_PROXY" to "${target.aetherBindHost}:${target.aetherHttpProxyPort}",
-            "AETHER_PROTOCOL" to target.protocol,
+            "AETHER_PROTOCOL" to target.effectiveProtocol,
             "AETHER_SCAN" to target.scanMode,
             "AETHER_NOIZE" to target.noizeProfile,
             "AETHER_IP" to target.ipVersion,
@@ -122,7 +122,7 @@ class AetherVpnService : VpnService() {
             "AETHER_QUICK_RECONNECT" to if (target.quickReconnect) "1" else "0",
         )
 
-        if (target.usesMasque && target.transport == "h2") {
+        if (target.usesHttp2) {
             environment["AETHER_MASQUE_HTTP2"] = "1"
             if (target.fragment) environment["AETHER_MASQUE_H2_FRAGMENT"] = "1"
         }
@@ -141,7 +141,7 @@ class AetherVpnService : VpnService() {
             environment["AETHER_PEER"] = target.endpoint
         }
         if (target.runsPsiphon) {
-            environment["AETHER_PSIPHON"] = if (target.psiphonOnly) "only" else "chain"
+            environment["AETHER_PSIPHON"] = target.psiphonWire
             environment["AETHER_PSIPHON_BIND"] = target.psiphonBindAddress
             environment["AETHER_PSIPHON_MODE"] = target.psiphonCoreMode
             if (target.psiphonCountry.isNotBlank()) {
@@ -161,7 +161,7 @@ class AetherVpnService : VpnService() {
         if (target.usesTor) {
             environment["AETHER_TOR"] = target.torWire
             if (target.torWire != "only") {
-                environment["AETHER_TOR_BIND"] = target.aetherTorAddress
+                environment["AETHER_TOR_BIND"] = target.torBindAddress
             }
             if (target.torRelays.isNotBlank()) {
                 environment["AETHER_TOR_RELAYS"] = target.torRelays
@@ -216,11 +216,14 @@ class AetherVpnService : VpnService() {
         val scheduler = Executors.newSingleThreadScheduledExecutor()
         validator = scheduler
 
-        val usesPsiphon = target.psiphonOnly
+        val alone = target.runsAlone
         val budgetMs = when {
-            usesPsiphon -> PSIPHON_VALIDATION_BUDGET_MS
-            target.usesChain ->
+            target.psiphonOnly -> PSIPHON_VALIDATION_BUDGET_MS
+            target.torOnly -> TOR_VALIDATION_BUDGET_MS
+            target.usesChain || target.psiphonReverse ->
                 validationBudgetMs(target.scanMode) + PSIPHON_VALIDATION_BUDGET_MS
+            target.torChain || target.torReverse ->
+                validationBudgetMs(target.scanMode) + TOR_VALIDATION_BUDGET_MS
             else -> validationBudgetMs(target.scanMode)
         }
         val deadline = System.currentTimeMillis() + budgetMs
@@ -229,7 +232,7 @@ class AetherVpnService : VpnService() {
 
         TunnelBus.log(
             logSource(),
-            if (usesPsiphon) {
+            if (alone) {
                 "[*] waiting up to ${budgetSeconds}s for the tunnel"
             } else {
                 "[*] waiting up to ${budgetSeconds}s for the tunnel on scan mode ${target.scanMode}"
@@ -245,7 +248,7 @@ class AetherVpnService : VpnService() {
             if (System.currentTimeMillis() > deadline) {
                 requestStop(
                     TunnelStage.FAILED,
-                    if (usesPsiphon) {
+                    if (alone) {
                         "no working tunnel after ${budgetSeconds}s"
                     } else {
                         "no working tunnel after ${budgetSeconds}s on scan mode ${target.scanMode}"
@@ -261,11 +264,12 @@ class AetherVpnService : VpnService() {
 
             if (!SocksProbe.reachable(target.aetherSocksPort)) return@scheduleWithFixedDelay
 
-            if (target.usesChain) {
+            if (target.carriesInside) {
                 if (!SocksProbe.reachable(target.socksPort)) return@scheduleWithFixedDelay
                 TunnelBus.log(
-                    CORE_PSIPHON,
-                    "[+] the chain is up: traffic goes through aether, then psiphon",
+                    if (target.torChain) CORE_TOR else CORE_PSIPHON,
+                    "[+] the chain is up: traffic goes through aether, then " +
+                        if (target.torChain) "tor" else "psiphon",
                 )
             }
 
@@ -611,9 +615,11 @@ class AetherVpnService : VpnService() {
         private const val HEV_LOG_NAME = "hev-tunnel.log"
         private const val CORE_AETHER = "aether"
         private const val CORE_PSIPHON = "psiphon"
+        private const val CORE_TOR = "tor"
         private const val PSIPHON_DATA_DIR = "psiphon"
         private const val PSIPHON_OVERLAY_NAME = "oblivion-psiphon.json"
         private const val PSIPHON_VALIDATION_BUDGET_MS = 180_000L
+        private const val TOR_VALIDATION_BUDGET_MS = 300_000L
 
 
         private const val POST_SCAN_HEADROOM_MS = 60_000L

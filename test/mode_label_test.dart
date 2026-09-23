@@ -42,14 +42,21 @@ void main() {
 
     test('tor is shown on whichever side it sits', () {
       expect(
-        const TunnelSettings(torMode: TorMode.chain).modeLabel,
+        const TunnelSettings(core: CoreEngine.torChain).modeLabel,
         'MASQUE H3 + TOR',
       );
       expect(
-        const TunnelSettings(torMode: TorMode.reverse).modeLabel,
-        'TOR + MASQUE H3',
+        const TunnelSettings(core: CoreEngine.torReverse).modeLabel,
+        'TOR + MASQUE H2',
       );
-      expect(const TunnelSettings(torMode: TorMode.only).modeLabel, 'TOR');
+      expect(const TunnelSettings(core: CoreEngine.tor).modeLabel, 'TOR');
+    });
+
+    test('psiphon is shown on whichever side it sits', () {
+      expect(
+        const TunnelSettings(core: CoreEngine.psiphonReverse).modeLabel,
+        'PSIPHON + MASQUE H2',
+      );
     });
 
     test('a scan mode saved under the old name still reads', () {

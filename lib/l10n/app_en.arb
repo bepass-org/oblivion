@@ -440,13 +440,40 @@
   "coreAetherDesc": "Cloudflare WARP and MASQUE",
   "corePsiphon": "Psiphon",
   "corePsiphonDesc": "Psiphon network with CDN fronting",
-  "coreChain": "Aether + Psiphon",
-  "coreChainDesc": "Bring up Aether first, then run Psiphon through it.",
+  "coreChain": "Psiphon inside the tunnel",
+  "coreChainDesc": "You, WARP, Psiphon, the internet. The exit is Psiphon, and a network that blocks Psiphon never sees it",
+  "corePsiphonReverse": "Tunnel through Psiphon",
+  "corePsiphonReverseDesc": "You, Psiphon, WARP, the internet. The exit is WARP, reached from a Psiphon exit, and your network never sees WARP",
+  "coreTor": "Tor",
+  "coreTorDesc": "Plain Tor, with no tunnel underneath",
+  "coreTorChain": "Tor inside the tunnel",
+  "coreTorChainDesc": "You, WARP, Tor, the internet. The exit is Tor, and a network that blocks Tor never sees it",
+  "coreTorReverse": "Tunnel through Tor",
+  "coreTorReverseDesc": "You, Tor, WARP, the internet. The exit is WARP, reached from a Tor exit, and your network never sees WARP",
   "chainOrder": "Chain order",
-  "chainOrderDesc": "{transport} connects first, then Psiphon dials out through it.",
+  "chainOrderDesc": "{transport} connects first, then {engine} dials out through it.",
   "@chainOrderDesc": {
     "placeholders": {
       "transport": {
+        "type": "String"
+      },
+      "engine": {
+        "type": "String"
+      }
+    }
+  },
+  "chainOrderReverseDesc": "{engine} connects first, then WARP is reached through it with MASQUE over HTTP/2.",
+  "@chainOrderReverseDesc": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      }
+    }
+  },
+  "protocolThroughCarrier": "Through {engine} only MASQUE over HTTP/2 reaches WARP. Your own choice comes back with any other core",
+  "@protocolThroughCarrier": {
+    "placeholders": {
+      "engine": {
         "type": "String"
       }
     }
@@ -494,16 +521,6 @@
   "obfuscationFirewallDesc": "The MASQUE default, tuned for a filtering firewall",
   "obfuscationGfw": "GFW",
   "obfuscationGfwDesc": "The loudest profile, for when nothing else gets through",
-  "torSection": "Tor",
-  "torModeTitle": "Tor",
-  "torOff": "Off",
-  "torOffDesc": "No Tor",
-  "torChain": "Tor inside the tunnel",
-  "torChainDesc": "You, WARP, Tor, the internet. The exit is a Tor exit",
-  "torReverse": "Tunnel through Tor",
-  "torReverseDesc": "WARP is reached from a Tor exit, so your network never sees WARP",
-  "torOnly": "Tor only",
-  "torOnlyDesc": "No tunnel underneath, plain Tor",
   "torRelaysTitle": "Bridge source",
   "torRelaysDesc": "Where bridges come from when the network blocks Tor",
   "torRelaysAuto": "BridgeDB and relays",

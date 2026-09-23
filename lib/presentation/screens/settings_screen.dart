@@ -22,27 +22,24 @@ String coreTitle(L10n l10n, CoreEngine value) => switch (value) {
   CoreEngine.aether => l10n.coreAether,
   CoreEngine.psiphon => l10n.corePsiphon,
   CoreEngine.chain => l10n.coreChain,
+  CoreEngine.psiphonReverse => l10n.corePsiphonReverse,
+  CoreEngine.tor => l10n.coreTor,
+  CoreEngine.torChain => l10n.coreTorChain,
+  CoreEngine.torReverse => l10n.coreTorReverse,
 };
 
 String coreDesc(L10n l10n, CoreEngine value) => switch (value) {
   CoreEngine.aether => l10n.coreAetherDesc,
   CoreEngine.psiphon => l10n.corePsiphonDesc,
   CoreEngine.chain => l10n.coreChainDesc,
+  CoreEngine.psiphonReverse => l10n.corePsiphonReverseDesc,
+  CoreEngine.tor => l10n.coreTorDesc,
+  CoreEngine.torChain => l10n.coreTorChainDesc,
+  CoreEngine.torReverse => l10n.coreTorReverseDesc,
 };
 
-String torTitle(L10n l10n, TorMode value) => switch (value) {
-  TorMode.off => l10n.torOff,
-  TorMode.chain => l10n.torChain,
-  TorMode.reverse => l10n.torReverse,
-  TorMode.only => l10n.torOnly,
-};
-
-String torDesc(L10n l10n, TorMode value) => switch (value) {
-  TorMode.off => l10n.torOffDesc,
-  TorMode.chain => l10n.torChainDesc,
-  TorMode.reverse => l10n.torReverseDesc,
-  TorMode.only => l10n.torOnlyDesc,
-};
+String chainedEngineName(L10n l10n, TunnelSettings settings) =>
+    settings.usesTor ? l10n.coreTor : l10n.corePsiphon;
 
 String torRelaysTitle(L10n l10n, TorRelays value) => switch (value) {
   TorRelays.auto => l10n.torRelaysAuto,
@@ -175,15 +172,23 @@ class SettingsScreen extends ConsumerWidget {
                             controller.update((s) => s.copyWith(core: v)),
                       ),
                     ),
-                    if (settings.usesChain)
+                    if (settings.carriesInside)
                       SettingsRow(
                         title: l10n.chainOrder,
                         subtitle: l10n.chainOrderDesc(
-                          protocolTitle(l10n, settings.protocol),
+                          protocolTitle(l10n, settings.effectiveProtocol),
+                          chainedEngineName(l10n, settings),
                         ),
                         value:
                             '${settings.aetherSocksPort} → '
                             '${settings.socksPort}',
+                      ),
+                    if (settings.dialsThrough)
+                      SettingsRow(
+                        title: l10n.chainOrder,
+                        subtitle: l10n.chainOrderReverseDesc(
+                          chainedEngineName(l10n, settings),
+                        ),
                       ),
                     if (settings.usesPsiphon)
                       SettingsRow(
@@ -196,27 +201,6 @@ class SettingsScreen extends ConsumerWidget {
                           ),
                         ),
                       ),
-                    SettingsRow(
-                      title: l10n.torModeTitle,
-                      subtitle: torDesc(l10n, settings.torMode),
-                      value: torTitle(l10n, settings.torMode),
-                      onTap: () => showChoiceSheet<TorMode>(
-                        context: context,
-                        title: l10n.torModeTitle,
-                        selected: settings.torMode,
-                        options: TorMode.values
-                            .map(
-                              (v) => PickerOption<TorMode>(
-                                value: v,
-                                title: torTitle(l10n, v),
-                                subtitle: torDesc(l10n, v),
-                              ),
-                            )
-                            .toList(),
-                        onSelected: (v) =>
-                            controller.update((s) => s.copyWith(torMode: v)),
-                      ),
-                    ),
                     if (settings.usesTor)
                       SettingsRow(
                         title: l10n.torRelaysTitle,
@@ -247,13 +231,25 @@ class SettingsScreen extends ConsumerWidget {
                     children: <Widget>[
                       SettingsRow(
                         title: l10n.protocol,
-                        subtitle: protocolDesc(l10n, settings.protocol),
-                        value: protocolTitle(l10n, settings.protocol),
+                        subtitle:
+                            settings.dialsThrough &&
+                                settings.effectiveProtocol != settings.protocol
+                            ? l10n.protocolThroughCarrier(
+                                chainedEngineName(l10n, settings),
+                              )
+                            : protocolDesc(l10n, settings.effectiveProtocol),
+                        value: protocolTitle(l10n, settings.effectiveProtocol),
                         onTap: () => showChoiceSheet<CoreProtocol>(
                           context: context,
                           title: l10n.protocol,
-                          selected: settings.protocol,
+                          selected: settings.effectiveProtocol,
                           options: CoreProtocol.values
+                              .where(
+                                (v) =>
+                                    !settings.dialsThrough ||
+                                    v == CoreProtocol.masque ||
+                                    v == CoreProtocol.mim,
+                              )
                               .map(
                                 (v) => PickerOption<CoreProtocol>(
                                   value: v,
@@ -269,7 +265,7 @@ class SettingsScreen extends ConsumerWidget {
                       SettingsRow(
                         title: l10n.transport,
                         value: settings.usesHttp2 ? 'HTTP/2' : 'HTTP/3',
-                        enabled: settings.isMasque,
+                        enabled: settings.isMasque && !settings.dialsThrough,
                         onTap: () => showChoiceSheet<MasqueTransport>(
                           context: context,
                           title: l10n.transport,

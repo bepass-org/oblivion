@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter/material.dart';
@@ -64,7 +65,6 @@ class SettingsStore {
     'psiphonCdnSni',
     'psiphonConduitPeers',
     'psiphonRejectCensoredPeers',
-    'torMode',
     'torRelays',
     'exitLoc',
     'protocol',
@@ -122,11 +122,20 @@ class SettingsStore {
 
   String? _string(String key) => _prefs.getString('$_prefix$key');
 
+  static const String _legacyTorModeKey = 'torMode';
+
   TunnelSettings readTunnelSettings() {
     const fallback = TunnelSettings();
 
+    final legacyTorMode = _string(_legacyTorModeKey);
+    final core = CoreEngine.migrate(_string('core'), legacyTorMode);
+    if (legacyTorMode != null) {
+      unawaited(_prefs.setString('${_prefix}core', core.wire));
+      unawaited(_prefs.remove('$_prefix$_legacyTorModeKey'));
+    }
+
     final settings = TunnelSettings(
-      core: CoreEngine.fromWire(_string('core')),
+      core: core,
       psiphonCountry: _string('psiphonCountry') ?? fallback.psiphonCountry,
       psiphonMode: PsiphonMode.fromWire(_string('psiphonMode')),
       psiphonCdnIps: _string('psiphonCdnIps') ?? fallback.psiphonCdnIps,
@@ -137,7 +146,6 @@ class SettingsStore {
       psiphonRejectCensoredPeers:
           _prefs.getBool('${_prefix}psiphonRejectCensoredPeers') ??
           fallback.psiphonRejectCensoredPeers,
-      torMode: TorMode.fromWire(_string('torMode')),
       torRelays: TorRelays.fromWire(_string('torRelays')),
       exitLoc: _string('exitLoc') ?? '',
       protocol: CoreProtocol.fromWire(_string('protocol')),
@@ -215,7 +223,6 @@ class SettingsStore {
     'psiphonCdnSni': s.psiphonCdnSni,
     'psiphonConduitPeers': s.psiphonConduitPeers.wire,
     'psiphonRejectCensoredPeers': s.psiphonRejectCensoredPeers,
-    'torMode': s.torMode.wire,
     'torRelays': s.torRelays.wire,
     'exitLoc': s.exitLoc,
     'protocol': s.protocol.wire,
@@ -307,6 +314,7 @@ class SettingsStore {
     for (final key in _coreKeys) {
       await _prefs.remove('$_prefix$key');
     }
+    await _prefs.remove('$_prefix$_legacyTorModeKey');
   }
 
   AppPreferences readAppPreferences() {

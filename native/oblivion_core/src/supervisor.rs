@@ -73,15 +73,33 @@ struct Attempt {
     budget: Duration,
 }
 
+fn carrier_budget(settings: &TunnelSettings) -> Duration {
+    if settings.tor_only() || settings.tor_reverse() {
+        CHAIN_TOR_BUDGET
+    } else if settings.psiphon_reverse() {
+        CHAIN_PSIPHON_BUDGET
+    } else {
+        Duration::ZERO
+    }
+}
+
+fn chain_source(settings: &TunnelSettings) -> &'static str {
+    if settings.tor_chain() {
+        "tor"
+    } else {
+        psiphon::CORE_PSIPHON
+    }
+}
+
 fn attempt_ladder(settings: &TunnelSettings) -> Vec<Attempt> {
     let configured = Attempt {
         label: "configured",
         noize: settings.noize(),
         scan: settings.scan_mode.clone(),
-        budget: validation_budget(&settings.scan_mode),
+        budget: validation_budget(&settings.scan_mode) + carrier_budget(settings),
     };
 
-    if settings.psiphon_only() || !settings.fast_first_connect {
+    if settings.runs_alone() || settings.dials_through() || !settings.fast_first_connect {
         return vec![configured];
     }
 
@@ -130,6 +148,7 @@ fn override_flag(arguments: &mut Vec<String>, flag: &str, value: &str) {
 const VALIDATION_INTERVAL: Duration = Duration::from_secs(1);
 const CORE_WATCH_INTERVAL: Duration = Duration::from_secs(1);
 const CHAIN_PSIPHON_BUDGET: Duration = Duration::from_secs(180);
+const CHAIN_TOR_BUDGET: Duration = Duration::from_secs(300);
 const RETAINED_LOG_LINES: usize = 2500;
 const MAX_TAILED_LOG_BYTES: u64 = 2 * 1024 * 1024;
 
@@ -829,9 +848,9 @@ impl Supervisor {
                     "[+] socks5 proxy answered a real request",
                 );
 
-                if settings.uses_chain() {
+                if settings.carries_inside() {
                     if let Err(error) = self.raise_chain(&settings) {
-                        self.log_from(psiphon::CORE_PSIPHON, format!("[-] {error}"));
+                        self.log_from(chain_source(&settings), format!("[-] {error}"));
                         if self.escalate(&settings, &base_arguments, &ladder, index) {
                             return;
                         }
@@ -901,15 +920,20 @@ impl Supervisor {
     }
 
     fn raise_chain(self: &Arc<Self>, settings: &TunnelSettings) -> Result<(), String> {
+        let (source, name, budget) = if settings.tor_chain() {
+            (chain_source(settings), "tor", CHAIN_TOR_BUDGET)
+        } else {
+            (chain_source(settings), "psiphon", CHAIN_PSIPHON_BUDGET)
+        };
         self.log_from(
-            psiphon::CORE_PSIPHON,
+            source,
             format!(
-                "[*] aether is up on {}; starting psiphon through it",
+                "[*] aether is up on {}; starting {name} through it",
                 settings.aether_socks_port()
             ),
         );
 
-        let deadline = Instant::now() + CHAIN_PSIPHON_BUDGET;
+        let deadline = Instant::now() + budget;
         while Instant::now() < deadline {
             if self.shutting_down.load(Ordering::SeqCst) {
                 return Err("cancelled".to_string());
@@ -919,8 +943,8 @@ impl Supervisor {
             }
             if probe::socks_reachable(settings.socks_port) {
                 self.log_from(
-                    psiphon::CORE_PSIPHON,
-                    "[+] the chain is up: traffic goes through aether, then psiphon",
+                    source,
+                    format!("[+] the chain is up: traffic goes through aether, then {name}"),
                 );
                 return Ok(());
             }
@@ -928,8 +952,8 @@ impl Supervisor {
         }
 
         Err(format!(
-            "psiphon did not come up through aether within {}s",
-            CHAIN_PSIPHON_BUDGET.as_secs()
+            "{name} did not come up through aether within {}s",
+            budget.as_secs()
         ))
     }
 
@@ -1532,6 +1556,23 @@ mod strategy_tests {
     fn psiphon_has_no_obfuscation_ladder() {
         let ladder = attempt_ladder(&settings_from(r#"{"core":"psiphon"}"#));
         assert_eq!(ladder.len(), 1);
+    }
+
+    #[test]
+    fn tor_alone_or_carrying_warp_gets_one_attempt_with_time_for_tor() {
+        let plain = attempt_ladder(&settings_from(r#"{"fastFirstConnect":false}"#));
+        for core in ["tor", "tor-reverse", "psiphon-reverse"] {
+            let ladder = attempt_ladder(&settings_from(&format!(r#"{{"core":"{core}"}}"#)));
+            assert_eq!(ladder.len(), 1, "{core}");
+            assert!(ladder[0].budget > plain[0].budget, "{core}");
+        }
+    }
+
+    #[test]
+    fn tor_inside_warp_keeps_the_fast_ladder_for_warp() {
+        let ladder = attempt_ladder(&settings_from(r#"{"core":"tor-chain"}"#));
+        assert_eq!(ladder.len(), 2);
+        assert_eq!(ladder[0].label, "fast");
     }
 
     #[test]

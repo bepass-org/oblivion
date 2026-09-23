@@ -102,4 +102,69 @@ void main() {
       expect(args, containsAllInOrder(['--wiw-outer', '162.159.192.1:2408']));
     });
   });
+
+  group('tor as a core, and every chain either way round', () {
+    test(
+      'tor inside the tunnel moves aether aside, exactly as psiphon does',
+      () {
+        const settings = TunnelSettings(
+          core: CoreEngine.torChain,
+          socksPort: 1819,
+        );
+        expect(settings.usesTor, isTrue);
+        expect(settings.usesAether, isTrue);
+        expect(settings.carriesInside, isTrue);
+        expect(settings.aetherSocksPort, 1829);
+        expect(
+          _valueAfter(settings.toCoreArguments(), '--bind'),
+          '127.0.0.1:1829',
+        );
+      },
+    );
+
+    test('tor on its own runs no aether', () {
+      const settings = TunnelSettings(core: CoreEngine.tor);
+      expect(settings.usesAether, isFalse);
+      expect(settings.toCoreArguments(), isEmpty);
+      expect(settings.aetherSocksPort, settings.socksPort);
+    });
+
+    test('dialled through tor or psiphon, aether keeps the public port', () {
+      for (final core in [CoreEngine.torReverse, CoreEngine.psiphonReverse]) {
+        final settings = TunnelSettings(core: core);
+        expect(settings.dialsThrough, isTrue, reason: core.wire);
+        expect(settings.carriesInside, isFalse, reason: core.wire);
+        expect(settings.aetherSocksPort, settings.socksPort, reason: core.wire);
+      }
+    });
+
+    test(
+      'through a carrier only masque over http/2 runs, without rewriting the choice',
+      () {
+        const settings = TunnelSettings(
+          core: CoreEngine.torReverse,
+          protocol: CoreProtocol.wireguard,
+        );
+        expect(settings.protocol, CoreProtocol.wireguard);
+        expect(settings.effectiveProtocol, CoreProtocol.masque);
+        expect(settings.usesHttp2, isTrue);
+        final args = settings.toCoreArguments();
+        expect(args, contains('--masque'));
+        expect(args, contains('--h2'));
+        expect(args, isNot(contains('--wg')));
+
+        final back = settings.copyWith(core: CoreEngine.aether);
+        expect(back.effectiveProtocol, CoreProtocol.wireguard);
+      },
+    );
+
+    test('tor saved as a switch beside the core becomes the core', () {
+      expect(CoreEngine.migrate('aether', 'chain'), CoreEngine.torChain);
+      expect(CoreEngine.migrate('chain', 'reverse'), CoreEngine.torReverse);
+      expect(CoreEngine.migrate('psiphon', 'only'), CoreEngine.tor);
+      expect(CoreEngine.migrate('chain', 'off'), CoreEngine.chain);
+      expect(CoreEngine.migrate(null, null), CoreEngine.aether);
+      expect(CoreEngine.fromWire('tor-chain'), CoreEngine.torChain);
+    });
+  });
 }

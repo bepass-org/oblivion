@@ -7,6 +7,10 @@ use crate::settings::TunnelSettings;
 pub const CORE_AETHER: &str = "aether";
 pub const CORE_PSIPHON: &str = "psiphon";
 pub const CORE_CHAIN: &str = "chain";
+pub const CORE_PSIPHON_REVERSE: &str = "psiphon-reverse";
+pub const CORE_TOR: &str = "tor";
+pub const CORE_TOR_CHAIN: &str = "tor-chain";
+pub const CORE_TOR_REVERSE: &str = "tor-reverse";
 
 pub const MODE_AUTO: &str = "auto";
 pub const MODE_CDN: &str = "cdn";

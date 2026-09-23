@@ -17,8 +17,6 @@ pub struct TunnelSettings {
     pub psiphon_conduit_peers: String,
     #[serde(default = "default_true")]
     pub psiphon_reject_censored_peers: bool,
-    #[serde(default)]
-    pub tor_mode: String,
     #[serde(default = "default_tor_relays")]
     pub tor_relays: String,
     #[serde(default)]
@@ -162,16 +160,72 @@ pub struct ConnectRequest {
 }
 
 impl TunnelSettings {
+    fn core_is(&self, name: &str) -> bool {
+        self.core.trim().eq_ignore_ascii_case(name)
+    }
+
     pub fn uses_chain(&self) -> bool {
-        self.core
-            .trim()
-            .eq_ignore_ascii_case(crate::psiphon::CORE_CHAIN)
+        self.core_is(crate::psiphon::CORE_CHAIN)
     }
 
     pub fn psiphon_only(&self) -> bool {
-        self.core
-            .trim()
-            .eq_ignore_ascii_case(crate::psiphon::CORE_PSIPHON)
+        self.core_is(crate::psiphon::CORE_PSIPHON)
+    }
+
+    pub fn psiphon_reverse(&self) -> bool {
+        self.core_is(crate::psiphon::CORE_PSIPHON_REVERSE)
+    }
+
+    pub fn tor_only(&self) -> bool {
+        self.core_is(crate::psiphon::CORE_TOR)
+    }
+
+    pub fn tor_chain(&self) -> bool {
+        self.core_is(crate::psiphon::CORE_TOR_CHAIN)
+    }
+
+    pub fn tor_reverse(&self) -> bool {
+        self.core_is(crate::psiphon::CORE_TOR_REVERSE)
+    }
+
+    pub fn uses_tor(&self) -> bool {
+        self.tor_only() || self.tor_chain() || self.tor_reverse()
+    }
+
+    pub fn runs_alone(&self) -> bool {
+        self.psiphon_only() || self.tor_only()
+    }
+
+    pub fn carries_inside(&self) -> bool {
+        self.uses_chain() || self.tor_chain()
+    }
+
+    pub fn dials_through(&self) -> bool {
+        self.psiphon_reverse() || self.tor_reverse()
+    }
+
+    pub fn psiphon_wire(&self) -> &'static str {
+        if self.psiphon_only() {
+            "only"
+        } else if self.uses_chain() {
+            "chain"
+        } else if self.psiphon_reverse() {
+            "reverse"
+        } else {
+            ""
+        }
+    }
+
+    pub fn effective_protocol(&self) -> String {
+        let chosen = self.protocol.trim();
+        let wireguard = chosen.eq_ignore_ascii_case("wg")
+            || chosen.eq_ignore_ascii_case("wireguard")
+            || chosen.eq_ignore_ascii_case("gool");
+        if self.dials_through() && wireguard {
+            "masque".to_string()
+        } else {
+            self.protocol.clone()
+        }
     }
 
     pub fn runs_aether(&self) -> bool {
@@ -179,7 +233,7 @@ impl TunnelSettings {
     }
 
     pub fn runs_psiphon(&self) -> bool {
-        self.psiphon_only() || self.uses_chain()
+        self.psiphon_only() || self.uses_chain() || self.psiphon_reverse()
     }
 
     pub fn core_name(&self) -> &'static str {
@@ -187,7 +241,7 @@ impl TunnelSettings {
     }
 
     pub fn aether_socks_port(&self) -> u16 {
-        if !self.uses_chain() {
+        if !self.carries_inside() {
             return self.socks_port;
         }
         match self.socks_port.checked_add(11) {
@@ -201,7 +255,7 @@ impl TunnelSettings {
     }
 
     fn aether_bind_host(&self) -> &'static str {
-        if self.allow_lan && !self.uses_chain() {
+        if self.allow_lan && !self.carries_inside() {
             "0.0.0.0"
         } else {
             "127.0.0.1"
@@ -221,29 +275,28 @@ impl TunnelSettings {
     }
 
     pub fn tor_mode(&self) -> String {
-        let raw = self.tor_mode.trim().to_ascii_lowercase();
-        match raw.as_str() {
-            "" | "off" | "no" | "0" | "false" | "none" => String::new(),
-            "reverse" | "rev" => "reverse".to_string(),
-            "only" | "alone" => "only".to_string(),
-            _ => "chain".to_string(),
-        }
+        let mode = if self.tor_only() {
+            "only"
+        } else if self.tor_chain() {
+            "chain"
+        } else if self.tor_reverse() {
+            "reverse"
+        } else {
+            ""
+        };
+        mode.to_string()
     }
 
-    pub fn uses_tor(&self) -> bool {
-        !self.tor_mode().is_empty()
-    }
-
-    pub fn tor_only(&self) -> bool {
-        self.tor_mode() == "only"
-    }
-
-    pub fn aether_tor_port(&self) -> u16 {
+    pub fn carrier_side_port(&self) -> u16 {
         self.aether_http_port().saturating_add(1)
     }
 
-    pub fn aether_tor_address(&self) -> String {
-        format!("{}:{}", self.aether_bind_host(), self.aether_tor_port())
+    pub fn tor_bind_address(&self) -> String {
+        if self.tor_chain() {
+            format!("{}:{}", self.psiphon_listen_host(), self.socks_port)
+        } else {
+            format!("127.0.0.1:{}", self.carrier_side_port())
+        }
     }
 
     pub fn psiphon_listen_host(&self) -> &'static str {
@@ -255,7 +308,11 @@ impl TunnelSettings {
     }
 
     pub fn psiphon_bind_address(&self) -> String {
-        format!("{}:{}", self.psiphon_listen_host(), self.socks_port)
+        if self.psiphon_reverse() {
+            format!("127.0.0.1:{}", self.carrier_side_port())
+        } else {
+            format!("{}:{}", self.psiphon_listen_host(), self.socks_port)
+        }
     }
 
     pub fn psiphon_core_mode(&self) -> &'static str {
@@ -267,16 +324,19 @@ impl TunnelSettings {
     }
 
     pub fn uses_mim(&self) -> bool {
-        self.protocol.trim().eq_ignore_ascii_case("mim")
+        self.effective_protocol().trim().eq_ignore_ascii_case("mim")
     }
 
     pub fn uses_masque(&self) -> bool {
-        let p = self.protocol.trim();
+        let p = self.effective_protocol();
+        let p = p.trim();
         p.eq_ignore_ascii_case("masque") || p.eq_ignore_ascii_case("mim")
     }
 
     pub fn uses_gool(&self) -> bool {
-        self.protocol.trim().eq_ignore_ascii_case("gool")
+        self.effective_protocol()
+            .trim()
+            .eq_ignore_ascii_case("gool")
     }
 
     pub fn wiw_outer_peer(&self) -> &str {
@@ -344,7 +404,7 @@ impl TunnelSettings {
         let mut env = vec![
             ("AETHER_SOCKS".to_string(), self.aether_bind_address()),
             ("AETHER_HTTP_PROXY".to_string(), self.aether_http_address()),
-            ("AETHER_PROTOCOL".to_string(), self.protocol.clone()),
+            ("AETHER_PROTOCOL".to_string(), self.effective_protocol()),
             ("AETHER_SCAN".to_string(), self.scan_mode.clone()),
             ("AETHER_NOIZE".to_string(), self.noize()),
             ("AETHER_IP".to_string(), self.ip_version.clone()),
@@ -369,7 +429,7 @@ impl TunnelSettings {
             }
         }
 
-        if self.uses_masque() && self.transport == "h2" {
+        if self.uses_masque() && (self.transport == "h2" || self.dials_through()) {
             env.push(("AETHER_MASQUE_HTTP2".to_string(), "1".to_string()));
             if self.fragment {
                 env.push(("AETHER_MASQUE_H2_FRAGMENT".to_string(), "1".to_string()));
@@ -398,7 +458,7 @@ impl TunnelSettings {
         if self.runs_psiphon() {
             env.push((
                 "AETHER_PSIPHON".to_string(),
-                if self.psiphon_only() { "only" } else { "chain" }.to_string(),
+                self.psiphon_wire().to_string(),
             ));
             env.push((
                 "AETHER_PSIPHON_BIND".to_string(),
@@ -434,7 +494,7 @@ impl TunnelSettings {
         if !tor.is_empty() {
             env.push(("AETHER_TOR".to_string(), tor.clone()));
             if tor != "only" {
-                env.push(("AETHER_TOR_BIND".to_string(), self.aether_tor_address()));
+                env.push(("AETHER_TOR_BIND".to_string(), self.tor_bind_address()));
             }
             let relays = self.tor_relays.trim();
             if !relays.is_empty() {
@@ -1039,31 +1099,72 @@ mod sync_tests {
     }
 
     #[test]
-    fn every_tor_mode_reaches_the_core() {
-        for (given, expected) in [
-            ("chain", "chain"),
-            ("reverse", "reverse"),
-            ("rev", "reverse"),
-            ("only", "only"),
+    fn every_tor_core_reaches_the_core() {
+        for (core, expected) in [
+            ("tor", "only"),
+            ("tor-chain", "chain"),
+            ("tor-reverse", "reverse"),
         ] {
-            let env = settings(&format!(r#"{{"torMode":"{given}"}}"#)).core_environment();
-            assert_eq!(value(&env, "AETHER_TOR"), Some(expected), "{given}");
+            let env = settings(&format!(r#"{{"core":"{core}"}}"#)).core_environment();
+            assert_eq!(value(&env, "AETHER_TOR"), Some(expected), "{core}");
+            assert!(value(&env, "AETHER_PSIPHON").is_none(), "{core}");
         }
     }
 
     #[test]
-    fn tor_gets_a_listener_of_its_own_unless_it_is_the_only_thing_running() {
-        let chained = settings(r#"{"torMode":"chain","socksPort":1829}"#);
-        let env = chained.core_environment();
-        assert_eq!(
-            value(&env, "AETHER_TOR_BIND"),
-            Some(chained.aether_tor_address().as_str())
-        );
-        assert_ne!(chained.aether_tor_port(), chained.aether_socks_port());
+    fn a_tor_switch_left_in_old_settings_is_not_read() {
+        let env = settings(r#"{"core":"aether","torMode":"chain"}"#).core_environment();
+        assert!(value(&env, "AETHER_TOR").is_none());
+    }
 
-        let alone = settings(r#"{"torMode":"only"}"#).core_environment();
+    #[test]
+    fn tor_inside_warp_is_the_exit_on_the_public_port() {
+        let chained = settings(r#"{"core":"tor-chain","socksPort":1819}"#);
+        let env = chained.core_environment();
+        assert_eq!(value(&env, "AETHER_TOR_BIND"), Some("127.0.0.1:1819"));
+        assert_eq!(value(&env, "AETHER_SOCKS"), Some("127.0.0.1:1829"));
+        assert_eq!(chained.aether_socks_port(), 1829);
+    }
+
+    #[test]
+    fn tor_inside_warp_faces_the_lan_only_when_asked_and_warp_never_does() {
+        let lan = settings(r#"{"core":"tor-chain","socksPort":1819,"allowLan":true}"#);
+        let env = lan.core_environment();
+        assert_eq!(value(&env, "AETHER_TOR_BIND"), Some("0.0.0.0:1819"));
+        assert_eq!(value(&env, "AETHER_SOCKS"), Some("127.0.0.1:1829"));
+    }
+
+    #[test]
+    fn warp_through_tor_keeps_the_public_port_and_tor_takes_a_loopback_side_port() {
+        let reverse = settings(r#"{"core":"tor-reverse","socksPort":1819}"#);
+        let env = reverse.core_environment();
+        assert_eq!(value(&env, "AETHER_SOCKS"), Some("127.0.0.1:1819"));
+        assert_eq!(value(&env, "AETHER_HTTP_PROXY"), Some("127.0.0.1:1820"));
+        assert_eq!(value(&env, "AETHER_TOR_BIND"), Some("127.0.0.1:1821"));
+    }
+
+    #[test]
+    fn tor_alone_is_served_on_the_public_port_itself() {
+        let alone = settings(r#"{"core":"tor","socksPort":1819}"#).core_environment();
         assert_eq!(value(&alone, "AETHER_TOR"), Some("only"));
+        assert_eq!(value(&alone, "AETHER_SOCKS"), Some("127.0.0.1:1819"));
         assert!(value(&alone, "AETHER_TOR_BIND").is_none());
+    }
+
+    #[test]
+    fn through_a_carrier_only_masque_over_http2_runs() {
+        for core in ["tor-reverse", "psiphon-reverse"] {
+            let s = settings(&format!(
+                r#"{{"core":"{core}","protocol":"wg","transport":"h3"}}"#
+            ));
+            assert_eq!(s.protocol, "wg", "{core}: the saved choice is kept");
+            let env = s.core_environment();
+            assert_eq!(value(&env, "AETHER_PROTOCOL"), Some("masque"), "{core}");
+            assert_eq!(value(&env, "AETHER_MASQUE_HTTP2"), Some("1"), "{core}");
+        }
+
+        let direct = settings(r#"{"core":"aether","protocol":"wg"}"#).core_environment();
+        assert_eq!(value(&direct, "AETHER_PROTOCOL"), Some("wg"));
     }
 
     #[test]
@@ -1087,10 +1188,10 @@ mod sync_tests {
 
     #[test]
     fn the_relay_source_defaults_to_auto_and_travels_with_tor() {
-        let env = settings(r#"{"torMode":"chain"}"#).core_environment();
+        let env = settings(r#"{"core":"tor-chain"}"#).core_environment();
         assert_eq!(value(&env, "AETHER_TOR_RELAYS"), Some("auto"));
 
-        let env = settings(r#"{"torMode":"chain","torRelays":"only"}"#).core_environment();
+        let env = settings(r#"{"core":"tor-chain","torRelays":"only"}"#).core_environment();
         assert_eq!(value(&env, "AETHER_TOR_RELAYS"), Some("only"));
     }
 }
@@ -1130,6 +1231,16 @@ mod psiphon_through_core_tests {
         assert_eq!(value(&env, "AETHER_PSIPHON"), Some("chain"));
         assert_eq!(value(&env, "AETHER_PSIPHON_BIND"), Some("127.0.0.1:1829"));
         assert_eq!(value(&env, "AETHER_SOCKS"), Some("127.0.0.1:1839"));
+    }
+
+    #[test]
+    fn warp_through_psiphon_keeps_the_public_port_and_psiphon_takes_a_side_port() {
+        let s = settings(r#"{"core":"psiphon-reverse","socksPort":1819,"allowLan":true}"#);
+        let env = s.core_environment();
+        assert_eq!(value(&env, "AETHER_PSIPHON"), Some("reverse"));
+        assert_eq!(value(&env, "AETHER_SOCKS"), Some("0.0.0.0:1819"));
+        assert_eq!(value(&env, "AETHER_PSIPHON_BIND"), Some("127.0.0.1:1821"));
+        assert!(value(&env, "AETHER_TOR").is_none());
     }
 
     #[test]
