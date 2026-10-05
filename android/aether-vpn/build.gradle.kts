@@ -302,6 +302,10 @@ val buildAetherCore by tasks.registering {
                 "BINDGEN_EXTRA_CLANG_ARGS_${triple.replace('-', '_')}" to
                     "--target=$triple --sysroot=${sysroot.absolutePath}",
                 "RUST_LIBC_UNSTABLE_MUSL_V1_2_3" to "1",
+                // link the c++ runtime statically, the way the core's own
+                // release archives are built, so libaether.so runs without
+                // a libc++_shared.so the apk does not carry
+                "BORING_BSSL_RUST_CPPLIB_${triple.replace('-', '_')}" to "static:-bundle=c++",
             )
 
             // A BoringSSL CMake cache left by a previous run (or restored by
