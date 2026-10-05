@@ -101,9 +101,10 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         let transport = settings["transport"] as? String ?? "h3"
         if protocolName == "masque", transport == "h2" {
             environment["AETHER_MASQUE_HTTP2"] = "1"
-            if (settings["fragment"] as? NSNumber)?.boolValue ?? false {
-                environment["AETHER_MASQUE_H2_FRAGMENT"] = "1"
-            }
+            // always send the switch: an unset variable leaves the fragment
+            // default to the core, which has flipped between releases
+            let fragment = (settings["fragment"] as? NSNumber)?.boolValue ?? false
+            environment["AETHER_MASQUE_H2_FRAGMENT"] = fragment ? "1" : "0"
         }
 
         if protocolName == "masque", let mtu = Self.coreMtu(settings) {
