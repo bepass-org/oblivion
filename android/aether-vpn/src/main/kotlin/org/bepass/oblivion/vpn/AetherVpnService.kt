@@ -124,7 +124,9 @@ class AetherVpnService : VpnService() {
 
         if (target.usesHttp2) {
             environment["AETHER_MASQUE_HTTP2"] = "1"
-            if (target.fragment) environment["AETHER_MASQUE_H2_FRAGMENT"] = "1"
+            // always send the switch: aether flips this default between releases,
+            // and an unset variable means no fragmenting on the http/2 carrier
+            environment["AETHER_MASQUE_H2_FRAGMENT"] = if (target.fragment) "1" else "0"
         }
         if (target.usesMasque && target.innerMtu > 0) {
             environment["AETHER_MASQUE_MTU"] = target.innerMtu.toString()

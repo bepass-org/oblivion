@@ -431,9 +431,12 @@ impl TunnelSettings {
 
         if self.uses_masque() && (self.transport == "h2" || self.dials_through()) {
             env.push(("AETHER_MASQUE_HTTP2".to_string(), "1".to_string()));
-            if self.fragment {
-                env.push(("AETHER_MASQUE_H2_FRAGMENT".to_string(), "1".to_string()));
-            }
+            // always send the switch: an unset variable leaves the fragment
+            // default to the core, which has flipped between releases
+            env.push((
+                "AETHER_MASQUE_H2_FRAGMENT".to_string(),
+                if self.fragment { "1" } else { "0" }.to_string(),
+            ));
         }
 
         if self.uses_gool() {
@@ -748,6 +751,38 @@ mod mtu_tests {
     fn the_tunnel_device_is_told_the_clamped_mtu() {
         let config = settings_from(r#"{"tunnelMtu":40000}"#).hev_config(None);
         assert!(config.contains("  mtu: 9000\n"));
+    }
+}
+
+#[cfg(test)]
+mod fragment_tests {
+    use super::*;
+
+    fn settings_from(json: &str) -> TunnelSettings {
+        serde_json::from_str(json).expect("settings should parse")
+    }
+
+    fn value_of<'a>(env: &'a [(String, String)], key: &str) -> Option<&'a str> {
+        env.iter()
+            .find(|(name, _)| name == key)
+            .map(|(_, value)| value.as_str())
+    }
+
+    #[test]
+    fn an_h2_run_always_carries_the_fragment_switch() {
+        let off = settings_from(r#"{"protocol":"masque","transport":"h2","fragment":false}"#)
+            .core_environment();
+        assert_eq!(value_of(&off, "AETHER_MASQUE_H2_FRAGMENT"), Some("0"));
+
+        let on = settings_from(r#"{"protocol":"masque","transport":"h2","fragment":true}"#)
+            .core_environment();
+        assert_eq!(value_of(&on, "AETHER_MASQUE_H2_FRAGMENT"), Some("1"));
+    }
+
+    #[test]
+    fn an_h3_run_leaves_the_fragment_switch_out() {
+        let env = settings_from(r#"{"protocol":"masque","transport":"h3"}"#).core_environment();
+        assert!(value_of(&env, "AETHER_MASQUE_H2_FRAGMENT").is_none());
     }
 }
 
