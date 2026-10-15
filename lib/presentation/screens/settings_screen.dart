@@ -47,6 +47,13 @@ String torRelaysTitle(L10n l10n, TorRelays value) => switch (value) {
   TorRelays.off => l10n.torRelaysOff,
 };
 
+String torBridgesTitle(L10n l10n, TorBridges value) => switch (value) {
+  TorBridges.auto => l10n.torBridgesAuto,
+  TorBridges.first => l10n.torBridgesFirst,
+  TorBridges.never => l10n.torBridgesNever,
+  TorBridges.own => l10n.torBridgesOwn,
+};
+
 String protocolTitle(L10n l10n, CoreProtocol value) => switch (value) {
   CoreProtocol.masque => l10n.protocolMasque,
   CoreProtocol.wireguard => l10n.protocolWireGuard,
@@ -80,6 +87,7 @@ String scanDesc(L10n l10n, ScanMode value) => switch (value) {
 };
 
 String obfuscationTitle(L10n l10n, ObfuscationProfile value) => switch (value) {
+  ObfuscationProfile.auto => l10n.obfuscationAuto,
   ObfuscationProfile.off => l10n.obfuscationOff,
   ObfuscationProfile.light => l10n.obfuscationLight,
   ObfuscationProfile.firewall => l10n.obfuscationFirewall,
@@ -89,6 +97,7 @@ String obfuscationTitle(L10n l10n, ObfuscationProfile value) => switch (value) {
 };
 
 String obfuscationDesc(L10n l10n, ObfuscationProfile value) => switch (value) {
+  ObfuscationProfile.auto => l10n.obfuscationAutoDesc,
   ObfuscationProfile.off => l10n.obfuscationOffDesc,
   ObfuscationProfile.light => l10n.obfuscationLightDesc,
   ObfuscationProfile.firewall => l10n.obfuscationFirewallDesc,
@@ -283,6 +292,54 @@ class SettingsScreen extends ConsumerWidget {
                           ),
                         ),
                       ),
+                    if (settings.usesTor)
+                      SettingsRow(
+                        title: l10n.torBridges,
+                        subtitle: l10n.torBridgesDesc,
+                        value: torBridgesTitle(l10n, settings.torBridges),
+                        onTap: () => showChoiceSheet<TorBridges>(
+                          context: context,
+                          title: l10n.torBridges,
+                          selected: settings.torBridges,
+                          options: TorBridges.values
+                              .map(
+                                (v) => PickerOption<TorBridges>(
+                                  value: v,
+                                  title: torBridgesTitle(l10n, v),
+                                ),
+                              )
+                              .toList(),
+                          onSelected: (v) => controller.update(
+                            (s) => s.copyWith(torBridges: v),
+                          ),
+                        ),
+                      ),
+                    if (settings.usesTor && settings.torBridges == TorBridges.own)
+                      SettingsRow(
+                        title: l10n.torBridgeLines,
+                        subtitle: settings.torBridgesMissing
+                            ? l10n.torBridgeLinesRefusal
+                            : null,
+                        destructive: settings.torBridgesMissing,
+                        value: '${settings.torBridgeLineList.length}',
+                        onTap: () => showTextEditorSheet(
+                          context: context,
+                          title: l10n.torBridgeLines,
+                          description: l10n.torBridgeLinesDesc,
+                          initial: settings.torBridgeLines,
+                          placeholder:
+                              'obfs4 1.2.3.4:443 FINGERPRINT cert=... iat-mode=0',
+                          multiline: true,
+                          cancelLabel: l10n.cancel,
+                          saveLabel: l10n.save,
+                          validator: (v) => TunnelSettings.bridgeLines(v).isEmpty
+                              ? l10n.torBridgeLinesRefusal
+                              : null,
+                          onSaved: (v) => controller.update(
+                            (s) => s.copyWith(torBridgeLines: v.trim()),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
                 if (settings.usesAether)
@@ -438,6 +495,35 @@ class SettingsScreen extends ConsumerWidget {
                             ),
                           ),
                         ),
+                      if (settings.usesMim)
+                        SettingsRow(
+                          title: l10n.mimInner,
+                          subtitle: l10n.mimInnerDesc,
+                          value: settings.mimInnerValue.isEmpty
+                              ? l10n.endpointAuto
+                              : settings.mimInnerValue,
+                          onTap: () => showTextEditorSheet(
+                            context: context,
+                            title: l10n.mimInner,
+                            description: '${l10n.mimInnerDesc}\n\n${l10n.wiwHint}',
+                            initial: settings.mimInner,
+                            placeholder: '162.159.198.2:443',
+                            cancelLabel: l10n.cancel,
+                            saveLabel: l10n.save,
+                            validator: (v) {
+                              if (v.trim().isEmpty) return null;
+                              if (!TunnelSettings.isValidEndpoint(v)) {
+                                return l10n.wiwInvalidEndpoint;
+                              }
+                              return settings.copyWith(mimInner: v).mimHopsCollide
+                                  ? l10n.wiwSameEdge
+                                  : null;
+                            },
+                            onSaved: (v) => controller.update(
+                              (s) => s.copyWith(mimInner: v.trim()),
+                            ),
+                          ),
+                        ),
                       SettingsRow(
                         title: l10n.endpoint,
                         subtitle: settings.usesGoolClassic
@@ -476,8 +562,13 @@ class SettingsScreen extends ConsumerWidget {
                           placeholder: l10n.exitLocHint,
                           cancelLabel: l10n.cancel,
                           saveLabel: l10n.save,
+                          validator: (v) => TunnelSettings.isExitRule(v)
+                              ? null
+                              : l10n.exitLocRefusal,
                           onSaved: (v) => controller.update(
-                            (s) => s.copyWith(exitLoc: v.trim()),
+                            (s) => s.copyWith(
+                              exitLoc: TunnelSettings.normalizeExitRule(v),
+                            ),
                           ),
                         ),
                       ),

@@ -226,6 +226,113 @@ void main() {
       expect(find.text(l10n.masqueSniDefaultDesc), findsNothing);
     });
 
+    testWidgets('tor offers its bridges and asks for lines of its own', (
+      tester,
+    ) async {
+      final l10n = await _open(
+        tester,
+        const TunnelSettings(core: CoreEngine.tor),
+        const SettingsScreen(),
+      );
+
+      expect(find.text(l10n.torBridges), findsOneWidget);
+      expect(find.text(l10n.torBridgeLines), findsNothing);
+
+      await tester.tap(find.text(l10n.torBridges));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.torBridgesOwn).last);
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.torBridgeLines), findsOneWidget);
+      expect(find.text(l10n.torBridgeLinesRefusal), findsOneWidget);
+
+      await _edit(tester, l10n, l10n.torBridgeLines, '# nothing here');
+      expect(find.text(l10n.torBridgeLinesRefusal), findsWidgets);
+
+      await tester.enterText(
+        find.byType(CupertinoTextField),
+        'obfs4 1.2.3.4:443 AAAA cert=x iat-mode=0',
+      );
+      await tester.tap(find.text(l10n.save));
+      await tester.pumpAndSettle();
+
+      final settings = _current(tester, SettingsScreen);
+      expect(settings.torBridges, TorBridges.own);
+      expect(
+        settings.torBridgesValue,
+        'obfs4 1.2.3.4:443 AAAA cert=x iat-mode=0',
+      );
+      expect(find.text(l10n.torBridgeLinesRefusal), findsNothing);
+    });
+
+    testWidgets('no bridge row without tor', (tester) async {
+      final l10n = await _open(
+        tester,
+        const TunnelSettings(),
+        const SettingsScreen(),
+      );
+      expect(find.text(l10n.torBridges), findsNothing);
+    });
+
+    testWidgets('masque in masque takes an inner hop on another edge', (
+      tester,
+    ) async {
+      final l10n = await _open(
+        tester,
+        const TunnelSettings(
+          protocol: CoreProtocol.mim,
+          endpoint: '162.159.198.1:443',
+        ),
+        const SettingsScreen(),
+      );
+
+      await _edit(tester, l10n, l10n.mimInner, '162.159.198.1:8443');
+      expect(find.text(l10n.wiwSameEdge), findsOneWidget);
+
+      await tester.enterText(
+        find.byType(CupertinoTextField),
+        '162.159.198.2:443',
+      );
+      await tester.tap(find.text(l10n.save));
+      await tester.pumpAndSettle();
+      expect(_current(tester, SettingsScreen).mimInner, '162.159.198.2:443');
+    });
+
+    testWidgets('an exit country rule is checked and written in capitals', (
+      tester,
+    ) async {
+      final l10n = await _open(
+        tester,
+        const TunnelSettings(),
+        const SettingsScreen(),
+      );
+
+      await _edit(tester, l10n, l10n.exitLocTitle, 'iran');
+      expect(find.text(l10n.exitLocRefusal), findsOneWidget);
+
+      await tester.enterText(find.byType(CupertinoTextField), ' !ir, ru ');
+      await tester.tap(find.text(l10n.save));
+      await tester.pumpAndSettle();
+      expect(_current(tester, SettingsScreen).exitLoc, '!IR,RU');
+    });
+
+    testWidgets('automatic obfuscation can be picked', (tester) async {
+      final l10n = await _open(
+        tester,
+        const TunnelSettings(),
+        const SettingsScreen(),
+      );
+
+      await tester.tap(find.text(l10n.obfuscation));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.obfuscationAutoDesc));
+      await tester.pumpAndSettle();
+
+      final settings = _current(tester, SettingsScreen);
+      expect(settings.obfuscation, ObfuscationProfile.auto);
+      expect(settings.toCoreArguments(), isNot(contains('--noize')));
+    });
+
     testWidgets('both gools are offered when the tunnel goes out directly', (
       tester,
     ) async {
@@ -361,28 +468,61 @@ void main() {
       );
     });
 
-    testWidgets('grease can be turned off', (tester) async {
+    testWidgets('grease and the cipher list belong to a custom fingerprint', (
+      tester,
+    ) async {
       final l10n = await _open(
         tester,
         const TunnelSettings(),
         const AdvancedScreen(),
       );
 
-      final greaseSwitch = find.descendant(
-        of: find
-            .ancestor(
-              of: find.text(l10n.grease),
-              matching: find.byType(GestureDetector),
-            )
-            .first,
-        matching: find.byType(CupertinoSwitch),
+      CupertinoSwitch greaseSwitch() => tester.widget<CupertinoSwitch>(
+        find.descendant(
+          of: find
+              .ancestor(
+                of: find.text(l10n.grease),
+                matching: find.byType(GestureDetector),
+              )
+              .first,
+          matching: find.byType(CupertinoSwitch),
+        ),
       );
-      await tester.tap(greaseSwitch);
-      await tester.pumpAndSettle();
 
-      final settings = _current(tester, AdvancedScreen);
+      expect(greaseSwitch().onChanged, isNull);
+      expect(greaseSwitch().value, isTrue);
+
+      await tester.tap(find.text(l10n.tlsFingerprint));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.fingerprintFirefox));
+      await tester.pumpAndSettle();
+      var settings = _current(tester, AdvancedScreen);
+      expect(settings.tlsFingerprint, TlsFingerprint.firefox);
+      expect(greaseSwitch().value, isFalse);
+      expect(settings.toCoreArguments(), contains('--disable-grease'));
+
+      await tester.tap(find.text(l10n.tlsFingerprint));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.fingerprintCustom));
+      await tester.pumpAndSettle();
+      expect(greaseSwitch().onChanged, isNotNull);
+
+      await tester.tap(
+        find.descendant(
+          of: find
+              .ancestor(
+                of: find.text(l10n.grease),
+                matching: find.byType(GestureDetector),
+              )
+              .first,
+          matching: find.byType(CupertinoSwitch),
+        ),
+      );
+      await tester.pumpAndSettle();
+      settings = _current(tester, AdvancedScreen);
       expect(settings.grease, isFalse);
       expect(settings.toCoreArguments(), contains('--disable-grease'));
+      expect(settings.toCoreArguments(), isNot(contains('--tls-ciphers')));
     });
 
     for (final locale in const <Locale>[Locale('en'), Locale('fa')]) {

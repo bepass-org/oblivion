@@ -164,6 +164,44 @@ void main() {
       expect(reopened.readTunnelSettings().fragmentSize, '16-32');
     });
 
+    test('the pattng options come back after a reopen', () async {
+      await store.writeTunnelSettings(
+        store.readTunnelSettings().copyWith(
+          tlsFingerprint: TlsFingerprint.go,
+          obfuscation: ObfuscationProfile.auto,
+          mimInner: '162.159.198.2:443',
+          torBridges: TorBridges.own,
+          torBridgeLines: 'obfs4 1.2.3.4:443 AAAA cert=x iat-mode=0',
+        ),
+      );
+
+      final reopened = SettingsStore(await SharedPreferences.getInstance());
+      final settings = reopened.readTunnelSettings();
+
+      expect(settings.tlsFingerprint, TlsFingerprint.go);
+      expect(settings.obfuscation, ObfuscationProfile.auto);
+      expect(settings.mimInner, '162.159.198.2:443');
+      expect(settings.torBridges, TorBridges.own);
+      expect(settings.torBridgeLines, 'obfs4 1.2.3.4:443 AAAA cert=x iat-mode=0');
+    });
+
+    test('ciphers written before fingerprints existed stay in use', () async {
+      backing.values['flutter.core.tlsCiphers'] = 'ECDHE-RSA-AES128-GCM-SHA256';
+      SharedPreferences.resetStatic();
+
+      final reopened = SettingsStore(await SharedPreferences.getInstance());
+      final settings = reopened.readTunnelSettings();
+      expect(settings.tlsFingerprint, TlsFingerprint.custom);
+      expect(
+        settings.toCoreArguments(),
+        containsAllInOrder(<String>['--tls-ciphers', 'ECDHE-RSA-AES128-GCM-SHA256']),
+      );
+    });
+
+    test('a fresh install takes the chrome fingerprint', () {
+      expect(store.readTunnelSettings().tlsFingerprint, TlsFingerprint.chrome);
+    });
+
     test('a cdn list name psiphon does not know is dropped', () async {
       backing.values['flutter.core.psiphonCdnSets'] = <String>[
         'cloudflare',

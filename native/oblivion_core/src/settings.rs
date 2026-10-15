@@ -22,6 +22,8 @@ pub struct TunnelSettings {
     #[serde(default = "default_tor_relays")]
     pub tor_relays: String,
     #[serde(default)]
+    pub tor_bridges: String,
+    #[serde(default)]
     pub exit_loc: String,
     #[serde(default = "default_protocol")]
     pub protocol: String,
@@ -100,6 +102,8 @@ fn default_tunnel_interface() -> String {
 fn default_mtu() -> u16 {
     8500
 }
+
+pub const NOIZE_AUTO: &str = "auto";
 
 const TUN_MTU_MIN: u16 = 1280;
 const TUN_MTU_MAX: u16 = 9000;
@@ -407,6 +411,12 @@ impl TunnelSettings {
         self.obfuscation.clone()
     }
 
+    pub fn noize_chosen(&self) -> bool {
+        let noize = self.noize();
+        let noize = noize.trim();
+        !noize.is_empty() && !noize.eq_ignore_ascii_case(NOIZE_AUTO)
+    }
+
     pub fn identity_path(&self) -> Option<String> {
         let base = self.data_dir.trim();
         if base.is_empty() {
@@ -426,7 +436,6 @@ impl TunnelSettings {
             ("AETHER_HTTP_PROXY".to_string(), self.aether_http_address()),
             ("AETHER_PROTOCOL".to_string(), self.core_protocol()),
             ("AETHER_SCAN".to_string(), self.scan_mode.clone()),
-            ("AETHER_NOIZE".to_string(), self.noize()),
             ("AETHER_IP".to_string(), self.ip_version.clone()),
             ("AETHER_LOG_LEVEL".to_string(), self.log_level.clone()),
             (
@@ -434,6 +443,10 @@ impl TunnelSettings {
                 if self.quick_reconnect { "1" } else { "0" }.to_string(),
             ),
         ];
+
+        if self.noize_chosen() {
+            env.push(("AETHER_NOIZE".to_string(), self.noize()));
+        }
 
         if let Some(path) = self.identity_path() {
             env.push(("AETHER_CONFIG".to_string(), path));
@@ -526,6 +539,10 @@ impl TunnelSettings {
             let relays = self.tor_relays.trim();
             if !relays.is_empty() {
                 env.push(("AETHER_TOR_RELAYS".to_string(), relays.to_string()));
+            }
+            let bridges = self.tor_bridges.trim();
+            if !bridges.is_empty() {
+                env.push(("AETHER_TOR_BRIDGES".to_string(), bridges.to_string()));
             }
         }
 
@@ -1309,6 +1326,38 @@ mod sync_tests {
         let env = mim.core_environment();
         assert_eq!(value(&env, "AETHER_PROTOCOL"), Some("mim"));
         assert_eq!(value(&env, "AETHER_MASQUE_HTTP2"), Some("1"));
+    }
+
+    #[test]
+    fn automatic_obfuscation_leaves_the_profile_to_the_core() {
+        let auto = settings(r#"{"obfuscation":"auto","noizeProfile":"auto"}"#).core_environment();
+        assert!(value(&auto, "AETHER_NOIZE").is_none());
+
+        let named = settings(r#"{"obfuscation":"gfw","noizeProfile":"gfw"}"#).core_environment();
+        assert_eq!(value(&named, "AETHER_NOIZE"), Some("gfw"));
+
+        let older = settings(r#"{"obfuscation":"light"}"#).core_environment();
+        assert_eq!(value(&older, "AETHER_NOIZE"), Some("light"));
+    }
+
+    #[test]
+    fn the_bridge_choice_travels_with_tor_alone() {
+        let own =
+            settings(r#"{"core":"tor","torBridges":"obfs4 1.2.3.4:443 AAAA cert=x iat-mode=0"}"#)
+                .core_environment();
+        assert_eq!(
+            value(&own, "AETHER_TOR_BRIDGES"),
+            Some("obfs4 1.2.3.4:443 AAAA cert=x iat-mode=0")
+        );
+
+        let never = settings(r#"{"core":"tor-chain","torBridges":"off"}"#).core_environment();
+        assert_eq!(value(&never, "AETHER_TOR_BRIDGES"), Some("off"));
+
+        let left = settings(r#"{"core":"tor","torBridges":""}"#).core_environment();
+        assert!(value(&left, "AETHER_TOR_BRIDGES").is_none());
+
+        let plain = settings(r#"{"torBridges":"off"}"#).core_environment();
+        assert!(value(&plain, "AETHER_TOR_BRIDGES").is_none());
     }
 
     #[test]

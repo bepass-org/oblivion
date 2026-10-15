@@ -10,6 +10,7 @@ data class TunnelConfig(
     val psiphonConduitPeers: String,
     val psiphonRejectCensoredPeers: Boolean,
     val torRelays: String,
+    val torBridges: String,
     val exitLoc: String,
     val protocol: String,
     val modeLabel: String,
@@ -149,6 +150,8 @@ data class TunnelConfig(
 
     val statusLabel: String get() = modeLabel.ifBlank { protocol.uppercase() }
 
+    val noizeChosen: Boolean get() = noizeProfile.isNotBlank() && noizeProfile != NOIZE_AUTO
+
     val wiwPinned: Boolean get() = wiwOuterPeer.isNotEmpty() || wiwInnerPeer.isNotEmpty()
 
     val dnsServers: List<String>
@@ -206,6 +209,7 @@ data class TunnelConfig(
         const val CORE_TOR_CHAIN = "tor-chain"
         const val CORE_TOR_REVERSE = "tor-reverse"
         const val PROTOCOL_GOOL_CLASSIC = "gool-classic"
+        const val NOIZE_AUTO = "auto"
         private val NEEDS_UDP = setOf("wg", "wireguard", PROTOCOL_GOOL_CLASSIC)
 
         const val TUN_MTU = 8500
@@ -234,6 +238,7 @@ data class TunnelConfig(
                 psiphonConduitPeers = str("psiphonConduitPeers", "auto"),
                 psiphonRejectCensoredPeers = bool("psiphonRejectCensoredPeers", true),
                 torRelays = str("torRelays", "auto"),
+                torBridges = str("torBridges"),
                 exitLoc = str("exitLoc"),
                 protocol = str("protocol", "masque"),
                 modeLabel = str("modeLabel"),

@@ -135,7 +135,7 @@ jobs:
         run: |
           apk=build/app/outputs/flutter-apk/app-debug.apk
           missing=0
-          for library in libaether.so libpsiphon.so; do
+          for library in libaether.so libpsiphon.so liblyrebird.so; do
             if ! unzip -l "$apk" | grep -q "lib/arm64-v8a/$library"; then
               echo "::error::the apk carries no $library"
               missing=1
@@ -145,7 +145,7 @@ jobs:
             unzip -l "$apk" | grep 'lib/' || true
             exit 1
           fi
-          echo "the aether and psiphon cores are inside the apk"
+          echo "the aether and psiphon cores and lyrebird are inside the apk"
 
       - name: Check the native libraries are 16 KB aligned
         run: |
@@ -156,6 +156,7 @@ jobs:
           failed=0
           for library in "$workdir"/lib/arm64-v8a/libaether.so \
                          "$workdir"/lib/arm64-v8a/libpsiphon.so \
+                         "$workdir"/lib/arm64-v8a/liblyrebird.so \
                          "$workdir"/lib/arm64-v8a/libhev-socks5-tunnel.so; do
             [ -f "$library" ] || continue
             alignments=$("$readelf" -lW "$library" | awk '$1=="LOAD"{print $NF}' | sort -u | tr '\n' ' ')
@@ -232,7 +233,7 @@ jobs:
         run: |
           bundle=build/linux/x64/debug/bundle
           missing=0
-          for artefact in oblivion aether lib/liboblivion_core.so; do
+          for artefact in oblivion aether psiphon lyrebird lib/liboblivion_core.so; do
             if [ ! -e "$bundle/$artefact" ]; then
               echo "::error::$artefact is missing from the bundle"
               missing=1
@@ -372,7 +373,7 @@ jobs:
         run: |
           $runner = "build/windows/x64/runner/Debug"
           $missing = $false
-          foreach ($artefact in @("oblivion.exe", "aether.exe", "oblivion_core.dll",
+          foreach ($artefact in @("oblivion.exe", "aether.exe", "psiphon.exe", "lyrebird.exe", "oblivion_core.dll",
                                   "oblivion-helper.exe", "hev-socks5-tunnel.exe",
                                   "wintun.dll")) {
             if (-not (Test-Path "$runner/$artefact")) {

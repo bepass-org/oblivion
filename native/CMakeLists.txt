@@ -110,6 +110,36 @@ else()
   set(OBLIVION_PSIPHON_BIN "" PARENT_SCOPE)
 endif()
 
+set(TRANSPORT_BUILD_SCRIPT "${CMAKE_CURRENT_LIST_DIR}/../aetherproject/pt-build.sh")
+
+if(WIN32)
+  set(LYREBIRD_BIN_NAME "lyrebird.exe")
+else()
+  set(LYREBIRD_BIN_NAME "lyrebird")
+endif()
+
+set(LYREBIRD_BIN "${CMAKE_CURRENT_BINARY_DIR}/${LYREBIRD_BIN_NAME}")
+
+if(EXISTS "${TRANSPORT_BUILD_SCRIPT}")
+  set(LYREBIRD_STAGING "${CMAKE_CURRENT_BINARY_DIR}/lyrebird-staging")
+
+  add_custom_command(
+    OUTPUT "${LYREBIRD_BIN}"
+    COMMAND bash "${TRANSPORT_BUILD_SCRIPT}"
+      "${PSIPHON_GOOS}" "${PSIPHON_GOARCH}" "${LYREBIRD_STAGING}" "${PSIPHON_GOARM}"
+    COMMAND "${CMAKE_COMMAND}" -E copy
+      "${LYREBIRD_STAGING}/${LYREBIRD_BIN_NAME}" "${LYREBIRD_BIN}"
+    COMMENT "Building lyrebird, the pluggable transport Tor's bridges run through"
+    VERBATIM
+  )
+  add_custom_target(lyrebird_build ALL DEPENDS "${LYREBIRD_BIN}")
+  set(OBLIVION_LYREBIRD_BIN "${LYREBIRD_BIN}" PARENT_SCOPE)
+else()
+  message(WARNING
+    "pt-build.sh not found at ${TRANSPORT_BUILD_SCRIPT}; the aetherproject submodule is missing")
+  set(OBLIVION_LYREBIRD_BIN "" PARENT_SCOPE)
+endif()
+
 set(OBLIVION_CORE_BUNDLED_LIB "${OBLIVION_CORE_LIB}" PARENT_SCOPE)
 
 set(OBLIVION_HELPER_BUNDLED_BIN "${OBLIVION_HELPER_BIN}" PARENT_SCOPE)

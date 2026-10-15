@@ -252,16 +252,51 @@ void main() {
   });
 
   group('tls fingerprint', () {
-    test('chrome as the core ships it, unless told otherwise', () {
+    test('chrome by name, its own rule and grease, unless told otherwise', () {
       final args = const TunnelSettings().toCoreArguments();
-      expect(args, isNot(contains('--tls-ciphers')));
-      expect(args, isNot(contains('--tls-groups')));
+      expect(_valueAfter(args, '--tls-ciphers'), 'ALL:!aPSK:!ECDSA+SHA1:!3DES');
       expect(args, isNot(contains('--disable-grease')));
+      expect(args, isNot(contains('--tls-groups')));
     });
 
-    test('the cipher list, the groups and grease reach the core', () {
+    test('every preset hands the core its own suites and grease', () {
+      for (final fingerprint in TlsFingerprint.values.where(
+        (value) => value != TlsFingerprint.custom,
+      )) {
+        final args = TunnelSettings(
+          tlsFingerprint: fingerprint,
+        ).toCoreArguments();
+        expect(
+          _valueAfter(args, '--tls-ciphers'),
+          fingerprint.ciphers,
+          reason: fingerprint.wire,
+        );
+        expect(
+          args.contains('--disable-grease'),
+          !fingerprint.grease,
+          reason: fingerprint.wire,
+        );
+        expect(TunnelSettings.isCipherList(fingerprint.ciphers), isTrue);
+      }
+    });
+
+    test('a preset leaves the hand-written suites and grease aside', () {
+      final args = const TunnelSettings(
+        tlsFingerprint: TlsFingerprint.firefox,
+        tlsCiphers: 'ECDHE-RSA-AES128-GCM-SHA256',
+        grease: true,
+      ).toCoreArguments();
+      expect(
+        _valueAfter(args, '--tls-ciphers'),
+        TlsFingerprint.firefox.ciphers,
+      );
+      expect(args, contains('--disable-grease'));
+    });
+
+    test('custom hands the core the cipher list, the groups and grease', () {
       final args = const TunnelSettings(
         protocol: CoreProtocol.wireguard,
+        tlsFingerprint: TlsFingerprint.custom,
         tlsCiphers:
             ' ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256 ',
         tlsGroups: 'X25519:P-256',
@@ -276,6 +311,14 @@ void main() {
       expect(args, contains('--disable-grease'));
     });
 
+    test('custom with nothing written leaves the suites to the core', () {
+      final args = const TunnelSettings(
+        tlsFingerprint: TlsFingerprint.custom,
+      ).toCoreArguments();
+      expect(args, isNot(contains('--tls-ciphers')));
+      expect(args, isNot(contains('--disable-grease')));
+    });
+
     test('a cipher list is names and the separators boringssl reads', () {
       for (final list in <String>[
         'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256',
@@ -287,6 +330,161 @@ void main() {
       for (final list in <String>['', '   ', ':::', 'AES128;rm -rf', 'é']) {
         expect(TunnelSettings.isCipherList(list), isFalse, reason: list);
       }
+    });
+
+    test('fingerprints keep their wire names', () {
+      expect(TlsFingerprint.fromWire('semi-python'), TlsFingerprint.semiPython);
+      expect(TlsFingerprint.fromWire('nothing'), TlsFingerprint.chrome);
+      expect(TlsFingerprint.fromWire(null), TlsFingerprint.chrome);
+    });
+  });
+
+  group('obfuscation', () {
+    test('automatic leaves the profile to the core', () {
+      const settings = TunnelSettings(obfuscation: ObfuscationProfile.auto);
+      expect(settings.toCoreArguments(), isNot(contains('--noize')));
+      expect(settings.toPlatformPayload()['noizeProfile'], 'auto');
+    });
+
+    test('a named profile is passed on', () {
+      final args = const TunnelSettings(
+        obfuscation: ObfuscationProfile.gfw,
+      ).toCoreArguments();
+      expect(_valueAfter(args, '--noize'), 'gfw');
+    });
+
+    test('the default stays balanced for an existing install', () {
+      expect(const TunnelSettings().obfuscation, ObfuscationProfile.balanced);
+      expect(ObfuscationProfile.fromWire(null), ObfuscationProfile.balanced);
+      expect(ObfuscationProfile.fromWire('auto'), ObfuscationProfile.auto);
+    });
+  });
+
+  group('exit country', () {
+    test('country codes are read as the core reads them', () {
+      for (final rule in <String>[
+        '',
+        'DE',
+        'DE,NL',
+        '!IR',
+        '!IR,RU',
+        ' !ir , ru ',
+      ]) {
+        expect(TunnelSettings.isExitRule(rule), isTrue, reason: rule);
+      }
+      for (final rule in <String>[
+        'IRN',
+        '!',
+        'DE;NL',
+        'DE,',
+        '1R',
+        '!!IR',
+        'DE,!NL',
+      ]) {
+        expect(TunnelSettings.isExitRule(rule), isFalse, reason: rule);
+      }
+      expect(TunnelSettings.normalizeExitRule(' !ir , ru '), '!IR,RU');
+    });
+  });
+
+  group('tor bridges', () {
+    test('each choice becomes what the core reads', () {
+      expect(const TunnelSettings().torBridgesValue, '');
+      expect(
+        const TunnelSettings(torBridges: TorBridges.first).torBridgesValue,
+        'auto',
+      );
+      expect(
+        const TunnelSettings(torBridges: TorBridges.never).torBridgesValue,
+        'off',
+      );
+      expect(
+        const TunnelSettings(
+          torBridges: TorBridges.own,
+          torBridgeLines:
+              '# mine\nBridge obfs4 1.2.3.4:443 AAAA cert=x iat-mode=0\n\n'
+              'webtunnel 5.6.7.8:443 BBBB url=https://example.com/x',
+        ).torBridgesValue,
+        'obfs4 1.2.3.4:443 AAAA cert=x iat-mode=0;'
+        'webtunnel 5.6.7.8:443 BBBB url=https://example.com/x',
+      );
+    });
+
+    test('own bridges with no line are called out', () {
+      expect(
+        const TunnelSettings(torBridges: TorBridges.own).torBridgesMissing,
+        isTrue,
+      );
+      expect(
+        const TunnelSettings(
+          torBridges: TorBridges.own,
+          torBridgeLines: 'obfs4 1.2.3.4:443 AAAA cert=x iat-mode=0',
+        ).torBridgesMissing,
+        isFalse,
+      );
+      expect(const TunnelSettings().torBridgesMissing, isFalse);
+    });
+
+    test('a line the core would split in two is left out', () {
+      expect(
+        TunnelSettings.bridgeLines(
+          'obfs4 1.2.3.4:443 A;B\nsnowflake 192.0.2.3:80',
+        ),
+        <String>['snowflake 192.0.2.3:80'],
+      );
+    });
+
+    test('the choice travels to the native side', () {
+      expect(
+        const TunnelSettings(
+          core: CoreEngine.tor,
+          torBridges: TorBridges.never,
+        ).toPlatformPayload()['torBridges'],
+        'off',
+      );
+    });
+  });
+
+  group('masque in masque inner hop', () {
+    test('the inner hop is named only when given', () {
+      final args = const TunnelSettings(
+        protocol: CoreProtocol.mim,
+        endpoint: '162.159.198.1:443',
+        mimInner: ' 162.159.198.2:443 ',
+      ).toCoreArguments();
+      expect(_valueAfter(args, '--mim-outer'), '162.159.198.1:443');
+      expect(_valueAfter(args, '--mim-inner'), '162.159.198.2:443');
+
+      expect(
+        const TunnelSettings(protocol: CoreProtocol.mim).toCoreArguments(),
+        isNot(contains('--mim-inner')),
+      );
+    });
+
+    test('the inner hop never reaches another protocol', () {
+      expect(
+        const TunnelSettings(mimInner: '162.159.198.2:443').toCoreArguments(),
+        isNot(contains('--mim-inner')),
+      );
+    });
+
+    test('two hops on one edge are caught', () {
+      expect(
+        const TunnelSettings(
+          protocol: CoreProtocol.mim,
+          endpoint: '162.159.198.1:443',
+          mimInner: '162.159.198.1:8443',
+        ).mimHopsCollide,
+        isTrue,
+      );
+      expect(
+        const TunnelSettings(
+          protocol: CoreProtocol.mim,
+          endpoint: '162.159.198.1:443',
+          mimInner: '162.159.198.2:443',
+        ).mimHopsCollide,
+        isFalse,
+      );
     });
   });
 

@@ -14,6 +14,14 @@ import '../widgets/screen_header.dart';
 import '../widgets/settings_list.dart';
 import 'settings_screen.dart';
 
+String fingerprintTitle(L10n l10n, TlsFingerprint value) => switch (value) {
+  TlsFingerprint.chrome => l10n.fingerprintChrome,
+  TlsFingerprint.firefox => l10n.fingerprintFirefox,
+  TlsFingerprint.semiPython => l10n.fingerprintSemiPython,
+  TlsFingerprint.go => l10n.fingerprintGo,
+  TlsFingerprint.custom => l10n.fingerprintCustom,
+};
+
 class AdvancedScreen extends ConsumerWidget {
   const AdvancedScreen({super.key});
 
@@ -575,11 +583,38 @@ class AdvancedScreen extends ConsumerWidget {
                       ),
                     ),
                     SettingsRow(
+                      title: l10n.tlsFingerprint,
+                      subtitle: l10n.tlsFingerprintDesc,
+                      value: fingerprintTitle(l10n, settings.tlsFingerprint),
+                      enabled: aether,
+                      onTap: () => showChoiceSheet<TlsFingerprint>(
+                        context: context,
+                        title: l10n.tlsFingerprint,
+                        selected: settings.tlsFingerprint,
+                        options: TlsFingerprint.values
+                            .map(
+                              (v) => PickerOption<TlsFingerprint>(
+                                value: v,
+                                title: fingerprintTitle(l10n, v),
+                                subtitle: v == TlsFingerprint.custom
+                                    ? l10n.fingerprintCustomDesc
+                                    : null,
+                              ),
+                            )
+                            .toList(),
+                        onSelected: (v) => controller.update(
+                          (s) => s.copyWith(tlsFingerprint: v),
+                        ),
+                      ),
+                    ),
+                    SettingsRow(
                       title: l10n.tlsCiphers,
                       value: settings.tlsCiphers.trim().isEmpty
                           ? l10n.endpointAuto
                           : settings.tlsCiphers.trim(),
-                      enabled: aether,
+                      enabled:
+                          aether &&
+                          settings.tlsFingerprint == TlsFingerprint.custom,
                       onTap: () => showTextEditorSheet(
                         context: context,
                         title: l10n.tlsCiphers,
@@ -601,10 +636,14 @@ class AdvancedScreen extends ConsumerWidget {
                     SettingsRow(
                       title: l10n.grease,
                       subtitle: l10n.greaseDesc,
-                      enabled: aether,
+                      enabled:
+                          aether &&
+                          settings.tlsFingerprint == TlsFingerprint.custom,
                       trailing: AppSwitch(
-                        value: settings.grease,
-                        onChanged: aether
+                        value: settings.effectiveGrease,
+                        onChanged:
+                            aether &&
+                                settings.tlsFingerprint == TlsFingerprint.custom
                             ? (v) => controller.update(
                                 (s) => s.copyWith(grease: v),
                               )

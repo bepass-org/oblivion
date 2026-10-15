@@ -488,6 +488,13 @@ class L10nFa extends L10n {
       'سنگین‌ترین تغییر شکل، برای شبکه‌های سخت‌گیر';
 
   @override
+  String get obfuscationAuto => 'خودکار';
+
+  @override
+  String get obfuscationAutoDesc =>
+      'انتخاب با هسته: firewall برای مسک، balanced برای وایرگارد';
+
+  @override
   String get ipV4Desc => 'فقط از راه IPv4 به دروازه‌ها وصل شو';
 
   @override
@@ -672,6 +679,13 @@ class L10nFa extends L10n {
       'سرور وایرگاردی که Gool داخل تونل به آن وصل می‌شود. خالی بگذارید تا همان سروری که در ثبت‌نامش آمده با پورت ۲۴۰۸ استفاده شود';
 
   @override
+  String get mimInner => 'هاپ درونی مسک در مسک';
+
+  @override
+  String get mimInnerDesc =>
+      'لبه‌ای که تونل مسک درونی از راه تونل بیرونی به آن می‌رود. خالی بگذارید تا هسته خودش انتخاب کند';
+
+  @override
   String get ech => 'پنهان‌سازی نام سرور (ECH)';
 
   @override
@@ -692,6 +706,32 @@ class L10nFa extends L10n {
 
   @override
   String get tlsGroupsDesc => 'گروه‌های کلیدی که در هندشیک پیشنهاد می‌شود';
+
+  @override
+  String get tlsFingerprint => 'اثر انگشت TLS';
+
+  @override
+  String get tlsFingerprintDesc =>
+      'سلام TLS با مجموعه‌رمزها و GREASE شبیه کدام برنامه باشد';
+
+  @override
+  String get fingerprintChrome => 'کروم';
+
+  @override
+  String get fingerprintFirefox => 'فایرفاکس';
+
+  @override
+  String get fingerprintSemiPython => 'پایتون (نزدیک)';
+
+  @override
+  String get fingerprintGo => 'Go';
+
+  @override
+  String get fingerprintCustom => 'دلخواه';
+
+  @override
+  String get fingerprintCustomDesc =>
+      'رمزهای TLS 1.2 و تنظیم GREASE دلخواه خودتان در پایین';
 
   @override
   String get masqueSni => 'نام سرور مسک (SNI)';
@@ -1490,6 +1530,35 @@ class L10nFa extends L10n {
   String get torRelaysOff => 'فقط بریج‌دی‌بی';
 
   @override
+  String get torBridges => 'پل‌ها';
+
+  @override
+  String get torBridgesDesc =>
+      'Tor کی سراغ پل‌ها برود؛ پل‌ها Tor را از دید شبکه‌ای که آن را مسدود می‌کند پنهان می‌کنند';
+
+  @override
+  String get torBridgesAuto => 'وقتی Tor مسدود است';
+
+  @override
+  String get torBridgesFirst => 'از همان اول';
+
+  @override
+  String get torBridgesNever => 'هرگز';
+
+  @override
+  String get torBridgesOwn => 'پل‌های خودم';
+
+  @override
+  String get torBridgeLines => 'خطوط پل';
+
+  @override
+  String get torBridgeLinesDesc =>
+      'هر خط یک پل، به همان شکل torrc: obfs4 1.2.3.4:443 FINGERPRINT cert=… iat-mode=0';
+
+  @override
+  String get torBridgeLinesRefusal => 'دست‌کم یک خط پل بنویسید';
+
+  @override
   String get exitLocTitle => 'کشور خروج';
 
   @override
@@ -1498,6 +1567,10 @@ class L10nFa extends L10n {
 
   @override
   String get exitLocHint => '!IR,AZ,RU';
+
+  @override
+  String get exitLocRefusal =>
+      'کد دوحرفی کشورها را با ویرگول جدا کنید و برای رد کردن، ! را اول بگذارید؛ مثل !IR,RU یا DE,NL';
 
   @override
   String get activeModeLabel => 'حالت';

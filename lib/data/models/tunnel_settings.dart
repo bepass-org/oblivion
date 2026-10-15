@@ -113,6 +113,61 @@ enum TorRelays {
       values.firstWhere((e) => e.wire == value, orElse: () => auto);
 }
 
+enum TorBridges {
+  auto('auto'),
+  first('first'),
+  never('never'),
+  own('own');
+
+  const TorBridges(this.wire);
+
+  final String wire;
+
+  static TorBridges fromWire(String? value) =>
+      values.firstWhere((e) => e.wire == value, orElse: () => auto);
+}
+
+enum TlsFingerprint {
+  chrome('chrome', 'ALL:!aPSK:!ECDSA+SHA1:!3DES', true),
+  firefox(
+    'firefox',
+    'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:'
+        'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:'
+        'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:'
+        'ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:'
+        'AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA:AES256-SHA',
+    false,
+  ),
+  semiPython(
+    'semi-python',
+    'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:'
+        'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:'
+        'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:'
+        'ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:'
+        'ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256',
+    false,
+  ),
+  go(
+    'go',
+    'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:'
+        'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:'
+        'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:'
+        'ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:'
+        'ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA',
+    false,
+  ),
+  custom('custom', '', true);
+
+  const TlsFingerprint(this.wire, this.ciphers, this.grease);
+
+  final String wire;
+  final String ciphers;
+  final bool grease;
+
+  static TlsFingerprint fromWire(String? value) =>
+      values.firstWhere((e) => e.wire == value, orElse: () => chrome);
+}
+
 enum CoreProtocol {
   masque('masque'),
   wireguard('wg'),
@@ -158,6 +213,7 @@ enum ScanMode {
 }
 
 enum ObfuscationProfile {
+  auto('auto'),
   off('off'),
   light('light'),
   firewall('firewall'),
@@ -264,6 +320,8 @@ class TunnelSettings {
     this.psiphonConduitPeers = ConduitPeers.auto,
     this.psiphonRejectCensoredPeers = true,
     this.torRelays = TorRelays.auto,
+    this.torBridges = TorBridges.auto,
+    this.torBridgeLines = '',
     this.exitLoc = '',
     this.protocol = CoreProtocol.masque,
     this.transport = MasqueTransport.http3,
@@ -281,10 +339,12 @@ class TunnelSettings {
     this.wiwOuter = '',
     this.wiwInner = '',
     this.goolPeer = '',
+    this.mimInner = '',
     this.masqueSni = '',
     this.echDns = '',
     this.echDomain = '',
     this.tlsGroups = '',
+    this.tlsFingerprint = TlsFingerprint.chrome,
     this.tlsCiphers = '',
     this.grease = true,
     this.apiAddress = '',
@@ -328,6 +388,8 @@ class TunnelSettings {
   final bool psiphonRejectCensoredPeers;
 
   final TorRelays torRelays;
+  final TorBridges torBridges;
+  final String torBridgeLines;
   final String exitLoc;
 
   final CoreProtocol protocol;
@@ -347,10 +409,12 @@ class TunnelSettings {
   final String wiwOuter;
   final String wiwInner;
   final String goolPeer;
+  final String mimInner;
   final String masqueSni;
   final String echDns;
   final String echDomain;
   final String tlsGroups;
+  final TlsFingerprint tlsFingerprint;
   final String tlsCiphers;
   final bool grease;
   final String apiAddress;
@@ -499,6 +563,58 @@ class TunnelSettings {
   bool get usesGoolClassic => effectiveProtocol == CoreProtocol.goolClassic;
 
   String get goolPeerValue => goolPeer.trim();
+
+  String get mimInnerValue => mimInner.trim();
+
+  bool get mimHopsCollide {
+    final outer = endpointHost(manualGateway);
+    final inner = endpointHost(mimInnerValue);
+    if (outer == null || inner == null) return false;
+    return outer == inner;
+  }
+
+  bool get obfuscationAuto => obfuscation == ObfuscationProfile.auto;
+
+  String get effectiveTlsCiphers => tlsFingerprint == TlsFingerprint.custom
+      ? tlsCiphers.trim()
+      : tlsFingerprint.ciphers;
+
+  bool get effectiveGrease =>
+      tlsFingerprint == TlsFingerprint.custom ? grease : tlsFingerprint.grease;
+
+  List<String> get torBridgeLineList => bridgeLines(torBridgeLines);
+
+  bool get torBridgesMissing =>
+      torBridges == TorBridges.own && torBridgeLineList.isEmpty;
+
+  String get torBridgesValue => switch (torBridges) {
+    TorBridges.auto => '',
+    TorBridges.first => 'auto',
+    TorBridges.never => 'off',
+    TorBridges.own => torBridgeLineList.join(';'),
+  };
+
+  static List<String> bridgeLines(String raw) => raw
+      .split('\n')
+      .map((line) => line.trim())
+      .where((line) => line.isNotEmpty && !line.startsWith('#'))
+      .map(
+        (line) => line.startsWith('Bridge ') || line.startsWith('bridge ')
+            ? line.substring('Bridge '.length).trim()
+            : line,
+      )
+      .where((line) => line.isNotEmpty && !line.contains(';'))
+      .toList();
+
+  static final RegExp _exitRule = RegExp(r'^!?[A-Z]{2}(,[A-Z]{2})*$');
+
+  static String normalizeExitRule(String value) =>
+      value.replaceAll(RegExp(r'\s'), '').toUpperCase();
+
+  static bool isExitRule(String value) {
+    final rule = normalizeExitRule(value);
+    return rule.isEmpty || _exitRule.hasMatch(rule);
+  }
 
   static const String defaultMasqueSni = 'www.cloudflare.com';
 
@@ -754,6 +870,8 @@ class TunnelSettings {
     ConduitPeers? psiphonConduitPeers,
     bool? psiphonRejectCensoredPeers,
     TorRelays? torRelays,
+    TorBridges? torBridges,
+    String? torBridgeLines,
     String? exitLoc,
     CoreProtocol? protocol,
     MasqueTransport? transport,
@@ -771,10 +889,12 @@ class TunnelSettings {
     String? wiwOuter,
     String? wiwInner,
     String? goolPeer,
+    String? mimInner,
     String? masqueSni,
     String? echDns,
     String? echDomain,
     String? tlsGroups,
+    TlsFingerprint? tlsFingerprint,
     String? tlsCiphers,
     bool? grease,
     String? apiAddress,
@@ -818,6 +938,8 @@ class TunnelSettings {
       psiphonRejectCensoredPeers:
           psiphonRejectCensoredPeers ?? this.psiphonRejectCensoredPeers,
       torRelays: torRelays ?? this.torRelays,
+      torBridges: torBridges ?? this.torBridges,
+      torBridgeLines: torBridgeLines ?? this.torBridgeLines,
       exitLoc: exitLoc ?? this.exitLoc,
       protocol: protocol ?? this.protocol,
       transport: transport ?? this.transport,
@@ -835,10 +957,12 @@ class TunnelSettings {
       wiwOuter: wiwOuter ?? this.wiwOuter,
       wiwInner: wiwInner ?? this.wiwInner,
       goolPeer: goolPeer ?? this.goolPeer,
+      mimInner: mimInner ?? this.mimInner,
       masqueSni: masqueSni ?? this.masqueSni,
       echDns: echDns ?? this.echDns,
       echDomain: echDomain ?? this.echDomain,
       tlsGroups: tlsGroups ?? this.tlsGroups,
+      tlsFingerprint: tlsFingerprint ?? this.tlsFingerprint,
       tlsCiphers: tlsCiphers ?? this.tlsCiphers,
       grease: grease ?? this.grease,
       apiAddress: apiAddress ?? this.apiAddress,
@@ -883,6 +1007,7 @@ class TunnelSettings {
     'psiphonConduitPeers': psiphonConduitPeers.wire,
     'psiphonRejectCensoredPeers': psiphonRejectCensoredPeers,
     'torRelays': torRelays.wire,
+    'torBridges': torBridgesValue,
     'exitLoc': exitLoc.trim(),
     'protocol': protocol.wire,
     'modeLabel': modeLabel,
@@ -953,8 +1078,6 @@ class TunnelSettings {
       aetherHttpProxyAddress,
       '--scan',
       scanMode.wire,
-      '--noize',
-      noizeProfile,
       '--log-level',
       logLevel.wire,
       '--ip',
@@ -964,6 +1087,8 @@ class TunnelSettings {
       '--reconnect-secs',
       '$reconnectSeconds',
     ];
+
+    if (!obfuscationAuto) args.addAll(<String>['--noize', noizeProfile]);
 
     switch (effectiveProtocol) {
       case CoreProtocol.masque:
@@ -1029,6 +1154,9 @@ class TunnelSettings {
       if (manualGateway.isNotEmpty) {
         args.addAll(<String>['--mim-outer', manualGateway]);
       }
+      if (mimInnerValue.isNotEmpty) {
+        args.addAll(<String>['--mim-inner', mimInnerValue]);
+      }
     } else {
       if (manualGateway.isNotEmpty) {
         args.addAll(<String>['--peer', manualGateway]);
@@ -1049,10 +1177,9 @@ class TunnelSettings {
     if (tlsGroups.trim().isNotEmpty) {
       args.addAll(<String>['--tls-groups', tlsGroups.trim()]);
     }
-    if (tlsCiphers.trim().isNotEmpty) {
-      args.addAll(<String>['--tls-ciphers', tlsCiphers.trim()]);
-    }
-    if (!grease) args.add('--disable-grease');
+    final ciphers = effectiveTlsCiphers;
+    if (ciphers.isNotEmpty) args.addAll(<String>['--tls-ciphers', ciphers]);
+    if (!effectiveGrease) args.add('--disable-grease');
     if (apiAddress.trim().isNotEmpty) {
       args.addAll(<String>['--api-address', apiAddress.trim()]);
     }

@@ -67,6 +67,8 @@ class SettingsStore {
     'psiphonConduitPeers',
     'psiphonRejectCensoredPeers',
     'torRelays',
+    'torBridges',
+    'torBridgeLines',
     'exitLoc',
     'protocol',
     'transport',
@@ -84,10 +86,12 @@ class SettingsStore {
     'wiwOuter',
     'wiwInner',
     'goolPeer',
+    'mimInner',
     'masqueSni',
     'echDns',
     'echDomain',
     'tlsGroups',
+    'tlsFingerprint',
     'tlsCiphers',
     'grease',
     'apiAddress',
@@ -159,6 +163,8 @@ class SettingsStore {
           _prefs.getBool('${_prefix}psiphonRejectCensoredPeers') ??
           fallback.psiphonRejectCensoredPeers,
       torRelays: TorRelays.fromWire(_string('torRelays')),
+      torBridges: TorBridges.fromWire(_string('torBridges')),
+      torBridgeLines: _string('torBridgeLines') ?? fallback.torBridgeLines,
       exitLoc: _string('exitLoc') ?? '',
       protocol: CoreProtocol.fromWire(_string('protocol')),
       transport: MasqueTransport.fromWire(_string('transport')),
@@ -178,10 +184,12 @@ class SettingsStore {
       wiwOuter: _string('wiwOuter') ?? fallback.wiwOuter,
       wiwInner: _string('wiwInner') ?? fallback.wiwInner,
       goolPeer: _string('goolPeer') ?? fallback.goolPeer,
+      mimInner: _string('mimInner') ?? fallback.mimInner,
       masqueSni: _string('masqueSni') ?? fallback.masqueSni,
       echDns: _string('echDns') ?? fallback.echDns,
       echDomain: _string('echDomain') ?? fallback.echDomain,
       tlsGroups: _string('tlsGroups') ?? fallback.tlsGroups,
+      tlsFingerprint: _fingerprint(),
       tlsCiphers: _string('tlsCiphers') ?? fallback.tlsCiphers,
       grease: _prefs.getBool('${_prefix}grease') ?? fallback.grease,
       apiAddress: _string('apiAddress') ?? fallback.apiAddress,
@@ -234,6 +242,16 @@ class SettingsStore {
     return settings;
   }
 
+  TlsFingerprint _fingerprint() {
+    final stored = _string('tlsFingerprint');
+    if (stored != null) return TlsFingerprint.fromWire(stored);
+    final ciphers = _string('tlsCiphers') ?? '';
+    final grease = _prefs.getBool('${_prefix}grease') ?? true;
+    return ciphers.trim().isNotEmpty || !grease
+        ? TlsFingerprint.custom
+        : TlsFingerprint.chrome;
+  }
+
   Map<String, Object> _snapshot(TunnelSettings s) => <String, Object>{
     'core': s.core.wire,
     'psiphonCountry': s.psiphonCountry,
@@ -244,6 +262,8 @@ class SettingsStore {
     'psiphonConduitPeers': s.psiphonConduitPeers.wire,
     'psiphonRejectCensoredPeers': s.psiphonRejectCensoredPeers,
     'torRelays': s.torRelays.wire,
+    'torBridges': s.torBridges.wire,
+    'torBridgeLines': s.torBridgeLines,
     'exitLoc': s.exitLoc,
     'protocol': s.protocol.wire,
     'transport': s.transport.wire,
@@ -261,10 +281,12 @@ class SettingsStore {
     'wiwOuter': s.wiwOuter,
     'wiwInner': s.wiwInner,
     'goolPeer': s.goolPeer,
+    'mimInner': s.mimInner,
     'masqueSni': s.masqueSni,
     'echDns': s.echDns,
     'echDomain': s.echDomain,
     'tlsGroups': s.tlsGroups,
+    'tlsFingerprint': s.tlsFingerprint.wire,
     'tlsCiphers': s.tlsCiphers,
     'grease': s.grease,
     'apiAddress': s.apiAddress,

@@ -219,6 +219,61 @@ val buildPsiphonCore by tasks.registering {
     }
 }
 
+val transportBuildScript = file("../../aetherproject/pt-build.sh")
+
+val buildTorTransports by tasks.registering {
+    group = "aether"
+    description = "Builds lyrebird, the pluggable transport Tor's bridges run through, one per Android ABI"
+
+    val outputDir = file("src/main/jniLibs")
+    outputs.dir(outputDir)
+    inputs.file(transportBuildScript)
+    inputs.property("abis", selectedAbis.keys.sorted().joinToString(","))
+
+    doLast {
+        if (!transportBuildScript.exists()) {
+            throw GradleException(
+                "pt-build.sh not found at ${transportBuildScript.absolutePath}; " +
+                    "the aetherproject submodule is missing",
+            )
+        }
+
+        for (abi in selectedAbis.keys) {
+            val (goarch, goarm) = goArches[abi]
+                ?: throw GradleException("no go architecture is known for $abi")
+
+            val staging = File(layout.buildDirectory.get().asFile, "lyrebird/$abi")
+            staging.deleteRecursively()
+            staging.mkdirs()
+
+            logger.lifecycle("[lyrebird] building for $abi")
+            val (status, output) = runCommand(
+                listOf(
+                    "bash",
+                    transportBuildScript.absolutePath,
+                    "linux",
+                    goarch,
+                    staging.absolutePath,
+                    goarm,
+                ),
+                projectDir,
+            )
+            if (status != 0) {
+                throw GradleException("lyrebird build for $abi failed: $output")
+            }
+
+            val built = File(staging, "lyrebird")
+            if (!built.isFile) {
+                throw GradleException("lyrebird build for $abi produced nothing")
+            }
+
+            val dest = File(outputDir, abi)
+            dest.mkdirs()
+            built.copyTo(File(dest, "liblyrebird.so"), overwrite = true)
+        }
+    }
+}
+
 val buildAetherCore by tasks.registering {
     group = "aether"
     description = "Cross compiles the Aether Rust core for every Android ABI"
@@ -385,4 +440,4 @@ val buildAetherCore by tasks.registering {
 
 
 tasks.matching { it.name.startsWith("merge") && it.name.endsWith("JniLibFolders") }
-    .configureEach { dependsOn(buildAetherCore, buildPsiphonCore) }
+    .configureEach { dependsOn(buildAetherCore, buildPsiphonCore, buildTorTransports) }

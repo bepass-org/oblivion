@@ -105,7 +105,7 @@ jobs:
           failed=0
           for abi in arm64-v8a armeabi-v7a x86_64; do
             apk="build/app/outputs/flutter-apk/app-$abi-release.apk"
-            for library in libaether.so libpsiphon.so; do
+            for library in libaether.so libpsiphon.so liblyrebird.so; do
               if ! unzip -l "$apk" | grep -q "lib/$abi/$library"; then
                 echo "::error::$abi apk carries no $library"
                 failed=1

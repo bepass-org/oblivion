@@ -46,6 +46,9 @@ endif()
 if(TARGET psiphon_core_build)
   add_dependencies(${BINARY_NAME} psiphon_core_build)
 endif()
+if(TARGET lyrebird_build)
+  add_dependencies(${BINARY_NAME} lyrebird_build)
+endif()
 
 
 include(flutter/generated_plugins.cmake)
@@ -87,6 +90,12 @@ endif()
 
 if(OBLIVION_PSIPHON_BIN)
   install(PROGRAMS "${OBLIVION_PSIPHON_BIN}"
+    DESTINATION "${CMAKE_INSTALL_PREFIX}"
+    COMPONENT Runtime)
+endif()
+
+if(OBLIVION_LYREBIRD_BIN)
+  install(PROGRAMS "${OBLIVION_LYREBIRD_BIN}"
     DESTINATION "${CMAKE_INSTALL_PREFIX}"
     COMPONENT Runtime)
 endif()

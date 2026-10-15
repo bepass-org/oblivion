@@ -991,6 +991,18 @@ abstract class L10n {
   /// **'Heaviest reshaping, for networks that fingerprint hard'**
   String get obfuscationAggressiveDesc;
 
+  /// No description provided for @obfuscationAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get obfuscationAuto;
+
+  /// No description provided for @obfuscationAutoDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The core picks: firewall for MASQUE, balanced for WireGuard'**
+  String get obfuscationAutoDesc;
+
   /// No description provided for @ipV4Desc.
   ///
   /// In en, this message translates to:
@@ -1333,6 +1345,18 @@ abstract class L10n {
   /// **'The WireGuard endpoint Gool dials inside the tunnel. Leave empty to use the one its registration names, on port 2408'**
   String get goolPeerDesc;
 
+  /// No description provided for @mimInner.
+  ///
+  /// In en, this message translates to:
+  /// **'MIM inner hop'**
+  String get mimInner;
+
+  /// No description provided for @mimInnerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The edge the inner MASQUE tunnel goes to, through the outer one. Leave empty and the core picks it'**
+  String get mimInnerDesc;
+
   /// No description provided for @ech.
   ///
   /// In en, this message translates to:
@@ -1374,6 +1398,54 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Key share groups offered during the handshake'**
   String get tlsGroupsDesc;
+
+  /// No description provided for @tlsFingerprint.
+  ///
+  /// In en, this message translates to:
+  /// **'TLS fingerprint'**
+  String get tlsFingerprint;
+
+  /// No description provided for @tlsFingerprintDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Which client the TLS hello looks like, through its cipher suites and GREASE'**
+  String get tlsFingerprintDesc;
+
+  /// No description provided for @fingerprintChrome.
+  ///
+  /// In en, this message translates to:
+  /// **'Chrome'**
+  String get fingerprintChrome;
+
+  /// No description provided for @fingerprintFirefox.
+  ///
+  /// In en, this message translates to:
+  /// **'Firefox'**
+  String get fingerprintFirefox;
+
+  /// No description provided for @fingerprintSemiPython.
+  ///
+  /// In en, this message translates to:
+  /// **'Python (close)'**
+  String get fingerprintSemiPython;
+
+  /// No description provided for @fingerprintGo.
+  ///
+  /// In en, this message translates to:
+  /// **'Go'**
+  String get fingerprintGo;
+
+  /// No description provided for @fingerprintCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get fingerprintCustom;
+
+  /// No description provided for @fingerprintCustomDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Your own TLS 1.2 ciphers and GREASE setting below'**
+  String get fingerprintCustomDesc;
 
   /// No description provided for @masqueSni.
   ///
@@ -2785,6 +2857,60 @@ abstract class L10n {
   /// **'BridgeDB only'**
   String get torRelaysOff;
 
+  /// No description provided for @torBridges.
+  ///
+  /// In en, this message translates to:
+  /// **'Bridges'**
+  String get torBridges;
+
+  /// No description provided for @torBridgesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'When Tor turns to bridges, which hide it from a network that blocks it'**
+  String get torBridgesDesc;
+
+  /// No description provided for @torBridgesAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'When Tor is blocked'**
+  String get torBridgesAuto;
+
+  /// No description provided for @torBridgesFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'From the start'**
+  String get torBridgesFirst;
+
+  /// No description provided for @torBridgesNever.
+  ///
+  /// In en, this message translates to:
+  /// **'Never'**
+  String get torBridgesNever;
+
+  /// No description provided for @torBridgesOwn.
+  ///
+  /// In en, this message translates to:
+  /// **'My own bridge lines'**
+  String get torBridgesOwn;
+
+  /// No description provided for @torBridgeLines.
+  ///
+  /// In en, this message translates to:
+  /// **'Bridge lines'**
+  String get torBridgeLines;
+
+  /// No description provided for @torBridgeLinesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'One per line, as in torrc: obfs4 1.2.3.4:443 FINGERPRINT cert=… iat-mode=0'**
+  String get torBridgeLinesDesc;
+
+  /// No description provided for @torBridgeLinesRefusal.
+  ///
+  /// In en, this message translates to:
+  /// **'Write at least one bridge line'**
+  String get torBridgeLinesRefusal;
+
   /// No description provided for @exitLocTitle.
   ///
   /// In en, this message translates to:
@@ -2802,6 +2928,12 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'!IR,AZ,RU'**
   String get exitLocHint;
+
+  /// No description provided for @exitLocRefusal.
+  ///
+  /// In en, this message translates to:
+  /// **'Write two-letter country codes separated by commas, with a ! in front to refuse them, such as !IR,RU or DE,NL'**
+  String get exitLocRefusal;
 
   /// No description provided for @activeModeLabel.
   ///

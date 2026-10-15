@@ -116,12 +116,12 @@ class AetherVpnService : VpnService() {
             "AETHER_HTTP_PROXY" to "${target.aetherBindHost}:${target.aetherHttpProxyPort}",
             "AETHER_PROTOCOL" to target.coreProtocol,
             "AETHER_SCAN" to target.scanMode,
-            "AETHER_NOIZE" to target.noizeProfile,
             "AETHER_IP" to target.ipVersion,
             "AETHER_LOG_LEVEL" to target.logLevel,
             "AETHER_QUICK_RECONNECT" to if (target.quickReconnect) "1" else "0",
         )
 
+        if (target.noizeChosen) environment["AETHER_NOIZE"] = target.noizeProfile
         if (target.usesHttp2) environment["AETHER_MASQUE_HTTP2"] = "1"
         if (target.fragment && !target.runsAlone) {
             environment["AETHER_MASQUE_H2_FRAGMENT"] = "1"
@@ -169,6 +169,12 @@ class AetherVpnService : VpnService() {
             }
             if (target.torRelays.isNotBlank()) {
                 environment["AETHER_TOR_RELAYS"] = target.torRelays
+            }
+            if (target.torBridges.isNotBlank()) {
+                environment["AETHER_TOR_BRIDGES"] = target.torBridges
+            }
+            TransportBinary.environment(applicationContext)?.let {
+                environment["AETHER_TOR_PT"] = it
             }
         }
 

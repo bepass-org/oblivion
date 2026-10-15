@@ -128,10 +128,21 @@ fn stage_attempt(
     staged.scan_mode = attempt.scan.clone();
 
     let mut staged_arguments = arguments.to_vec();
-    override_flag(&mut staged_arguments, "--noize", &attempt.noize);
+    if staged.noize_chosen() {
+        override_flag(&mut staged_arguments, "--noize", &attempt.noize);
+    } else {
+        remove_flag(&mut staged_arguments, "--noize");
+    }
     override_flag(&mut staged_arguments, "--scan", &attempt.scan);
 
     (staged, staged_arguments)
+}
+
+fn remove_flag(arguments: &mut Vec<String>, flag: &str) {
+    while let Some(position) = arguments.iter().position(|entry| entry == flag) {
+        let end = (position + 2).min(arguments.len());
+        arguments.drain(position..end);
+    }
 }
 
 fn override_flag(arguments: &mut Vec<String>, flag: &str, value: &str) {
@@ -1599,6 +1610,45 @@ mod strategy_tests {
                 "turbo".to_string(),
             ]
         );
+    }
+
+    #[test]
+    fn automatic_obfuscation_keeps_the_fast_attempt_and_drops_the_flag_after_it() {
+        let settings = settings_from(r#"{"obfuscation":"auto","noizeProfile":"auto"}"#);
+        let arguments = vec![
+            "--bind".to_string(),
+            "127.0.0.1:1819".to_string(),
+            "--scan".to_string(),
+            "balanced".to_string(),
+        ];
+
+        let ladder = attempt_ladder(&settings);
+        assert_eq!(ladder.len(), 2);
+
+        let (fast, fast_arguments) = stage_attempt(&settings, &arguments, &ladder[0]);
+        assert_eq!(fast.noize(), "off");
+        assert!(fast_arguments
+            .windows(2)
+            .any(|pair| pair == ["--noize", "off"]));
+
+        let (configured, configured_arguments) = stage_attempt(&settings, &arguments, &ladder[1]);
+        assert!(!configured_arguments.contains(&"--noize".to_string()));
+        assert!(configured
+            .core_environment()
+            .iter()
+            .all(|(key, _)| key != "AETHER_NOIZE"));
+    }
+
+    #[test]
+    fn a_stray_noize_flag_goes_with_its_value() {
+        let mut arguments = vec![
+            "--noize".to_string(),
+            "auto".to_string(),
+            "--scan".to_string(),
+            "turbo".to_string(),
+        ];
+        remove_flag(&mut arguments, "--noize");
+        assert_eq!(arguments, vec!["--scan".to_string(), "turbo".to_string()]);
     }
 
     #[test]

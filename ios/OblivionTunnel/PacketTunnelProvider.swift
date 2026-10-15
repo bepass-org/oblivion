@@ -95,10 +95,14 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             "AETHER_SOCKS": "\(host):\(socksPort)",
             "AETHER_PROTOCOL": classicGool ? "gool" : protocolName,
             "AETHER_SCAN": settings["scanMode"] as? String ?? "balanced",
-            "AETHER_NOIZE": settings["obfuscation"] as? String ?? "balanced",
             "AETHER_IP": settings["ipVersion"] as? String ?? "v4",
             "AETHER_LOG_LEVEL": settings["logLevel"] as? String ?? "info",
         ]
+
+        let noize = settings["obfuscation"] as? String ?? "balanced"
+        if !noize.isEmpty, noize != "auto" {
+            environment["AETHER_NOIZE"] = noize
+        }
 
         let transport = settings["transport"] as? String ?? "h3"
         if ["masque", "mim", "gool"].contains(protocolName), transport == "h2" {

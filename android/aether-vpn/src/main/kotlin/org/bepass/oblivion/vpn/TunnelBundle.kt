@@ -13,6 +13,7 @@ object TunnelBundle {
         putString("psiphonConduitPeers", config.psiphonConduitPeers)
         putBoolean("psiphonRejectCensoredPeers", config.psiphonRejectCensoredPeers)
         putString("torRelays", config.torRelays)
+        putString("torBridges", config.torBridges)
         putString("exitLoc", config.exitLoc)
         putString("protocol", config.protocol)
         putString("modeLabel", config.modeLabel)
@@ -57,6 +58,7 @@ object TunnelBundle {
         psiphonConduitPeers = bundle.getString("psiphonConduitPeers", "auto"),
         psiphonRejectCensoredPeers = bundle.getBoolean("psiphonRejectCensoredPeers", true),
         torRelays = bundle.getString("torRelays", "auto"),
+        torBridges = bundle.getString("torBridges", ""),
         exitLoc = bundle.getString("exitLoc", ""),
         protocol = bundle.getString("protocol", "masque"),
         modeLabel = bundle.getString("modeLabel", ""),

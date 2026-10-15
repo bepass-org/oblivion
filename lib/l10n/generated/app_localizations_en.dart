@@ -488,6 +488,13 @@ class L10nEn extends L10n {
       'Heaviest reshaping, for networks that fingerprint hard';
 
   @override
+  String get obfuscationAuto => 'Automatic';
+
+  @override
+  String get obfuscationAutoDesc =>
+      'The core picks: firewall for MASQUE, balanced for WireGuard';
+
+  @override
   String get ipV4Desc => 'Reach gateways over IPv4 only';
 
   @override
@@ -675,6 +682,13 @@ class L10nEn extends L10n {
       'The WireGuard endpoint Gool dials inside the tunnel. Leave empty to use the one its registration names, on port 2408';
 
   @override
+  String get mimInner => 'MIM inner hop';
+
+  @override
+  String get mimInnerDesc =>
+      'The edge the inner MASQUE tunnel goes to, through the outer one. Leave empty and the core picks it';
+
+  @override
   String get ech => 'Hide the server name (ECH)';
 
   @override
@@ -695,6 +709,32 @@ class L10nEn extends L10n {
 
   @override
   String get tlsGroupsDesc => 'Key share groups offered during the handshake';
+
+  @override
+  String get tlsFingerprint => 'TLS fingerprint';
+
+  @override
+  String get tlsFingerprintDesc =>
+      'Which client the TLS hello looks like, through its cipher suites and GREASE';
+
+  @override
+  String get fingerprintChrome => 'Chrome';
+
+  @override
+  String get fingerprintFirefox => 'Firefox';
+
+  @override
+  String get fingerprintSemiPython => 'Python (close)';
+
+  @override
+  String get fingerprintGo => 'Go';
+
+  @override
+  String get fingerprintCustom => 'Custom';
+
+  @override
+  String get fingerprintCustomDesc =>
+      'Your own TLS 1.2 ciphers and GREASE setting below';
 
   @override
   String get masqueSni => 'MASQUE server name (SNI)';
@@ -1490,6 +1530,35 @@ class L10nEn extends L10n {
   String get torRelaysOff => 'BridgeDB only';
 
   @override
+  String get torBridges => 'Bridges';
+
+  @override
+  String get torBridgesDesc =>
+      'When Tor turns to bridges, which hide it from a network that blocks it';
+
+  @override
+  String get torBridgesAuto => 'When Tor is blocked';
+
+  @override
+  String get torBridgesFirst => 'From the start';
+
+  @override
+  String get torBridgesNever => 'Never';
+
+  @override
+  String get torBridgesOwn => 'My own bridge lines';
+
+  @override
+  String get torBridgeLines => 'Bridge lines';
+
+  @override
+  String get torBridgeLinesDesc =>
+      'One per line, as in torrc: obfs4 1.2.3.4:443 FINGERPRINT cert=… iat-mode=0';
+
+  @override
+  String get torBridgeLinesRefusal => 'Write at least one bridge line';
+
+  @override
   String get exitLocTitle => 'Exit country';
 
   @override
@@ -1498,6 +1567,10 @@ class L10nEn extends L10n {
 
   @override
   String get exitLocHint => '!IR,AZ,RU';
+
+  @override
+  String get exitLocRefusal =>
+      'Write two-letter country codes separated by commas, with a ! in front to refuse them, such as !IR,RU or DE,NL';
 
   @override
   String get activeModeLabel => 'Mode';
