@@ -121,6 +121,9 @@ class OblivionPlugin(
                 AetherCore(context, onLog = {}, onExit = {}).version()
             }
             "psiphonVersion" -> reply(result) { PsiphonBinary.version(context) }
+            "coreBinary" -> reply(result) {
+                AetherCore(context, onLog = {}, onExit = {}).binary().absolutePath
+            }
             "capabilities" -> result.success(
                 mapOf(
                     "embedded" to true,

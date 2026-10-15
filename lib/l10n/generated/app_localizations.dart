@@ -355,6 +355,48 @@ abstract class L10n {
   /// **'Connect with a Cloudflare Zero Trust account instead of a personal one'**
   String get zeroTrustDesc;
 
+  /// No description provided for @renewKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'Get new WARP keys'**
+  String get renewKeys;
+
+  /// No description provided for @renewKeysDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Register fresh WARP identities and put them in place of the ones in use'**
+  String get renewKeysDesc;
+
+  /// No description provided for @renewKeysWhich.
+  ///
+  /// In en, this message translates to:
+  /// **'Which keys to replace. The others stay as they are'**
+  String get renewKeysWhich;
+
+  /// No description provided for @renewKeysRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Registering new keys with WARP. The keys in use stay until every new one is ready'**
+  String get renewKeysRunning;
+
+  /// No description provided for @keyKindAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All keys'**
+  String get keyKindAll;
+
+  /// No description provided for @keysRenewed.
+  ///
+  /// In en, this message translates to:
+  /// **'The new keys are in place and are used from the next connection'**
+  String get keysRenewed;
+
+  /// No description provided for @keysNotRenewed.
+  ///
+  /// In en, this message translates to:
+  /// **'The keys in use were kept. {reason}'**
+  String keysNotRenewed(String reason);
+
   /// No description provided for @zeroTrustOff.
   ///
   /// In en, this message translates to:
@@ -2988,6 +3030,42 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Write two-letter country codes separated by commas, with a ! in front to refuse them, such as !IR,RU or DE,NL'**
   String get exitLocRefusal;
+
+  /// No description provided for @findGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a gateway'**
+  String get findGateway;
+
+  /// No description provided for @findGatewayDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan once now and keep the best gateway, so later connections skip the scan'**
+  String get findGatewayDesc;
+
+  /// No description provided for @findGatewayRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Looking for a gateway that answers on this network. This can take a few minutes'**
+  String get findGatewayRunning;
+
+  /// No description provided for @gatewayFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Found {gateway}. It is now the gateway in your settings'**
+  String gatewayFound(String gateway);
+
+  /// No description provided for @gatewayNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No gateway was found. {reason}'**
+  String gatewayNotFound(String reason);
+
+  /// No description provided for @jobsNeedDisconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect first; the running connection uses the same keys'**
+  String get jobsNeedDisconnect;
 
   /// No description provided for @activeModeLabel.
   ///

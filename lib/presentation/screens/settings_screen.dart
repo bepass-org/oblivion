@@ -6,9 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../data/models/tunnel_settings.dart';
+import '../../data/services/core_jobs.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../providers/tunnel_providers.dart';
+import '../widgets/core_job_sheet.dart';
 import '../widgets/developer_note.dart';
 import '../widgets/pickers.dart';
 import '../widgets/screen_header.dart';
@@ -185,6 +187,87 @@ bool isIpAddress(String value) {
   return InternetAddress.tryParse(trimmed) != null;
 }
 
+String keyKindTitle(L10n l10n, WarpKeyKind value) => switch (value) {
+  WarpKeyKind.all => l10n.keyKindAll,
+  WarpKeyKind.masque => l10n.protocolMasque,
+  WarpKeyKind.wireguard => l10n.protocolWireGuard,
+  WarpKeyKind.gool => l10n.protocolGool,
+  WarpKeyKind.goolClassic => l10n.protocolGoolClassic,
+  WarpKeyKind.mim => l10n.protocolMim,
+};
+
+Future<void> findGateway(BuildContext context, WidgetRef ref, L10n l10n) async {
+  final settings = ref.read(tunnelSettingsProvider);
+  final jobs = ref.read(coreJobsProvider);
+  final result = await showCoreJobSheet<GatewayScan>(
+    context: context,
+    title: l10n.findGateway,
+    message: l10n.findGatewayRunning,
+    cancelLabel: l10n.cancel,
+    start: (onLine, cancel) =>
+        jobs.findGateway(settings, onLine: onLine, cancel: cancel),
+  );
+  if (result == null || result.cancelled) return;
+
+  final found = result.value;
+  if (found != null) {
+    await ref
+        .read(tunnelSettingsProvider.notifier)
+        .update((s) => s.withFoundGateway(found));
+  }
+  if (!context.mounted) return;
+  await showNoticeDialog(
+    context: context,
+    title: l10n.findGateway,
+    message: found != null
+        ? l10n.gatewayFound(found.toString())
+        : l10n.gatewayNotFound(readableCoreLine(result.problem ?? '')),
+    dismissLabel: l10n.confirm,
+  );
+}
+
+Future<void> renewKeys(BuildContext context, WidgetRef ref, L10n l10n) async {
+  final settings = ref.read(tunnelSettingsProvider);
+  WarpKeyKind? chosen;
+  await showChoiceSheet<WarpKeyKind>(
+    context: context,
+    title: l10n.renewKeys,
+    message: l10n.renewKeysWhich,
+    selected: WarpKeyKind.of(settings.effectiveProtocol),
+    reportReselect: true,
+    options: WarpKeyKind.values
+        .map(
+          (value) => PickerOption<WarpKeyKind>(
+            value: value,
+            title: keyKindTitle(l10n, value),
+          ),
+        )
+        .toList(),
+    onSelected: (value) => chosen = value,
+  );
+  final kind = chosen;
+  if (kind == null || !context.mounted) return;
+
+  final jobs = ref.read(coreJobsProvider);
+  final result = await showCoreJobSheet<List<String>>(
+    context: context,
+    title: l10n.renewKeys,
+    message: l10n.renewKeysRunning,
+    cancelLabel: l10n.cancel,
+    start: (onLine, cancel) =>
+        jobs.renewKeys(settings, kind, onLine: onLine, cancel: cancel),
+  );
+  if (result == null || result.cancelled || !context.mounted) return;
+  await showNoticeDialog(
+    context: context,
+    title: l10n.renewKeys,
+    message: result.succeeded
+        ? l10n.keysRenewed
+        : l10n.keysNotRenewed(readableCoreLine(result.problem ?? '')),
+    dismissLabel: l10n.confirm,
+  );
+}
+
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -197,6 +280,7 @@ class SettingsScreen extends ConsumerWidget {
     final controller = ref.read(tunnelSettingsProvider.notifier);
     final prefs = ref.watch(appPreferencesProvider);
     final prefsController = ref.read(appPreferencesProvider.notifier);
+    final tunnelIdle = ref.watch(tunnelProvider).stage.isIdle;
 
     return CupertinoPageScaffold(
       backgroundColor: palette.canvas,
@@ -572,6 +656,17 @@ class SettingsScreen extends ConsumerWidget {
                           ),
                         ),
                       ),
+                      if (CoreJobs.supported && settings.canFindGateway)
+                        SettingsRow(
+                          title: l10n.findGateway,
+                          subtitle: tunnelIdle
+                              ? l10n.findGatewayDesc
+                              : l10n.jobsNeedDisconnect,
+                          enabled: tunnelIdle,
+                          onTap: tunnelIdle
+                              ? () => findGateway(context, ref, l10n)
+                              : null,
+                        ),
                     ],
                   ),
                 SettingsGroup(
@@ -676,6 +771,19 @@ class SettingsScreen extends ConsumerWidget {
                             builder: (_) => const ZeroTrustScreen(),
                           ),
                         ),
+                      ),
+                    if (CoreJobs.supported &&
+                        settings.usesAether &&
+                        settings.canRenewKeys)
+                      SettingsRow(
+                        title: l10n.renewKeys,
+                        subtitle: tunnelIdle
+                            ? l10n.renewKeysDesc
+                            : l10n.jobsNeedDisconnect,
+                        enabled: tunnelIdle,
+                        onTap: tunnelIdle
+                            ? () => renewKeys(context, ref, l10n)
+                            : null,
                       ),
                     SettingsRow(
                       title: l10n.sectionAdvanced,

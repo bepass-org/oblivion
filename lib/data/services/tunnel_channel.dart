@@ -186,6 +186,15 @@ class TunnelChannel {
     return version ?? 'unknown';
   }
 
+  Future<String?> coreBinary() async {
+    if (!_usesNativeChannels) {
+      final backend = await _desktopBackend();
+      return backend?.corePath;
+    }
+    if (!Platform.isAndroid) return null;
+    return _methods.invokeMethod<String>('coreBinary');
+  }
+
   Future<String> psiphonVersion() async {
     if (!_usesNativeChannels) {
       final backend = await _desktopBackend();

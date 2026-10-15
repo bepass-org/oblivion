@@ -21,6 +21,9 @@ class DesktopTunnelBackend {
   Timer? _poller;
   String _lastStatusJson = '';
   String? _dataDir;
+  String? _corePath;
+
+  String? get corePath => _corePath;
 
   static DesktopTunnelBackend? _instance;
   static Future<DesktopTunnelBackend?>? _opening;
@@ -63,11 +66,13 @@ class DesktopTunnelBackend {
     for (final candidate in candidates) {
       if (File(candidate).existsSync()) {
         _bindings.setCorePath(candidate);
+        _corePath = candidate;
         return;
       }
     }
 
     _bindings.setCorePath(candidates.first);
+    _corePath = candidates.first;
   }
 
   Future<void> _registerPsiphonBinary() async {

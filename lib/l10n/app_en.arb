@@ -43,6 +43,20 @@
   "tunnelDegradedHint": "Full tunnel mode needs the app to run with administrator rights",
   "zeroTrust": "Organization account",
   "zeroTrustDesc": "Connect with a Cloudflare Zero Trust account instead of a personal one",
+  "renewKeys": "Get new WARP keys",
+  "renewKeysDesc": "Register fresh WARP identities and put them in place of the ones in use",
+  "renewKeysWhich": "Which keys to replace. The others stay as they are",
+  "renewKeysRunning": "Registering new keys with WARP. The keys in use stay until every new one is ready",
+  "keyKindAll": "All keys",
+  "keysRenewed": "The new keys are in place and are used from the next connection",
+  "keysNotRenewed": "The keys in use were kept. {reason}",
+  "@keysNotRenewed": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "zeroTrustOff": "Off",
   "zeroTrustTeam": "Team name",
   "zeroTrustTeamDesc": "The name in your <team>.cloudflareaccess.com address",
@@ -588,5 +602,25 @@
   "exitLocDesc": "Refuse a tunnel that comes out in a country you do not want, and reconnect. Leave empty to accept any",
   "exitLocHint": "!IR,AZ,RU",
   "exitLocRefusal": "Write two-letter country codes separated by commas, with a ! in front to refuse them, such as !IR,RU or DE,NL",
+  "findGateway": "Find a gateway",
+  "findGatewayDesc": "Scan once now and keep the best gateway, so later connections skip the scan",
+  "findGatewayRunning": "Looking for a gateway that answers on this network. This can take a few minutes",
+  "gatewayFound": "Found {gateway}. It is now the gateway in your settings",
+  "@gatewayFound": {
+    "placeholders": {
+      "gateway": {
+        "type": "String"
+      }
+    }
+  },
+  "gatewayNotFound": "No gateway was found. {reason}",
+  "@gatewayNotFound": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "jobsNeedDisconnect": "Disconnect first; the running connection uses the same keys",
   "activeModeLabel": "Mode"
 }

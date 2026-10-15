@@ -43,6 +43,20 @@
   "tunnelDegradedHint": "برای تونل کامل، برنامه باید با دسترسی مدیر اجرا شود",
   "zeroTrust": "حساب سازمانی",
   "zeroTrustDesc": "اتصال با اکانت Zero Trust کلادفلر به جای حساب عمومی",
+  "renewKeys": "گرفتن کلیدهای تازه WARP",
+  "renewKeysDesc": "هویت‌های تازه WARP ثبت می‌شوند و جای هویت‌های فعلی را می‌گیرند",
+  "renewKeysWhich": "کدام کلیدها عوض شوند؛ بقیه همان‌طور می‌مانند",
+  "renewKeysRunning": "کلیدهای تازه در WARP ثبت می‌شوند. تا همه کلیدهای تازه آماده نشوند، کلیدهای فعلی سر جایشان می‌مانند",
+  "keyKindAll": "همه کلیدها",
+  "keysRenewed": "کلیدهای تازه جایگزین شدند و از اتصال بعدی استفاده می‌شوند",
+  "keysNotRenewed": "کلیدهای فعلی دست نخوردند. {reason}",
+  "@keysNotRenewed": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "zeroTrustOff": "خاموش",
   "zeroTrustTeam": "نام تیم",
   "zeroTrustTeamDesc": "همان نامی که در نشانی <team>.cloudflareaccess.com دارید",
@@ -564,5 +578,25 @@
   "exitLocDesc": "تانلی که در کشور ناخواسته بیرون می‌آید را قبول نکن و دوباره وصل شو. خالی یعنی هر کشوری قبول است",
   "exitLocHint": "!IR,AZ,RU",
   "exitLocRefusal": "کد دوحرفی کشورها را با ویرگول جدا کنید و برای رد کردن، ! را اول بگذارید؛ مثل !IR,RU یا DE,NL",
+  "findGateway": "پیدا کردن گیت‌وی",
+  "findGatewayDesc": "یک بار همین حالا اسکن می‌کند و بهترین گیت‌وی را نگه می‌دارد تا اتصال‌های بعدی بدون اسکن انجام شوند",
+  "findGatewayRunning": "دنبال گیت‌وی‌ای می‌گردد که روی این شبکه جواب بدهد. ممکن است چند دقیقه طول بکشد",
+  "gatewayFound": "{gateway} پیدا شد و حالا گیت‌وی تنظیمات شماست",
+  "@gatewayFound": {
+    "placeholders": {
+      "gateway": {
+        "type": "String"
+      }
+    }
+  },
+  "gatewayNotFound": "گیت‌وی‌ای پیدا نشد. {reason}",
+  "@gatewayNotFound": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "jobsNeedDisconnect": "اول اتصال را قطع کنید؛ اتصال فعلی از همین کلیدها استفاده می‌کند",
   "activeModeLabel": "حالت"
 }

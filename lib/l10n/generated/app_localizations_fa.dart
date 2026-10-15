@@ -143,6 +143,32 @@ class L10nFa extends L10n {
       'اتصال با اکانت Zero Trust کلادفلر به جای حساب عمومی';
 
   @override
+  String get renewKeys => 'گرفتن کلیدهای تازه WARP';
+
+  @override
+  String get renewKeysDesc =>
+      'هویت‌های تازه WARP ثبت می‌شوند و جای هویت‌های فعلی را می‌گیرند';
+
+  @override
+  String get renewKeysWhich => 'کدام کلیدها عوض شوند؛ بقیه همان‌طور می‌مانند';
+
+  @override
+  String get renewKeysRunning =>
+      'کلیدهای تازه در WARP ثبت می‌شوند. تا همه کلیدهای تازه آماده نشوند، کلیدهای فعلی سر جایشان می‌مانند';
+
+  @override
+  String get keyKindAll => 'همه کلیدها';
+
+  @override
+  String get keysRenewed =>
+      'کلیدهای تازه جایگزین شدند و از اتصال بعدی استفاده می‌شوند';
+
+  @override
+  String keysNotRenewed(String reason) {
+    return 'کلیدهای فعلی دست نخوردند. $reason';
+  }
+
+  @override
   String get zeroTrustOff => 'خاموش';
 
   @override
@@ -1603,6 +1629,31 @@ class L10nFa extends L10n {
   @override
   String get exitLocRefusal =>
       'کد دوحرفی کشورها را با ویرگول جدا کنید و برای رد کردن، ! را اول بگذارید؛ مثل !IR,RU یا DE,NL';
+
+  @override
+  String get findGateway => 'پیدا کردن گیت‌وی';
+
+  @override
+  String get findGatewayDesc =>
+      'یک بار همین حالا اسکن می‌کند و بهترین گیت‌وی را نگه می‌دارد تا اتصال‌های بعدی بدون اسکن انجام شوند';
+
+  @override
+  String get findGatewayRunning =>
+      'دنبال گیت‌وی‌ای می‌گردد که روی این شبکه جواب بدهد. ممکن است چند دقیقه طول بکشد';
+
+  @override
+  String gatewayFound(String gateway) {
+    return '$gateway پیدا شد و حالا گیت‌وی تنظیمات شماست';
+  }
+
+  @override
+  String gatewayNotFound(String reason) {
+    return 'گیت‌وی‌ای پیدا نشد. $reason';
+  }
+
+  @override
+  String get jobsNeedDisconnect =>
+      'اول اتصال را قطع کنید؛ اتصال فعلی از همین کلیدها استفاده می‌کند';
 
   @override
   String get activeModeLabel => 'حالت';

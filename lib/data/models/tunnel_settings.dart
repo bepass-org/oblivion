@@ -183,6 +183,46 @@ enum CoreProtocol {
       values.firstWhere((e) => e.wire == value, orElse: () => masque);
 }
 
+enum WarpKeyKind {
+  all('all'),
+  masque('masque'),
+  wireguard('wg'),
+  gool('gool'),
+  goolClassic('gool-classic'),
+  mim('mim');
+
+  const WarpKeyKind(this.wire);
+
+  final String wire;
+
+  static WarpKeyKind of(CoreProtocol protocol) => switch (protocol) {
+    CoreProtocol.masque => masque,
+    CoreProtocol.wireguard => wireguard,
+    CoreProtocol.gool => gool,
+    CoreProtocol.goolClassic => goolClassic,
+    CoreProtocol.mim => mim,
+  };
+}
+
+class GatewayScan {
+  const GatewayScan(this.endpoint, [this.inner]);
+
+  final String endpoint;
+  final String? inner;
+
+  @override
+  bool operator ==(Object other) =>
+      other is GatewayScan &&
+      other.endpoint == endpoint &&
+      other.inner == inner;
+
+  @override
+  int get hashCode => Object.hash(endpoint, inner);
+
+  @override
+  String toString() => inner == null ? endpoint : '$endpoint → $inner';
+}
+
 enum MasqueTransport {
   http3('h3'),
   http2('h2');
@@ -1223,4 +1263,87 @@ class TunnelSettings {
 
     return args;
   }
+
+  bool get canFindGateway => usesAether && !dialsThrough;
+
+  bool get canRenewKeys => !usesZeroTrust;
+
+  List<String> toRegistrationArguments(WarpKeyKind kind) {
+    final args = <String>[
+      '--register',
+      kind.wire,
+      '--log-level',
+      'info',
+      '--ip',
+      ipVersion.wire,
+    ];
+
+    if (fragment) {
+      args.add('--fragment');
+      if (fragmentSize.trim().isNotEmpty) {
+        args.addAll(<String>['--fragment-size', fragmentSize.trim()]);
+      }
+      if (fragmentDelay.trim().isNotEmpty) {
+        args.addAll(<String>['--fragment-delay', fragmentDelay.trim()]);
+      }
+    }
+
+    if (usesEch) {
+      args.addAll(<String>['--ech', echMode.wire]);
+      if (echDns.trim().isNotEmpty) {
+        args.addAll(<String>['--ech-dns', echDns.trim()]);
+      }
+      if (echDomain.trim().isNotEmpty) {
+        args.addAll(<String>['--ech-domain', echDomain.trim()]);
+      }
+    }
+
+    if (tlsGroups.trim().isNotEmpty) {
+      args.addAll(<String>['--tls-groups', tlsGroups.trim()]);
+    }
+    final ciphers = effectiveTlsCiphers;
+    if (ciphers.isNotEmpty) args.addAll(<String>['--tls-ciphers', ciphers]);
+    if (!effectiveGrease) args.add('--disable-grease');
+    if (apiAddress.trim().isNotEmpty) {
+      args.addAll(<String>['--api-address', apiAddress.trim()]);
+    }
+
+    return args;
+  }
+
+  List<String> toScanArguments({
+    required String bindAddress,
+    required String httpProxyAddress,
+  }) {
+    final args = <String>[
+      ...copyWith(
+        endpoint: '',
+        mimInner: '',
+        wiwOuter: '',
+        wiwInner: '',
+      ).toCoreArguments(),
+    ];
+    for (final (flag, value) in <(String, String)>[
+      ('--bind', bindAddress),
+      ('--http-proxy', httpProxyAddress),
+      ('--log-level', 'info'),
+    ]) {
+      final index = args.indexOf(flag);
+      if (index >= 0 && index + 1 < args.length) args[index + 1] = value;
+    }
+    return args;
+  }
+
+  TunnelSettings withFoundGateway(GatewayScan found) =>
+      switch (effectiveProtocol) {
+        CoreProtocol.goolClassic => copyWith(
+          wiwOuter: found.endpoint,
+          wiwInner: found.inner ?? '',
+        ),
+        CoreProtocol.mim => copyWith(
+          endpoint: found.endpoint,
+          mimInner: found.inner ?? '',
+        ),
+        _ => copyWith(endpoint: found.endpoint),
+      };
 }

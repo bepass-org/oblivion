@@ -144,6 +144,33 @@ class L10nEn extends L10n {
       'Connect with a Cloudflare Zero Trust account instead of a personal one';
 
   @override
+  String get renewKeys => 'Get new WARP keys';
+
+  @override
+  String get renewKeysDesc =>
+      'Register fresh WARP identities and put them in place of the ones in use';
+
+  @override
+  String get renewKeysWhich =>
+      'Which keys to replace. The others stay as they are';
+
+  @override
+  String get renewKeysRunning =>
+      'Registering new keys with WARP. The keys in use stay until every new one is ready';
+
+  @override
+  String get keyKindAll => 'All keys';
+
+  @override
+  String get keysRenewed =>
+      'The new keys are in place and are used from the next connection';
+
+  @override
+  String keysNotRenewed(String reason) {
+    return 'The keys in use were kept. $reason';
+  }
+
+  @override
   String get zeroTrustOff => 'Off';
 
   @override
@@ -1603,6 +1630,31 @@ class L10nEn extends L10n {
   @override
   String get exitLocRefusal =>
       'Write two-letter country codes separated by commas, with a ! in front to refuse them, such as !IR,RU or DE,NL';
+
+  @override
+  String get findGateway => 'Find a gateway';
+
+  @override
+  String get findGatewayDesc =>
+      'Scan once now and keep the best gateway, so later connections skip the scan';
+
+  @override
+  String get findGatewayRunning =>
+      'Looking for a gateway that answers on this network. This can take a few minutes';
+
+  @override
+  String gatewayFound(String gateway) {
+    return 'Found $gateway. It is now the gateway in your settings';
+  }
+
+  @override
+  String gatewayNotFound(String reason) {
+    return 'No gateway was found. $reason';
+  }
+
+  @override
+  String get jobsNeedDisconnect =>
+      'Disconnect first; the running connection uses the same keys';
 
   @override
   String get activeModeLabel => 'Mode';
