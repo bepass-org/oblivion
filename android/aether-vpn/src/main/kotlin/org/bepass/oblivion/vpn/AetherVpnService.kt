@@ -35,6 +35,8 @@ class AetherVpnService : VpnService() {
     private val control = Executors.newSingleThreadExecutor()
     private val stopping = AtomicBoolean(false)
     private val latestStartId = AtomicInteger(0)
+    private val session = AtomicInteger(0)
+    private val pendingStarts = AtomicInteger(0)
 
     private var connectedAtMillis = 0L
 
@@ -59,7 +61,9 @@ class AetherVpnService : VpnService() {
                 val target = TunnelBundle.decode(payload)
                 publish(TunnelStage.CONNECTING, null)
                 startForegroundNotification(TunnelStage.CONNECTING)
-                control.execute { startTunnel(target) }
+                pendingStarts.incrementAndGet()
+                runCatching { control.execute { startTunnel(target) } }
+                    .onFailure { pendingStarts.decrementAndGet() }
             }
             ACTION_STOP -> requestStop(TunnelStage.DISCONNECTED, null)
             else -> {
@@ -84,6 +88,7 @@ class AetherVpnService : VpnService() {
     }
 
     private fun startTunnel(target: TunnelConfig) {
+        pendingStarts.decrementAndGet()
         teardown()
         stopping.set(false)
         config = target
@@ -93,12 +98,13 @@ class AetherVpnService : VpnService() {
     }
 
     private fun startAetherTunnel(target: TunnelConfig) {
+        val generation = session.incrementAndGet()
         val runner = AetherCore(
             context = applicationContext,
             onLog = { line -> TunnelBus.log(line) },
-            onExit = { code ->
-                if (code != 0) {
-                    requestStop(TunnelStage.FAILED, "core exited with code $code")
+            onExit = { code, problem ->
+                if (code != 0 && session.get() == generation) {
+                    requestStop(TunnelStage.FAILED, problem ?: "core exited with code $code")
                 }
             },
         )
@@ -107,7 +113,7 @@ class AetherVpnService : VpnService() {
         runner.start(target.coreArguments, coreEnvironment(target))
         if (!runner.isRunning) return
 
-        scheduleValidation(target)
+        scheduleValidation(target, generation)
     }
 
     private fun coreEnvironment(target: TunnelConfig): Map<String, String> {
@@ -225,7 +231,7 @@ class AetherVpnService : VpnService() {
 
     private fun activeCoreIsRunning(): Boolean = core?.isRunning == true
 
-    private fun scheduleValidation(target: TunnelConfig) {
+    private fun scheduleValidation(target: TunnelConfig, generation: Int) {
         val scheduler = Executors.newSingleThreadScheduledExecutor()
         validator = scheduler
 
@@ -251,6 +257,7 @@ class AetherVpnService : VpnService() {
         )
 
         scheduler.scheduleWithFixedDelay({
+            if (session.get() != generation) return@scheduleWithFixedDelay
             if (!activeCoreIsRunning()) {
                 requestStop(TunnelStage.FAILED, "the core stopped before the tunnel came up")
                 return@scheduleWithFixedDelay
@@ -468,12 +475,14 @@ class AetherVpnService : VpnService() {
             TunnelBus.log(logSource(), "[-] $message")
         }
         teardown()
+        if (pendingStarts.get() > 0) return
         publish(stage, message)
         stopForegroundCompat()
         stopSelf(latestStartId.get())
     }
 
     private fun teardown() {
+        session.incrementAndGet()
         validator?.shutdownNow()
         validator = null
         statsPoller?.shutdownNow()

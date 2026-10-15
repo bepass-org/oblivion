@@ -14,7 +14,7 @@ import kotlin.concurrent.thread
 class AetherCore(
     private val context: Context,
     private val onLog: (String) -> Unit,
-    private val onExit: (Int) -> Unit,
+    private val onExit: (Int, String?) -> Unit,
 ) {
     private val running = AtomicBoolean(false)
     private var process: Process? = null
@@ -49,7 +49,7 @@ class AetherCore(
         val binary = binary()
         if (!binary.exists()) {
             onLog("[aether] [-] aether core binary is missing at ${binary.absolutePath}")
-            onExit(-1)
+            onExit(-1, null)
             return
         }
 
@@ -76,7 +76,7 @@ class AetherCore(
 
         val started = runCatching { builder.start() }.getOrElse { error ->
             onLog("[aether] [-] failed to launch aether core: ${error.message}")
-            onExit(-1)
+            onExit(-1, error.message)
             return
         }
 
@@ -91,11 +91,14 @@ class AetherCore(
     }
 
     private fun drainOutput(target: Process) {
+        var problem: String? = null
         try {
             BufferedReader(InputStreamReader(target.inputStream)).use { reader ->
                 while (true) {
                     val line = reader.readLine() ?: break
-                    if (line.isNotBlank()) onLog("[aether] ${line.trimEnd()}")
+                    if (line.isBlank()) continue
+                    onLog("[aether] ${line.trimEnd()}")
+                    problemOf(line)?.let { problem = it }
                 }
             }
         } catch (error: IOException) {
@@ -106,7 +109,7 @@ class AetherCore(
         val wasRunning = running.getAndSet(false)
         if (wasRunning) {
             onLog("[aether] [-] aether core exited with code $exitCode")
-            onExit(exitCode)
+            onExit(exitCode, problem)
         }
     }
 
@@ -156,6 +159,16 @@ class AetherCore(
     }
 
     companion object {
+        private val WRAPPED_ERROR = Regex("""^[A-Za-z]+\("(.*)"\)$""")
+
+        fun problemOf(line: String): String? {
+            val text = line.trim()
+            if (!text.startsWith("Error:")) return null
+            val detail = text.removePrefix("Error:").trim()
+            val inner = WRAPPED_ERROR.matchEntire(detail)?.groupValues?.get(1) ?: detail
+            return inner.replace("\\\"", "\"").trim().ifEmpty { null }
+        }
+
         private const val TAG = "AetherCore"
         private const val BINARY_NAME = "libaether.so"
         private const val LISTENER_VARIABLE = "AETHER_SOCKS"

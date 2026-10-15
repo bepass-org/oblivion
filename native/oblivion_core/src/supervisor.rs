@@ -242,6 +242,19 @@ fn gateway_from_log(line: &str) -> Option<String> {
     None
 }
 
+fn problem_of(line: &str) -> Option<String> {
+    let detail = line.trim().strip_prefix("Error:")?.trim();
+    let inner = detail
+        .split_once('(')
+        .filter(|(kind, _)| !kind.is_empty() && kind.chars().all(|c| c.is_ascii_alphabetic()))
+        .and_then(|(_, rest)| rest.strip_prefix('"'))
+        .and_then(|rest| rest.strip_suffix("\")"))
+        .map(|inner| inner.replace("\\\"", "\""))
+        .unwrap_or_else(|| detail.to_string());
+    let inner = inner.trim();
+    (!inner.is_empty()).then(|| inner.to_string())
+}
+
 fn escape(value: &str) -> String {
     let mut out = String::with_capacity(value.len() + 8);
     for character in value.chars() {
@@ -265,6 +278,7 @@ fn escape(value: &str) -> String {
 pub struct Supervisor {
     core: Mutex<Option<Child>>,
     core_tree: Mutex<Option<crate::tree::Tree>>,
+    core_problem: Mutex<Option<String>>,
     core_input: Mutex<Option<std::process::ChildStdin>>,
     snapshot: Mutex<Snapshot>,
     logs: Mutex<Vec<String>>,
@@ -290,6 +304,7 @@ impl Supervisor {
         Self {
             core: Mutex::new(None),
             core_tree: Mutex::new(None),
+            core_problem: Mutex::new(None),
             core_input: Mutex::new(None),
             snapshot: Mutex::new(Snapshot::disconnected()),
             logs: Mutex::new(Vec::new()),
@@ -633,6 +648,7 @@ impl Supervisor {
             );
         }
 
+        *self.core_problem.lock().unwrap() = None;
         let mut command = Command::new(&binary);
         command
             .args(&arguments)
@@ -770,6 +786,9 @@ impl Supervisor {
         thread::spawn(move || {
             let reader = BufReader::new(stream);
             for line in reader.lines().map_while(Result::ok) {
+                if let Some(problem) = problem_of(&line) {
+                    *supervisor.core_problem.lock().unwrap() = Some(problem);
+                }
                 supervisor.log_from(source, line);
             }
         });
@@ -872,7 +891,7 @@ impl Supervisor {
                     return;
                 }
                 self.disconnect();
-                self.publish(Stage::Failed, Some("core stopped".into()), None);
+                self.publish(Stage::Failed, Some(self.stop_reason()), None);
                 return;
             }
 
@@ -1017,8 +1036,21 @@ impl Supervisor {
                 "[-] a core stopped after the tunnel was up",
             );
             self.disconnect();
-            self.publish(Stage::Failed, Some("core stopped".into()), gateway);
+            self.publish(Stage::Failed, Some(self.stop_reason()), gateway);
             return;
+        }
+    }
+
+    fn stop_reason(&self) -> String {
+        let deadline = Instant::now() + Duration::from_millis(300);
+        loop {
+            if let Some(problem) = self.core_problem.lock().unwrap().clone() {
+                return problem;
+            }
+            if Instant::now() >= deadline {
+                return "core stopped".to_string();
+            }
+            thread::sleep(Duration::from_millis(25));
         }
     }
 
@@ -1487,7 +1519,35 @@ mod gateway_log_tests {
 
 #[cfg(test)]
 mod snapshot_tests {
-    use super::escape;
+    use super::{escape, problem_of};
+
+    #[test]
+    fn the_reason_a_core_gives_is_pulled_out_of_its_error() {
+        assert_eq!(
+            problem_of(
+                "Error: Other(\"the socks5 listener cannot use 127.0.0.1:1819: Address already in use (os error 98)\")"
+            )
+            .as_deref(),
+            Some("the socks5 listener cannot use 127.0.0.1:1819: Address already in use (os error 98)")
+        );
+        assert_eq!(
+            problem_of("Error: Api(\"too many registrations\")").as_deref(),
+            Some("too many registrations")
+        );
+        assert_eq!(
+            problem_of("Error: Other(\"he said \\\"hi\\\"\")").as_deref(),
+            Some("he said \"hi\"")
+        );
+        assert_eq!(
+            problem_of("Error: something broke").as_deref(),
+            Some("something broke")
+        );
+        assert_eq!(
+            problem_of("[2026-10-15T10:00:00Z INFO  aether] [+] ready"),
+            None
+        );
+        assert_eq!(problem_of("Error:   "), None);
+    }
 
     #[test]
     fn quotes_and_backslashes_are_escaped() {

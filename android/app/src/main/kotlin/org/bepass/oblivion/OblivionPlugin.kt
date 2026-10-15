@@ -118,11 +118,11 @@ class OblivionPlugin(
             "readLogs" -> reply(result) { TunnelBus.readLogs(context) }
             "clearLogs" -> reply(result) { TunnelBus.clearLogs(context); null }
             "coreVersion" -> reply(result) {
-                AetherCore(context, onLog = {}, onExit = {}).version()
+                AetherCore(context, onLog = {}, onExit = { _, _ -> }).version()
             }
             "psiphonVersion" -> reply(result) { PsiphonBinary.version(context) }
             "coreBinary" -> reply(result) {
-                AetherCore(context, onLog = {}, onExit = {}).binary().absolutePath
+                AetherCore(context, onLog = {}, onExit = { _, _ -> }).binary().absolutePath
             }
             "capabilities" -> result.success(
                 mapOf(
