@@ -17,7 +17,14 @@ Windows and Linux from one codebase.
 - **Gool**: WireGuard carried inside MASQUE and dialled from inside WARP, so the
   tunnel comes out in another country. The older WARP-in-WARP stays as Classic Gool.
 - **TLS camouflage**: pick the server name the MASQUE handshake shows, hide it with
-  ECH, send the ClientHello in pieces, and shape the TLS fingerprint.
+  ECH, send the ClientHello in pieces, and make the TLS fingerprint look like
+  Chrome, Firefox, Python or Go.
+- **Psiphon and Tor**: run either on its own or chained with WARP. Psiphon starts
+  from the server list shipped with the app and offers every country it can
+  leave from; Tor reaches its network through obfs4, snowflake and other bridges
+  when it is blocked.
+- **Gateway finder and new keys**: scan once for a gateway that works on your
+  network and keep it, or register fresh WARP keys, straight from the settings.
 - **Zero Trust**: connect as a managed device on your organization's Cloudflare
   account, signing in with an emailed code, a service token, or a token you hold.
 - **Traffic rules**: block a destination outright, or send it straight out and
@@ -44,6 +51,8 @@ rights.
 
 - Flutter 3.44 or newer
 - Rust (stable) for the Aether core and the FFI bridge
+- Go for the Psiphon engine and lyrebird, the bridge transport Tor uses
+- Python 3 and OpenSSL to fetch and check the Psiphon server list
 - Android NDK r27 or newer, and JDK 17, for Android builds
 - CMake, Ninja, Clang and `libgtk-3-dev` for Linux builds
 
@@ -65,6 +74,7 @@ git submodule update --init --recursive
 ### Build
 
 ```sh
+tools/fetch-psiphon-servers.sh
 flutter pub get
 
 flutter build apk --release --split-per-abi
@@ -72,6 +82,10 @@ flutter build apk --release
 flutter build linux --release
 flutter build windows --release
 ```
+
+`tools/fetch-psiphon-servers.sh` downloads the newest Psiphon server list and
+checks its signature before the app bundles it; a build without it ships no
+list, and Psiphon then waits for a download on its first start.
 
 The Android build cross compiles the Aether core for each ABI on the fly, so the
 first build takes a while. Add `--target-platform android-arm64` to build for one
