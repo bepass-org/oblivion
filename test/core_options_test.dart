@@ -333,6 +333,27 @@ void main() {
     });
   });
 
+  group('masque in masque', () {
+    test('the gateway named by hand is the outer hop', () {
+      final args = const TunnelSettings(
+        protocol: CoreProtocol.mim,
+        endpoint: ' 162.159.198.1:443 ',
+      ).toCoreArguments();
+
+      expect(_valueAfter(args, '--mim-outer'), '162.159.198.1:443');
+      expect(args, isNot(contains('--peer')));
+    });
+
+    test('with no gateway named both hops are left to the core', () {
+      final args = const TunnelSettings(
+        protocol: CoreProtocol.mim,
+      ).toCoreArguments();
+
+      expect(args, isNot(contains('--mim-outer')));
+      expect(args, isNot(contains('--peer')));
+    });
+  });
+
   group('cores that run no aether', () {
     test('psiphon and tor alone get no aether flags at all', () {
       for (final core in <CoreEngine>[CoreEngine.psiphon, CoreEngine.tor]) {

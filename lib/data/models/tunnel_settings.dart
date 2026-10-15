@@ -1025,6 +1025,10 @@ class TunnelSettings {
         args.addAll(<String>['--wiw-inner', wiwInnerPeer]);
       }
       if (!wiwPinned) args.add('--wiw-scan');
+    } else if (usesMim) {
+      if (manualGateway.isNotEmpty) {
+        args.addAll(<String>['--mim-outer', manualGateway]);
+      }
     } else {
       if (manualGateway.isNotEmpty) {
         args.addAll(<String>['--peer', manualGateway]);
