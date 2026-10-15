@@ -297,17 +297,23 @@ class L10nFa extends L10n {
   String get protocolWireGuardDesc => 'تونل کلاسیک WARP با کمترین سرباز';
 
   @override
-  String get protocolGool => 'Gool';
+  String get protocolGool => 'Gool (وایرگارد روی مسک)';
 
   @override
   String get protocolGoolDesc =>
       'وایرگارد داخل مسک، برای خروجی بیرون از کشور خودتان';
 
   @override
-  String get protocolGoolClassic => 'Gool کلاسیک';
+  String get protocolGoolClassic => 'Gool کلاسیک (وارپ داخل وارپ)';
 
   @override
   String get protocolGoolClassicDesc => 'وارپ داخل وارپ، با دو هاپ وایرگارد';
+
+  @override
+  String get protocolGoolShort => 'Gool';
+
+  @override
+  String get protocolGoolClassicShort => 'Gool کلاسیک';
 
   @override
   String get transport => 'روش اتصال';
@@ -389,7 +395,7 @@ class L10nFa extends L10n {
   String get ipV6 => 'IPv6';
 
   @override
-  String get ipDual => 'هر دو';
+  String get ipDual => 'IPv4 + IPv6';
 
   @override
   String get socksPort => 'پورت SOCKS5';
@@ -1317,32 +1323,14 @@ class L10nFa extends L10n {
       'اوبلیوین برای زنده نگه داشتن تونل در پس‌زمینه به نوتیفیکیشن نیاز دارد';
 
   @override
-  String get coreEngine => 'هسته';
-
-  @override
-  String get coreEngineDesc => 'کدام موتور تانل اجرا شود';
-
-  @override
-  String get coreAether => 'Aether';
-
-  @override
-  String get coreAetherDesc => 'وارپ کلادفلر و MASQUE';
-
-  @override
   String get corePsiphon => 'سایفون';
 
   @override
   String get corePsiphonDesc => 'شبکه سایفون با CDN fronting';
 
   @override
-  String get coreChain => 'سایفون داخل تانل';
-
-  @override
   String get coreChainDesc =>
       'شما، وارپ، سایفون، اینترنت. خروجی سایفون است و شبکه‌ای که سایفون را بسته اصلا آن را نمی‌بیند';
-
-  @override
-  String get corePsiphonReverse => 'تانل از داخل سایفون';
 
   @override
   String get corePsiphonReverseDesc =>
@@ -1355,36 +1343,12 @@ class L10nFa extends L10n {
   String get coreTorDesc => 'تور خالی، بدون تانل زیرش';
 
   @override
-  String get coreTorChain => 'تور داخل تانل';
-
-  @override
   String get coreTorChainDesc =>
       'شما، وارپ، تور، اینترنت. خروجی تور است و شبکه‌ای که تور را بسته اصلا آن را نمی‌بیند';
 
   @override
-  String get coreTorReverse => 'تانل از داخل تور';
-
-  @override
   String get coreTorReverseDesc =>
       'شما، تور، وارپ، اینترنت. خروجی وارپ است که از یک exit تور گرفته می‌شود و شبکه شما اصلا وارپ نمی‌بیند';
-
-  @override
-  String get chainOrder => 'ترتیب زنجیره';
-
-  @override
-  String chainOrderDesc(String transport, String engine) {
-    return 'اول $transport وصل می‌شود، بعد $engine از داخل آن بیرون می‌رود.';
-  }
-
-  @override
-  String chainOrderReverseDesc(String engine) {
-    return 'اول $engine وصل می‌شود، بعد وارپ از داخل آن با MASQUE روی HTTP/2 گرفته می‌شود.';
-  }
-
-  @override
-  String protocolThroughCarrier(String engine) {
-    return 'از داخل $engine وارپ فقط روی HTTP/2 گرفته می‌شود، پس وایرگارد و Gool کلاسیک اجرا نمی‌شوند. انتخاب خودتان با هر هستهٔ دیگری برمی‌گردد';
-  }
 
   @override
   String get chainNeedsTcp =>
@@ -1535,9 +1499,6 @@ class L10nFa extends L10n {
       'تنظیمات سایفون فقط وقتی هسته سایفون انتخاب شده اعمال می‌شود';
 
   @override
-  String get aetherOnlySection => 'این تنظیمات به هسته Aether مربوط است';
-
-  @override
   String get fastFirstConnect => 'اتصال اول سریع';
 
   @override
@@ -1550,6 +1511,52 @@ class L10nFa extends L10n {
   @override
   String get protocolMimDesc =>
       'دو هاپ مسک، برای گرفتن آدرس خروج از یک رنج دیگر';
+
+  @override
+  String get sectionWarp => 'WARP';
+
+  @override
+  String get masqueServer => 'سرور مسک';
+
+  @override
+  String protocolRunsAsMasque(String engine) {
+    return 'با «$engine → WARP» وارپ فقط روی HTTP/2 گرفته می‌شود، پس این پروتکل به‌صورت MASQUE وصل می‌شود';
+  }
+
+  @override
+  String get placeOff => 'خاموش';
+
+  @override
+  String get placePsiphonOffDesc => 'فقط WARP، بدون سایفون';
+
+  @override
+  String get placeTorOffDesc => 'فقط WARP، بدون تور';
+
+  @override
+  String get placePsiphonChain => 'اول WARP، بعد سایفون';
+
+  @override
+  String get placePsiphonReverse => 'اول سایفون، بعد WARP';
+
+  @override
+  String get placePsiphonOnly => 'فقط سایفون';
+
+  @override
+  String get placeTorChain => 'اول WARP، بعد تور';
+
+  @override
+  String get placeTorReverse => 'اول تور، بعد WARP';
+
+  @override
+  String get placeTorOnly => 'فقط تور';
+
+  @override
+  String placeTurnsOff(String engine) {
+    return '$engine خاموش می‌شود؛ این دو فقط وقتی با هم کار می‌کنند که یکی داخل WARP و دیگری بیرون آن باشد';
+  }
+
+  @override
+  String get psiphonDetails => 'تنظیمات سایفون';
 
   @override
   String get scanVerified => 'تأییدشده';

@@ -1,7 +1,8 @@
 package org.bepass.oblivion.vpn
 
 data class TunnelConfig(
-    val core: String,
+    val psiphon: String,
+    val tor: String,
     val psiphonCountry: String,
     val psiphonMode: String,
     val psiphonCdnIps: String,
@@ -49,17 +50,17 @@ data class TunnelConfig(
 
     val httpProxyPort: Int get() = socksPort + 1
 
-    val usesChain: Boolean get() = core == CORE_CHAIN
+    val usesChain: Boolean get() = psiphon == CARRIER_CHAIN
 
-    val psiphonOnly: Boolean get() = core == CORE_PSIPHON
+    val psiphonOnly: Boolean get() = psiphon == CARRIER_ONLY
 
-    val psiphonReverse: Boolean get() = core == CORE_PSIPHON_REVERSE
+    val psiphonReverse: Boolean get() = psiphon == CARRIER_REVERSE
 
-    val torOnly: Boolean get() = core == CORE_TOR
+    val torOnly: Boolean get() = tor == CARRIER_ONLY
 
-    val torChain: Boolean get() = core == CORE_TOR_CHAIN
+    val torChain: Boolean get() = tor == CARRIER_CHAIN
 
-    val torReverse: Boolean get() = core == CORE_TOR_REVERSE
+    val torReverse: Boolean get() = tor == CARRIER_REVERSE
 
     val runsAether: Boolean get() = true
 
@@ -172,7 +173,6 @@ data class TunnelConfig(
     val innerMtu: Int
         get() = when {
             coreMtu in CORE_MTU_MIN..CORE_MTU_MAX -> coreMtu
-            tunnelMtu in CORE_MTU_MIN..CORE_MTU_MAX -> tunnelMtu
             else -> 0
         }
 
@@ -202,18 +202,15 @@ data class TunnelConfig(
     }
 
     companion object {
-        const val CORE_AETHER = "aether"
-        const val CORE_PSIPHON = "psiphon"
-        const val CORE_CHAIN = "chain"
-        const val CORE_PSIPHON_REVERSE = "psiphon-reverse"
-        const val CORE_TOR = "tor"
-        const val CORE_TOR_CHAIN = "tor-chain"
-        const val CORE_TOR_REVERSE = "tor-reverse"
+        const val CARRIER_OFF = "off"
+        const val CARRIER_CHAIN = "chain"
+        const val CARRIER_REVERSE = "reverse"
+        const val CARRIER_ONLY = "only"
         const val PROTOCOL_GOOL_CLASSIC = "gool-classic"
         const val NOIZE_AUTO = "auto"
         private val NEEDS_UDP = setOf("wg", "wireguard", PROTOCOL_GOOL_CLASSIC)
 
-        const val TUN_MTU = 8500
+        const val TUN_MTU = 1500
         const val TUN_MTU_MIN = 1280
         const val TUN_MTU_MAX = 9000
         const val CORE_MTU_MIN = 576
@@ -230,7 +227,8 @@ data class TunnelConfig(
             fun int(key: String, fallback: Int) = (settings[key] as? Number)?.toInt() ?: fallback
 
             return TunnelConfig(
-                core = str("core", "aether"),
+                psiphon = str("psiphon", CARRIER_OFF),
+                tor = str("tor", CARRIER_OFF),
                 psiphonCountry = str("psiphonCountry"),
                 psiphonMode = str("psiphonMode", "auto"),
                 psiphonCdnIps = str("psiphonCdnIps"),
@@ -248,7 +246,7 @@ data class TunnelConfig(
                 scanMode = str("scanMode", "balanced"),
                 obfuscation = str("obfuscation", "balanced"),
                 noizeProfile = str("noizeProfile", str("obfuscation", "balanced")),
-                ipVersion = str("ipVersion", "v4"),
+                ipVersion = str("ipVersion", "both"),
                 logLevel = str("logLevel", "info"),
                 perfProfile = str("perfProfile"),
                 endpoint = str("endpoint"),

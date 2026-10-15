@@ -59,7 +59,8 @@ class SettingsStore {
 
   static const String _prefix = 'core.';
   static const List<String> _coreKeys = <String>[
-    'core',
+    'psiphon',
+    'tor',
     'psiphonCountry',
     'psiphonMode',
     'psiphonCdnIps',
@@ -138,19 +139,53 @@ class SettingsStore {
   String? _string(String key) => _prefs.getString('$_prefix$key');
 
   static const String _legacyTorModeKey = 'torMode';
+  static const String _legacyCoreKey = 'core';
+  static const String _defaultsKey = 'defaults';
+  static const int _currentDefaults = 2;
+
+  void _forgetOldDefaults() {
+    if ((_prefs.getInt('$_prefix$_defaultsKey') ?? 1) >= _currentDefaults) {
+      return;
+    }
+    if (_prefs.getInt('${_prefix}tunnelMtu') == 8500) {
+      unawaited(_prefs.remove('${_prefix}tunnelMtu'));
+    }
+    if (_string('ipVersion') == IpVersion.v4.wire) {
+      unawaited(_prefs.remove('${_prefix}ipVersion'));
+    }
+    unawaited(_prefs.setInt('$_prefix$_defaultsKey', _currentDefaults));
+  }
+
+  (CarrierMode, CarrierMode) _carriers() {
+    final legacyTorMode = _string(_legacyTorModeKey);
+    final legacyCore = _string(_legacyCoreKey);
+    if (legacyTorMode == null && legacyCore == null) {
+      return (
+        CarrierMode.fromWire(_string('psiphon')),
+        CarrierMode.fromWire(_string('tor')),
+      );
+    }
+
+    final (psiphon, tor) = CarrierMode.fromLegacyCore(
+      legacyCore,
+      legacyTorMode,
+    );
+    unawaited(_prefs.setString('${_prefix}psiphon', psiphon.wire));
+    unawaited(_prefs.setString('${_prefix}tor', tor.wire));
+    unawaited(_prefs.remove('$_prefix$_legacyCoreKey'));
+    unawaited(_prefs.remove('$_prefix$_legacyTorModeKey'));
+    return (psiphon, tor);
+  }
 
   TunnelSettings readTunnelSettings() {
     const fallback = TunnelSettings();
 
-    final legacyTorMode = _string(_legacyTorModeKey);
-    final core = CoreEngine.migrate(_string('core'), legacyTorMode);
-    if (legacyTorMode != null) {
-      unawaited(_prefs.setString('${_prefix}core', core.wire));
-      unawaited(_prefs.remove('$_prefix$_legacyTorModeKey'));
-    }
+    _forgetOldDefaults();
+    final (psiphon, tor) = _carriers();
 
     final settings = TunnelSettings(
-      core: core,
+      psiphon: psiphon,
+      tor: tor,
       psiphonCountry: _string('psiphonCountry') ?? fallback.psiphonCountry,
       psiphonMode: PsiphonMode.fromWire(_string('psiphonMode')),
       psiphonCdnIps: _string('psiphonCdnIps') ?? fallback.psiphonCdnIps,
@@ -259,7 +294,8 @@ class SettingsStore {
   }
 
   Map<String, Object> _snapshot(TunnelSettings s) => <String, Object>{
-    'core': s.core.wire,
+    'psiphon': s.psiphon.wire,
+    'tor': s.tor.wire,
     'psiphonCountry': s.psiphonCountry,
     'psiphonMode': s.psiphonMode.wire,
     'psiphonCdnIps': s.psiphonCdnIps,
@@ -371,6 +407,7 @@ class SettingsStore {
       await _prefs.remove('$_prefix$key');
     }
     await _prefs.remove('$_prefix$_legacyTorModeKey');
+    await _prefs.remove('$_prefix$_legacyCoreKey');
   }
 
   AppPreferences readAppPreferences() {

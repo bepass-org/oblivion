@@ -19,10 +19,11 @@ Windows and Linux from one codebase.
 - **TLS camouflage**: pick the server name the MASQUE handshake shows, hide it with
   ECH, send the ClientHello in pieces, and make the TLS fingerprint look like
   Chrome, Firefox, Python or Go.
-- **Psiphon and Tor**: run either on its own or chained with WARP. Psiphon starts
-  from the server list shipped with the app and offers every country it can
-  leave from; Tor reaches its network through obfs4, snowflake and other bridges
-  when it is blocked.
+- **Psiphon and Tor**: each has a setting of its own: off, after WARP, before
+  WARP or alone, and the two can run together with one inside WARP and the other
+  around it. Psiphon starts from the server list shipped with the app and offers
+  every country it can leave from; Tor reaches its network through obfs4,
+  snowflake and other bridges when it is blocked.
 - **Gateway finder and new keys**: scan once for a gateway that works on your
   network and keep it, or register fresh WARP keys, straight from the settings.
 - **Zero Trust**: connect as a managed device on your organization's Cloudflare

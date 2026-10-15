@@ -103,10 +103,12 @@
   "protocolMasqueDesc": "Modern QUIC/HTTP-3 transport, best on healthy networks",
   "protocolWireGuard": "WireGuard",
   "protocolWireGuardDesc": "Classic WARP tunnel, lowest overhead",
-  "protocolGool": "Gool",
+  "protocolGool": "Gool (WireGuard over MASQUE)",
   "protocolGoolDesc": "WireGuard inside MASQUE, for an exit outside your own country",
-  "protocolGoolClassic": "Classic Gool",
+  "protocolGoolClassic": "Classic Gool (WARP in WARP)",
   "protocolGoolClassicDesc": "WARP inside WARP, two WireGuard hops",
+  "protocolGoolShort": "Gool",
+  "protocolGoolClassicShort": "Classic Gool",
   "transport": "Connection type",
   "transportH3": "HTTP/3 over QUIC",
   "transportH3Desc": "Faster, but your network has to leave UDP open",
@@ -132,7 +134,7 @@
   "ipVersion": "IP version",
   "ipV4": "IPv4",
   "ipV6": "IPv6",
-  "ipDual": "Both",
+  "ipDual": "IPv4 + IPv6",
   "socksPort": "SOCKS5 port",
   "socksPortDesc": "Local port the core listens on",
   "allowLan": "Allow LAN access",
@@ -485,50 +487,14 @@
   "notificationChannelDesc": "Shows whether the tunnel is up and lets you disconnect",
   "notificationPermissionTitle": "Allow notifications",
   "notificationPermissionBody": "Oblivion needs a notification to keep the tunnel alive in the background",
-  "coreEngine": "Core",
-  "coreEngineDesc": "Which tunnel engine to run",
-  "coreAether": "Aether",
-  "coreAetherDesc": "Cloudflare WARP and MASQUE",
   "corePsiphon": "Psiphon",
   "corePsiphonDesc": "Psiphon network with CDN fronting",
-  "coreChain": "Psiphon inside the tunnel",
   "coreChainDesc": "You, WARP, Psiphon, the internet. The exit is Psiphon, and a network that blocks Psiphon never sees it",
-  "corePsiphonReverse": "Tunnel through Psiphon",
   "corePsiphonReverseDesc": "You, Psiphon, WARP, the internet. The exit is WARP, reached from a Psiphon exit, and your network never sees WARP",
   "coreTor": "Tor",
   "coreTorDesc": "Plain Tor, with no tunnel underneath",
-  "coreTorChain": "Tor inside the tunnel",
   "coreTorChainDesc": "You, WARP, Tor, the internet. The exit is Tor, and a network that blocks Tor never sees it",
-  "coreTorReverse": "Tunnel through Tor",
   "coreTorReverseDesc": "You, Tor, WARP, the internet. The exit is WARP, reached from a Tor exit, and your network never sees WARP",
-  "chainOrder": "Chain order",
-  "chainOrderDesc": "{transport} connects first, then {engine} dials out through it.",
-  "@chainOrderDesc": {
-    "placeholders": {
-      "transport": {
-        "type": "String"
-      },
-      "engine": {
-        "type": "String"
-      }
-    }
-  },
-  "chainOrderReverseDesc": "{engine} connects first, then WARP is reached through it with MASQUE over HTTP/2.",
-  "@chainOrderReverseDesc": {
-    "placeholders": {
-      "engine": {
-        "type": "String"
-      }
-    }
-  },
-  "protocolThroughCarrier": "Through {engine} WARP is reached over HTTP/2, so WireGuard and Classic Gool cannot run. Your own choice comes back with any other core",
-  "@protocolThroughCarrier": {
-    "placeholders": {
-      "engine": {
-        "type": "String"
-      }
-    }
-  },
   "chainNeedsTcp": "Chained through Aether, so Psiphon keeps to its TCP protocols.",
   "psiphonSettings": "Psiphon",
   "psiphonCountry": "Country",
@@ -573,11 +539,38 @@
   "psiphonConduitUnavailable": "This build embeds no conduit credentials, so conduit mode cannot connect",
   "psiphonCountryIgnoredOnConduit": "Conduit reaches the network through volunteer peers, so the country is chosen for you",
   "psiphonNotAvailable": "Psiphon settings apply only when the Psiphon core is selected",
-  "aetherOnlySection": "These settings apply to the Aether core",
   "fastFirstConnect": "Fast first connect",
   "fastFirstConnectDesc": "Try a plain connection first, then fall back to obfuscation",
   "protocolMim": "MASQUE-in-MASQUE",
   "protocolMimDesc": "Two MASQUE hops, for an exit address in a different range",
+  "sectionWarp": "WARP",
+  "masqueServer": "MASQUE server",
+  "protocolRunsAsMasque": "With {engine} → WARP, WARP is reached over HTTP/2, so this protocol connects as MASQUE",
+  "@protocolRunsAsMasque": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      }
+    }
+  },
+  "placeOff": "Off",
+  "placePsiphonOffDesc": "WARP alone, without Psiphon",
+  "placeTorOffDesc": "WARP alone, without Tor",
+  "placePsiphonChain": "WARP → Psiphon",
+  "placePsiphonReverse": "Psiphon → WARP",
+  "placePsiphonOnly": "Psiphon only",
+  "placeTorChain": "WARP → Tor",
+  "placeTorReverse": "Tor → WARP",
+  "placeTorOnly": "Tor only",
+  "placeTurnsOff": "{engine} turns off: the two work together only with one inside WARP and the other around it",
+  "@placeTurnsOff": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      }
+    }
+  },
+  "psiphonDetails": "Psiphon options",
   "scanVerified": "Verified",
   "scanVerifiedDesc": "Only edges measured to answer, never a guessed neighbour",
   "obfuscationFirewall": "Firewall",

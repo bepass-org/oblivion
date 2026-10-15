@@ -279,29 +279,24 @@ void main() {
     });
 
     test('a carrier around the tunnel keeps gool and drops what needs udp', () {
-      for (final core in <CoreEngine>[
-        CoreEngine.torReverse,
-        CoreEngine.psiphonReverse,
+      for (final around in const <TunnelSettings>[
+        TunnelSettings(tor: CarrierMode.reverse),
+        TunnelSettings(psiphon: CarrierMode.reverse),
       ]) {
-        final gool = TunnelSettings(core: core, protocol: CoreProtocol.gool);
-        expect(gool.effectiveProtocol, CoreProtocol.gool, reason: core.wire);
-        expect(gool.usesHttp2, isTrue, reason: core.wire);
-        expect(gool.toCoreArguments(), contains('--gool'), reason: core.wire);
-        expect(gool.toCoreArguments(), contains('--h2'), reason: core.wire);
+        final reason = around.modeLabel;
+        final gool = around.copyWith(protocol: CoreProtocol.gool);
+        expect(gool.effectiveProtocol, CoreProtocol.gool, reason: reason);
+        expect(gool.usesHttp2, isTrue, reason: reason);
+        expect(gool.toCoreArguments(), contains('--gool'), reason: reason);
+        expect(gool.toCoreArguments(), contains('--h2'), reason: reason);
 
-        final classic = TunnelSettings(
-          core: core,
-          protocol: CoreProtocol.goolClassic,
-        );
-        expect(
-          classic.effectiveProtocol,
-          CoreProtocol.masque,
-          reason: core.wire,
-        );
+        final classic = around.copyWith(protocol: CoreProtocol.goolClassic);
+        expect(classic.effectiveProtocol, CoreProtocol.masque, reason: reason);
+        expect(classic.protocolRunsAsMasque, isTrue, reason: reason);
         expect(
           classic.toCoreArguments(),
           isNot(contains('--gool-classic')),
-          reason: core.wire,
+          reason: reason,
         );
       }
     });

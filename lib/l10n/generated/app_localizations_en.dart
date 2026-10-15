@@ -300,17 +300,23 @@ class L10nEn extends L10n {
   String get protocolWireGuardDesc => 'Classic WARP tunnel, lowest overhead';
 
   @override
-  String get protocolGool => 'Gool';
+  String get protocolGool => 'Gool (WireGuard over MASQUE)';
 
   @override
   String get protocolGoolDesc =>
       'WireGuard inside MASQUE, for an exit outside your own country';
 
   @override
-  String get protocolGoolClassic => 'Classic Gool';
+  String get protocolGoolClassic => 'Classic Gool (WARP in WARP)';
 
   @override
   String get protocolGoolClassicDesc => 'WARP inside WARP, two WireGuard hops';
+
+  @override
+  String get protocolGoolShort => 'Gool';
+
+  @override
+  String get protocolGoolClassicShort => 'Classic Gool';
 
   @override
   String get transport => 'Connection type';
@@ -392,7 +398,7 @@ class L10nEn extends L10n {
   String get ipV6 => 'IPv6';
 
   @override
-  String get ipDual => 'Both';
+  String get ipDual => 'IPv4 + IPv6';
 
   @override
   String get socksPort => 'SOCKS5 port';
@@ -1316,32 +1322,14 @@ class L10nEn extends L10n {
       'Oblivion needs a notification to keep the tunnel alive in the background';
 
   @override
-  String get coreEngine => 'Core';
-
-  @override
-  String get coreEngineDesc => 'Which tunnel engine to run';
-
-  @override
-  String get coreAether => 'Aether';
-
-  @override
-  String get coreAetherDesc => 'Cloudflare WARP and MASQUE';
-
-  @override
   String get corePsiphon => 'Psiphon';
 
   @override
   String get corePsiphonDesc => 'Psiphon network with CDN fronting';
 
   @override
-  String get coreChain => 'Psiphon inside the tunnel';
-
-  @override
   String get coreChainDesc =>
       'You, WARP, Psiphon, the internet. The exit is Psiphon, and a network that blocks Psiphon never sees it';
-
-  @override
-  String get corePsiphonReverse => 'Tunnel through Psiphon';
 
   @override
   String get corePsiphonReverseDesc =>
@@ -1354,36 +1342,12 @@ class L10nEn extends L10n {
   String get coreTorDesc => 'Plain Tor, with no tunnel underneath';
 
   @override
-  String get coreTorChain => 'Tor inside the tunnel';
-
-  @override
   String get coreTorChainDesc =>
       'You, WARP, Tor, the internet. The exit is Tor, and a network that blocks Tor never sees it';
 
   @override
-  String get coreTorReverse => 'Tunnel through Tor';
-
-  @override
   String get coreTorReverseDesc =>
       'You, Tor, WARP, the internet. The exit is WARP, reached from a Tor exit, and your network never sees WARP';
-
-  @override
-  String get chainOrder => 'Chain order';
-
-  @override
-  String chainOrderDesc(String transport, String engine) {
-    return '$transport connects first, then $engine dials out through it.';
-  }
-
-  @override
-  String chainOrderReverseDesc(String engine) {
-    return '$engine connects first, then WARP is reached through it with MASQUE over HTTP/2.';
-  }
-
-  @override
-  String protocolThroughCarrier(String engine) {
-    return 'Through $engine WARP is reached over HTTP/2, so WireGuard and Classic Gool cannot run. Your own choice comes back with any other core';
-  }
 
   @override
   String get chainNeedsTcp =>
@@ -1535,9 +1499,6 @@ class L10nEn extends L10n {
       'Psiphon settings apply only when the Psiphon core is selected';
 
   @override
-  String get aetherOnlySection => 'These settings apply to the Aether core';
-
-  @override
   String get fastFirstConnect => 'Fast first connect';
 
   @override
@@ -1550,6 +1511,52 @@ class L10nEn extends L10n {
   @override
   String get protocolMimDesc =>
       'Two MASQUE hops, for an exit address in a different range';
+
+  @override
+  String get sectionWarp => 'WARP';
+
+  @override
+  String get masqueServer => 'MASQUE server';
+
+  @override
+  String protocolRunsAsMasque(String engine) {
+    return 'With $engine → WARP, WARP is reached over HTTP/2, so this protocol connects as MASQUE';
+  }
+
+  @override
+  String get placeOff => 'Off';
+
+  @override
+  String get placePsiphonOffDesc => 'WARP alone, without Psiphon';
+
+  @override
+  String get placeTorOffDesc => 'WARP alone, without Tor';
+
+  @override
+  String get placePsiphonChain => 'WARP → Psiphon';
+
+  @override
+  String get placePsiphonReverse => 'Psiphon → WARP';
+
+  @override
+  String get placePsiphonOnly => 'Psiphon only';
+
+  @override
+  String get placeTorChain => 'WARP → Tor';
+
+  @override
+  String get placeTorReverse => 'Tor → WARP';
+
+  @override
+  String get placeTorOnly => 'Tor only';
+
+  @override
+  String placeTurnsOff(String engine) {
+    return '$engine turns off: the two work together only with one inside WARP and the other around it';
+  }
+
+  @override
+  String get psiphonDetails => 'Psiphon options';
 
   @override
   String get scanVerified => 'Verified';

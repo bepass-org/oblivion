@@ -143,15 +143,15 @@ void main() {
     test('scanning is offered only where the core dials warp itself', () {
       expect(_masque.canFindGateway, isTrue);
       expect(
-        const TunnelSettings(core: CoreEngine.chain).canFindGateway,
+        const TunnelSettings(psiphon: CarrierMode.chain).canFindGateway,
         isTrue,
       );
       expect(
-        const TunnelSettings(core: CoreEngine.psiphonReverse).canFindGateway,
+        const TunnelSettings(psiphon: CarrierMode.reverse).canFindGateway,
         isFalse,
       );
       expect(
-        const TunnelSettings(core: CoreEngine.psiphon).canFindGateway,
+        const TunnelSettings(psiphon: CarrierMode.only).canFindGateway,
         isFalse,
       );
     });

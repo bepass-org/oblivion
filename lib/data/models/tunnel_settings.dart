@@ -1,28 +1,40 @@
 import 'dart:io';
 
-enum CoreEngine {
-  aether('aether'),
-  psiphon('psiphon'),
+enum CarrierMode {
+  off('off'),
   chain('chain'),
-  psiphonReverse('psiphon-reverse'),
-  tor('tor'),
-  torChain('tor-chain'),
-  torReverse('tor-reverse');
+  reverse('reverse'),
+  only('only');
 
-  const CoreEngine(this.wire);
+  const CarrierMode(this.wire);
 
   final String wire;
 
-  static CoreEngine fromWire(String? value) =>
-      values.firstWhere((e) => e.wire == value, orElse: () => aether);
+  static CarrierMode fromWire(String? value) =>
+      values.firstWhere((e) => e.wire == value, orElse: () => off);
 
-  static CoreEngine migrate(String? core, String? legacyTorMode) =>
-      switch (legacyTorMode?.trim().toLowerCase()) {
-        'only' => tor,
-        'chain' => torChain,
-        'reverse' => torReverse,
-        _ => fromWire(core),
-      };
+  static (CarrierMode, CarrierMode) fromLegacyCore(
+    String? core,
+    String? legacyTorMode,
+  ) {
+    switch (legacyTorMode?.trim().toLowerCase()) {
+      case 'only':
+        return (off, only);
+      case 'chain':
+        return (off, chain);
+      case 'reverse':
+        return (off, reverse);
+    }
+    return switch (core?.trim().toLowerCase()) {
+      'psiphon' => (only, off),
+      'chain' => (chain, off),
+      'psiphon-reverse' => (reverse, off),
+      'tor' => (off, only),
+      'tor-chain' => (off, chain),
+      'tor-reverse' => (off, reverse),
+      _ => (off, off),
+    };
+  }
 }
 
 enum PsiphonMode {
@@ -279,7 +291,7 @@ enum IpVersion {
   final String wire;
 
   static IpVersion fromWire(String? value) =>
-      values.firstWhere((e) => e.wire == value, orElse: () => v4);
+      values.firstWhere((e) => e.wire == value, orElse: () => dual);
 }
 
 enum CoreLogLevel {
@@ -351,7 +363,8 @@ enum SplitTunnelMode {
 
 class TunnelSettings {
   const TunnelSettings({
-    this.core = CoreEngine.aether,
+    this.psiphon = CarrierMode.off,
+    this.tor = CarrierMode.off,
     this.psiphonCountry = '',
     this.psiphonMode = PsiphonMode.auto,
     this.psiphonCdnIps = '',
@@ -368,7 +381,7 @@ class TunnelSettings {
     this.transport = MasqueTransport.http3,
     this.scanMode = ScanMode.balanced,
     this.obfuscation = ObfuscationProfile.balanced,
-    this.ipVersion = IpVersion.v4,
+    this.ipVersion = IpVersion.dual,
     this.logLevel = CoreLogLevel.info,
     this.perfProfile = PerfProfile.auto,
     this.echMode = EchMode.off,
@@ -393,7 +406,7 @@ class TunnelSettings {
     this.allowLan = false,
     this.routingMode = RoutingMode.fullTunnel,
     this.tunnelInterface = 'oblivion0',
-    this.tunnelMtu = 8500,
+    this.tunnelMtu = 1500,
     this.coreMtu = 0,
     this.pathMtu = 0,
     this.overrideDns = true,
@@ -419,7 +432,8 @@ class TunnelSettings {
     this.gatewayProxy = false,
   });
 
-  final CoreEngine core;
+  final CarrierMode psiphon;
+  final CarrierMode tor;
   final String psiphonCountry;
   final PsiphonMode psiphonMode;
   final String psiphonCdnIps;
@@ -500,21 +514,39 @@ class TunnelSettings {
   bool get splitTunnelStarved =>
       splitTunnelMode == SplitTunnelMode.onlySelected && bypassedApps.isEmpty;
 
-  bool get usesChain => core == CoreEngine.chain;
+  bool get usesChain => psiphon == CarrierMode.chain;
 
-  bool get psiphonReverse => core == CoreEngine.psiphonReverse;
+  bool get psiphonReverse => psiphon == CarrierMode.reverse;
 
-  bool get psiphonOnly => core == CoreEngine.psiphon;
+  bool get psiphonOnly => psiphon == CarrierMode.only;
 
-  bool get usesPsiphon => psiphonOnly || usesChain || psiphonReverse;
+  bool get usesPsiphon => psiphon != CarrierMode.off;
 
-  bool get torOnly => core == CoreEngine.tor;
+  bool get torOnly => tor == CarrierMode.only;
 
-  bool get torChain => core == CoreEngine.torChain;
+  bool get torChain => tor == CarrierMode.chain;
 
-  bool get torReverse => core == CoreEngine.torReverse;
+  bool get torReverse => tor == CarrierMode.reverse;
 
-  bool get usesTor => torOnly || torChain || torReverse;
+  bool get usesTor => tor != CarrierMode.off;
+
+  static bool carriersFit(CarrierMode psiphon, CarrierMode tor) =>
+      psiphon == CarrierMode.off ||
+      tor == CarrierMode.off ||
+      (psiphon == CarrierMode.chain && tor == CarrierMode.reverse) ||
+      (psiphon == CarrierMode.reverse && tor == CarrierMode.chain);
+
+  TunnelSettings withPsiphon(CarrierMode mode) => copyWith(
+    psiphon: mode,
+    tor: carriersFit(mode, tor) ? tor : CarrierMode.off,
+  );
+
+  TunnelSettings withTor(CarrierMode mode) => copyWith(
+    tor: mode,
+    psiphon: carriersFit(psiphon, mode) ? psiphon : CarrierMode.off,
+  );
+
+  bool get protocolRunsAsMasque => dialsThrough && needsUdpToWarp(protocol);
 
   bool get usesAether => !psiphonOnly && !torOnly;
 
@@ -565,15 +597,15 @@ class TunnelSettings {
       CoreProtocol.wireguard => 'WARP',
     };
 
-    return switch (core) {
-      CoreEngine.aether => carrier,
-      CoreEngine.psiphon => 'PSIPHON',
-      CoreEngine.chain => '$carrier + PSIPHON',
-      CoreEngine.psiphonReverse => 'PSIPHON + $carrier',
-      CoreEngine.tor => 'TOR',
-      CoreEngine.torChain => '$carrier + TOR',
-      CoreEngine.torReverse => 'TOR + $carrier',
-    };
+    if (psiphonOnly) return 'PSIPHON';
+    if (torOnly) return 'TOR';
+    return <String>[
+      if (psiphonReverse) 'PSIPHON',
+      if (torReverse) 'TOR',
+      carrier,
+      if (usesChain) 'PSIPHON',
+      if (torChain) 'TOR',
+    ].join(' + ');
   }
 
   String get teamName => team.trim();
@@ -877,11 +909,7 @@ class TunnelSettings {
   String get httpProxyAddress =>
       '${allowLan ? '0.0.0.0' : '127.0.0.1'}:$httpProxyPort';
 
-  int get effectiveCoreMtu {
-    if (coreMtu >= 576 && coreMtu <= 1500) return coreMtu;
-    if (tunnelMtu >= 576 && tunnelMtu <= 1500) return tunnelMtu;
-    return 0;
-  }
+  int get effectiveCoreMtu => coreMtu >= 576 && coreMtu <= 1500 ? coreMtu : 0;
 
   bool get proxyOnly => routingMode != RoutingMode.fullTunnel;
 
@@ -903,7 +931,8 @@ class TunnelSettings {
   }
 
   TunnelSettings copyWith({
-    CoreEngine? core,
+    CarrierMode? psiphon,
+    CarrierMode? tor,
     String? psiphonCountry,
     PsiphonMode? psiphonMode,
     String? psiphonCdnIps,
@@ -971,7 +1000,8 @@ class TunnelSettings {
     bool? gatewayProxy,
   }) {
     return TunnelSettings(
-      core: core ?? this.core,
+      psiphon: psiphon ?? this.psiphon,
+      tor: tor ?? this.tor,
       psiphonCountry: psiphonCountry ?? this.psiphonCountry,
       psiphonMode: psiphonMode ?? this.psiphonMode,
       psiphonCdnIps: psiphonCdnIps ?? this.psiphonCdnIps,
@@ -1042,7 +1072,8 @@ class TunnelSettings {
   }
 
   Map<String, dynamic> toPlatformPayload() => <String, dynamic>{
-    'core': core.wire,
+    'psiphon': psiphon.wire,
+    'tor': tor.wire,
     'psiphonCountry': psiphonCountry.trim(),
     'psiphonMode': psiphonMode.wire,
     'psiphonCdnIps': psiphonCdnIps.trim(),

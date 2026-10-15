@@ -6,7 +6,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
     private static let tunIpv4 = "198.18.0.1"
     private static let tunIpv6 = "fc00::1"
-    private static let tunMtu = 8500
+    private static let tunMtu = 1500
     private static let tunMtuRange = 1280...9000
     private static let coreMtuRange = 576...1500
 
@@ -95,7 +95,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             "AETHER_SOCKS": "\(host):\(socksPort)",
             "AETHER_PROTOCOL": classicGool ? "gool" : protocolName,
             "AETHER_SCAN": settings["scanMode"] as? String ?? "balanced",
-            "AETHER_IP": settings["ipVersion"] as? String ?? "v4",
+            "AETHER_IP": settings["ipVersion"] as? String ?? "both",
             "AETHER_LOG_LEVEL": settings["logLevel"] as? String ?? "info",
         ]
 
@@ -145,11 +145,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     }
 
     private static func coreMtu(_ settings: [String: Any]) -> Int? {
-        let candidates = [
-            (settings["coreMtu"] as? NSNumber)?.intValue ?? 0,
-            (settings["tunnelMtu"] as? NSNumber)?.intValue ?? 0,
-        ]
-        return candidates.first { coreMtuRange.contains($0) }
+        let mtu = (settings["coreMtu"] as? NSNumber)?.intValue ?? 0
+        return coreMtuRange.contains(mtu) ? mtu : nil
     }
 
     private func applyTunnelSettings(socksPort: Int, mtu: Int) async throws {

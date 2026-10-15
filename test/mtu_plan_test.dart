@@ -8,7 +8,7 @@ MtuPlan _plan(TunnelSettings settings, int pathMtu) =>
 void main() {
   group('mtu plan', () {
     test('a clean ethernet path keeps the masque packet size the core ships', () {
-      final plan = _plan(const TunnelSettings(), 1500);
+      final plan = _plan(const TunnelSettings(ipVersion: IpVersion.v4), 1500);
 
       expect(plan.profile, MtuProfile.masqueH3);
       expect(plan.overhead, 72);
@@ -19,7 +19,7 @@ void main() {
     });
 
     test('a path with room to spare is capped by the core, not the path', () {
-      final plan = _plan(const TunnelSettings(), 1400);
+      final plan = _plan(const TunnelSettings(ipVersion: IpVersion.v4), 1400);
 
       expect(plan.innerMtu, 1280);
       expect(plan.pathLimited, isFalse);
@@ -27,7 +27,7 @@ void main() {
     });
 
     test('a narrow path pulls the packet size down to what fits', () {
-      final plan = _plan(const TunnelSettings(), 1340);
+      final plan = _plan(const TunnelSettings(ipVersion: IpVersion.v4), 1340);
 
       expect(plan.innerMtu, 1268);
       expect(plan.coreMtu, 1268);
@@ -36,7 +36,7 @@ void main() {
     });
 
     test('a path too small for the tun floor still tells the core to shrink', () {
-      final plan = _plan(const TunnelSettings(), 1300);
+      final plan = _plan(const TunnelSettings(ipVersion: IpVersion.v4), 1300);
 
       expect(plan.innerMtu, 1228);
       expect(plan.coreMtu, 1228);
@@ -45,21 +45,30 @@ void main() {
     });
 
     test('a path that cannot carry the quic handshake is called out', () {
-      expect(_plan(const TunnelSettings(), 1400).handshakeAtRisk, isFalse);
-      expect(_plan(const TunnelSettings(), 1200).handshakeAtRisk, isTrue);
+      expect(_plan(const TunnelSettings(ipVersion: IpVersion.v4), 1400).handshakeAtRisk, isFalse);
+      expect(_plan(const TunnelSettings(ipVersion: IpVersion.v4), 1200).handshakeAtRisk, isTrue);
     });
 
     test('ipv6 pays twenty more bytes per packet', () {
-      final v4 = _plan(const TunnelSettings(), 1340);
+      final v4 = _plan(const TunnelSettings(ipVersion: IpVersion.v4), 1340);
       final v6 = _plan(const TunnelSettings(ipVersion: IpVersion.v6), 1340);
 
       expect(v6.overhead - v4.overhead, 20);
       expect(v6.innerMtu, lessThan(v4.innerMtu));
     });
 
+    test('with both ip versions the plan leaves room for ipv6', () {
+      final both = _plan(const TunnelSettings(), 1340);
+      final v6 = _plan(const TunnelSettings(ipVersion: IpVersion.v6), 1340);
+
+      expect(const TunnelSettings().ipVersion, IpVersion.dual);
+      expect(both.overhead, v6.overhead);
+      expect(both.innerMtu, v6.innerMtu);
+    });
+
     test('http2 rides a tcp stream, so the path does not cap the packet', () {
       final plan = _plan(
-        const TunnelSettings(transport: MasqueTransport.http2),
+        const TunnelSettings(ipVersion: IpVersion.v4, transport: MasqueTransport.http2),
         1360,
       );
 
@@ -71,7 +80,7 @@ void main() {
 
     test('wireguard rounds down to the padding boundary', () {
       final plan = _plan(
-        const TunnelSettings(protocol: CoreProtocol.wireguard),
+        const TunnelSettings(ipVersion: IpVersion.v4, protocol: CoreProtocol.wireguard),
         1300,
       );
 
@@ -83,7 +92,7 @@ void main() {
 
     test('two wireguard hops pay for both', () {
       final plan = _plan(
-        const TunnelSettings(protocol: CoreProtocol.goolClassic),
+        const TunnelSettings(ipVersion: IpVersion.v4, protocol: CoreProtocol.goolClassic),
         1500,
       );
 
@@ -94,7 +103,7 @@ void main() {
     });
 
     test('gool pays for wireguard and for the masque carrier around it', () {
-      final roomy = _plan(const TunnelSettings(protocol: CoreProtocol.gool), 1500);
+      final roomy = _plan(const TunnelSettings(ipVersion: IpVersion.v4, protocol: CoreProtocol.gool), 1500);
 
       expect(roomy.profile, MtuProfile.goolH3);
       expect(roomy.overhead, 132);
@@ -103,7 +112,7 @@ void main() {
       expect(roomy.pathLimited, isFalse);
 
       final narrow = _plan(
-        const TunnelSettings(protocol: CoreProtocol.gool),
+        const TunnelSettings(ipVersion: IpVersion.v4, protocol: CoreProtocol.gool),
         1300,
       );
       expect(narrow.innerMtu, 1168);
@@ -115,8 +124,7 @@ void main() {
 
     test('gool over http2 rides a stream, and over quic needs its handshake', () {
       final stream = _plan(
-        const TunnelSettings(
-          protocol: CoreProtocol.gool,
+        const TunnelSettings(ipVersion: IpVersion.v4, protocol: CoreProtocol.gool,
           transport: MasqueTransport.http2,
         ),
         1300,
@@ -126,14 +134,14 @@ void main() {
       expect(stream.pathLimited, isFalse);
 
       expect(
-        _plan(const TunnelSettings(protocol: CoreProtocol.gool), 1200)
+        _plan(const TunnelSettings(ipVersion: IpVersion.v4, protocol: CoreProtocol.gool), 1200)
             .handshakeAtRisk,
         isTrue,
       );
     });
 
     test('without a measurement the plan stays on the shipped defaults', () {
-      final plan = _plan(const TunnelSettings(), 0);
+      final plan = _plan(const TunnelSettings(ipVersion: IpVersion.v4), 0);
 
       expect(plan.measured, isFalse);
       expect(plan.innerMtu, 1280);
@@ -141,7 +149,7 @@ void main() {
     });
 
     test('a hopeless path never proposes a packet the core would refuse', () {
-      final plan = _plan(const TunnelSettings(), 300);
+      final plan = _plan(const TunnelSettings(ipVersion: IpVersion.v4), 300);
 
       expect(plan.coreMtu, greaterThanOrEqualTo(kCoreMtuMin));
       expect(plan.tunnelMtu, kTunnelMtuMin);

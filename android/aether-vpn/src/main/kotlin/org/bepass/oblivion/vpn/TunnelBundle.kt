@@ -4,7 +4,8 @@ import android.os.Bundle
 
 object TunnelBundle {
     fun encode(config: TunnelConfig): Bundle = Bundle().apply {
-        putString("core", config.core)
+        putString("psiphon", config.psiphon)
+        putString("tor", config.tor)
         putString("psiphonCountry", config.psiphonCountry)
         putString("psiphonMode", config.psiphonMode)
         putString("psiphonCdnIps", config.psiphonCdnIps)
@@ -50,7 +51,8 @@ object TunnelBundle {
     }
 
     fun decode(bundle: Bundle): TunnelConfig = TunnelConfig(
-        core = bundle.getString("core", "aether"),
+        psiphon = bundle.getString("psiphon", TunnelConfig.CARRIER_OFF),
+        tor = bundle.getString("tor", TunnelConfig.CARRIER_OFF),
         psiphonCountry = bundle.getString("psiphonCountry", ""),
         psiphonMode = bundle.getString("psiphonMode", "auto"),
         psiphonCdnIps = bundle.getString("psiphonCdnIps", ""),
@@ -70,7 +72,7 @@ object TunnelBundle {
         noizeProfile = bundle.getString("noizeProfile", "balanced"),
         tunnelMtu = bundle.getInt("tunnelMtu", TunnelConfig.TUN_MTU),
         coreMtu = bundle.getInt("coreMtu", 0),
-        ipVersion = bundle.getString("ipVersion", "v4"),
+        ipVersion = bundle.getString("ipVersion", "both"),
         logLevel = bundle.getString("logLevel", "info"),
         perfProfile = bundle.getString("perfProfile", ""),
         endpoint = bundle.getString("endpoint", ""),

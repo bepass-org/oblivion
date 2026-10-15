@@ -99,23 +99,149 @@ void main() {
       expect(find.text(l10n.goolPeer), findsOneWidget);
       expect(find.text(l10n.wiwSection), findsNothing);
       expect(find.text(l10n.endpointIgnoredOnGool), findsNothing);
-      expect(find.text(l10n.protocolGool), findsOneWidget);
+      expect(find.text(l10n.protocolGoolShort), findsOneWidget);
     });
 
-    testWidgets('classic gool offers its two hops and ignores the gateway', (
+    testWidgets('classic gool shows its two hops in place of the server', (
       tester,
     ) async {
       final l10n = await _open(
         tester,
-        const TunnelSettings(protocol: CoreProtocol.goolClassic),
+        const TunnelSettings(
+          protocol: CoreProtocol.goolClassic,
+          wiwInner: '162.159.192.1:2408',
+        ),
         const SettingsScreen(),
       );
 
-      expect(find.text(l10n.wiwSection), findsOneWidget);
+      expect(find.text(l10n.wiwOuter), findsOneWidget);
+      expect(find.text(l10n.wiwInner), findsOneWidget);
+      expect(find.text(l10n.endpoint), findsNothing);
       expect(find.text(l10n.goolPeer), findsNothing);
-      expect(find.text(l10n.endpointIgnoredOnGool), findsOneWidget);
-      expect(find.text(l10n.protocolGoolClassic), findsOneWidget);
+      expect(find.text(l10n.protocolGoolClassicShort), findsOneWidget);
+
+      await _edit(tester, l10n, l10n.wiwOuter, '162.159.192.1:500');
+      expect(find.text(l10n.wiwSameEdge), findsOneWidget);
+
+      await tester.enterText(
+        find.byType(CupertinoTextField),
+        '162.159.195.7:2408',
+      );
+      await tester.tap(find.text(l10n.save));
+      await tester.pumpAndSettle();
+      expect(_current(tester, SettingsScreen).wiwOuter, '162.159.195.7:2408');
     });
+
+    testWidgets('both gools are offered under their full names', (
+      tester,
+    ) async {
+      final l10n = await _open(
+        tester,
+        const TunnelSettings(),
+        const SettingsScreen(),
+      );
+
+      await tester.tap(find.text(l10n.protocol));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.protocolGoolClassic));
+      await tester.pumpAndSettle();
+      expect(
+        _current(tester, SettingsScreen).protocol,
+        CoreProtocol.goolClassic,
+      );
+
+      await tester.tap(find.text(l10n.protocol));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.protocolGool).last);
+      await tester.pumpAndSettle();
+      expect(_current(tester, SettingsScreen).protocol, CoreProtocol.gool);
+      expect(find.text(l10n.masqueServer), findsOneWidget);
+      expect(find.text(l10n.goolPeer), findsOneWidget);
+    });
+
+    testWidgets('psiphon and tor each have a picker of their own', (
+      tester,
+    ) async {
+      final l10n = await _open(
+        tester,
+        const TunnelSettings(),
+        const SettingsScreen(),
+      );
+
+      expect(find.text(l10n.corePsiphon), findsOneWidget);
+      expect(find.text(l10n.coreTor), findsOneWidget);
+      expect(find.text(l10n.placeOff), findsAtLeastNWidgets(2));
+      expect(find.text(l10n.torBridges), findsNothing);
+      expect(find.text(l10n.psiphonDetails), findsNothing);
+
+      await tester.tap(find.text(l10n.coreTor));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.placeTorChain));
+      await tester.pumpAndSettle();
+
+      final settings = _current(tester, SettingsScreen);
+      expect(settings.tor, CarrierMode.chain);
+      expect(settings.psiphon, CarrierMode.off);
+      expect(find.text(l10n.torBridges), findsOneWidget);
+    });
+
+    testWidgets('tor inside warp goes along with psiphon around it', (
+      tester,
+    ) async {
+      final l10n = await _open(
+        tester,
+        const TunnelSettings(psiphon: CarrierMode.reverse),
+        const SettingsScreen(),
+      );
+
+      await tester.tap(find.text(l10n.coreTor));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.placeTorChain));
+      await tester.pumpAndSettle();
+
+      final settings = _current(tester, SettingsScreen);
+      expect(settings.psiphon, CarrierMode.reverse);
+      expect(settings.tor, CarrierMode.chain);
+      expect(settings.modeLabel, 'PSIPHON + MASQUE H2 + TOR');
+    });
+
+    testWidgets('a place the other one cannot share turns it off', (
+      tester,
+    ) async {
+      final l10n = await _open(
+        tester,
+        const TunnelSettings(psiphon: CarrierMode.chain),
+        const SettingsScreen(),
+      );
+
+      await tester.tap(find.text(l10n.coreTor));
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining(l10n.placeTurnsOff(l10n.corePsiphon)),
+        findsNWidgets(2),
+      );
+      await tester.tap(find.text(l10n.placeTorOnly));
+      await tester.pumpAndSettle();
+
+      final settings = _current(tester, SettingsScreen);
+      expect(settings.tor, CarrierMode.only);
+      expect(settings.psiphon, CarrierMode.off);
+      expect(find.text(l10n.protocol), findsNothing);
+    });
+
+    testWidgets(
+      'the ip version sits beside the protocol and both is the default',
+      (tester) async {
+        final l10n = await _open(
+          tester,
+          const TunnelSettings(),
+          const SettingsScreen(),
+        );
+
+        expect(find.text(l10n.ipVersion), findsOneWidget);
+        expect(find.text(l10n.ipDual), findsOneWidget);
+      },
+    );
 
     testWidgets('the wireguard server of gool takes an address and a port', (
       tester,
@@ -221,9 +347,9 @@ void main() {
         const SettingsScreen(),
       );
 
-      await tester.tap(find.text(l10n.masqueSni));
-      await tester.pumpAndSettle();
-      expect(find.text(l10n.masqueSniDefaultDesc), findsNothing);
+      expect(find.text(l10n.masqueSni), findsNothing);
+      expect(find.text(l10n.transport), findsNothing);
+      expect(find.text(l10n.endpoint), findsOneWidget);
     });
 
     testWidgets('tor offers its bridges and asks for lines of its own', (
@@ -231,7 +357,7 @@ void main() {
     ) async {
       final l10n = await _open(
         tester,
-        const TunnelSettings(core: CoreEngine.tor),
+        const TunnelSettings(tor: CarrierMode.only),
         const SettingsScreen(),
       );
 
@@ -286,7 +412,8 @@ void main() {
         const SettingsScreen(),
       );
 
-      await _edit(tester, l10n, l10n.mimInner, '162.159.198.1:8443');
+      expect(find.text(l10n.wiwOuter), findsOneWidget);
+      await _edit(tester, l10n, l10n.wiwInner, '162.159.198.1:8443');
       expect(find.text(l10n.wiwSameEdge), findsOneWidget);
 
       await tester.enterText(
@@ -357,23 +484,40 @@ void main() {
       );
     });
 
-    testWidgets('through tor only what rides tcp is offered, gool included', (
-      tester,
-    ) async {
-      final l10n = await _open(
-        tester,
-        const TunnelSettings(core: CoreEngine.torReverse),
-        const SettingsScreen(),
-      );
+    testWidgets(
+      'around tor every protocol is offered and what needs udp is said to run as masque',
+      (tester) async {
+        final l10n = await _open(
+          tester,
+          const TunnelSettings(tor: CarrierMode.reverse),
+          const SettingsScreen(),
+        );
 
-      await tester.tap(find.text(l10n.protocol));
-      await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.protocol));
+        await tester.pumpAndSettle();
+        for (final desc in <String>[
+          l10n.protocolMasqueDesc,
+          l10n.protocolWireGuardDesc,
+          l10n.protocolGoolDesc,
+          l10n.protocolGoolClassicDesc,
+          l10n.protocolMimDesc,
+        ]) {
+          expect(find.text(desc), findsWidgets, reason: desc);
+        }
 
-      expect(find.text(l10n.protocolGoolDesc), findsOneWidget);
-      expect(find.text(l10n.protocolMimDesc), findsOneWidget);
-      expect(find.text(l10n.protocolGoolClassicDesc), findsNothing);
-      expect(find.text(l10n.protocolWireGuardDesc), findsNothing);
-    });
+        await tester.tap(find.text(l10n.protocolGoolClassic));
+        await tester.pumpAndSettle();
+        expect(
+          _current(tester, SettingsScreen).protocol,
+          CoreProtocol.goolClassic,
+        );
+        expect(
+          find.text(l10n.protocolRunsAsMasque(l10n.coreTor)),
+          findsOneWidget,
+        );
+        expect(find.text(l10n.wiwOuter), findsNothing);
+      },
+    );
   });
 
   group('advanced screen', () {
@@ -399,7 +543,7 @@ void main() {
       expect(find.text(l10n.wiwSection), findsNothing);
     });
 
-    testWidgets('classic gool shows its hops here and gool does not', (
+    testWidgets('the hops and the ip version moved to the main page', (
       tester,
     ) async {
       final l10n = await _open(
@@ -407,7 +551,8 @@ void main() {
         const TunnelSettings(protocol: CoreProtocol.goolClassic),
         const AdvancedScreen(),
       );
-      expect(find.text(l10n.wiwSection), findsOneWidget);
+      expect(find.text(l10n.wiwOuter), findsNothing);
+      expect(find.text(l10n.ipVersion), findsNothing);
     });
 
     testWidgets('the warp api address is checked as the core checks it', (
@@ -553,7 +698,7 @@ void main() {
     testWidgets('the built-in edge lists are picked and saved', (tester) async {
       final l10n = await _open(
         tester,
-        const TunnelSettings(core: CoreEngine.psiphon),
+        const TunnelSettings(psiphon: CarrierMode.only),
         const PsiphonScreen(),
       );
 
@@ -575,7 +720,7 @@ void main() {
     testWidgets('the bundled server list can be turned off', (tester) async {
       final l10n = await _open(
         tester,
-        const TunnelSettings(core: CoreEngine.psiphon),
+        const TunnelSettings(psiphon: CarrierMode.only),
         const PsiphonScreen(),
       );
 
@@ -598,7 +743,7 @@ void main() {
       final l10n = await _open(
         tester,
         const TunnelSettings(
-          core: CoreEngine.psiphon,
+          psiphon: CarrierMode.only,
           psiphonCdnIps: '104.16.0.0/13',
         ),
         const PsiphonScreen(),

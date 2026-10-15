@@ -87,9 +87,18 @@ void main() {
   });
 
   group('mode badge', () {
-    for (final core in CoreEngine.values) {
+    final placements = <(CarrierMode, CarrierMode)>[
+      for (final psiphon in CarrierMode.values)
+        for (final tor in CarrierMode.values)
+          if (TunnelSettings.carriersFit(psiphon, tor)) (psiphon, tor),
+    ];
+    for (final (psiphon, tor) in placements) {
       for (final protocol in CoreProtocol.values) {
-        final mode = TunnelSettings(core: core, protocol: protocol).modeLabel;
+        final mode = TunnelSettings(
+          psiphon: psiphon,
+          tor: tor,
+          protocol: protocol,
+        ).modeLabel;
         testWidgets('names what runs on a narrow phone: $mode', (tester) async {
           await tester.pumpWidget(
             _host(Center(child: ModeBadge(mode: mode)), width: 300),
@@ -104,27 +113,29 @@ void main() {
 
   group('warp exit', () {
     test('only the cores that leave through warp expect a warp exit', () {
-      for (final core in <CoreEngine>[
-        CoreEngine.aether,
-        CoreEngine.psiphonReverse,
-        CoreEngine.torReverse,
+      for (final (psiphon, tor) in <(CarrierMode, CarrierMode)>[
+        (CarrierMode.off, CarrierMode.off),
+        (CarrierMode.reverse, CarrierMode.off),
+        (CarrierMode.off, CarrierMode.reverse),
       ]) {
         expect(
-          TunnelSettings(core: core).exitIsWarp,
+          TunnelSettings(psiphon: psiphon, tor: tor).exitIsWarp,
           isTrue,
-          reason: core.wire,
+          reason: '${psiphon.wire} ${tor.wire}',
         );
       }
-      for (final core in <CoreEngine>[
-        CoreEngine.psiphon,
-        CoreEngine.chain,
-        CoreEngine.tor,
-        CoreEngine.torChain,
+      for (final (psiphon, tor) in <(CarrierMode, CarrierMode)>[
+        (CarrierMode.only, CarrierMode.off),
+        (CarrierMode.chain, CarrierMode.off),
+        (CarrierMode.off, CarrierMode.only),
+        (CarrierMode.off, CarrierMode.chain),
+        (CarrierMode.reverse, CarrierMode.chain),
+        (CarrierMode.chain, CarrierMode.reverse),
       ]) {
         expect(
-          TunnelSettings(core: core).exitIsWarp,
+          TunnelSettings(psiphon: psiphon, tor: tor).exitIsWarp,
           isFalse,
-          reason: core.wire,
+          reason: '${psiphon.wire} ${tor.wire}',
         );
       }
     });

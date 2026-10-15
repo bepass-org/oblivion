@@ -20,28 +20,224 @@ import 'psiphon_screen.dart';
 import 'split_tunnel_screen.dart';
 import 'zero_trust_screen.dart';
 
-String coreTitle(L10n l10n, CoreEngine value) => switch (value) {
-  CoreEngine.aether => l10n.coreAether,
-  CoreEngine.psiphon => l10n.corePsiphon,
-  CoreEngine.chain => l10n.coreChain,
-  CoreEngine.psiphonReverse => l10n.corePsiphonReverse,
-  CoreEngine.tor => l10n.coreTor,
-  CoreEngine.torChain => l10n.coreTorChain,
-  CoreEngine.torReverse => l10n.coreTorReverse,
+String carrierTitle(L10n l10n, CarrierMode value, {required bool tor}) =>
+    switch (value) {
+      CarrierMode.off => l10n.placeOff,
+      CarrierMode.chain => tor ? l10n.placeTorChain : l10n.placePsiphonChain,
+      CarrierMode.reverse =>
+        tor ? l10n.placeTorReverse : l10n.placePsiphonReverse,
+      CarrierMode.only => tor ? l10n.placeTorOnly : l10n.placePsiphonOnly,
+    };
+
+String carrierDesc(L10n l10n, CarrierMode value, {required bool tor}) =>
+    switch (value) {
+      CarrierMode.off => tor ? l10n.placeTorOffDesc : l10n.placePsiphonOffDesc,
+      CarrierMode.chain => tor ? l10n.coreTorChainDesc : l10n.coreChainDesc,
+      CarrierMode.reverse =>
+        tor ? l10n.coreTorReverseDesc : l10n.corePsiphonReverseDesc,
+      CarrierMode.only => tor ? l10n.coreTorDesc : l10n.corePsiphonDesc,
+    };
+
+String reverseCarrierName(L10n l10n, TunnelSettings settings) =>
+    settings.torReverse ? l10n.coreTor : l10n.corePsiphon;
+
+Future<void> pickCarrier({
+  required BuildContext context,
+  required L10n l10n,
+  required TunnelSettingsController controller,
+  required TunnelSettings settings,
+  required bool tor,
+}) {
+  final other = tor ? settings.psiphon : settings.tor;
+  final otherName = tor ? l10n.corePsiphon : l10n.coreTor;
+
+  return showChoiceSheet<CarrierMode>(
+    context: context,
+    title: tor ? l10n.coreTor : l10n.corePsiphon,
+    selected: tor ? settings.tor : settings.psiphon,
+    options: CarrierMode.values.map((value) {
+      final fits = tor
+          ? TunnelSettings.carriersFit(other, value)
+          : TunnelSettings.carriersFit(value, other);
+      final desc = carrierDesc(l10n, value, tor: tor);
+      return PickerOption<CarrierMode>(
+        value: value,
+        title: carrierTitle(l10n, value, tor: tor),
+        subtitle: fits ? desc : '$desc\n${l10n.placeTurnsOff(otherName)}',
+      );
+    }).toList(),
+    onSelected: (value) =>
+        controller.update((s) => tor ? s.withTor(value) : s.withPsiphon(value)),
+  );
+}
+
+String ipTitle(L10n l10n, IpVersion value) => switch (value) {
+  IpVersion.v4 => l10n.ipV4,
+  IpVersion.v6 => l10n.ipV6,
+  IpVersion.dual => l10n.ipDual,
 };
 
-String coreDesc(L10n l10n, CoreEngine value) => switch (value) {
-  CoreEngine.aether => l10n.coreAetherDesc,
-  CoreEngine.psiphon => l10n.corePsiphonDesc,
-  CoreEngine.chain => l10n.coreChainDesc,
-  CoreEngine.psiphonReverse => l10n.corePsiphonReverseDesc,
-  CoreEngine.tor => l10n.coreTorDesc,
-  CoreEngine.torChain => l10n.coreTorChainDesc,
-  CoreEngine.torReverse => l10n.coreTorReverseDesc,
+String ipDesc(L10n l10n, IpVersion value) => switch (value) {
+  IpVersion.v4 => l10n.ipV4Desc,
+  IpVersion.v6 => l10n.ipV6Desc,
+  IpVersion.dual => l10n.ipDualDesc,
 };
 
-String chainedEngineName(L10n l10n, TunnelSettings settings) =>
-    settings.usesTor ? l10n.coreTor : l10n.corePsiphon;
+Future<void> editWiwHop({
+  required BuildContext context,
+  required L10n l10n,
+  required TunnelSettingsController controller,
+  required TunnelSettings settings,
+  required bool outer,
+}) {
+  final title = outer ? l10n.wiwOuter : l10n.wiwInner;
+
+  return showTextEditorSheet(
+    context: context,
+    title: title,
+    description:
+        '${outer ? l10n.wiwOuterDesc : l10n.wiwInnerDesc}\n\n'
+        '${l10n.wiwHint}',
+    initial: outer ? settings.wiwOuter : settings.wiwInner,
+    placeholder: outer ? '162.159.192.1:2408' : '188.114.96.1:2408',
+    cancelLabel: l10n.cancel,
+    saveLabel: l10n.save,
+    validator: (raw) {
+      final value = raw.trim();
+      if (value.isEmpty) return null;
+      if (!TunnelSettings.isValidEndpoint(value)) {
+        return l10n.wiwInvalidEndpoint;
+      }
+      final next = outer
+          ? settings.copyWith(wiwOuter: value)
+          : settings.copyWith(wiwInner: value);
+      return next.wiwHopsCollide ? l10n.wiwSameEdge : null;
+    },
+    onSaved: (raw) => controller.update(
+      (s) => outer
+          ? s.copyWith(wiwOuter: raw.trim())
+          : s.copyWith(wiwInner: raw.trim()),
+    ),
+  );
+}
+
+List<Widget> endpointRows({
+  required BuildContext context,
+  required L10n l10n,
+  required TunnelSettingsController controller,
+  required TunnelSettings settings,
+}) {
+  if (settings.usesGoolClassic) {
+    return <Widget>[
+      for (final outer in <bool>[true, false])
+        SettingsRow(
+          title: outer ? l10n.wiwOuter : l10n.wiwInner,
+          subtitle: outer ? l10n.wiwOuterDesc : l10n.wiwInnerDesc,
+          value: switch (outer
+              ? settings.wiwOuterPeer
+              : settings.wiwInnerPeer) {
+            '' => l10n.wiwScanned,
+            final hop => hop,
+          },
+          onTap: () => editWiwHop(
+            context: context,
+            l10n: l10n,
+            controller: controller,
+            settings: settings,
+            outer: outer,
+          ),
+        ),
+    ];
+  }
+
+  final endpointTitle = settings.usesMim
+      ? l10n.wiwOuter
+      : settings.usesGool
+      ? l10n.masqueServer
+      : l10n.endpoint;
+
+  return <Widget>[
+    SettingsRow(
+      title: endpointTitle,
+      subtitle: settings.scannerBypassed
+          ? l10n.scannerOff
+          : l10n.endpointManualHint,
+      value: settings.endpoint.isEmpty ? l10n.endpointAuto : settings.endpoint,
+      onTap: () => showTextEditorSheet(
+        context: context,
+        title: endpointTitle,
+        description: l10n.endpointDesc,
+        initial: settings.endpoint,
+        placeholder: '162.159.198.1:443',
+        cancelLabel: l10n.cancel,
+        saveLabel: l10n.save,
+        validator: (v) {
+          if (v.trim().isEmpty) return null;
+          if (!TunnelSettings.isValidEndpoint(v)) {
+            return l10n.wiwInvalidEndpoint;
+          }
+          return settings.usesMim &&
+                  settings.copyWith(endpoint: v.trim()).mimHopsCollide
+              ? l10n.wiwSameEdge
+              : null;
+        },
+        onSaved: (v) =>
+            controller.update((s) => s.copyWith(endpoint: v.trim())),
+      ),
+    ),
+    if (settings.usesMim)
+      SettingsRow(
+        title: l10n.wiwInner,
+        subtitle: l10n.mimInnerDesc,
+        value: settings.mimInnerValue.isEmpty
+            ? l10n.endpointAuto
+            : settings.mimInnerValue,
+        onTap: () => showTextEditorSheet(
+          context: context,
+          title: l10n.wiwInner,
+          description: '${l10n.mimInnerDesc}\n\n${l10n.wiwHint}',
+          initial: settings.mimInner,
+          placeholder: '162.159.198.2:443',
+          cancelLabel: l10n.cancel,
+          saveLabel: l10n.save,
+          validator: (v) {
+            if (v.trim().isEmpty) return null;
+            if (!TunnelSettings.isValidEndpoint(v)) {
+              return l10n.wiwInvalidEndpoint;
+            }
+            return settings.copyWith(mimInner: v).mimHopsCollide
+                ? l10n.wiwSameEdge
+                : null;
+          },
+          onSaved: (v) =>
+              controller.update((s) => s.copyWith(mimInner: v.trim())),
+        ),
+      ),
+    if (settings.usesGool)
+      SettingsRow(
+        title: l10n.goolPeer,
+        subtitle: l10n.goolPeerDesc,
+        value: settings.goolPeerValue.isEmpty
+            ? l10n.endpointAuto
+            : settings.goolPeerValue,
+        onTap: () => showTextEditorSheet(
+          context: context,
+          title: l10n.goolPeer,
+          description: l10n.goolPeerDesc,
+          initial: settings.goolPeer,
+          placeholder: '162.159.192.1:2408',
+          cancelLabel: l10n.cancel,
+          saveLabel: l10n.save,
+          validator: (v) =>
+              v.trim().isEmpty || TunnelSettings.isValidEndpoint(v)
+              ? null
+              : l10n.wiwInvalidEndpoint,
+          onSaved: (v) =>
+              controller.update((s) => s.copyWith(goolPeer: v.trim())),
+        ),
+      ),
+  ];
+}
 
 String torRelaysTitle(L10n l10n, TorRelays value) => switch (value) {
   TorRelays.auto => l10n.torRelaysAuto,
@@ -62,6 +258,12 @@ String protocolTitle(L10n l10n, CoreProtocol value) => switch (value) {
   CoreProtocol.gool => l10n.protocolGool,
   CoreProtocol.goolClassic => l10n.protocolGoolClassic,
   CoreProtocol.mim => l10n.protocolMim,
+};
+
+String protocolShortTitle(L10n l10n, CoreProtocol value) => switch (value) {
+  CoreProtocol.gool => l10n.protocolGoolShort,
+  CoreProtocol.goolClassic => l10n.protocolGoolClassicShort,
+  _ => protocolTitle(l10n, value),
 };
 
 String protocolDesc(L10n l10n, CoreProtocol value) => switch (value) {
@@ -302,154 +504,24 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-                SettingsGroup(
-                  children: <Widget>[
-                    SettingsRow(
-                      title: l10n.coreEngine,
-                      subtitle: coreDesc(l10n, settings.core),
-                      value: coreTitle(l10n, settings.core),
-                      onTap: () => showChoiceSheet<CoreEngine>(
-                        context: context,
-                        title: l10n.coreEngine,
-                        selected: settings.core,
-                        options: CoreEngine.values
-                            .map(
-                              (v) => PickerOption<CoreEngine>(
-                                value: v,
-                                title: coreTitle(l10n, v),
-                                subtitle: coreDesc(l10n, v),
-                              ),
-                            )
-                            .toList(),
-                        onSelected: (v) =>
-                            controller.update((s) => s.copyWith(core: v)),
-                      ),
-                    ),
-                    if (settings.carriesInside)
-                      SettingsRow(
-                        title: l10n.chainOrder,
-                        subtitle: l10n.chainOrderDesc(
-                          protocolTitle(l10n, settings.effectiveProtocol),
-                          chainedEngineName(l10n, settings),
-                        ),
-                        value:
-                            '${settings.aetherSocksPort} → '
-                            '${settings.socksPort}',
-                      ),
-                    if (settings.dialsThrough)
-                      SettingsRow(
-                        title: l10n.chainOrder,
-                        subtitle: l10n.chainOrderReverseDesc(
-                          chainedEngineName(l10n, settings),
-                        ),
-                      ),
-                    if (settings.usesPsiphon)
-                      SettingsRow(
-                        title: l10n.psiphonSettings,
-                        subtitle: psiphonModeDesc(l10n, settings.psiphonMode),
-                        value: psiphonModeTitle(l10n, settings.psiphonMode),
-                        onTap: () => Navigator.of(context).push(
-                          CupertinoPageRoute<void>(
-                            builder: (_) => const PsiphonScreen(),
-                          ),
-                        ),
-                      ),
-                    if (settings.usesTor)
-                      SettingsRow(
-                        title: l10n.torRelaysTitle,
-                        subtitle: l10n.torRelaysDesc,
-                        value: torRelaysTitle(l10n, settings.torRelays),
-                        onTap: () => showChoiceSheet<TorRelays>(
-                          context: context,
-                          title: l10n.torRelaysTitle,
-                          selected: settings.torRelays,
-                          options: TorRelays.values
-                              .map(
-                                (v) => PickerOption<TorRelays>(
-                                  value: v,
-                                  title: torRelaysTitle(l10n, v),
-                                ),
-                              )
-                              .toList(),
-                          onSelected: (v) => controller.update(
-                            (s) => s.copyWith(torRelays: v),
-                          ),
-                        ),
-                      ),
-                    if (settings.usesTor)
-                      SettingsRow(
-                        title: l10n.torBridges,
-                        subtitle: l10n.torBridgesDesc,
-                        value: torBridgesTitle(l10n, settings.torBridges),
-                        onTap: () => showChoiceSheet<TorBridges>(
-                          context: context,
-                          title: l10n.torBridges,
-                          selected: settings.torBridges,
-                          options: TorBridges.values
-                              .map(
-                                (v) => PickerOption<TorBridges>(
-                                  value: v,
-                                  title: torBridgesTitle(l10n, v),
-                                ),
-                              )
-                              .toList(),
-                          onSelected: (v) => controller.update(
-                            (s) => s.copyWith(torBridges: v),
-                          ),
-                        ),
-                      ),
-                    if (settings.usesTor && settings.torBridges == TorBridges.own)
-                      SettingsRow(
-                        title: l10n.torBridgeLines,
-                        subtitle: settings.torBridgesMissing
-                            ? l10n.torBridgeLinesRefusal
-                            : null,
-                        destructive: settings.torBridgesMissing,
-                        value: '${settings.torBridgeLineList.length}',
-                        onTap: () => showTextEditorSheet(
-                          context: context,
-                          title: l10n.torBridgeLines,
-                          description: l10n.torBridgeLinesDesc,
-                          initial: settings.torBridgeLines,
-                          placeholder:
-                              'obfs4 1.2.3.4:443 FINGERPRINT cert=... iat-mode=0',
-                          multiline: true,
-                          cancelLabel: l10n.cancel,
-                          saveLabel: l10n.save,
-                          validator: (v) => TunnelSettings.bridgeLines(v).isEmpty
-                              ? l10n.torBridgeLinesRefusal
-                              : null,
-                          onSaved: (v) => controller.update(
-                            (s) => s.copyWith(torBridgeLines: v.trim()),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
                 if (settings.usesAether)
                   SettingsGroup(
-                    header: l10n.aetherOnlySection,
+                    header: l10n.sectionWarp,
                     children: <Widget>[
                       SettingsRow(
                         title: l10n.protocol,
-                        subtitle:
-                            settings.dialsThrough &&
-                                settings.effectiveProtocol != settings.protocol
-                            ? l10n.protocolThroughCarrier(
-                                chainedEngineName(l10n, settings),
+                        subtitle: settings.protocolRunsAsMasque
+                            ? l10n.protocolRunsAsMasque(
+                                reverseCarrierName(l10n, settings),
                               )
-                            : protocolDesc(l10n, settings.effectiveProtocol),
-                        value: protocolTitle(l10n, settings.effectiveProtocol),
+                            : protocolDesc(l10n, settings.protocol),
+                        destructive: settings.protocolRunsAsMasque,
+                        value: protocolShortTitle(l10n, settings.protocol),
                         onTap: () => showChoiceSheet<CoreProtocol>(
                           context: context,
                           title: l10n.protocol,
-                          selected: settings.effectiveProtocol,
+                          selected: settings.protocol,
                           options: CoreProtocol.values
-                              .where(
-                                (v) =>
-                                    !settings.dialsThrough ||
-                                    !TunnelSettings.needsUdpToWarp(v),
-                              )
                               .map(
                                 (v) => PickerOption<CoreProtocol>(
                                   value: v,
@@ -462,41 +534,81 @@ class SettingsScreen extends ConsumerWidget {
                               controller.update((s) => s.copyWith(protocol: v)),
                         ),
                       ),
-                      SettingsRow(
-                        title: l10n.transport,
-                        value: settings.usesHttp2 ? 'HTTP/2' : 'HTTP/3',
-                        enabled: settings.isMasque && !settings.dialsThrough,
-                        onTap: () => showChoiceSheet<MasqueTransport>(
-                          context: context,
+                      if (settings.isMasque)
+                        SettingsRow(
                           title: l10n.transport,
-                          selected: settings.transport,
-                          options: <PickerOption<MasqueTransport>>[
-                            PickerOption(
-                              value: MasqueTransport.http3,
-                              title: l10n.transportH3,
-                              subtitle: l10n.transportH3Desc,
+                          value: settings.usesHttp2 ? 'HTTP/2' : 'HTTP/3',
+                          enabled: !settings.dialsThrough,
+                          onTap: () => showChoiceSheet<MasqueTransport>(
+                            context: context,
+                            title: l10n.transport,
+                            selected: settings.transport,
+                            options: <PickerOption<MasqueTransport>>[
+                              PickerOption(
+                                value: MasqueTransport.http3,
+                                title: l10n.transportH3,
+                                subtitle: l10n.transportH3Desc,
+                              ),
+                              PickerOption(
+                                value: MasqueTransport.http2,
+                                title: l10n.transportH2,
+                                subtitle: l10n.transportH2Desc,
+                              ),
+                            ],
+                            onSelected: (v) => controller.update(
+                              (s) => s.copyWith(transport: v),
                             ),
-                            PickerOption(
-                              value: MasqueTransport.http2,
-                              title: l10n.transportH2,
-                              subtitle: l10n.transportH2Desc,
-                            ),
-                          ],
-                          onSelected: (v) => controller.update(
-                            (s) => s.copyWith(transport: v),
                           ),
                         ),
+                      if (settings.isMasque)
+                        SettingsRow(
+                          title: l10n.masqueSni,
+                          subtitle: l10n.masqueSniDesc,
+                          value: settings.masqueServerName,
+                          onTap: () => pickMasqueServerName(
+                            context: context,
+                            l10n: l10n,
+                            controller: controller,
+                            settings: settings,
+                          ),
+                        ),
+                      ...endpointRows(
+                        context: context,
+                        l10n: l10n,
+                        controller: controller,
+                        settings: settings,
                       ),
+                      if (CoreJobs.supported && settings.canFindGateway)
+                        SettingsRow(
+                          title: l10n.findGateway,
+                          subtitle: tunnelIdle
+                              ? l10n.findGatewayDesc
+                              : l10n.jobsNeedDisconnect,
+                          enabled: tunnelIdle,
+                          onTap: tunnelIdle
+                              ? () => findGateway(context, ref, l10n)
+                              : null,
+                        ),
                       SettingsRow(
-                        title: l10n.masqueSni,
-                        subtitle: l10n.masqueSniDesc,
-                        value: settings.masqueServerName,
-                        enabled: settings.isMasque,
-                        onTap: () => pickMasqueServerName(
+                        title: l10n.ipVersion,
+                        subtitle: ipDesc(l10n, settings.ipVersion),
+                        value: ipTitle(l10n, settings.ipVersion),
+                        onTap: () => showChoiceSheet<IpVersion>(
                           context: context,
-                          l10n: l10n,
-                          controller: controller,
-                          settings: settings,
+                          title: l10n.ipVersion,
+                          selected: settings.ipVersion,
+                          options: IpVersion.values
+                              .map(
+                                (v) => PickerOption<IpVersion>(
+                                  value: v,
+                                  title: ipTitle(l10n, v),
+                                  subtitle: ipDesc(l10n, v),
+                                ),
+                              )
+                              .toList(),
+                          onSelected: (v) => controller.update(
+                            (s) => s.copyWith(ipVersion: v),
+                          ),
                         ),
                       ),
                       SettingsRow(
@@ -541,97 +653,6 @@ class SettingsScreen extends ConsumerWidget {
                           ),
                         ),
                       ),
-                      if (settings.usesGoolClassic)
-                        SettingsRow(
-                          title: l10n.wiwSection,
-                          subtitle: l10n.wiwSectionDesc,
-                          value: settings.wiwPinned
-                              ? l10n.wiwManual
-                              : l10n.wiwScanned,
-                          onTap: () => Navigator.of(context).push(
-                            CupertinoPageRoute<void>(
-                              builder: (_) => const AdvancedScreen(),
-                            ),
-                          ),
-                        ),
-                      if (settings.usesGool)
-                        SettingsRow(
-                          title: l10n.goolPeer,
-                          subtitle: l10n.goolPeerDesc,
-                          value: settings.goolPeerValue.isEmpty
-                              ? l10n.endpointAuto
-                              : settings.goolPeerValue,
-                          onTap: () => showTextEditorSheet(
-                            context: context,
-                            title: l10n.goolPeer,
-                            description: l10n.goolPeerDesc,
-                            initial: settings.goolPeer,
-                            placeholder: '162.159.192.1:2408',
-                            cancelLabel: l10n.cancel,
-                            saveLabel: l10n.save,
-                            validator: (v) =>
-                                v.trim().isEmpty ||
-                                    TunnelSettings.isValidEndpoint(v)
-                                ? null
-                                : l10n.wiwInvalidEndpoint,
-                            onSaved: (v) => controller.update(
-                              (s) => s.copyWith(goolPeer: v.trim()),
-                            ),
-                          ),
-                        ),
-                      if (settings.usesMim)
-                        SettingsRow(
-                          title: l10n.mimInner,
-                          subtitle: l10n.mimInnerDesc,
-                          value: settings.mimInnerValue.isEmpty
-                              ? l10n.endpointAuto
-                              : settings.mimInnerValue,
-                          onTap: () => showTextEditorSheet(
-                            context: context,
-                            title: l10n.mimInner,
-                            description: '${l10n.mimInnerDesc}\n\n${l10n.wiwHint}',
-                            initial: settings.mimInner,
-                            placeholder: '162.159.198.2:443',
-                            cancelLabel: l10n.cancel,
-                            saveLabel: l10n.save,
-                            validator: (v) {
-                              if (v.trim().isEmpty) return null;
-                              if (!TunnelSettings.isValidEndpoint(v)) {
-                                return l10n.wiwInvalidEndpoint;
-                              }
-                              return settings.copyWith(mimInner: v).mimHopsCollide
-                                  ? l10n.wiwSameEdge
-                                  : null;
-                            },
-                            onSaved: (v) => controller.update(
-                              (s) => s.copyWith(mimInner: v.trim()),
-                            ),
-                          ),
-                        ),
-                      SettingsRow(
-                        title: l10n.endpoint,
-                        subtitle: settings.usesGoolClassic
-                            ? l10n.endpointIgnoredOnGool
-                            : (settings.scannerBypassed
-                                  ? l10n.scannerOff
-                                  : l10n.endpointManualHint),
-                        enabled: !settings.usesGoolClassic,
-                        value: settings.endpoint.isEmpty
-                            ? l10n.endpointAuto
-                            : settings.endpoint,
-                        onTap: () => showTextEditorSheet(
-                          context: context,
-                          title: l10n.endpoint,
-                          description: l10n.endpointDesc,
-                          initial: settings.endpoint,
-                          placeholder: '162.159.198.1:443',
-                          cancelLabel: l10n.cancel,
-                          saveLabel: l10n.save,
-                          onSaved: (v) => controller.update(
-                            (s) => s.copyWith(endpoint: v.trim()),
-                          ),
-                        ),
-                      ),
                       SettingsRow(
                         title: l10n.exitLocTitle,
                         subtitle: l10n.exitLocDesc,
@@ -656,19 +677,125 @@ class SettingsScreen extends ConsumerWidget {
                           ),
                         ),
                       ),
-                      if (CoreJobs.supported && settings.canFindGateway)
-                        SettingsRow(
-                          title: l10n.findGateway,
-                          subtitle: tunnelIdle
-                              ? l10n.findGatewayDesc
-                              : l10n.jobsNeedDisconnect,
-                          enabled: tunnelIdle,
-                          onTap: tunnelIdle
-                              ? () => findGateway(context, ref, l10n)
-                              : null,
-                        ),
                     ],
                   ),
+                SettingsGroup(
+                  children: <Widget>[
+                    SettingsRow(
+                      title: l10n.corePsiphon,
+                      subtitle: carrierDesc(l10n, settings.psiphon, tor: false),
+                      value: carrierTitle(l10n, settings.psiphon, tor: false),
+                      onTap: () => pickCarrier(
+                        context: context,
+                        l10n: l10n,
+                        controller: controller,
+                        settings: settings,
+                        tor: false,
+                      ),
+                    ),
+                    if (settings.usesPsiphon)
+                      SettingsRow(
+                        title: l10n.psiphonDetails,
+                        subtitle: psiphonModeDesc(l10n, settings.psiphonMode),
+                        value: psiphonModeTitle(l10n, settings.psiphonMode),
+                        onTap: () => Navigator.of(context).push(
+                          CupertinoPageRoute<void>(
+                            builder: (_) => const PsiphonScreen(),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                SettingsGroup(
+                  children: <Widget>[
+                    SettingsRow(
+                      title: l10n.coreTor,
+                      subtitle: carrierDesc(l10n, settings.tor, tor: true),
+                      value: carrierTitle(l10n, settings.tor, tor: true),
+                      onTap: () => pickCarrier(
+                        context: context,
+                        l10n: l10n,
+                        controller: controller,
+                        settings: settings,
+                        tor: true,
+                      ),
+                    ),
+                    if (settings.usesTor)
+                      SettingsRow(
+                        title: l10n.torBridges,
+                        subtitle: l10n.torBridgesDesc,
+                        value: torBridgesTitle(l10n, settings.torBridges),
+                        onTap: () => showChoiceSheet<TorBridges>(
+                          context: context,
+                          title: l10n.torBridges,
+                          selected: settings.torBridges,
+                          options: TorBridges.values
+                              .map(
+                                (v) => PickerOption<TorBridges>(
+                                  value: v,
+                                  title: torBridgesTitle(l10n, v),
+                                ),
+                              )
+                              .toList(),
+                          onSelected: (v) => controller.update(
+                            (s) => s.copyWith(torBridges: v),
+                          ),
+                        ),
+                      ),
+                    if (settings.usesTor &&
+                        (settings.torBridges == TorBridges.auto ||
+                            settings.torBridges == TorBridges.first))
+                      SettingsRow(
+                        title: l10n.torRelaysTitle,
+                        subtitle: l10n.torRelaysDesc,
+                        value: torRelaysTitle(l10n, settings.torRelays),
+                        onTap: () => showChoiceSheet<TorRelays>(
+                          context: context,
+                          title: l10n.torRelaysTitle,
+                          selected: settings.torRelays,
+                          options: TorRelays.values
+                              .map(
+                                (v) => PickerOption<TorRelays>(
+                                  value: v,
+                                  title: torRelaysTitle(l10n, v),
+                                ),
+                              )
+                              .toList(),
+                          onSelected: (v) => controller.update(
+                            (s) => s.copyWith(torRelays: v),
+                          ),
+                        ),
+                      ),
+                    if (settings.usesTor &&
+                        settings.torBridges == TorBridges.own)
+                      SettingsRow(
+                        title: l10n.torBridgeLines,
+                        subtitle: settings.torBridgesMissing
+                            ? l10n.torBridgeLinesRefusal
+                            : null,
+                        destructive: settings.torBridgesMissing,
+                        value: '${settings.torBridgeLineList.length}',
+                        onTap: () => showTextEditorSheet(
+                          context: context,
+                          title: l10n.torBridgeLines,
+                          description: l10n.torBridgeLinesDesc,
+                          initial: settings.torBridgeLines,
+                          placeholder:
+                              'obfs4 1.2.3.4:443 FINGERPRINT cert=... iat-mode=0',
+                          multiline: true,
+                          cancelLabel: l10n.cancel,
+                          saveLabel: l10n.save,
+                          validator: (v) =>
+                              TunnelSettings.bridgeLines(v).isEmpty
+                              ? l10n.torBridgeLinesRefusal
+                              : null,
+                          onSaved: (v) => controller.update(
+                            (s) => s.copyWith(torBridgeLines: v.trim()),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
                 SettingsGroup(
                   children: <Widget>[
                     SettingsRow(

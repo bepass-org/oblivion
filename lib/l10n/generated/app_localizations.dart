@@ -634,7 +634,7 @@ abstract class L10n {
   /// No description provided for @protocolGool.
   ///
   /// In en, this message translates to:
-  /// **'Gool'**
+  /// **'Gool (WireGuard over MASQUE)'**
   String get protocolGool;
 
   /// No description provided for @protocolGoolDesc.
@@ -646,7 +646,7 @@ abstract class L10n {
   /// No description provided for @protocolGoolClassic.
   ///
   /// In en, this message translates to:
-  /// **'Classic Gool'**
+  /// **'Classic Gool (WARP in WARP)'**
   String get protocolGoolClassic;
 
   /// No description provided for @protocolGoolClassicDesc.
@@ -654,6 +654,18 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'WARP inside WARP, two WireGuard hops'**
   String get protocolGoolClassicDesc;
+
+  /// No description provided for @protocolGoolShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Gool'**
+  String get protocolGoolShort;
+
+  /// No description provided for @protocolGoolClassicShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Classic Gool'**
+  String get protocolGoolClassicShort;
 
   /// No description provided for @transport.
   ///
@@ -808,7 +820,7 @@ abstract class L10n {
   /// No description provided for @ipDual.
   ///
   /// In en, this message translates to:
-  /// **'Both'**
+  /// **'IPv4 + IPv6'**
   String get ipDual;
 
   /// No description provided for @socksPort.
@@ -2473,30 +2485,6 @@ abstract class L10n {
   /// **'Oblivion needs a notification to keep the tunnel alive in the background'**
   String get notificationPermissionBody;
 
-  /// No description provided for @coreEngine.
-  ///
-  /// In en, this message translates to:
-  /// **'Core'**
-  String get coreEngine;
-
-  /// No description provided for @coreEngineDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Which tunnel engine to run'**
-  String get coreEngineDesc;
-
-  /// No description provided for @coreAether.
-  ///
-  /// In en, this message translates to:
-  /// **'Aether'**
-  String get coreAether;
-
-  /// No description provided for @coreAetherDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Cloudflare WARP and MASQUE'**
-  String get coreAetherDesc;
-
   /// No description provided for @corePsiphon.
   ///
   /// In en, this message translates to:
@@ -2509,23 +2497,11 @@ abstract class L10n {
   /// **'Psiphon network with CDN fronting'**
   String get corePsiphonDesc;
 
-  /// No description provided for @coreChain.
-  ///
-  /// In en, this message translates to:
-  /// **'Psiphon inside the tunnel'**
-  String get coreChain;
-
   /// No description provided for @coreChainDesc.
   ///
   /// In en, this message translates to:
   /// **'You, WARP, Psiphon, the internet. The exit is Psiphon, and a network that blocks Psiphon never sees it'**
   String get coreChainDesc;
-
-  /// No description provided for @corePsiphonReverse.
-  ///
-  /// In en, this message translates to:
-  /// **'Tunnel through Psiphon'**
-  String get corePsiphonReverse;
 
   /// No description provided for @corePsiphonReverseDesc.
   ///
@@ -2545,53 +2521,17 @@ abstract class L10n {
   /// **'Plain Tor, with no tunnel underneath'**
   String get coreTorDesc;
 
-  /// No description provided for @coreTorChain.
-  ///
-  /// In en, this message translates to:
-  /// **'Tor inside the tunnel'**
-  String get coreTorChain;
-
   /// No description provided for @coreTorChainDesc.
   ///
   /// In en, this message translates to:
   /// **'You, WARP, Tor, the internet. The exit is Tor, and a network that blocks Tor never sees it'**
   String get coreTorChainDesc;
 
-  /// No description provided for @coreTorReverse.
-  ///
-  /// In en, this message translates to:
-  /// **'Tunnel through Tor'**
-  String get coreTorReverse;
-
   /// No description provided for @coreTorReverseDesc.
   ///
   /// In en, this message translates to:
   /// **'You, Tor, WARP, the internet. The exit is WARP, reached from a Tor exit, and your network never sees WARP'**
   String get coreTorReverseDesc;
-
-  /// No description provided for @chainOrder.
-  ///
-  /// In en, this message translates to:
-  /// **'Chain order'**
-  String get chainOrder;
-
-  /// No description provided for @chainOrderDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'{transport} connects first, then {engine} dials out through it.'**
-  String chainOrderDesc(String transport, String engine);
-
-  /// No description provided for @chainOrderReverseDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'{engine} connects first, then WARP is reached through it with MASQUE over HTTP/2.'**
-  String chainOrderReverseDesc(String engine);
-
-  /// No description provided for @protocolThroughCarrier.
-  ///
-  /// In en, this message translates to:
-  /// **'Through {engine} WARP is reached over HTTP/2, so WireGuard and Classic Gool cannot run. Your own choice comes back with any other core'**
-  String protocolThroughCarrier(String engine);
 
   /// No description provided for @chainNeedsTcp.
   ///
@@ -2857,12 +2797,6 @@ abstract class L10n {
   /// **'Psiphon settings apply only when the Psiphon core is selected'**
   String get psiphonNotAvailable;
 
-  /// No description provided for @aetherOnlySection.
-  ///
-  /// In en, this message translates to:
-  /// **'These settings apply to the Aether core'**
-  String get aetherOnlySection;
-
   /// No description provided for @fastFirstConnect.
   ///
   /// In en, this message translates to:
@@ -2886,6 +2820,90 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Two MASQUE hops, for an exit address in a different range'**
   String get protocolMimDesc;
+
+  /// No description provided for @sectionWarp.
+  ///
+  /// In en, this message translates to:
+  /// **'WARP'**
+  String get sectionWarp;
+
+  /// No description provided for @masqueServer.
+  ///
+  /// In en, this message translates to:
+  /// **'MASQUE server'**
+  String get masqueServer;
+
+  /// No description provided for @protocolRunsAsMasque.
+  ///
+  /// In en, this message translates to:
+  /// **'With {engine} → WARP, WARP is reached over HTTP/2, so this protocol connects as MASQUE'**
+  String protocolRunsAsMasque(String engine);
+
+  /// No description provided for @placeOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get placeOff;
+
+  /// No description provided for @placePsiphonOffDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'WARP alone, without Psiphon'**
+  String get placePsiphonOffDesc;
+
+  /// No description provided for @placeTorOffDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'WARP alone, without Tor'**
+  String get placeTorOffDesc;
+
+  /// No description provided for @placePsiphonChain.
+  ///
+  /// In en, this message translates to:
+  /// **'WARP → Psiphon'**
+  String get placePsiphonChain;
+
+  /// No description provided for @placePsiphonReverse.
+  ///
+  /// In en, this message translates to:
+  /// **'Psiphon → WARP'**
+  String get placePsiphonReverse;
+
+  /// No description provided for @placePsiphonOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Psiphon only'**
+  String get placePsiphonOnly;
+
+  /// No description provided for @placeTorChain.
+  ///
+  /// In en, this message translates to:
+  /// **'WARP → Tor'**
+  String get placeTorChain;
+
+  /// No description provided for @placeTorReverse.
+  ///
+  /// In en, this message translates to:
+  /// **'Tor → WARP'**
+  String get placeTorReverse;
+
+  /// No description provided for @placeTorOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Tor only'**
+  String get placeTorOnly;
+
+  /// No description provided for @placeTurnsOff.
+  ///
+  /// In en, this message translates to:
+  /// **'{engine} turns off: the two work together only with one inside WARP and the other around it'**
+  String placeTurnsOff(String engine);
+
+  /// No description provided for @psiphonDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Psiphon options'**
+  String get psiphonDetails;
 
   /// No description provided for @scanVerified.
   ///

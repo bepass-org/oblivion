@@ -437,7 +437,7 @@ void main() {
     test('the choice travels to the native side', () {
       expect(
         const TunnelSettings(
-          core: CoreEngine.tor,
+          tor: CarrierMode.only,
           torBridges: TorBridges.never,
         ).toPlatformPayload()['torBridges'],
         'off',
@@ -554,9 +554,11 @@ void main() {
 
   group('cores that run no aether', () {
     test('psiphon and tor alone get no aether flags at all', () {
-      for (final core in <CoreEngine>[CoreEngine.psiphon, CoreEngine.tor]) {
-        final args = TunnelSettings(
-          core: core,
+      for (final alone in const <TunnelSettings>[
+        TunnelSettings(psiphon: CarrierMode.only),
+        TunnelSettings(tor: CarrierMode.only),
+      ]) {
+        final args = alone.copyWith(
           protocol: CoreProtocol.gool,
           masqueSni: 'www.cloudflare.com',
           echMode: EchMode.auto,
@@ -565,7 +567,7 @@ void main() {
           grease: false,
           apiAddress: '188.114.97.6',
         ).toCoreArguments();
-        expect(args, isEmpty, reason: core.wire);
+        expect(args, isEmpty, reason: alone.modeLabel);
       }
     });
   });
@@ -573,7 +575,7 @@ void main() {
   group('psiphon cdn lists', () {
     test('the picked lists travel in the order psiphon names them', () {
       const settings = TunnelSettings(
-        core: CoreEngine.psiphon,
+        psiphon: CarrierMode.only,
         psiphonCdnSets: <String>{'fastly', 'cloudflare', 'github'},
       );
       expect(settings.psiphonCdnSetList, <String>[

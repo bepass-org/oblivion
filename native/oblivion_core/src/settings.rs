@@ -6,6 +6,10 @@ pub struct TunnelSettings {
     #[serde(default = "default_core")]
     pub core: String,
     #[serde(default)]
+    pub psiphon: String,
+    #[serde(default)]
+    pub tor: String,
+    #[serde(default)]
     pub psiphon_country: String,
     #[serde(default = "default_psiphon_mode")]
     pub psiphon_mode: String,
@@ -102,7 +106,7 @@ fn default_tunnel_interface() -> String {
 }
 
 fn default_mtu() -> u16 {
-    8500
+    1500
 }
 
 pub const NOIZE_AUTO: &str = "auto";
@@ -114,6 +118,18 @@ const CORE_MTU_MAX: u16 = 1500;
 
 fn default_core() -> String {
     crate::psiphon::CORE_AETHER.to_string()
+}
+
+fn legacy_places(core: &str) -> (&'static str, &'static str) {
+    match core.trim().to_ascii_lowercase().as_str() {
+        "psiphon" => ("only", "off"),
+        "chain" => ("chain", "off"),
+        "psiphon-reverse" => ("reverse", "off"),
+        "tor" => ("off", "only"),
+        "tor-chain" => ("off", "chain"),
+        "tor-reverse" => ("off", "reverse"),
+        _ => ("off", "off"),
+    }
 }
 
 fn default_psiphon_mode() -> String {
@@ -145,7 +161,7 @@ fn default_obfuscation() -> String {
 }
 
 fn default_ip_version() -> String {
-    "v4".to_string()
+    "both".to_string()
 }
 
 fn default_log_level() -> String {
@@ -168,32 +184,42 @@ pub struct ConnectRequest {
 }
 
 impl TunnelSettings {
-    fn core_is(&self, name: &str) -> bool {
-        self.core.trim().eq_ignore_ascii_case(name)
+    fn psiphon_place(&self) -> &str {
+        match self.psiphon.trim() {
+            "" => legacy_places(&self.core).0,
+            chosen => chosen,
+        }
+    }
+
+    fn tor_place(&self) -> &str {
+        match self.tor.trim() {
+            "" => legacy_places(&self.core).1,
+            chosen => chosen,
+        }
     }
 
     pub fn uses_chain(&self) -> bool {
-        self.core_is(crate::psiphon::CORE_CHAIN)
+        self.psiphon_place().eq_ignore_ascii_case("chain")
     }
 
     pub fn psiphon_only(&self) -> bool {
-        self.core_is(crate::psiphon::CORE_PSIPHON)
+        self.psiphon_place().eq_ignore_ascii_case("only")
     }
 
     pub fn psiphon_reverse(&self) -> bool {
-        self.core_is(crate::psiphon::CORE_PSIPHON_REVERSE)
+        self.psiphon_place().eq_ignore_ascii_case("reverse")
     }
 
     pub fn tor_only(&self) -> bool {
-        self.core_is(crate::psiphon::CORE_TOR)
+        self.tor_place().eq_ignore_ascii_case("only")
     }
 
     pub fn tor_chain(&self) -> bool {
-        self.core_is(crate::psiphon::CORE_TOR_CHAIN)
+        self.tor_place().eq_ignore_ascii_case("chain")
     }
 
     pub fn tor_reverse(&self) -> bool {
-        self.core_is(crate::psiphon::CORE_TOR_REVERSE)
+        self.tor_place().eq_ignore_ascii_case("reverse")
     }
 
     pub fn uses_tor(&self) -> bool {
@@ -616,12 +642,9 @@ impl TunnelSettings {
     }
 
     pub fn inner_mtu(&self) -> Option<u16> {
-        for candidate in [self.core_mtu, self.tunnel_mtu] {
-            if (CORE_MTU_MIN..=CORE_MTU_MAX).contains(&candidate) {
-                return Some(candidate);
-            }
-        }
-        None
+        (CORE_MTU_MIN..=CORE_MTU_MAX)
+            .contains(&self.core_mtu)
+            .then_some(self.core_mtu)
     }
 
     pub fn tunnel_mode(&self) -> bool {
@@ -651,7 +674,7 @@ impl TunnelSettings {
     }
 
     pub fn dual_stack(&self) -> bool {
-        self.ip_version == "dual" || self.ip_version == "v6"
+        matches!(self.ip_version.trim(), "both" | "dual" | "v6")
     }
 
     pub fn hev_log_level(&self) -> &'static str {
@@ -765,7 +788,7 @@ mod mtu_tests {
 
     #[test]
     fn the_default_tun_mtu_survives_the_clamp() {
-        assert_eq!(settings_from("{}").tun_mtu(), 8500);
+        assert_eq!(settings_from("{}").tun_mtu(), 1500);
     }
 
     #[test]
@@ -787,9 +810,19 @@ mod mtu_tests {
     }
 
     #[test]
-    fn a_hand_typed_mtu_the_core_can_use_is_forwarded_on_its_own() {
+    fn the_tunnel_mtu_alone_leaves_the_core_mtu_to_the_core() {
         let env = settings_from(r#"{"tunnelMtu":1400}"#).core_environment();
-        assert_eq!(value_of(&env, "AETHER_MASQUE_MTU"), Some("1400"));
+        assert!(value_of(&env, "AETHER_MASQUE_MTU").is_none());
+    }
+
+    #[test]
+    fn both_ip_versions_route_ipv6_as_well() {
+        assert!(settings_from("{}").dual_stack());
+        assert!(settings_from(r#"{"ipVersion":"both"}"#).dual_stack());
+        assert!(settings_from(r#"{"ipVersion":"v6"}"#).dual_stack());
+        assert!(!settings_from(r#"{"ipVersion":"v4"}"#).dual_stack());
+        let env = settings_from("{}").core_environment();
+        assert_eq!(value_of(&env, "AETHER_IP"), Some("both"));
     }
 
     #[test]
@@ -976,6 +1009,62 @@ mod chain_tests {
         let settings = settings_from(r#"{"core":"aether"}"#);
         assert!(settings.runs_aether());
         assert!(!settings.runs_psiphon());
+    }
+
+    #[test]
+    fn psiphon_around_warp_and_tor_inside_it_each_get_their_own_port() {
+        let settings = settings_from(r#"{"psiphon":"reverse","tor":"chain","socksPort":1819}"#);
+        assert!(settings.psiphon_reverse());
+        assert!(settings.tor_chain());
+        assert!(settings.carries_inside());
+        assert!(settings.dials_through());
+
+        let env = settings.core_environment();
+        assert_eq!(value_of(&env, "AETHER_SOCKS"), Some("127.0.0.1:1829"));
+        assert_eq!(value_of(&env, "AETHER_PSIPHON"), Some("reverse"));
+        assert_eq!(
+            value_of(&env, "AETHER_PSIPHON_BIND"),
+            Some("127.0.0.1:1831")
+        );
+        assert_eq!(value_of(&env, "AETHER_TOR"), Some("chain"));
+        assert_eq!(value_of(&env, "AETHER_TOR_BIND"), Some("127.0.0.1:1819"));
+    }
+
+    #[test]
+    fn tor_around_warp_and_psiphon_inside_it_each_get_their_own_port() {
+        let env = settings_from(r#"{"psiphon":"chain","tor":"reverse","socksPort":1819}"#)
+            .core_environment();
+        assert_eq!(value_of(&env, "AETHER_PSIPHON"), Some("chain"));
+        assert_eq!(
+            value_of(&env, "AETHER_PSIPHON_BIND"),
+            Some("127.0.0.1:1819")
+        );
+        assert_eq!(value_of(&env, "AETHER_TOR"), Some("reverse"));
+        assert_eq!(value_of(&env, "AETHER_TOR_BIND"), Some("127.0.0.1:1831"));
+    }
+
+    #[test]
+    fn the_new_fields_win_over_a_core_left_from_before() {
+        let settings = settings_from(r#"{"core":"tor-chain","psiphon":"chain","tor":"off"}"#);
+        assert!(settings.uses_chain());
+        assert!(!settings.uses_tor());
+    }
+
+    #[test]
+    fn a_core_from_before_reads_as_the_same_places() {
+        for (core, psiphon, tor) in [
+            ("aether", "", ""),
+            ("psiphon", "only", ""),
+            ("chain", "chain", ""),
+            ("psiphon-reverse", "reverse", ""),
+            ("tor", "", "only"),
+            ("tor-chain", "", "chain"),
+            ("tor-reverse", "", "reverse"),
+        ] {
+            let settings = settings_from(&format!(r#"{{"core":"{core}"}}"#));
+            assert_eq!(settings.psiphon_wire(), psiphon, "{core}");
+            assert_eq!(settings.tor_mode(), tor, "{core}");
+        }
     }
 }
 

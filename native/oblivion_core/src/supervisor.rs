@@ -896,7 +896,7 @@ impl Supervisor {
 
                 // For psiphon tunnel mode, wait for the Tunnels notice with count > 0
                 // which means at least one tunnel is active
-                if settings.tunnel_mode() && settings.core == psiphon::CORE_PSIPHON {
+                if settings.tunnel_mode() && settings.psiphon_only() {
                     let start = Instant::now();
                     let deadline = start + Duration::from_secs(3);
                     while Instant::now() < deadline {

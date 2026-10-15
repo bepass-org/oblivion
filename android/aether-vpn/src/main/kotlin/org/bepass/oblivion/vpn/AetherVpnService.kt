@@ -233,11 +233,9 @@ class AetherVpnService : VpnService() {
         val budgetMs = when {
             target.psiphonOnly -> PSIPHON_VALIDATION_BUDGET_MS
             target.torOnly -> TOR_VALIDATION_BUDGET_MS
-            target.usesChain || target.psiphonReverse ->
-                validationBudgetMs(target.scanMode) + PSIPHON_VALIDATION_BUDGET_MS
-            target.torChain || target.torReverse ->
-                validationBudgetMs(target.scanMode) + TOR_VALIDATION_BUDGET_MS
-            else -> validationBudgetMs(target.scanMode)
+            else -> validationBudgetMs(target.scanMode) +
+                (if (target.runsPsiphon) PSIPHON_VALIDATION_BUDGET_MS else 0L) +
+                (if (target.usesTor) TOR_VALIDATION_BUDGET_MS else 0L)
         }
         val deadline = System.currentTimeMillis() + budgetMs
         var announcedValidating = false

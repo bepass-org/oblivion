@@ -184,7 +184,7 @@ void main() {
     test('psiphon gets the unpacked list', () async {
       await start(
         const TunnelSettings(
-          core: CoreEngine.psiphon,
+          psiphon: CarrierMode.only,
           routingMode: RoutingMode.socksOnly,
         ),
       );
@@ -201,7 +201,7 @@ void main() {
     test('a chain through psiphon gets it as well', () async {
       await start(
         const TunnelSettings(
-          core: CoreEngine.chain,
+          psiphon: CarrierMode.chain,
           routingMode: RoutingMode.socksOnly,
         ),
       );
@@ -212,7 +212,7 @@ void main() {
     test('nothing is handed when the list is turned off', () async {
       await start(
         const TunnelSettings(
-          core: CoreEngine.psiphon,
+          psiphon: CarrierMode.only,
           routingMode: RoutingMode.socksOnly,
           psiphonBundledList: false,
         ),

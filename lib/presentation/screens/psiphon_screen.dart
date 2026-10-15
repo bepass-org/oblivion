@@ -73,7 +73,7 @@ class PsiphonScreen extends ConsumerWidget {
                   children: <Widget>[
                     if (settings.usesChain)
                       SettingsRow(
-                        title: l10n.coreChain,
+                        title: l10n.placePsiphonChain,
                         subtitle: l10n.chainNeedsTcp,
                       ),
                     if (onConduit && !conduitReady)

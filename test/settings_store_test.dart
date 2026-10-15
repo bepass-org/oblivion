@@ -200,8 +200,72 @@ void main() {
       );
     });
 
+    test('a fresh install takes both ip versions and a 1500 byte tunnel', () {
+      final settings = store.readTunnelSettings();
+      expect(settings.ipVersion, IpVersion.dual);
+      expect(settings.tunnelMtu, 1500);
+      expect(settings.toCoreArguments(), containsAllInOrder(<String>['--ip', 'both']));
+    });
+
     test('a fresh install takes the chrome fingerprint', () {
       expect(store.readTunnelSettings().tlsFingerprint, TlsFingerprint.chrome);
+    });
+
+    test('a core saved by an earlier version opens as its two places', () async {
+      backing.values['flutter.core.core'] = 'tor-chain';
+      SharedPreferences.resetStatic();
+
+      final reopened = SettingsStore(await SharedPreferences.getInstance());
+      final settings = reopened.readTunnelSettings();
+      expect(settings.tor, CarrierMode.chain);
+      expect(settings.psiphon, CarrierMode.off);
+      await Future<void>.delayed(Duration.zero);
+      expect(backing.values.containsKey('flutter.core.core'), isFalse);
+      expect(backing.values['flutter.core.tor'], 'chain');
+      expect(backing.values['flutter.core.psiphon'], 'off');
+    });
+
+    test('psiphon and tor come back from their own keys', () async {
+      await store.writeTunnelSettings(
+        store.readTunnelSettings().copyWith(
+          psiphon: CarrierMode.reverse,
+          tor: CarrierMode.chain,
+        ),
+      );
+
+      final reopened = SettingsStore(await SharedPreferences.getInstance());
+      final settings = reopened.readTunnelSettings();
+      expect(settings.psiphon, CarrierMode.reverse);
+      expect(settings.tor, CarrierMode.chain);
+    });
+
+    test('the old mtu and ip defaults give way to the new ones once', () async {
+      backing.values['flutter.core.tunnelMtu'] = 8500;
+      backing.values['flutter.core.ipVersion'] = 'v4';
+      backing.values.remove('flutter.core.defaults');
+      SharedPreferences.resetStatic();
+
+      final reopened = SettingsStore(await SharedPreferences.getInstance());
+      final settings = reopened.readTunnelSettings();
+      expect(settings.tunnelMtu, 1500);
+      expect(settings.ipVersion, IpVersion.dual);
+
+      await reopened.writeTunnelSettings(
+        settings.copyWith(ipVersion: IpVersion.v4, tunnelMtu: 8500),
+      );
+      final again = SettingsStore(await SharedPreferences.getInstance());
+      final kept = again.readTunnelSettings();
+      expect(kept.ipVersion, IpVersion.v4);
+      expect(kept.tunnelMtu, 8500);
+    });
+
+    test('an mtu picked by hand is not taken for an old default', () async {
+      backing.values['flutter.core.tunnelMtu'] = 1400;
+      backing.values.remove('flutter.core.defaults');
+      SharedPreferences.resetStatic();
+
+      final reopened = SettingsStore(await SharedPreferences.getInstance());
+      expect(reopened.readTunnelSettings().tunnelMtu, 1400);
     });
 
     test('a cdn list name psiphon does not know is dropped', () async {
@@ -228,7 +292,7 @@ void main() {
 
       await store.writeTunnelSettings(const TunnelSettings());
       expect(backing.writes, isNotEmpty);
-      expect(store.readTunnelSettings().tunnelMtu, 8500);
+      expect(store.readTunnelSettings().tunnelMtu, 1500);
     });
   });
 

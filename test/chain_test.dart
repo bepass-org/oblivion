@@ -3,7 +3,7 @@ import 'package:oblivion/data/models/tunnel_settings.dart';
 
 TunnelSettings _chain({int socksPort = 1819, bool allowLan = false}) {
   return TunnelSettings(
-    core: CoreEngine.chain,
+    psiphon: CarrierMode.chain,
     socksPort: socksPort,
     allowLan: allowLan,
   );
@@ -26,7 +26,7 @@ void main() {
     });
 
     test('psiphon on its own runs no aether', () {
-      const settings = TunnelSettings(core: CoreEngine.psiphon);
+      const settings = TunnelSettings(psiphon: CarrierMode.only);
       expect(settings.usesAether, isFalse);
       expect(settings.psiphonOnly, isTrue);
       expect(settings.toCoreArguments(), isEmpty);
@@ -76,7 +76,7 @@ void main() {
 
     test('a chain leaves the masque transport exactly as it was picked', () {
       final h3 = TunnelSettings(
-        core: CoreEngine.chain,
+        psiphon: CarrierMode.chain,
         transport: MasqueTransport.http3,
       );
       expect(h3.usesHttp2, isFalse);
@@ -84,7 +84,7 @@ void main() {
       expect(h3.toPlatformPayload()['transport'], 'h3');
 
       final h2 = TunnelSettings(
-        core: CoreEngine.chain,
+        psiphon: CarrierMode.chain,
         transport: MasqueTransport.http2,
       );
       expect(h2.usesHttp2, isTrue);
@@ -93,7 +93,7 @@ void main() {
 
     test('the chain still carries the aether protocol flags', () {
       final classic = TunnelSettings(
-        core: CoreEngine.chain,
+        psiphon: CarrierMode.chain,
         protocol: CoreProtocol.goolClassic,
         wiwOuter: '162.159.192.1:2408',
       ).toCoreArguments();
@@ -105,7 +105,7 @@ void main() {
       );
 
       final gool = TunnelSettings(
-        core: CoreEngine.chain,
+        psiphon: CarrierMode.chain,
         protocol: CoreProtocol.gool,
         goolPeer: '162.159.192.1:2408',
       ).toCoreArguments();
@@ -120,7 +120,7 @@ void main() {
       'tor inside the tunnel moves aether aside, exactly as psiphon does',
       () {
         const settings = TunnelSettings(
-          core: CoreEngine.torChain,
+          tor: CarrierMode.chain,
           socksPort: 1819,
         );
         expect(settings.usesTor, isTrue);
@@ -135,18 +135,21 @@ void main() {
     );
 
     test('tor on its own runs no aether', () {
-      const settings = TunnelSettings(core: CoreEngine.tor);
+      const settings = TunnelSettings(tor: CarrierMode.only);
       expect(settings.usesAether, isFalse);
       expect(settings.toCoreArguments(), isEmpty);
       expect(settings.aetherSocksPort, settings.socksPort);
     });
 
     test('dialled through tor or psiphon, aether keeps the public port', () {
-      for (final core in [CoreEngine.torReverse, CoreEngine.psiphonReverse]) {
-        final settings = TunnelSettings(core: core);
-        expect(settings.dialsThrough, isTrue, reason: core.wire);
-        expect(settings.carriesInside, isFalse, reason: core.wire);
-        expect(settings.aetherSocksPort, settings.socksPort, reason: core.wire);
+      for (final settings in const <TunnelSettings>[
+        TunnelSettings(tor: CarrierMode.reverse),
+        TunnelSettings(psiphon: CarrierMode.reverse),
+      ]) {
+        final reason = settings.modeLabel;
+        expect(settings.dialsThrough, isTrue, reason: reason);
+        expect(settings.carriesInside, isFalse, reason: reason);
+        expect(settings.aetherSocksPort, settings.socksPort, reason: reason);
       }
     });
 
@@ -154,7 +157,7 @@ void main() {
       'through a carrier only masque over http/2 runs, without rewriting the choice',
       () {
         const settings = TunnelSettings(
-          core: CoreEngine.torReverse,
+          tor: CarrierMode.reverse,
           protocol: CoreProtocol.wireguard,
         );
         expect(settings.protocol, CoreProtocol.wireguard);
@@ -165,18 +168,44 @@ void main() {
         expect(args, contains('--h2'));
         expect(args, isNot(contains('--wg')));
 
-        final back = settings.copyWith(core: CoreEngine.aether);
+        final back = settings.copyWith(tor: CarrierMode.off);
         expect(back.effectiveProtocol, CoreProtocol.wireguard);
       },
     );
 
-    test('tor saved as a switch beside the core becomes the core', () {
-      expect(CoreEngine.migrate('aether', 'chain'), CoreEngine.torChain);
-      expect(CoreEngine.migrate('chain', 'reverse'), CoreEngine.torReverse);
-      expect(CoreEngine.migrate('psiphon', 'only'), CoreEngine.tor);
-      expect(CoreEngine.migrate('chain', 'off'), CoreEngine.chain);
-      expect(CoreEngine.migrate(null, null), CoreEngine.aether);
-      expect(CoreEngine.fromWire('tor-chain'), CoreEngine.torChain);
+    test('a core saved by an earlier version keeps its places', () {
+      expect(CarrierMode.fromLegacyCore('aether', 'chain'), (
+        CarrierMode.off,
+        CarrierMode.chain,
+      ));
+      expect(CarrierMode.fromLegacyCore('chain', 'reverse'), (
+        CarrierMode.off,
+        CarrierMode.reverse,
+      ));
+      expect(CarrierMode.fromLegacyCore('psiphon', 'only'), (
+        CarrierMode.off,
+        CarrierMode.only,
+      ));
+      expect(CarrierMode.fromLegacyCore('chain', 'off'), (
+        CarrierMode.chain,
+        CarrierMode.off,
+      ));
+      expect(CarrierMode.fromLegacyCore(null, null), (
+        CarrierMode.off,
+        CarrierMode.off,
+      ));
+      expect(CarrierMode.fromLegacyCore('tor-chain', null), (
+        CarrierMode.off,
+        CarrierMode.chain,
+      ));
+      expect(CarrierMode.fromLegacyCore('psiphon-reverse', null), (
+        CarrierMode.reverse,
+        CarrierMode.off,
+      ));
+      expect(CarrierMode.fromLegacyCore('psiphon', null), (
+        CarrierMode.only,
+        CarrierMode.off,
+      ));
     });
   });
 }

@@ -39,33 +39,33 @@ void main() {
 
     test('psiphon on its own replaces the carrier', () {
       expect(
-        const TunnelSettings(core: CoreEngine.psiphon).modeLabel,
+        const TunnelSettings(psiphon: CarrierMode.only).modeLabel,
         'PSIPHON',
       );
     });
 
     test('a chain names both halves in the order traffic takes them', () {
       expect(
-        const TunnelSettings(core: CoreEngine.chain).modeLabel,
+        const TunnelSettings(psiphon: CarrierMode.chain).modeLabel,
         'MASQUE H3 + PSIPHON',
       );
     });
 
     test('tor is shown on whichever side it sits', () {
       expect(
-        const TunnelSettings(core: CoreEngine.torChain).modeLabel,
+        const TunnelSettings(tor: CarrierMode.chain).modeLabel,
         'MASQUE H3 + TOR',
       );
       expect(
-        const TunnelSettings(core: CoreEngine.torReverse).modeLabel,
+        const TunnelSettings(tor: CarrierMode.reverse).modeLabel,
         'TOR + MASQUE H2',
       );
-      expect(const TunnelSettings(core: CoreEngine.tor).modeLabel, 'TOR');
+      expect(const TunnelSettings(tor: CarrierMode.only).modeLabel, 'TOR');
     });
 
     test('psiphon is shown on whichever side it sits', () {
       expect(
-        const TunnelSettings(core: CoreEngine.psiphonReverse).modeLabel,
+        const TunnelSettings(psiphon: CarrierMode.reverse).modeLabel,
         'PSIPHON + MASQUE H2',
       );
     });
@@ -73,14 +73,14 @@ void main() {
     test('gool through a carrier keeps its name on http2', () {
       expect(
         const TunnelSettings(
-          core: CoreEngine.torReverse,
+          tor: CarrierMode.reverse,
           protocol: CoreProtocol.gool,
         ).modeLabel,
         'TOR + GOOL H2',
       );
       expect(
         const TunnelSettings(
-          core: CoreEngine.psiphonReverse,
+          psiphon: CarrierMode.reverse,
           protocol: CoreProtocol.goolClassic,
         ).modeLabel,
         'PSIPHON + MASQUE H2',
