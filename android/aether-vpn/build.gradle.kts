@@ -300,7 +300,9 @@ val buildAetherCore by tasks.registering {
                 "AR_${triple.replace('-', '_')}" to
                     File(toolchainBin, "llvm-ar").absolutePath,
                 "BINDGEN_EXTRA_CLANG_ARGS_${triple.replace('-', '_')}" to
-                    "--target=$triple --sysroot=${sysroot.absolutePath}",
+                    "--target=$clangTarget --sysroot=${sysroot.absolutePath}",
+                "BORING_BSSL_RUST_CPPLIB_${triple.replace('-', '_')}" to
+                    "static:-bundle=c++",
                 "RUST_LIBC_UNSTABLE_MUSL_V1_2_3" to "1",
             )
 
@@ -360,6 +362,19 @@ val buildAetherCore by tasks.registering {
                 throw GradleException(
                     "aether binary missing for $abi: ${produced.absolutePath}",
                 )
+            }
+
+            val readelf = File(toolchainBin, "llvm-readelf")
+            if (readelf.exists()) {
+                val (_, dynamic) = runCommand(
+                    listOf(readelf.absolutePath, "-d", produced.absolutePath),
+                    aetherCoreDir,
+                )
+                if (dynamic.contains("libc++_shared.so")) {
+                    throw GradleException(
+                        "aether for $abi needs libc++_shared.so, which Android does not ship",
+                    )
+                }
             }
 
             val abiDir = File(destRoot, abi).apply { mkdirs() }
