@@ -4,7 +4,7 @@ import android.content.Context
 import java.io.File
 
 object PsiphonBinary {
-    private const val BINARY_NAME = "libpsiphon.so"
+    const val BINARY_NAME = "libpsiphon.so"
 
     fun binary(context: Context): File =
         File(context.applicationInfo.nativeLibraryDir, BINARY_NAME)

@@ -10,6 +10,7 @@ pub mod psiphon;
 pub mod settings;
 mod supervisor;
 mod sysproxy;
+mod tree;
 pub mod tunnel;
 
 #[cfg(test)]

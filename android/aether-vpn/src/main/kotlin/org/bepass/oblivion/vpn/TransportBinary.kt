@@ -4,7 +4,7 @@ import android.content.Context
 import java.io.File
 
 object TransportBinary {
-    private const val BINARY_NAME = "liblyrebird.so"
+    const val BINARY_NAME = "liblyrebird.so"
 
     private val TRANSPORTS = listOf(
         "obfs4",

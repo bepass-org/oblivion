@@ -264,6 +264,7 @@ fn escape(value: &str) -> String {
 
 pub struct Supervisor {
     core: Mutex<Option<Child>>,
+    core_tree: Mutex<Option<crate::tree::Tree>>,
     core_input: Mutex<Option<std::process::ChildStdin>>,
     snapshot: Mutex<Snapshot>,
     logs: Mutex<Vec<String>>,
@@ -288,6 +289,7 @@ impl Supervisor {
         let (log_tx, log_rx) = channel();
         Self {
             core: Mutex::new(None),
+            core_tree: Mutex::new(None),
             core_input: Mutex::new(None),
             snapshot: Mutex::new(Snapshot::disconnected()),
             logs: Mutex::new(Vec::new()),
@@ -622,12 +624,22 @@ impl Supervisor {
 
         self.publish(Stage::Connecting, None, None);
 
+        let record = crate::tree::record_path(&settings.log_directory());
+        let ended = crate::tree::end_leftovers(&record, &self.family_of(&binary));
+        if ended > 0 {
+            self.log_from(
+                core,
+                format!("[!] ended {ended} process(es) an earlier run left behind"),
+            );
+        }
+
         let mut command = Command::new(&binary);
         command
             .args(&arguments)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
+        crate::tree::own_group(&mut command);
 
         {
             for (key, value) in settings.core_environment() {
@@ -686,6 +698,9 @@ impl Supervisor {
             self.spawn_log_reader(stderr, core);
         }
 
+        drop(self.core_tree.lock().unwrap().take());
+        let tree = crate::tree::Tree::adopt(&child, Some(record));
+        *self.core_tree.lock().unwrap() = Some(tree);
         *self.core_input.lock().unwrap() = child.stdin.take();
         *self.core.lock().unwrap() = Some(child);
 
@@ -698,11 +713,19 @@ impl Supervisor {
     fn stop_core(&self) {
         drop(self.core_input.lock().unwrap().take());
 
+        let tree = self.core_tree.lock().unwrap().take();
         let mut guard = self.core.lock().unwrap();
         if let Some(mut child) = guard.take() {
-            let _ = child.kill();
-            let _ = child.wait();
+            crate::tree::end(&mut child, tree);
         }
+    }
+
+    fn family_of(&self, binary: &Path) -> Vec<PathBuf> {
+        let mut family = vec![binary.to_path_buf(), binary.with_file_name("lyrebird")];
+        if let Some(psiphon) = self.psiphon_binary.lock().unwrap().clone() {
+            family.push(psiphon);
+        }
+        family
     }
 
     fn escalate(
@@ -1365,11 +1388,11 @@ impl Supervisor {
 
         drop(self.core_input.lock().unwrap().take());
 
+        let tree = self.core_tree.lock().unwrap().take();
         let mut guard = self.core.lock().unwrap();
         if let Some(mut child) = guard.take() {
             self.publish(Stage::Disconnecting, None, None);
-            let _ = child.kill();
-            let _ = child.wait();
+            crate::tree::end(&mut child, tree);
             self.log_from(self.active_core(), "[-] core stopped");
         }
         drop(guard);

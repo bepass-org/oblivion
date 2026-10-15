@@ -53,6 +53,9 @@ class AetherCore(
             return
         }
 
+        ProcessReaper.clearLeftovers(BINARY_NAME, HELPERS, environment[LISTENER_VARIABLE])
+            .forEach { onLog("[aether] $it") }
+
         val workDir = File(context.filesDir, WORK_DIR).apply { mkdirs() }
         val command = mutableListOf(binary.absolutePath).apply { addAll(arguments) }
 
@@ -67,6 +70,7 @@ class AetherCore(
             put("AETHER_CONFIG", File(workDir, "aether.toml").absolutePath)
             put("AETHER_WG_CONFIG", File(workDir, "aether-wg.toml").absolutePath)
             put("AETHER_MASQUE_CONFIG", File(workDir, "aether-masque.toml").absolutePath)
+            put(ProcessReaper.OWNER_VARIABLE, ProcessReaper.owner())
             putAll(environment)
         }
 
@@ -134,7 +138,9 @@ class AetherCore(
         runCatching { target.destroy() }
         if (!target.waitForTimeout(GRACEFUL_SHUTDOWN_MS)) {
             runCatching { target.destroyForcibly() }
+            target.waitForTimeout(GRACEFUL_SHUTDOWN_MS)
         }
+        ProcessReaper.clearOrphans(BINARY_NAME, HELPERS).forEach { onLog("[aether] $it") }
 
         readerThread?.interrupt()
         readerThread = null
@@ -152,6 +158,8 @@ class AetherCore(
     companion object {
         private const val TAG = "AetherCore"
         private const val BINARY_NAME = "libaether.so"
+        private const val LISTENER_VARIABLE = "AETHER_SOCKS"
+        private val HELPERS = setOf(PsiphonBinary.BINARY_NAME, TransportBinary.BINARY_NAME)
         private const val WORK_DIR = "aether"
         private const val SYSTEM_CA_DIRS =
             "/apex/com.android.conscrypt/cacerts:/system/etc/security/cacerts"
