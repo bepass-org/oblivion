@@ -172,6 +172,7 @@ void main() {
           mimInner: '162.159.198.2:443',
           torBridges: TorBridges.own,
           torBridgeLines: 'obfs4 1.2.3.4:443 AAAA cert=x iat-mode=0',
+          psiphonBundledList: false,
         ),
       );
 
@@ -183,6 +184,7 @@ void main() {
       expect(settings.mimInner, '162.159.198.2:443');
       expect(settings.torBridges, TorBridges.own);
       expect(settings.torBridgeLines, 'obfs4 1.2.3.4:443 AAAA cert=x iat-mode=0');
+      expect(settings.psiphonBundledList, isFalse);
     });
 
     test('ciphers written before fingerprints existed stay in use', () async {

@@ -91,6 +91,10 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
           cache: false
 
+      - name: Fetch the Psiphon server list
+        shell: bash
+        run: bash tools/fetch-psiphon-servers.sh
+
       - name: Fetch dependencies
         run: flutter pub get
 
@@ -111,6 +115,10 @@ jobs:
                 failed=1
               fi
             done
+            if ! unzip -l "$apk" | grep -q "assets/flutter_assets/assets/psiphon/servers.dat"; then
+              echo "::error::$abi apk carries no psiphon server list"
+              failed=1
+            fi
           done
           exit $failed
 
@@ -218,6 +226,10 @@ jobs:
           key: cargo-linux-${{ matrix.arch }}-${{ hashFiles('aetherproject/aether/Cargo.lock') }}
           restore-keys: cargo-linux-${{ matrix.arch }}-
 
+      - name: Fetch the Psiphon server list
+        shell: bash
+        run: bash tools/fetch-psiphon-servers.sh
+
       - name: Build
         env:
           OBLIVION_REQUIRE_HEV: "1"
@@ -238,6 +250,11 @@ jobs:
             exit 1
           fi
           echo "hev-socks5-tunnel is linked, tunnel mode is available"
+          list="build/linux/${{ matrix.arch }}/release/bundle/data/flutter_assets/assets/psiphon/servers.dat"
+          if [ ! -s "$list" ]; then
+            echo "::error::the bundle carries no psiphon server list"
+            exit 1
+          fi
 
       - name: Package
         run: |
@@ -365,6 +382,10 @@ jobs:
 
           ls -la "$dest"
 
+      - name: Fetch the Psiphon server list
+        shell: bash
+        run: bash tools/fetch-psiphon-servers.sh
+
       - name: Build
         run: |
           flutter pub get
@@ -375,7 +396,7 @@ jobs:
         run: |
           $runner = "build/windows/${{ matrix.arch }}/runner/Release"
           foreach ($artefact in @("oblivion-helper.exe", "hev-socks5-tunnel.exe",
-                                  "wintun.dll")) {
+                                  "wintun.dll", "data/flutter_assets/assets/psiphon/servers.dat")) {
             if (-not (Test-Path "$runner/$artefact")) {
               Write-Output "::error::$artefact is missing, the release would be proxy only"
               exit 1

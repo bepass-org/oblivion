@@ -126,6 +126,10 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
           cache: false
 
+      - name: Fetch the Psiphon server list
+        shell: bash
+        run: bash tools/fetch-psiphon-servers.sh
+
       - name: Build
         run: |
           flutter pub get
@@ -146,6 +150,11 @@ jobs:
             exit 1
           fi
           echo "the aether and psiphon cores and lyrebird are inside the apk"
+          if ! unzip -l "$apk" | grep -q "assets/flutter_assets/assets/psiphon/servers.dat"; then
+            echo "::error::the apk carries no psiphon server list"
+            exit 1
+          fi
+          echo "the psiphon server list is inside the apk"
 
       - name: Check the native libraries are 16 KB aligned
         run: |
@@ -219,6 +228,10 @@ jobs:
           key: ci-cargo-linux-${{ hashFiles('aetherproject/aether/Cargo.lock') }}
           restore-keys: ci-cargo-linux-
 
+      - name: Fetch the Psiphon server list
+        shell: bash
+        run: bash tools/fetch-psiphon-servers.sh
+
       - name: Build
         env:
           OBLIVION_REQUIRE_HEV: "1"
@@ -233,7 +246,8 @@ jobs:
         run: |
           bundle=build/linux/x64/debug/bundle
           missing=0
-          for artefact in oblivion aether psiphon lyrebird lib/liboblivion_core.so; do
+          for artefact in oblivion aether psiphon lyrebird lib/liboblivion_core.so \
+              data/flutter_assets/assets/psiphon/servers.dat; do
             if [ ! -e "$bundle/$artefact" ]; then
               echo "::error::$artefact is missing from the bundle"
               missing=1
@@ -363,6 +377,10 @@ jobs:
 
           ls -la "$dest"
 
+      - name: Fetch the Psiphon server list
+        shell: bash
+        run: bash tools/fetch-psiphon-servers.sh
+
       - name: Build
         run: |
           flutter pub get
@@ -375,7 +393,7 @@ jobs:
           $missing = $false
           foreach ($artefact in @("oblivion.exe", "aether.exe", "psiphon.exe", "lyrebird.exe", "oblivion_core.dll",
                                   "oblivion-helper.exe", "hev-socks5-tunnel.exe",
-                                  "wintun.dll")) {
+                                  "wintun.dll", "data/flutter_assets/assets/psiphon/servers.dat")) {
             if (-not (Test-Path "$runner/$artefact")) {
               Write-Output "::error::$artefact is missing from the runner directory"
               $missing = $true

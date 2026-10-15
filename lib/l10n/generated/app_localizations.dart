@@ -1369,6 +1369,12 @@ abstract class L10n {
   /// **'Encrypts the server name of the MASQUE handshake and of the WARP API calls. If no ECH key can be found, nothing connects rather than show the name'**
   String get echDesc;
 
+  /// No description provided for @echKeyMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'ECH is on, but no usable ECH key was found. The connection was stopped so the server name would not go out in the clear'**
+  String get echKeyMissing;
+
   /// No description provided for @fragmentSize.
   ///
   /// In en, this message translates to:
@@ -2682,6 +2688,54 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Your addresses only'**
   String get psiphonCdnSetsNone;
+
+  /// No description provided for @psiphonBundledList.
+  ///
+  /// In en, this message translates to:
+  /// **'Start from the bundled server list'**
+  String get psiphonBundledList;
+
+  /// No description provided for @psiphonBundledListDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Psiphon starts with the servers shipped with the app, so the first connection does not wait for a server list download'**
+  String get psiphonBundledListDesc;
+
+  /// No description provided for @psiphonClearData.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Psiphon data'**
+  String get psiphonClearData;
+
+  /// No description provided for @psiphonClearDataDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Forget the servers and exit countries Psiphon has learned. It starts again from the bundled list or a fresh download'**
+  String get psiphonClearDataDesc;
+
+  /// No description provided for @psiphonClearDataBusy.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect first; the running connection uses this data'**
+  String get psiphonClearDataBusy;
+
+  /// No description provided for @psiphonClearDataConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Psiphon will forget the servers and exit countries it has learned. Continue?'**
+  String get psiphonClearDataConfirm;
+
+  /// No description provided for @psiphonDataCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Psiphon data cleared'**
+  String get psiphonDataCleared;
+
+  /// No description provided for @psiphonDataNotCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Psiphon data could not be cleared'**
+  String get psiphonDataNotCleared;
 
   /// No description provided for @psiphonConduitPeers.
   ///

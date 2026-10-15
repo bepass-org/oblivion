@@ -122,13 +122,22 @@ class TunnelChannel {
     return granted ?? false;
   }
 
-  Future<void> connect(TunnelSettings settings) async {
+  Future<void> connect(
+    TunnelSettings settings, {
+    String? psiphonServerEntries,
+  }) async {
     if (!_usesNativeChannels) {
       final backend = await _desktopBackend();
-      return backend?.connect(settings);
+      return backend?.connect(
+        settings,
+        psiphonServerEntries: psiphonServerEntries,
+      );
     }
     return _methods.invokeMethod<void>('connect', <String, dynamic>{
-      'settings': settings.toPlatformPayload(),
+      'settings': <String, dynamic>{
+        ...settings.toPlatformPayload(),
+        'psiphonServerEntries': ?psiphonServerEntries,
+      },
       'arguments': settings.toCoreArguments(),
     });
   }

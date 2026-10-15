@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/models/tunnel_settings.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../providers/app_providers.dart';
 import '../providers/tunnel_providers.dart';
 import '../widgets/flag_icon.dart';
 import '../widgets/pickers.dart';
@@ -47,6 +48,12 @@ class PsiphonScreen extends ConsumerWidget {
     final controller = ref.read(tunnelSettingsProvider.notifier);
 
     final country = settings.psiphonCountry.trim().toUpperCase();
+    final countries = <String>{
+      ...psiphonCountries,
+      ...ref.watch(psiphonRegionsProvider),
+      if (country.isNotEmpty) country,
+    }.toList()..sort();
+    final tunnelIdle = ref.watch(tunnelProvider).stage.isIdle;
     final capability = ref.watch(tunnelCapabilityProvider).value;
     final conduitReady = capability?.conduit ?? true;
     final onConduit = settings.psiphonUsesConduit;
@@ -94,7 +101,7 @@ class PsiphonScreen extends ConsumerWidget {
                               title: l10n.psiphonCountry,
                               selected: country,
                               autoLabel: l10n.psiphonCountryAuto,
-                              countryCodes: psiphonCountries,
+                              countryCodes: countries,
                               onSelected: (value) => controller.update(
                                 (s) => s.copyWith(psiphonCountry: value),
                               ),
@@ -195,6 +202,31 @@ class PsiphonScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
+                SettingsGroup(
+                  children: <Widget>[
+                    SettingsRow(
+                      title: l10n.psiphonBundledList,
+                      subtitle: l10n.psiphonBundledListDesc,
+                      trailing: AppSwitch(
+                        value: settings.psiphonBundledList,
+                        onChanged: (value) => controller.update(
+                          (s) => s.copyWith(psiphonBundledList: value),
+                        ),
+                      ),
+                    ),
+                    SettingsRow(
+                      title: l10n.psiphonClearData,
+                      subtitle: tunnelIdle
+                          ? l10n.psiphonClearDataDesc
+                          : l10n.psiphonClearDataBusy,
+                      destructive: true,
+                      enabled: tunnelIdle,
+                      onTap: tunnelIdle
+                          ? () => _clearData(context, ref, l10n)
+                          : null,
+                    ),
+                  ],
+                ),
                 if (settings.psiphonUsesConduit)
                   SettingsGroup(
                     header: l10n.psiphonModeConduit,
@@ -245,6 +277,32 @@ class PsiphonScreen extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _clearData(
+    BuildContext context,
+    WidgetRef ref,
+    L10n l10n,
+  ) async {
+    final confirmed = await showConfirmDialog(
+      context: context,
+      title: l10n.psiphonClearData,
+      message: l10n.psiphonClearDataConfirm,
+      confirmLabel: l10n.confirm,
+      cancelLabel: l10n.cancel,
+    );
+    if (!confirmed) return;
+    if (!ref.read(tunnelProvider).stage.isIdle) return;
+
+    final cleared = await ref.read(psiphonDataProvider).clear();
+    if (cleared) await ref.read(psiphonRegionsProvider.notifier).forget();
+    if (!context.mounted) return;
+    await showNoticeDialog(
+      context: context,
+      title: l10n.psiphonClearData,
+      message: cleared ? l10n.psiphonDataCleared : l10n.psiphonDataNotCleared,
+      dismissLabel: l10n.confirm,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -6,6 +7,7 @@ import '../../data/models/geo_endpoint.dart';
 import '../../data/models/tunnel_settings.dart';
 import '../../data/models/tunnel_status.dart';
 import '../../data/services/geo_service.dart';
+import '../../data/services/psiphon_data.dart';
 import '../../data/services/settings_store.dart';
 import '../../data/services/tunnel_channel.dart';
 import 'app_providers.dart';
@@ -141,14 +143,30 @@ final geoProvider = StateNotifierProvider<GeoController, GeoSnapshot>((ref) {
 class TunnelController extends StateNotifier<TunnelStatus> {
   TunnelController(this._ref, this._channel) : super(TunnelStatus.initial) {
     _subscription = _channel.statusStream.listen(_onStatus);
+    _logSubscription = _channel.logStream.listen(_onLog);
     _syncInitialStatus();
   }
+
+  static final RegExp _noEchKey = RegExp(
+    r'ECH is on but there is no ECH key to offer',
+  );
 
   final Ref _ref;
   final TunnelChannel _channel;
   StreamSubscription<TunnelStatus>? _subscription;
+  StreamSubscription<String>? _logSubscription;
   Timer? _ticker;
   bool _connecting = false;
+
+  void _onLog(String line) {
+    if (_noEchKey.hasMatch(line)) {
+      _ref.read(echKeyMissingProvider.notifier).state = true;
+    }
+    final regions = PsiphonServerList.reportedRegions(line);
+    if (regions != null) {
+      unawaited(_ref.read(psiphonRegionsProvider.notifier).remember(regions));
+    }
+  }
 
   Future<void> _syncInitialStatus() async {
     try {
@@ -208,11 +226,15 @@ class TunnelController extends StateNotifier<TunnelStatus> {
       }
 
       _ref.read(sessionSettingsProvider.notifier).state = settings;
+      _ref.read(echKeyMissingProvider.notifier).state = false;
       state = state.copyWith(
         stage: TunnelStage.connecting,
         clearMessage: true,
       );
-      await _channel.connect(settings);
+      final entries = settings.usesPsiphon && settings.psiphonBundledList
+          ? await _ref.read(psiphonDataProvider).serverEntries()
+          : null;
+      await _channel.connect(settings, psiphonServerEntries: entries);
 
       unawaited(_channel.requestNotifications());
       return true;
@@ -240,10 +262,58 @@ class TunnelController extends StateNotifier<TunnelStatus> {
   @override
   void dispose() {
     _subscription?.cancel();
+    _logSubscription?.cancel();
     _stopTicker();
     super.dispose();
   }
 }
+
+final echKeyMissingProvider = StateProvider<bool>((ref) => false);
+
+class PsiphonRegionsController extends StateNotifier<Set<String>> {
+  PsiphonRegionsController(this._store, this._data)
+    : _reported = _store.readPsiphonRegions(),
+      super(SplayTreeSet<String>.of(_store.readPsiphonRegions())) {
+    unawaited(_loadBundled());
+  }
+
+  final SettingsStore _store;
+  final PsiphonData _data;
+  Set<String> _reported;
+  Set<String> _bundled = const <String>{};
+
+  Future<void> _loadBundled() async {
+    final regions = await _data.bundledRegions();
+    if (!mounted) return;
+    _bundled = regions;
+    _publish();
+  }
+
+  Future<void> remember(List<String> regions) async {
+    _reported = regions.where(PsiphonServerList.isCountryCode).toSet();
+    _publish();
+    await _store.writePsiphonRegions(_reported);
+  }
+
+  Future<void> forget() async {
+    _reported = <String>{};
+    _publish();
+    await _store.writePsiphonRegions(_reported);
+  }
+
+  void _publish() {
+    if (!mounted) return;
+    state = SplayTreeSet<String>.of(<String>{..._reported, ..._bundled});
+  }
+}
+
+final psiphonRegionsProvider =
+    StateNotifierProvider<PsiphonRegionsController, Set<String>>((ref) {
+      return PsiphonRegionsController(
+        ref.watch(settingsStoreProvider),
+        ref.watch(psiphonDataProvider),
+      );
+    });
 
 final tunnelProvider = StateNotifierProvider<TunnelController, TunnelStatus>((
   ref,

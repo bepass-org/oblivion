@@ -15,6 +15,8 @@ pub struct TunnelSettings {
     pub psiphon_cdn_sni: String,
     #[serde(default)]
     pub psiphon_cdn_sets: String,
+    #[serde(default)]
+    pub psiphon_server_entries: String,
     #[serde(default = "default_conduit_peers")]
     pub psiphon_conduit_peers: String,
     #[serde(default = "default_true")]
@@ -522,6 +524,14 @@ impl TunnelSettings {
             let sets = self.psiphon_cdn_sets.trim();
             if !sets.is_empty() {
                 env.push(("AETHER_PSIPHON_CDN_SETS".to_string(), sets.to_string()));
+            }
+
+            let entries = self.psiphon_server_entries.trim();
+            if !entries.is_empty() && std::path::Path::new(entries).is_file() {
+                env.push((
+                    "AETHER_PSIPHON_SERVER_ENTRIES".to_string(),
+                    entries.to_string(),
+                ));
             }
 
             let data = self.data_dir.trim();
@@ -1448,6 +1458,35 @@ mod psiphon_through_core_tests {
 
         let plain = settings(r#"{"psiphonCdnSets":"cloudflare"}"#).core_environment();
         assert!(value(&plain, "AETHER_PSIPHON_CDN_SETS").is_none());
+    }
+
+    #[test]
+    fn the_bundled_server_list_travels_only_with_psiphon_and_a_real_file() {
+        let directory =
+            std::env::temp_dir().join(format!("oblivion-entries-{}", std::process::id()));
+        std::fs::create_dir_all(&directory).unwrap();
+        let entries = directory.join("psiphon-servers.txt");
+        std::fs::write(&entries, "00\n").unwrap();
+        let path = entries.to_string_lossy().replace('\\', "\\\\");
+
+        let with = settings(&format!(
+            r#"{{"core":"psiphon","psiphonServerEntries":"{path}"}}"#
+        ))
+        .core_environment();
+        assert_eq!(
+            value(&with, "AETHER_PSIPHON_SERVER_ENTRIES"),
+            Some(entries.to_string_lossy().as_ref())
+        );
+
+        let missing =
+            settings(r#"{"core":"psiphon","psiphonServerEntries":"/nowhere/psiphon-servers.txt"}"#)
+                .core_environment();
+        assert!(value(&missing, "AETHER_PSIPHON_SERVER_ENTRIES").is_none());
+
+        let warp = settings(&format!(r#"{{"psiphonServerEntries":"{path}"}}"#)).core_environment();
+        assert!(value(&warp, "AETHER_PSIPHON_SERVER_ENTRIES").is_none());
+
+        let _ = std::fs::remove_dir_all(&directory);
     }
 
     #[test]

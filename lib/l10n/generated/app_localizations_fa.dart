@@ -693,6 +693,10 @@ class L10nFa extends L10n {
       'نام سرور را در دست‌دهی مسک و درخواست‌های API وارپ رمز می‌کند. اگر کلید ECH پیدا نشود، به‌جای نشان دادن نام، اتصال برقرار نمی‌شود';
 
   @override
+  String get echKeyMissing =>
+      'ECH روشن است ولی هیچ کلید ECH قابل استفاده‌ای پیدا نشد. اتصال متوقف شد تا نام سرور به‌صورت آشکار فرستاده نشود';
+
+  @override
   String get fragmentSize => 'اندازه قطعه';
 
   @override
@@ -1429,6 +1433,34 @@ class L10nFa extends L10n {
 
   @override
   String get psiphonCdnSetsNone => 'فقط آدرس‌های شما';
+
+  @override
+  String get psiphonBundledList => 'شروع با فهرست سرورهای همراه برنامه';
+
+  @override
+  String get psiphonBundledListDesc =>
+      'سایفون با سرورهای همراه برنامه شروع می‌کند تا اتصال اول منتظر دانلود فهرست سرورها نماند';
+
+  @override
+  String get psiphonClearData => 'پاک کردن داده‌های سایفون';
+
+  @override
+  String get psiphonClearDataDesc =>
+      'سرورها و کشورهای خروجی که سایفون یاد گرفته فراموش می‌شوند و دوباره از فهرست همراه برنامه یا یک دانلود تازه شروع می‌کند';
+
+  @override
+  String get psiphonClearDataBusy =>
+      'اول اتصال را قطع کنید؛ اتصال فعلی از این داده‌ها استفاده می‌کند';
+
+  @override
+  String get psiphonClearDataConfirm =>
+      'سایفون سرورها و کشورهای خروجی که یاد گرفته را فراموش می‌کند. ادامه می‌دهید؟';
+
+  @override
+  String get psiphonDataCleared => 'داده‌های سایفون پاک شد';
+
+  @override
+  String get psiphonDataNotCleared => 'داده‌های سایفون پاک نشد';
 
   @override
   String get psiphonConduitPeers => 'همتاها';

@@ -15,6 +15,17 @@ import 'about_screen.dart';
 import 'logs_screen.dart';
 import 'settings_screen.dart';
 
+String? failureText(
+  L10n l10n,
+  TunnelStatus status, {
+  required bool echKeyMissing,
+}) {
+  if (status.stage != TunnelStage.failed) return null;
+  if (echKeyMissing) return l10n.echKeyMissing;
+  final reason = status.message?.trim();
+  return reason == null || reason.isEmpty ? null : reason;
+}
+
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -81,13 +92,11 @@ class HomeScreen extends ConsumerWidget {
         settings.tunnelMode &&
         !status.tunnelDeviceUp;
 
-    final reason = status.message?.trim();
-    final failure =
-        status.stage == TunnelStage.failed &&
-            reason != null &&
-            reason.isNotEmpty
-        ? reason
-        : null;
+    final failure = failureText(
+      l10n,
+      status,
+      echKeyMissing: ref.watch(echKeyMissingProvider),
+    );
 
     return CupertinoPageScaffold(
       backgroundColor: palette.canvas,

@@ -146,11 +146,15 @@ class DesktopTunnelBackend {
     }
   }
 
-  Future<void> connect(TunnelSettings settings) async {
+  Future<void> connect(
+    TunnelSettings settings, {
+    String? psiphonServerEntries,
+  }) async {
     final payload = jsonEncode(<String, dynamic>{
       'settings': <String, dynamic>{
         ...settings.toPlatformPayload(),
         'dataDir': await _dataDirectory(),
+        'psiphonServerEntries': ?psiphonServerEntries,
       },
       'arguments': settings.toCoreArguments(),
     });

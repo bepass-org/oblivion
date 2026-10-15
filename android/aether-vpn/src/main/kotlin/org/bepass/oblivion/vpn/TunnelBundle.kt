@@ -10,6 +10,7 @@ object TunnelBundle {
         putString("psiphonCdnIps", config.psiphonCdnIps)
         putString("psiphonCdnSni", config.psiphonCdnSni)
         putString("psiphonCdnSets", config.psiphonCdnSets)
+        putString("psiphonServerEntries", config.psiphonServerEntries)
         putString("psiphonConduitPeers", config.psiphonConduitPeers)
         putBoolean("psiphonRejectCensoredPeers", config.psiphonRejectCensoredPeers)
         putString("torRelays", config.torRelays)
@@ -55,6 +56,7 @@ object TunnelBundle {
         psiphonCdnIps = bundle.getString("psiphonCdnIps", ""),
         psiphonCdnSni = bundle.getString("psiphonCdnSni", ""),
         psiphonCdnSets = bundle.getString("psiphonCdnSets", ""),
+        psiphonServerEntries = bundle.getString("psiphonServerEntries", ""),
         psiphonConduitPeers = bundle.getString("psiphonConduitPeers", "auto"),
         psiphonRejectCensoredPeers = bundle.getBoolean("psiphonRejectCensoredPeers", true),
         torRelays = bundle.getString("torRelays", "auto"),

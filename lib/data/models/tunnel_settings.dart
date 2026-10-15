@@ -319,6 +319,7 @@ class TunnelSettings {
     this.psiphonCdnSets = const <String>{},
     this.psiphonConduitPeers = ConduitPeers.auto,
     this.psiphonRejectCensoredPeers = true,
+    this.psiphonBundledList = true,
     this.torRelays = TorRelays.auto,
     this.torBridges = TorBridges.auto,
     this.torBridgeLines = '',
@@ -386,6 +387,7 @@ class TunnelSettings {
   final Set<String> psiphonCdnSets;
   final ConduitPeers psiphonConduitPeers;
   final bool psiphonRejectCensoredPeers;
+  final bool psiphonBundledList;
 
   final TorRelays torRelays;
   final TorBridges torBridges;
@@ -869,6 +871,7 @@ class TunnelSettings {
     Set<String>? psiphonCdnSets,
     ConduitPeers? psiphonConduitPeers,
     bool? psiphonRejectCensoredPeers,
+    bool? psiphonBundledList,
     TorRelays? torRelays,
     TorBridges? torBridges,
     String? torBridgeLines,
@@ -937,6 +940,7 @@ class TunnelSettings {
       psiphonConduitPeers: psiphonConduitPeers ?? this.psiphonConduitPeers,
       psiphonRejectCensoredPeers:
           psiphonRejectCensoredPeers ?? this.psiphonRejectCensoredPeers,
+      psiphonBundledList: psiphonBundledList ?? this.psiphonBundledList,
       torRelays: torRelays ?? this.torRelays,
       torBridges: torBridges ?? this.torBridges,
       torBridgeLines: torBridgeLines ?? this.torBridgeLines,

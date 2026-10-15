@@ -572,6 +572,28 @@ void main() {
       expect(find.text('cloudflare +1'), findsOneWidget);
     });
 
+    testWidgets('the bundled server list can be turned off', (tester) async {
+      final l10n = await _open(
+        tester,
+        const TunnelSettings(core: CoreEngine.psiphon),
+        const PsiphonScreen(),
+      );
+
+      await tester.tap(
+        find.descendant(
+          of: find
+              .ancestor(
+                of: find.text(l10n.psiphonBundledList),
+                matching: find.byType(GestureDetector),
+              )
+              .first,
+          matching: find.byType(CupertinoSwitch),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(_current(tester, PsiphonScreen).psiphonBundledList, isFalse);
+    });
+
     testWidgets('own addresses without lists say so', (tester) async {
       final l10n = await _open(
         tester,

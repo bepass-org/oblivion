@@ -696,6 +696,10 @@ class L10nEn extends L10n {
       'Encrypts the server name of the MASQUE handshake and of the WARP API calls. If no ECH key can be found, nothing connects rather than show the name';
 
   @override
+  String get echKeyMissing =>
+      'ECH is on, but no usable ECH key was found. The connection was stopped so the server name would not go out in the clear';
+
+  @override
   String get fragmentSize => 'Fragment size';
 
   @override
@@ -1427,6 +1431,34 @@ class L10nEn extends L10n {
 
   @override
   String get psiphonCdnSetsNone => 'Your addresses only';
+
+  @override
+  String get psiphonBundledList => 'Start from the bundled server list';
+
+  @override
+  String get psiphonBundledListDesc =>
+      'Psiphon starts with the servers shipped with the app, so the first connection does not wait for a server list download';
+
+  @override
+  String get psiphonClearData => 'Clear Psiphon data';
+
+  @override
+  String get psiphonClearDataDesc =>
+      'Forget the servers and exit countries Psiphon has learned. It starts again from the bundled list or a fresh download';
+
+  @override
+  String get psiphonClearDataBusy =>
+      'Disconnect first; the running connection uses this data';
+
+  @override
+  String get psiphonClearDataConfirm =>
+      'Psiphon will forget the servers and exit countries it has learned. Continue?';
+
+  @override
+  String get psiphonDataCleared => 'Psiphon data cleared';
+
+  @override
+  String get psiphonDataNotCleared => 'Psiphon data could not be cleared';
 
   @override
   String get psiphonConduitPeers => 'Peers';

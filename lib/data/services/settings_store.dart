@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/tunnel_settings.dart';
+import 'psiphon_data.dart';
 
 const List<String> supportedLocaleCodes = <String>['en', 'fa'];
 
@@ -66,6 +67,7 @@ class SettingsStore {
     'psiphonCdnSets',
     'psiphonConduitPeers',
     'psiphonRejectCensoredPeers',
+    'psiphonBundledList',
     'torRelays',
     'torBridges',
     'torBridgeLines',
@@ -129,6 +131,7 @@ class SettingsStore {
   static const _kLocale = 'app.locale';
   static const _kIntroSeen = 'app.introSeen';
   static const _kDevNoteSeen = 'app.devNoteSeen';
+  static const _kPsiphonRegions = 'psiphon.regions';
 
   Map<String, Object>? _stored;
 
@@ -162,6 +165,9 @@ class SettingsStore {
       psiphonRejectCensoredPeers:
           _prefs.getBool('${_prefix}psiphonRejectCensoredPeers') ??
           fallback.psiphonRejectCensoredPeers,
+      psiphonBundledList:
+          _prefs.getBool('${_prefix}psiphonBundledList') ??
+          fallback.psiphonBundledList,
       torRelays: TorRelays.fromWire(_string('torRelays')),
       torBridges: TorBridges.fromWire(_string('torBridges')),
       torBridgeLines: _string('torBridgeLines') ?? fallback.torBridgeLines,
@@ -261,6 +267,7 @@ class SettingsStore {
     'psiphonCdnSets': s.psiphonCdnSetList,
     'psiphonConduitPeers': s.psiphonConduitPeers.wire,
     'psiphonRejectCensoredPeers': s.psiphonRejectCensoredPeers,
+    'psiphonBundledList': s.psiphonBundledList,
     'torRelays': s.torRelays.wire,
     'torBridges': s.torBridges.wire,
     'torBridgeLines': s.torBridgeLines,
@@ -386,6 +393,16 @@ class SettingsStore {
   }
 
   bool get hasLocaleOverride => _prefs.getString(_kLocale) != null;
+
+  Set<String> readPsiphonRegions() => <String>{
+    for (final code
+        in _prefs.getStringList(_kPsiphonRegions) ?? const <String>[])
+      if (PsiphonServerList.isCountryCode(code)) code,
+  };
+
+  Future<void> writePsiphonRegions(Set<String> regions) async {
+    await _prefs.setStringList(_kPsiphonRegions, regions.toList()..sort());
+  }
 
   Future<void> writeLocaleOverride(String code) async {
     await _prefs.setString(_kLocale, code);

@@ -157,6 +157,9 @@ class AetherVpnService : VpnService() {
             if (target.psiphonCdnSets.isNotBlank()) {
                 environment["AETHER_PSIPHON_CDN_SETS"] = target.psiphonCdnSets
             }
+            if (target.psiphonServerEntries.isNotBlank() && File(target.psiphonServerEntries).isFile) {
+                environment["AETHER_PSIPHON_SERVER_ENTRIES"] = target.psiphonServerEntries
+            }
             environment["AETHER_PSIPHON_DIR"] = File(filesDir, PSIPHON_DATA_DIR).absolutePath
             psiphonBinary()?.let { environment["AETHER_PSIPHON_BIN"] = it }
             psiphonOverlay(target)?.let { environment["AETHER_PSIPHON_CONFIG"] = it }

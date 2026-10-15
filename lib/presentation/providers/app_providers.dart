@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/services/geo_service.dart';
+import '../../data/services/psiphon_data.dart';
 import '../../data/services/settings_store.dart';
 import '../../data/services/tunnel_channel.dart';
 
@@ -12,6 +13,8 @@ final settingsStoreProvider = Provider<SettingsStore>((ref) {
 final tunnelChannelProvider = Provider<TunnelChannel>(
   (ref) => TunnelChannel.instance,
 );
+
+final psiphonDataProvider = Provider<PsiphonData>((ref) => PsiphonData());
 
 final geoServiceProvider = Provider<GeoService>((ref) {
   final service = GeoService();
