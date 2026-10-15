@@ -114,7 +114,7 @@ class AetherVpnService : VpnService() {
         val environment = mutableMapOf(
             "AETHER_SOCKS" to "${target.aetherBindHost}:${target.aetherSocksPort}",
             "AETHER_HTTP_PROXY" to "${target.aetherBindHost}:${target.aetherHttpProxyPort}",
-            "AETHER_PROTOCOL" to target.effectiveProtocol,
+            "AETHER_PROTOCOL" to target.coreProtocol,
             "AETHER_SCAN" to target.scanMode,
             "AETHER_NOIZE" to target.noizeProfile,
             "AETHER_IP" to target.ipVersion,
@@ -122,14 +122,15 @@ class AetherVpnService : VpnService() {
             "AETHER_QUICK_RECONNECT" to if (target.quickReconnect) "1" else "0",
         )
 
-        if (target.usesHttp2) {
-            environment["AETHER_MASQUE_HTTP2"] = "1"
-            if (target.fragment) environment["AETHER_MASQUE_H2_FRAGMENT"] = "1"
+        if (target.usesHttp2) environment["AETHER_MASQUE_HTTP2"] = "1"
+        if (target.fragment && !target.runsAlone) {
+            environment["AETHER_MASQUE_H2_FRAGMENT"] = "1"
         }
         if (target.usesMasque && target.innerMtu > 0) {
             environment["AETHER_MASQUE_MTU"] = target.innerMtu.toString()
         }
-        if (target.usesGool) {
+        if (target.usesGoolClassic) {
+            environment["AETHER_GOOL_MODE"] = "classic"
             if (target.wiwOuterPeer.isNotEmpty()) {
                 environment["AETHER_WIW_OUTER_PEER"] = target.wiwOuterPeer
             }
@@ -137,8 +138,8 @@ class AetherVpnService : VpnService() {
                 environment["AETHER_WIW_INNER_PEER"] = target.wiwInnerPeer
             }
             if (!target.wiwPinned) environment["AETHER_WIW_PEERS"] = "auto"
-        } else if (target.endpoint.isNotBlank()) {
-            environment["AETHER_PEER"] = target.endpoint
+        } else if (target.manualGateway.isNotEmpty()) {
+            environment["AETHER_PEER"] = target.manualGateway
         }
         if (target.runsPsiphon) {
             environment["AETHER_PSIPHON"] = target.psiphonWire
@@ -152,6 +153,9 @@ class AetherVpnService : VpnService() {
             }
             if (target.psiphonCdnSni.isNotBlank()) {
                 environment["AETHER_PSIPHON_CDN_SNI"] = target.psiphonCdnSni
+            }
+            if (target.psiphonCdnSets.isNotBlank()) {
+                environment["AETHER_PSIPHON_CDN_SETS"] = target.psiphonCdnSets
             }
             environment["AETHER_PSIPHON_DIR"] = File(filesDir, PSIPHON_DATA_DIR).absolutePath
             psiphonBinary()?.let { environment["AETHER_PSIPHON_BIN"] = it }
@@ -494,7 +498,7 @@ class AetherVpnService : VpnService() {
             TunnelSnapshot(
                 stage = stage,
                 stats = stats,
-                gateway = config?.endpoint?.takeIf { it.isNotBlank() },
+                gateway = config?.manualGateway?.takeIf { it.isNotBlank() },
                 connectedAtMillis = if (stage == TunnelStage.CONNECTED) connectedAtMillis else 0L,
                 message = message,
             ),
@@ -551,7 +555,7 @@ class AetherVpnService : VpnService() {
                     R.string.tunnel_proxy_at,
                     "${active.bindHost}:${active.socksPort}",
                 )
-                false -> active.protocol.uppercase()
+                false -> active.statusLabel
             }
         }
 

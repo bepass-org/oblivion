@@ -180,6 +180,7 @@ class AdvancedScreen extends ConsumerWidget {
 
     final settings = ref.watch(tunnelSettingsProvider);
     final controller = ref.read(tunnelSettingsProvider.notifier);
+    final aether = settings.usesAether;
 
     final String capabilityLabel;
     if (isMobilePlatform) {
@@ -321,7 +322,8 @@ class AdvancedScreen extends ConsumerWidget {
                       value: settings.wgEndpoint.isEmpty
                           ? l10n.endpointAuto
                           : settings.wgEndpoint,
-                      enabled: settings.usesWireGuard && !settings.usesGool,
+                      enabled:
+                          settings.usesWireGuard && !settings.usesGoolClassic,
                       onTap: () => showTextEditorSheet(
                         context: context,
                         title: l10n.wgEndpoint,
@@ -354,6 +356,29 @@ class AdvancedScreen extends ConsumerWidget {
                       ),
                     ),
                     SettingsRow(
+                      title: l10n.apiAddress,
+                      value: settings.apiAddress.trim().isEmpty
+                          ? l10n.endpointAuto
+                          : settings.apiAddress.trim(),
+                      enabled: aether,
+                      onTap: () => showTextEditorSheet(
+                        context: context,
+                        title: l10n.apiAddress,
+                        description: l10n.apiAddressDesc,
+                        initial: settings.apiAddress,
+                        placeholder: '188.114.97.6',
+                        cancelLabel: l10n.cancel,
+                        saveLabel: l10n.save,
+                        validator: (v) =>
+                            v.trim().isEmpty || TunnelSettings.isApiAddress(v)
+                            ? null
+                            : l10n.apiAddressRefusal,
+                        onSaved: (v) => controller.update(
+                          (s) => s.copyWith(apiAddress: v.trim()),
+                        ),
+                      ),
+                    ),
+                    SettingsRow(
                       title: l10n.ipVersion,
                       value: _ipTitle(l10n, settings.ipVersion),
                       onTap: () => showChoiceSheet<IpVersion>(
@@ -376,7 +401,7 @@ class AdvancedScreen extends ConsumerWidget {
                   ],
                 ),
 
-                if (settings.usesAether && settings.usesGool)
+                if (aether && settings.usesGoolClassic)
                   SettingsGroup(
                     header: l10n.wiwSection,
                     children: <Widget>[
@@ -417,10 +442,10 @@ class AdvancedScreen extends ConsumerWidget {
                     SettingsRow(
                       title: l10n.ech,
                       subtitle: l10n.echDesc,
-                      enabled: settings.isMasque,
+                      enabled: aether,
                       trailing: AppSwitch(
-                        value: settings.echMode == EchMode.auto,
-                        onChanged: settings.isMasque
+                        value: settings.usesEch,
+                        onChanged: aether
                             ? (v) => controller.update(
                                 (s) => s.copyWith(
                                   echMode: v ? EchMode.auto : EchMode.off,
@@ -430,14 +455,59 @@ class AdvancedScreen extends ConsumerWidget {
                       ),
                     ),
                     SettingsRow(
+                      title: l10n.echDns,
+                      value: settings.echDns.trim().isEmpty
+                          ? l10n.endpointAuto
+                          : settings.echDns.trim(),
+                      enabled: aether && settings.usesEch,
+                      onTap: () => showTextEditorSheet(
+                        context: context,
+                        title: l10n.echDns,
+                        description: l10n.echDnsDesc,
+                        initial: settings.echDns,
+                        placeholder: 'udp://1.1.1.1',
+                        cancelLabel: l10n.cancel,
+                        saveLabel: l10n.save,
+                        validator: (v) =>
+                            v.trim().isEmpty || TunnelSettings.isEchResolver(v)
+                            ? null
+                            : l10n.echDnsRefusal,
+                        onSaved: (v) => controller.update(
+                          (s) => s.copyWith(echDns: v.trim()),
+                        ),
+                      ),
+                    ),
+                    SettingsRow(
+                      title: l10n.echDomain,
+                      value: settings.echDomain.trim().isEmpty
+                          ? l10n.endpointAuto
+                          : settings.echDomain.trim(),
+                      enabled: aether && settings.usesEch,
+                      onTap: () => showTextEditorSheet(
+                        context: context,
+                        title: l10n.echDomain,
+                        description: l10n.echDomainDesc,
+                        initial: settings.echDomain,
+                        placeholder: 'cloudflare-ech.com',
+                        cancelLabel: l10n.cancel,
+                        saveLabel: l10n.save,
+                        validator: (v) =>
+                            v.trim().isEmpty ||
+                                TunnelSettings.isDomainName(v.trim())
+                            ? null
+                            : l10n.domainRefusal,
+                        onSaved: (v) => controller.update(
+                          (s) => s.copyWith(echDomain: v.trim()),
+                        ),
+                      ),
+                    ),
+                    SettingsRow(
                       title: l10n.fragment,
-                      subtitle: settings.usesHttp2
-                          ? l10n.fragmentDesc
-                          : l10n.fragmentNeedsHttp2,
-                      enabled: settings.usesHttp2,
+                      subtitle: l10n.fragmentDesc,
+                      enabled: aether,
                       trailing: AppSwitch(
                         value: settings.fragment,
-                        onChanged: settings.usesHttp2
+                        onChanged: aether
                             ? (v) => controller.update(
                                 (s) => s.copyWith(fragment: v),
                               )
@@ -448,7 +518,7 @@ class AdvancedScreen extends ConsumerWidget {
                       title: l10n.fragmentSize,
                       subtitle: l10n.rangeHint,
                       value: settings.fragmentSize,
-                      enabled: settings.usesHttp2 && settings.fragment,
+                      enabled: aether && settings.fragment,
                       onTap: () => showTextEditorSheet(
                         context: context,
                         title: l10n.fragmentSize,
@@ -468,7 +538,7 @@ class AdvancedScreen extends ConsumerWidget {
                       title: l10n.fragmentDelay,
                       subtitle: l10n.rangeHint,
                       value: settings.fragmentDelay,
-                      enabled: settings.usesHttp2 && settings.fragment,
+                      enabled: aether && settings.fragment,
                       onTap: () => showTextEditorSheet(
                         context: context,
                         title: l10n.fragmentDelay,
@@ -490,18 +560,55 @@ class AdvancedScreen extends ConsumerWidget {
                       value: settings.tlsGroups.isEmpty
                           ? l10n.endpointAuto
                           : settings.tlsGroups,
-                      enabled: settings.isMasque,
+                      enabled: aether,
                       onTap: () => showTextEditorSheet(
                         context: context,
                         title: l10n.tlsGroups,
                         description: l10n.tlsGroupsDesc,
                         initial: settings.tlsGroups,
-                        placeholder: 'X25519:P-256',
+                        placeholder: 'P-256:X25519:P-384',
                         cancelLabel: l10n.cancel,
                         saveLabel: l10n.save,
                         onSaved: (v) => controller.update(
                           (s) => s.copyWith(tlsGroups: v.trim()),
                         ),
+                      ),
+                    ),
+                    SettingsRow(
+                      title: l10n.tlsCiphers,
+                      value: settings.tlsCiphers.trim().isEmpty
+                          ? l10n.endpointAuto
+                          : settings.tlsCiphers.trim(),
+                      enabled: aether,
+                      onTap: () => showTextEditorSheet(
+                        context: context,
+                        title: l10n.tlsCiphers,
+                        description: l10n.tlsCiphersDesc,
+                        initial: settings.tlsCiphers,
+                        placeholder:
+                            'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256',
+                        cancelLabel: l10n.cancel,
+                        saveLabel: l10n.save,
+                        validator: (v) =>
+                            v.trim().isEmpty || TunnelSettings.isCipherList(v)
+                            ? null
+                            : l10n.tlsCiphersRefusal,
+                        onSaved: (v) => controller.update(
+                          (s) => s.copyWith(tlsCiphers: v.trim()),
+                        ),
+                      ),
+                    ),
+                    SettingsRow(
+                      title: l10n.grease,
+                      subtitle: l10n.greaseDesc,
+                      enabled: aether,
+                      trailing: AppSwitch(
+                        value: settings.grease,
+                        onChanged: aether
+                            ? (v) => controller.update(
+                                (s) => s.copyWith(grease: v),
+                              )
+                            : null,
                       ),
                     ),
                   ],

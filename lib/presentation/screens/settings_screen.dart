@@ -51,6 +51,7 @@ String protocolTitle(L10n l10n, CoreProtocol value) => switch (value) {
   CoreProtocol.masque => l10n.protocolMasque,
   CoreProtocol.wireguard => l10n.protocolWireGuard,
   CoreProtocol.gool => l10n.protocolGool,
+  CoreProtocol.goolClassic => l10n.protocolGoolClassic,
   CoreProtocol.mim => l10n.protocolMim,
 };
 
@@ -58,6 +59,7 @@ String protocolDesc(L10n l10n, CoreProtocol value) => switch (value) {
   CoreProtocol.masque => l10n.protocolMasqueDesc,
   CoreProtocol.wireguard => l10n.protocolWireGuardDesc,
   CoreProtocol.gool => l10n.protocolGoolDesc,
+  CoreProtocol.goolClassic => l10n.protocolGoolClassicDesc,
   CoreProtocol.mim => l10n.protocolMimDesc,
 };
 
@@ -109,6 +111,64 @@ String routingDesc(L10n l10n, RoutingMode value) => switch (value) {
   RoutingMode.fullTunnel =>
     isMobilePlatform ? l10n.routingTunnelDescMobile : l10n.routingTunnelDesc,
 };
+
+Future<void> pickMasqueServerName({
+  required BuildContext context,
+  required L10n l10n,
+  required TunnelSettingsController controller,
+  required TunnelSettings settings,
+}) {
+  final current = settings.masqueServerName;
+  final custom = settings.masqueSniCustom;
+
+  return showChoiceSheet<String>(
+    context: context,
+    title: l10n.masqueSni,
+    message: l10n.masqueSniDesc,
+    selected: custom ? '' : current,
+    reportReselect: true,
+    options: <PickerOption<String>>[
+      PickerOption(
+        value: TunnelSettings.defaultMasqueSni,
+        title: TunnelSettings.defaultMasqueSni,
+        subtitle: l10n.masqueSniDefaultDesc,
+      ),
+      PickerOption(
+        value: TunnelSettings.warpMasqueSni,
+        title: TunnelSettings.warpMasqueSni,
+        subtitle: l10n.masqueSniWarpDesc,
+      ),
+      PickerOption(
+        value: '',
+        title: l10n.masqueSniCustom,
+        subtitle: custom ? current : l10n.masqueSniCustomDesc,
+      ),
+    ],
+    onSelected: (value) {
+      if (value.isNotEmpty) {
+        controller.update(
+          (s) => s.copyWith(
+            masqueSni: value == TunnelSettings.defaultMasqueSni ? '' : value,
+          ),
+        );
+        return;
+      }
+      showTextEditorSheet(
+        context: context,
+        title: l10n.masqueSniCustom,
+        description: l10n.masqueSniCustomDesc,
+        initial: custom ? current : '',
+        placeholder: 'www.example.com',
+        cancelLabel: l10n.cancel,
+        saveLabel: l10n.save,
+        validator: (v) =>
+            TunnelSettings.isServerName(v) ? null : l10n.serverNameRefusal,
+        onSaved: (v) =>
+            controller.update((s) => s.copyWith(masqueSni: v.trim())),
+      );
+    },
+  );
+}
 
 bool isIpAddress(String value) {
   final trimmed = value.trim();
@@ -247,8 +307,7 @@ class SettingsScreen extends ConsumerWidget {
                               .where(
                                 (v) =>
                                     !settings.dialsThrough ||
-                                    v == CoreProtocol.masque ||
-                                    v == CoreProtocol.mim,
+                                    !TunnelSettings.needsUdpToWarp(v),
                               )
                               .map(
                                 (v) => PickerOption<CoreProtocol>(
@@ -285,6 +344,18 @@ class SettingsScreen extends ConsumerWidget {
                           onSelected: (v) => controller.update(
                             (s) => s.copyWith(transport: v),
                           ),
+                        ),
+                      ),
+                      SettingsRow(
+                        title: l10n.masqueSni,
+                        subtitle: l10n.masqueSniDesc,
+                        value: settings.masqueServerName,
+                        enabled: settings.isMasque,
+                        onTap: () => pickMasqueServerName(
+                          context: context,
+                          l10n: l10n,
+                          controller: controller,
+                          settings: settings,
                         ),
                       ),
                       SettingsRow(
@@ -329,7 +400,7 @@ class SettingsScreen extends ConsumerWidget {
                           ),
                         ),
                       ),
-                      if (settings.usesGool)
+                      if (settings.usesGoolClassic)
                         SettingsRow(
                           title: l10n.wiwSection,
                           subtitle: l10n.wiwSectionDesc,
@@ -342,14 +413,39 @@ class SettingsScreen extends ConsumerWidget {
                             ),
                           ),
                         ),
+                      if (settings.usesGool)
+                        SettingsRow(
+                          title: l10n.goolPeer,
+                          subtitle: l10n.goolPeerDesc,
+                          value: settings.goolPeerValue.isEmpty
+                              ? l10n.endpointAuto
+                              : settings.goolPeerValue,
+                          onTap: () => showTextEditorSheet(
+                            context: context,
+                            title: l10n.goolPeer,
+                            description: l10n.goolPeerDesc,
+                            initial: settings.goolPeer,
+                            placeholder: '162.159.192.1:2408',
+                            cancelLabel: l10n.cancel,
+                            saveLabel: l10n.save,
+                            validator: (v) =>
+                                v.trim().isEmpty ||
+                                    TunnelSettings.isValidEndpoint(v)
+                                ? null
+                                : l10n.wiwInvalidEndpoint,
+                            onSaved: (v) => controller.update(
+                              (s) => s.copyWith(goolPeer: v.trim()),
+                            ),
+                          ),
+                        ),
                       SettingsRow(
                         title: l10n.endpoint,
-                        subtitle: settings.usesGool
+                        subtitle: settings.usesGoolClassic
                             ? l10n.endpointIgnoredOnGool
                             : (settings.scannerBypassed
                                   ? l10n.scannerOff
                                   : l10n.endpointManualHint),
-                        enabled: !settings.usesGool,
+                        enabled: !settings.usesGoolClassic,
                         value: settings.endpoint.isEmpty
                             ? l10n.endpointAuto
                             : settings.endpoint,

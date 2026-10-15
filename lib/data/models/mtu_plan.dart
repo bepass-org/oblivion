@@ -57,7 +57,28 @@ class MtuProfile {
     alignment: 16,
   );
 
-  static const MtuProfile gool = MtuProfile(
+  static const MtuProfile goolH3 = MtuProfile(
+    label: 'WireGuard in MASQUE · HTTP/3',
+    carrier: MtuCarrier.datagram,
+    overheadV4: 132,
+    overheadV6: 152,
+    ceiling: 1200,
+    coreTunable: false,
+    alignment: 16,
+    handshakeFloor: 1228,
+  );
+
+  static const MtuProfile goolH2 = MtuProfile(
+    label: 'WireGuard in MASQUE · HTTP/2',
+    carrier: MtuCarrier.stream,
+    overheadV4: 132,
+    overheadV6: 152,
+    ceiling: 1200,
+    coreTunable: false,
+    alignment: 16,
+  );
+
+  static const MtuProfile goolClassic = MtuProfile(
     label: 'WireGuard in WireGuard',
     carrier: MtuCarrier.datagram,
     overheadV4: 120,
@@ -68,7 +89,8 @@ class MtuProfile {
   );
 
   static MtuProfile of(TunnelSettings settings) {
-    if (settings.usesGool) return gool;
+    if (settings.usesGoolClassic) return goolClassic;
+    if (settings.usesGool) return settings.usesHttp2 ? goolH2 : goolH3;
     if (settings.usesWireGuard) return wireguard;
     if (settings.usesHttp2) return masqueH2;
     return masqueH3;

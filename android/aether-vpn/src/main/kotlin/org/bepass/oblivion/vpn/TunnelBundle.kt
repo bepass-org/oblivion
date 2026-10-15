@@ -9,11 +9,13 @@ object TunnelBundle {
         putString("psiphonMode", config.psiphonMode)
         putString("psiphonCdnIps", config.psiphonCdnIps)
         putString("psiphonCdnSni", config.psiphonCdnSni)
+        putString("psiphonCdnSets", config.psiphonCdnSets)
         putString("psiphonConduitPeers", config.psiphonConduitPeers)
         putBoolean("psiphonRejectCensoredPeers", config.psiphonRejectCensoredPeers)
         putString("torRelays", config.torRelays)
         putString("exitLoc", config.exitLoc)
         putString("protocol", config.protocol)
+        putString("modeLabel", config.modeLabel)
         putString("transport", config.transport)
         putString("scanMode", config.scanMode)
         putString("obfuscation", config.obfuscation)
@@ -51,11 +53,13 @@ object TunnelBundle {
         psiphonMode = bundle.getString("psiphonMode", "auto"),
         psiphonCdnIps = bundle.getString("psiphonCdnIps", ""),
         psiphonCdnSni = bundle.getString("psiphonCdnSni", ""),
+        psiphonCdnSets = bundle.getString("psiphonCdnSets", ""),
         psiphonConduitPeers = bundle.getString("psiphonConduitPeers", "auto"),
         psiphonRejectCensoredPeers = bundle.getBoolean("psiphonRejectCensoredPeers", true),
         torRelays = bundle.getString("torRelays", "auto"),
         exitLoc = bundle.getString("exitLoc", ""),
         protocol = bundle.getString("protocol", "masque"),
+        modeLabel = bundle.getString("modeLabel", ""),
         transport = bundle.getString("transport", "h3"),
         scanMode = bundle.getString("scanMode", "balanced"),
         obfuscation = bundle.getString("obfuscation", "balanced"),

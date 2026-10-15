@@ -19,6 +19,7 @@ Future<void> showChoiceSheet<T>({
   required List<PickerOption<T>> options,
   required ValueChanged<T> onSelected,
   String? message,
+  bool reportReselect = false,
 }) async {
   final palette = context.palette;
 
@@ -70,7 +71,168 @@ Future<void> showChoiceSheet<T>({
     ),
   );
 
-  if (chosen != null && chosen != selected) onSelected(chosen);
+  if (chosen != null && (reportReselect || chosen != selected)) {
+    onSelected(chosen);
+  }
+}
+
+Future<void> showMultiChoiceSheet<T>({
+  required BuildContext context,
+  required String title,
+  required Set<T> selected,
+  required List<PickerOption<T>> options,
+  required ValueChanged<Set<T>> onSaved,
+  String? message,
+  String cancelLabel = 'Cancel',
+  String saveLabel = 'Save',
+}) async {
+  final palette = context.palette;
+  final chosen = <T>{...selected};
+
+  final saved = await showCupertinoModalPopup<bool>(
+    context: context,
+    builder: (sheetContext) {
+      return StatefulBuilder(
+        builder: (_, setSheetState) {
+          return Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(sheetContext).size.height * 0.8,
+            ),
+            decoration: BoxDecoration(
+              color: palette.canvas,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
+            ),
+            child: SafeArea(
+              top: false,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 0),
+                    child: Text(title, style: AppText.title(palette.label)),
+                  ),
+                  if (message != null)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(18, 6, 18, 0),
+                      child: Text(
+                        message,
+                        style: AppText.caption(palette.labelSecondary),
+                      ),
+                    ),
+                  const SizedBox(height: 12),
+                  Flexible(
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: options.length,
+                      separatorBuilder: (_, _) => Padding(
+                        padding: const EdgeInsetsDirectional.only(start: 18),
+                        child: Container(height: 0.5, color: palette.separator),
+                      ),
+                      itemBuilder: (_, index) {
+                        final option = options[index];
+                        final picked = chosen.contains(option.value);
+
+                        return CupertinoButton(
+                          padding: EdgeInsets.zero,
+                          borderRadius: BorderRadius.zero,
+                          onPressed: () => setSheetState(() {
+                            if (!chosen.remove(option.value)) {
+                              chosen.add(option.value);
+                            }
+                          }),
+                          child: Container(
+                            color: palette.card,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 18,
+                              vertical: 13,
+                            ),
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        option.title,
+                                        style: AppText.rowTitle(
+                                          picked
+                                              ? palette.primary
+                                              : palette.label,
+                                        ),
+                                      ),
+                                      if (option.subtitle != null) ...<Widget>[
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          option.subtitle!,
+                                          style: AppText.caption(
+                                            palette.labelSecondary,
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                                if (picked)
+                                  Icon(
+                                    CupertinoIcons.check_mark,
+                                    size: 18,
+                                    color: palette.primary,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: CupertinoButton(
+                            color: palette.cardPressed,
+                            borderRadius: BorderRadius.circular(10),
+                            padding: const EdgeInsets.symmetric(vertical: 13),
+                            onPressed: () =>
+                                Navigator.of(sheetContext).pop(false),
+                            child: Text(
+                              cancelLabel,
+                              style: AppText.rowTitle(palette.label),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: CupertinoButton(
+                            color: palette.primary,
+                            borderRadius: BorderRadius.circular(10),
+                            padding: const EdgeInsets.symmetric(vertical: 13),
+                            onPressed: () =>
+                                Navigator.of(sheetContext).pop(true),
+                            child: Text(
+                              saveLabel,
+                              style: AppText.rowTitle(const Color(0xFFFFFFFF)),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  if (saved ?? false) onSaved(chosen);
 }
 
 Future<void> showTextEditorSheet({

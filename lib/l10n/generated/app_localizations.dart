@@ -598,8 +598,20 @@ abstract class L10n {
   /// No description provided for @protocolGoolDesc.
   ///
   /// In en, this message translates to:
-  /// **'WARP inside WARP, slower but harder to block'**
+  /// **'WireGuard inside MASQUE, for an exit outside your own country'**
   String get protocolGoolDesc;
+
+  /// No description provided for @protocolGoolClassic.
+  ///
+  /// In en, this message translates to:
+  /// **'Classic Gool'**
+  String get protocolGoolClassic;
+
+  /// No description provided for @protocolGoolClassicDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'WARP inside WARP, two WireGuard hops'**
+  String get protocolGoolClassicDesc;
 
   /// No description provided for @transport.
   ///
@@ -880,7 +892,7 @@ abstract class L10n {
   /// No description provided for @fragmentDesc.
   ///
   /// In en, this message translates to:
-  /// **'Breaks the start of the connection into pieces so filtering cannot recognise it'**
+  /// **'Sends the TLS hello in pieces so filtering cannot read the server name: on the WARP API calls whatever the protocol, and on MASQUE over HTTP/2'**
   String get fragmentDesc;
 
   /// No description provided for @logLevel.
@@ -1240,7 +1252,7 @@ abstract class L10n {
   /// No description provided for @wiwSection.
   ///
   /// In en, this message translates to:
-  /// **'WARP-in-WARP hops'**
+  /// **'Classic Gool hops'**
   String get wiwSection;
 
   /// No description provided for @wiwSectionDesc.
@@ -1306,19 +1318,31 @@ abstract class L10n {
   /// No description provided for @endpointIgnoredOnGool.
   ///
   /// In en, this message translates to:
-  /// **'Not used by WARP-in-WARP; name the two hops instead.'**
+  /// **'Not used by Classic Gool; name the two hops instead.'**
   String get endpointIgnoredOnGool;
+
+  /// No description provided for @goolPeer.
+  ///
+  /// In en, this message translates to:
+  /// **'Gool WireGuard server'**
+  String get goolPeer;
+
+  /// No description provided for @goolPeerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The WireGuard endpoint Gool dials inside the tunnel. Leave empty to use the one its registration names, on port 2408'**
+  String get goolPeerDesc;
 
   /// No description provided for @ech.
   ///
   /// In en, this message translates to:
-  /// **'Hide the site name'**
+  /// **'Hide the server name (ECH)'**
   String get ech;
 
   /// No description provided for @echDesc.
   ///
   /// In en, this message translates to:
-  /// **'Keeps the name of the site you open hidden from the network'**
+  /// **'Encrypts the server name of the MASQUE handshake and of the WARP API calls. If no ECH key can be found, nothing connects rather than show the name'**
   String get echDesc;
 
   /// No description provided for @fragmentSize.
@@ -1336,7 +1360,7 @@ abstract class L10n {
   /// No description provided for @rangeHint.
   ///
   /// In en, this message translates to:
-  /// **'A single number or a range such as 16-32'**
+  /// **'A single number or a range such as 8-16'**
   String get rangeHint;
 
   /// No description provided for @tlsGroups.
@@ -1350,6 +1374,132 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Key share groups offered during the handshake'**
   String get tlsGroupsDesc;
+
+  /// No description provided for @masqueSni.
+  ///
+  /// In en, this message translates to:
+  /// **'MASQUE server name (SNI)'**
+  String get masqueSni;
+
+  /// No description provided for @masqueSniDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The name the MASQUE handshake shows your network. The one you pick is sent as it is on every connection'**
+  String get masqueSniDesc;
+
+  /// No description provided for @masqueSniDefaultDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The default. Looks like a visit to Cloudflare\'s own site'**
+  String get masqueSniDefaultDesc;
+
+  /// No description provided for @masqueSniWarpDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'What the official WARP app sends. Some networks block it'**
+  String get masqueSniWarpDesc;
+
+  /// No description provided for @masqueSniCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'A name of your own'**
+  String get masqueSniCustom;
+
+  /// No description provided for @masqueSniCustomDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Write any domain name; it is sent exactly as written'**
+  String get masqueSniCustomDesc;
+
+  /// No description provided for @serverNameRefusal.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a domain name such as www.cloudflare.com, not an IP address'**
+  String get serverNameRefusal;
+
+  /// No description provided for @echDns.
+  ///
+  /// In en, this message translates to:
+  /// **'ECH key resolver'**
+  String get echDns;
+
+  /// No description provided for @echDnsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Where the ECH key is looked up: udp://ip, tcp://ip or a DNS-over-HTTPS https:// address, which may end in @address= and @sni=. Leave empty for udp://1.1.1.1'**
+  String get echDnsDesc;
+
+  /// No description provided for @echDnsRefusal.
+  ///
+  /// In en, this message translates to:
+  /// **'Write udp://ip, tcp://ip or an https:// address'**
+  String get echDnsRefusal;
+
+  /// No description provided for @echDomain.
+  ///
+  /// In en, this message translates to:
+  /// **'ECH key domain'**
+  String get echDomain;
+
+  /// No description provided for @echDomainDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The domain whose ECH key is used. Leave empty for cloudflare-ech.com'**
+  String get echDomainDesc;
+
+  /// No description provided for @domainRefusal.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a domain name'**
+  String get domainRefusal;
+
+  /// No description provided for @tlsCiphers.
+  ///
+  /// In en, this message translates to:
+  /// **'TLS 1.2 ciphers'**
+  String get tlsCiphers;
+
+  /// No description provided for @tlsCiphersDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Cipher suites offered after the TLS 1.3 ones, names separated by colons. Leave empty for Chrome\'s list. HTTP/3 offers TLS 1.3 alone'**
+  String get tlsCiphersDesc;
+
+  /// No description provided for @tlsCiphersRefusal.
+  ///
+  /// In en, this message translates to:
+  /// **'Write cipher names separated by colons'**
+  String get tlsCiphersRefusal;
+
+  /// No description provided for @grease.
+  ///
+  /// In en, this message translates to:
+  /// **'Send GREASE'**
+  String get grease;
+
+  /// No description provided for @greaseDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds the random GREASE values Chrome sends, so the handshake looks like a browser. Turn it off only if a network drops it'**
+  String get greaseDesc;
+
+  /// No description provided for @apiAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'WARP API address'**
+  String get apiAddress;
+
+  /// No description provided for @apiAddressDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Where registration and key calls go: an IP address or a domain, with a port when it is not 443. The name api.cloudflareclient.com stays in the handshake. Leave empty to reach it directly'**
+  String get apiAddressDesc;
+
+  /// No description provided for @apiAddressRefusal.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an IP address or a domain, with an optional port such as 188.114.97.6:443'**
+  String get apiAddressRefusal;
 
   /// No description provided for @dataCheck.
   ///
@@ -1720,13 +1870,13 @@ abstract class L10n {
   /// No description provided for @devNoteGoolTitle.
   ///
   /// In en, this message translates to:
-  /// **'Gool usually works well'**
+  /// **'Gool gives a foreign address'**
   String get devNoteGoolTitle;
 
   /// No description provided for @devNoteGoolBody.
   ///
   /// In en, this message translates to:
-  /// **'From Iran, Gool almost always comes out on a German address and gives no trouble. Once in a while it lands back on an Iranian address. Disconnect and connect again a couple of times and it clears up.'**
+  /// **'Gool now carries WireGuard inside MASQUE. The WireGuard hop is dialled from inside WARP, so it comes out on a foreign address instead of an Iranian one. It follows the connection type you pick, so on a restricted line use it over HTTP/2. The older WARP inside WARP is still in the list as Classic Gool.'**
   String get devNoteGoolBody;
 
   /// No description provided for @devNoteDismiss.
@@ -1848,12 +1998,6 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Connected'**
   String get trayStageActive;
-
-  /// No description provided for @fragmentNeedsHttp2.
-  ///
-  /// In en, this message translates to:
-  /// **'Switches the transport to HTTP/2, the only one that carries a TLS ClientHello'**
-  String get fragmentNeedsHttp2;
 
   /// No description provided for @transportUdp.
   ///
@@ -2326,7 +2470,7 @@ abstract class L10n {
   /// No description provided for @protocolThroughCarrier.
   ///
   /// In en, this message translates to:
-  /// **'Through {engine} only MASQUE over HTTP/2 reaches WARP. Your own choice comes back with any other core'**
+  /// **'Through {engine} WARP is reached over HTTP/2, so WireGuard and Classic Gool cannot run. Your own choice comes back with any other core'**
   String protocolThroughCarrier(String engine);
 
   /// No description provided for @chainNeedsTcp.
@@ -2442,6 +2586,30 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Domain names to present in TLS, one per line'**
   String get psiphonCdnSniDesc;
+
+  /// No description provided for @psiphonCdnSets.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in edge lists'**
+  String get psiphonCdnSets;
+
+  /// No description provided for @psiphonCdnSetsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Which of Psiphon\'s own CDN lists the fronting scan tries, after your own edge addresses. With none picked it tries every list, or only your addresses when you gave some'**
+  String get psiphonCdnSetsDesc;
+
+  /// No description provided for @psiphonCdnSetsAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get psiphonCdnSetsAll;
+
+  /// No description provided for @psiphonCdnSetsNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Your addresses only'**
+  String get psiphonCdnSetsNone;
 
   /// No description provided for @psiphonConduitPeers.
   ///

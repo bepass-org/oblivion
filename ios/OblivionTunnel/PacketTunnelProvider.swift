@@ -88,29 +88,33 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         let allowLan = (settings["allowLan"] as? NSNumber)?.boolValue ?? false
         let host = allowLan ? "0.0.0.0" : "127.0.0.1"
 
+        let protocolName = settings["protocol"] as? String ?? "masque"
+        let classicGool = protocolName == "gool-classic"
+
         var environment: [String: String] = [
             "AETHER_SOCKS": "\(host):\(socksPort)",
-            "AETHER_PROTOCOL": settings["protocol"] as? String ?? "masque",
+            "AETHER_PROTOCOL": classicGool ? "gool" : protocolName,
             "AETHER_SCAN": settings["scanMode"] as? String ?? "balanced",
             "AETHER_NOIZE": settings["obfuscation"] as? String ?? "balanced",
             "AETHER_IP": settings["ipVersion"] as? String ?? "v4",
             "AETHER_LOG_LEVEL": settings["logLevel"] as? String ?? "info",
         ]
 
-        let protocolName = settings["protocol"] as? String ?? "masque"
         let transport = settings["transport"] as? String ?? "h3"
-        if protocolName == "masque", transport == "h2" {
+        if ["masque", "mim", "gool"].contains(protocolName), transport == "h2" {
             environment["AETHER_MASQUE_HTTP2"] = "1"
-            if (settings["fragment"] as? NSNumber)?.boolValue ?? false {
-                environment["AETHER_MASQUE_H2_FRAGMENT"] = "1"
-            }
+        }
+        if (settings["fragment"] as? NSNumber)?.boolValue ?? false {
+            environment["AETHER_MASQUE_H2_FRAGMENT"] = "1"
         }
 
         if protocolName == "masque", let mtu = Self.coreMtu(settings) {
             environment["AETHER_MASQUE_MTU"] = String(mtu)
         }
 
-        if let endpoint = settings["endpoint"] as? String, !endpoint.isEmpty {
+        if classicGool {
+            environment["AETHER_GOOL_MODE"] = "classic"
+        } else if let endpoint = settings["endpoint"] as? String, !endpoint.isEmpty {
             environment["AETHER_PEER"] = endpoint
         }
         if let perf = settings["perfProfile"] as? String, !perf.isEmpty {

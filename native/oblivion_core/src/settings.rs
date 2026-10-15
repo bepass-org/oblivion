@@ -13,6 +13,8 @@ pub struct TunnelSettings {
     pub psiphon_cdn_ips: String,
     #[serde(default)]
     pub psiphon_cdn_sni: String,
+    #[serde(default)]
+    pub psiphon_cdn_sets: String,
     #[serde(default = "default_conduit_peers")]
     pub psiphon_conduit_peers: String,
     #[serde(default = "default_true")]
@@ -218,13 +220,21 @@ impl TunnelSettings {
 
     pub fn effective_protocol(&self) -> String {
         let chosen = self.protocol.trim();
-        let wireguard = chosen.eq_ignore_ascii_case("wg")
+        let needs_udp = chosen.eq_ignore_ascii_case("wg")
             || chosen.eq_ignore_ascii_case("wireguard")
-            || chosen.eq_ignore_ascii_case("gool");
-        if self.dials_through() && wireguard {
+            || chosen.eq_ignore_ascii_case("gool-classic");
+        if self.dials_through() && needs_udp {
             "masque".to_string()
         } else {
             self.protocol.clone()
+        }
+    }
+
+    pub fn core_protocol(&self) -> String {
+        if self.uses_gool_classic() {
+            "gool".to_string()
+        } else {
+            self.effective_protocol()
         }
     }
 
@@ -339,8 +349,18 @@ impl TunnelSettings {
             .eq_ignore_ascii_case("gool")
     }
 
+    pub fn uses_gool_classic(&self) -> bool {
+        self.effective_protocol()
+            .trim()
+            .eq_ignore_ascii_case("gool-classic")
+    }
+
+    pub fn masque_carrier(&self) -> bool {
+        self.uses_masque() || self.uses_gool()
+    }
+
     pub fn wiw_outer_peer(&self) -> &str {
-        if self.uses_gool() {
+        if self.uses_gool_classic() {
             self.wiw_outer.trim()
         } else {
             ""
@@ -348,7 +368,7 @@ impl TunnelSettings {
     }
 
     pub fn wiw_inner_peer(&self) -> &str {
-        if self.uses_gool() {
+        if self.uses_gool_classic() {
             self.wiw_inner.trim()
         } else {
             ""
@@ -404,7 +424,7 @@ impl TunnelSettings {
         let mut env = vec![
             ("AETHER_SOCKS".to_string(), self.aether_bind_address()),
             ("AETHER_HTTP_PROXY".to_string(), self.aether_http_address()),
-            ("AETHER_PROTOCOL".to_string(), self.effective_protocol()),
+            ("AETHER_PROTOCOL".to_string(), self.core_protocol()),
             ("AETHER_SCAN".to_string(), self.scan_mode.clone()),
             ("AETHER_NOIZE".to_string(), self.noize()),
             ("AETHER_IP".to_string(), self.ip_version.clone()),
@@ -429,14 +449,16 @@ impl TunnelSettings {
             }
         }
 
-        if self.uses_masque() && (self.transport == "h2" || self.dials_through()) {
+        if self.masque_carrier() && (self.transport == "h2" || self.dials_through()) {
             env.push(("AETHER_MASQUE_HTTP2".to_string(), "1".to_string()));
-            if self.fragment {
-                env.push(("AETHER_MASQUE_H2_FRAGMENT".to_string(), "1".to_string()));
-            }
         }
 
-        if self.uses_gool() {
+        if self.fragment && !self.runs_alone() {
+            env.push(("AETHER_MASQUE_H2_FRAGMENT".to_string(), "1".to_string()));
+        }
+
+        if self.uses_gool_classic() {
+            env.push(("AETHER_GOOL_MODE".to_string(), "classic".to_string()));
             let outer = self.wiw_outer_peer();
             if !outer.is_empty() {
                 env.push(("AETHER_WIW_OUTER_PEER".to_string(), outer.to_string()));
@@ -482,6 +504,11 @@ impl TunnelSettings {
             let names = self.psiphon_cdn_sni.trim();
             if !names.is_empty() {
                 env.push(("AETHER_PSIPHON_CDN_SNI".to_string(), names.to_string()));
+            }
+
+            let sets = self.psiphon_cdn_sets.trim();
+            if !sets.is_empty() {
+                env.push(("AETHER_PSIPHON_CDN_SETS".to_string(), sets.to_string()));
             }
 
             let data = self.data_dir.trim();
@@ -580,7 +607,7 @@ impl TunnelSettings {
 
     pub fn manual_gateway(&self) -> Option<String> {
         let value = self.endpoint.trim();
-        if value.is_empty() {
+        if value.is_empty() || self.uses_gool_classic() {
             None
         } else {
             Some(value.to_string())
@@ -940,9 +967,16 @@ mod warp_in_warp_tests {
     }
 
     #[test]
+    fn classic_gool_is_named_to_the_core_as_gool_in_its_classic_mode() {
+        let env = settings_from(r#"{"protocol":"gool-classic"}"#).core_environment();
+        assert_eq!(value_of(&env, "AETHER_PROTOCOL"), Some("gool"));
+        assert_eq!(value_of(&env, "AETHER_GOOL_MODE"), Some("classic"));
+    }
+
+    #[test]
     fn both_hops_reach_the_core_when_they_are_named_by_hand() {
         let env = settings_from(
-            r#"{"protocol":"gool","wiwOuter":"162.159.192.1:2408","wiwInner":"188.114.96.1:894"}"#,
+            r#"{"protocol":"gool-classic","wiwOuter":"162.159.192.1:2408","wiwInner":"188.114.96.1:894"}"#,
         )
         .core_environment();
 
@@ -959,7 +993,7 @@ mod warp_in_warp_tests {
 
     #[test]
     fn naming_one_hop_leaves_the_other_to_the_scan() {
-        let env = settings_from(r#"{"protocol":"gool","wiwOuter":"162.159.192.1:2408"}"#)
+        let env = settings_from(r#"{"protocol":"gool-classic","wiwOuter":"162.159.192.1:2408"}"#)
             .core_environment();
 
         assert_eq!(
@@ -972,20 +1006,22 @@ mod warp_in_warp_tests {
 
     #[test]
     fn naming_neither_hop_asks_the_core_to_scan_for_both() {
-        let env = settings_from(r#"{"protocol":"gool"}"#).core_environment();
+        let env = settings_from(r#"{"protocol":"gool-classic"}"#).core_environment();
         assert_eq!(value_of(&env, "AETHER_WIW_PEERS"), Some("auto"));
     }
 
     #[test]
-    fn the_masque_endpoint_never_becomes_a_gool_hop() {
-        let env = settings_from(r#"{"protocol":"gool","endpoint":"162.159.198.1:443"}"#)
-            .core_environment();
+    fn the_masque_endpoint_never_becomes_a_classic_gool_hop() {
+        let settings =
+            settings_from(r#"{"protocol":"gool-classic","endpoint":"162.159.198.1:443"}"#);
+        let env = settings.core_environment();
 
         assert!(
             value_of(&env, "AETHER_PEER").is_none(),
-            "AETHER_PEER doubles as the outer hop, so it must not survive into gool"
+            "AETHER_PEER doubles as the outer hop, so it must not survive into classic gool"
         );
         assert_eq!(value_of(&env, "AETHER_WIW_PEERS"), Some("auto"));
+        assert_eq!(settings.manual_gateway(), None);
     }
 
     #[test]
@@ -996,14 +1032,103 @@ mod warp_in_warp_tests {
         .core_environment();
 
         assert!(value_of(&env, "AETHER_WIW_OUTER_PEER").is_none());
+        assert!(value_of(&env, "AETHER_GOOL_MODE").is_none());
         assert_eq!(value_of(&env, "AETHER_PEER"), Some("162.159.198.1:443"));
     }
 
     #[test]
     fn surrounding_whitespace_is_trimmed_off_a_hop() {
-        let settings = settings_from(r#"{"protocol":"gool","wiwInner":"  188.114.96.1:894  "}"#);
+        let settings =
+            settings_from(r#"{"protocol":"gool-classic","wiwInner":"  188.114.96.1:894  "}"#);
         assert_eq!(settings.wiw_inner_peer(), "188.114.96.1:894");
         assert!(settings.wiw_pinned());
+    }
+
+    #[test]
+    fn gool_over_masque_leaves_every_classic_switch_off() {
+        let env = settings_from(
+            r#"{"protocol":"gool","wiwOuter":"162.159.192.1:2408","wiwInner":"188.114.96.1:894"}"#,
+        )
+        .core_environment();
+
+        assert_eq!(value_of(&env, "AETHER_PROTOCOL"), Some("gool"));
+        for key in [
+            "AETHER_GOOL_MODE",
+            "AETHER_WIW_OUTER_PEER",
+            "AETHER_WIW_INNER_PEER",
+            "AETHER_WIW_PEERS",
+        ] {
+            assert!(
+                value_of(&env, key).is_none(),
+                "{key} would turn gool classic"
+            );
+        }
+    }
+
+    #[test]
+    fn gool_over_masque_takes_the_masque_gateway_and_carrier() {
+        let settings = settings_from(
+            r#"{"protocol":"gool","transport":"h2","endpoint":" 162.159.198.1:443 "}"#,
+        );
+        let env = settings.core_environment();
+
+        assert_eq!(value_of(&env, "AETHER_PEER"), Some("162.159.198.1:443"));
+        assert_eq!(value_of(&env, "AETHER_MASQUE_HTTP2"), Some("1"));
+        assert_eq!(
+            settings.manual_gateway().as_deref(),
+            Some("162.159.198.1:443")
+        );
+    }
+
+    #[test]
+    fn gool_over_masque_keeps_the_masque_packet_size_of_the_core() {
+        let env = settings_from(r#"{"protocol":"gool","tunnelMtu":1280,"coreMtu":1180}"#)
+            .core_environment();
+        assert!(value_of(&env, "AETHER_MASQUE_MTU").is_none());
+    }
+
+    #[test]
+    fn through_a_carrier_gool_stays_and_classic_gool_falls_back_to_masque() {
+        for core in ["tor-reverse", "psiphon-reverse"] {
+            let gool = settings_from(&format!(r#"{{"core":"{core}","protocol":"gool"}}"#))
+                .core_environment();
+            assert_eq!(value_of(&gool, "AETHER_PROTOCOL"), Some("gool"), "{core}");
+            assert_eq!(value_of(&gool, "AETHER_MASQUE_HTTP2"), Some("1"), "{core}");
+
+            let classic =
+                settings_from(&format!(r#"{{"core":"{core}","protocol":"gool-classic"}}"#))
+                    .core_environment();
+            assert_eq!(
+                value_of(&classic, "AETHER_PROTOCOL"),
+                Some("masque"),
+                "{core}"
+            );
+            assert!(value_of(&classic, "AETHER_GOOL_MODE").is_none(), "{core}");
+            assert!(value_of(&classic, "AETHER_WIW_PEERS").is_none(), "{core}");
+        }
+    }
+
+    #[test]
+    fn the_fragment_switch_reaches_the_core_on_every_carrier() {
+        for json in [
+            r#"{"fragment":true}"#,
+            r#"{"fragment":true,"transport":"h2"}"#,
+            r#"{"fragment":true,"protocol":"wg"}"#,
+            r#"{"fragment":true,"protocol":"gool"}"#,
+        ] {
+            let env = settings_from(json).core_environment();
+            assert_eq!(
+                value_of(&env, "AETHER_MASQUE_H2_FRAGMENT"),
+                Some("1"),
+                "{json}"
+            );
+        }
+
+        let off = settings_from("{}").core_environment();
+        assert!(value_of(&off, "AETHER_MASQUE_H2_FRAGMENT").is_none());
+
+        let alone = settings_from(r#"{"core":"psiphon","fragment":true}"#).core_environment();
+        assert!(value_of(&alone, "AETHER_MASQUE_H2_FRAGMENT").is_none());
     }
 }
 
@@ -1258,6 +1383,22 @@ mod psiphon_through_core_tests {
         assert_eq!(value(&env, "AETHER_PSIPHON_REGION"), Some("DE"));
         assert_eq!(value(&env, "AETHER_PSIPHON_CDN_IPS"), Some("1.2.3.4"));
         assert_eq!(value(&env, "AETHER_PSIPHON_CDN_SNI"), Some("a.example"));
+    }
+
+    #[test]
+    fn the_cdn_lists_travel_only_when_some_were_picked() {
+        let none = settings(r#"{"core":"psiphon"}"#).core_environment();
+        assert!(value(&none, "AETHER_PSIPHON_CDN_SETS").is_none());
+
+        let picked =
+            settings(r#"{"core":"chain","psiphonCdnSets":"cloudflare,fastly"}"#).core_environment();
+        assert_eq!(
+            value(&picked, "AETHER_PSIPHON_CDN_SETS"),
+            Some("cloudflare,fastly")
+        );
+
+        let plain = settings(r#"{"psiphonCdnSets":"cloudflare"}"#).core_environment();
+        assert!(value(&plain, "AETHER_PSIPHON_CDN_SETS").is_none());
     }
 
     #[test]

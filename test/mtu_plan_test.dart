@@ -82,11 +82,54 @@ void main() {
     });
 
     test('two wireguard hops pay for both', () {
-      final plan = _plan(const TunnelSettings(protocol: CoreProtocol.gool), 1500);
+      final plan = _plan(
+        const TunnelSettings(protocol: CoreProtocol.goolClassic),
+        1500,
+      );
 
+      expect(plan.profile, MtuProfile.goolClassic);
       expect(plan.overhead, 120);
       expect(plan.innerMtu, 1200);
       expect(plan.coreMtu, 0);
+    });
+
+    test('gool pays for wireguard and for the masque carrier around it', () {
+      final roomy = _plan(const TunnelSettings(protocol: CoreProtocol.gool), 1500);
+
+      expect(roomy.profile, MtuProfile.goolH3);
+      expect(roomy.overhead, 132);
+      expect(roomy.innerMtu, 1200);
+      expect(roomy.coreMtu, 0);
+      expect(roomy.pathLimited, isFalse);
+
+      final narrow = _plan(
+        const TunnelSettings(protocol: CoreProtocol.gool),
+        1300,
+      );
+      expect(narrow.innerMtu, 1168);
+      expect(narrow.innerMtu % 16, 0);
+      expect(narrow.pathLimited, isTrue);
+      expect(narrow.outerPacket, lessThanOrEqualTo(1300));
+      expect(narrow.coreMtu, 0);
+    });
+
+    test('gool over http2 rides a stream, and over quic needs its handshake', () {
+      final stream = _plan(
+        const TunnelSettings(
+          protocol: CoreProtocol.gool,
+          transport: MasqueTransport.http2,
+        ),
+        1300,
+      );
+      expect(stream.profile, MtuProfile.goolH2);
+      expect(stream.innerMtu, 1200);
+      expect(stream.pathLimited, isFalse);
+
+      expect(
+        _plan(const TunnelSettings(protocol: CoreProtocol.gool), 1200)
+            .handshakeAtRisk,
+        isTrue,
+      );
     });
 
     test('without a measurement the plan stays on the shipped defaults', () {

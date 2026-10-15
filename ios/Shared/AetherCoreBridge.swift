@@ -45,6 +45,9 @@ final class AetherCoreBridge {
     func start(arguments: [String], environment: [String: String]) throws {
         guard job == nil else { return }
 
+        for key in ProcessInfo.processInfo.environment.keys where key.hasPrefix("AETHER_") {
+            unsetenv(key)
+        }
         for (key, value) in environment {
             setenv(key, value, 1)
         }

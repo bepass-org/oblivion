@@ -14,7 +14,18 @@ void main() {
     test('every protocol has a name of its own', () {
       expect(
         const TunnelSettings(protocol: CoreProtocol.gool).modeLabel,
-        'GOOL',
+        'GOOL H3',
+      );
+      expect(
+        const TunnelSettings(
+          protocol: CoreProtocol.gool,
+          transport: MasqueTransport.http2,
+        ).modeLabel,
+        'GOOL H2',
+      );
+      expect(
+        const TunnelSettings(protocol: CoreProtocol.goolClassic).modeLabel,
+        'GOOL CLASSIC',
       );
       expect(
         const TunnelSettings(protocol: CoreProtocol.wireguard).modeLabel,
@@ -55,6 +66,23 @@ void main() {
     test('psiphon is shown on whichever side it sits', () {
       expect(
         const TunnelSettings(core: CoreEngine.psiphonReverse).modeLabel,
+        'PSIPHON + MASQUE H2',
+      );
+    });
+
+    test('gool through a carrier keeps its name on http2', () {
+      expect(
+        const TunnelSettings(
+          core: CoreEngine.torReverse,
+          protocol: CoreProtocol.gool,
+        ).modeLabel,
+        'TOR + GOOL H2',
+      );
+      expect(
+        const TunnelSettings(
+          core: CoreEngine.psiphonReverse,
+          protocol: CoreProtocol.goolClassic,
+        ).modeLabel,
         'PSIPHON + MASQUE H2',
       );
     });

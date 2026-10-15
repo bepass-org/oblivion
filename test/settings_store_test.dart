@@ -113,6 +113,70 @@ void main() {
       expect(settings.effectiveCoreMtu, 1328);
     });
 
+    test('the options of the new core come back after a reopen', () async {
+      await store.writeTunnelSettings(
+        store.readTunnelSettings().copyWith(
+          protocol: CoreProtocol.goolClassic,
+          goolPeer: '162.159.192.1:2408',
+          masqueSni: 'consumer-masque.cloudflareclient.com',
+          echDns: 'tcp://1.1.1.1',
+          echDomain: 'crypto.cloudflare.com',
+          tlsCiphers: 'ECDHE-RSA-AES128-GCM-SHA256',
+          grease: false,
+          apiAddress: '188.114.97.6:2053',
+          psiphonCdnSets: <String>{'fastly', 'cloudflare'},
+        ),
+      );
+
+      final reopened = SettingsStore(await SharedPreferences.getInstance());
+      final settings = reopened.readTunnelSettings();
+
+      expect(settings.protocol, CoreProtocol.goolClassic);
+      expect(settings.goolPeer, '162.159.192.1:2408');
+      expect(settings.masqueSni, 'consumer-masque.cloudflareclient.com');
+      expect(settings.echDns, 'tcp://1.1.1.1');
+      expect(settings.echDomain, 'crypto.cloudflare.com');
+      expect(settings.tlsCiphers, 'ECDHE-RSA-AES128-GCM-SHA256');
+      expect(settings.grease, isFalse);
+      expect(settings.apiAddress, '188.114.97.6:2053');
+      expect(settings.psiphonCdnSetList, <String>['cloudflare', 'fastly']);
+    });
+
+    test('gool saved by an earlier version opens as gool over masque', () async {
+      backing.values['flutter.core.protocol'] = 'gool';
+      backing.values['flutter.core.wiwOuter'] = '162.159.192.1:2408';
+      SharedPreferences.resetStatic();
+
+      final reopened = SettingsStore(await SharedPreferences.getInstance());
+      final settings = reopened.readTunnelSettings();
+
+      expect(settings.protocol, CoreProtocol.gool);
+      expect(settings.wiwOuter, '162.159.192.1:2408');
+      expect(settings.toCoreArguments(), contains('--gool'));
+      expect(settings.toCoreArguments(), isNot(contains('--wiw-outer')));
+    });
+
+    test('a fragment size left at the old default is kept as it was', () async {
+      backing.values['flutter.core.fragmentSize'] = '16-32';
+      SharedPreferences.resetStatic();
+
+      final reopened = SettingsStore(await SharedPreferences.getInstance());
+      expect(reopened.readTunnelSettings().fragmentSize, '16-32');
+    });
+
+    test('a cdn list name psiphon does not know is dropped', () async {
+      backing.values['flutter.core.psiphonCdnSets'] = <String>[
+        'cloudflare',
+        'nowhere',
+      ];
+      SharedPreferences.resetStatic();
+
+      final reopened = SettingsStore(await SharedPreferences.getInstance());
+      expect(reopened.readTunnelSettings().psiphonCdnSets, <String>{
+        'cloudflare',
+      });
+    });
+
     test('a reset drops the stored values and the diff along with them',
         () async {
       await store.writeTunnelSettings(

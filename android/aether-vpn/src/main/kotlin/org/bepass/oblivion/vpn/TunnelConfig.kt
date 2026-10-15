@@ -6,11 +6,13 @@ data class TunnelConfig(
     val psiphonMode: String,
     val psiphonCdnIps: String,
     val psiphonCdnSni: String,
+    val psiphonCdnSets: String,
     val psiphonConduitPeers: String,
     val psiphonRejectCensoredPeers: Boolean,
     val torRelays: String,
     val exitLoc: String,
     val protocol: String,
+    val modeLabel: String,
     val transport: String,
     val scanMode: String,
     val obfuscation: String,
@@ -88,15 +90,21 @@ data class TunnelConfig(
     val usesZeroTrust: Boolean get() = team.isNotBlank()
 
     val effectiveProtocol: String
-        get() = if (dialsThrough && protocol in setOf("wg", "wireguard", "gool")) "masque" else protocol
+        get() = if (dialsThrough && protocol in NEEDS_UDP) "masque" else protocol
 
     val usesGool: Boolean get() = effectiveProtocol == "gool"
+
+    val usesGoolClassic: Boolean get() = effectiveProtocol == PROTOCOL_GOOL_CLASSIC
+
+    val coreProtocol: String get() = if (usesGoolClassic) "gool" else effectiveProtocol
 
     val usesMim: Boolean get() = effectiveProtocol == "mim"
 
     val usesMasque: Boolean get() = effectiveProtocol == "masque" || usesMim
 
-    val usesHttp2: Boolean get() = usesMasque && (transport == "h2" || dialsThrough)
+    val masqueCarrier: Boolean get() = usesMasque || usesGool
+
+    val usesHttp2: Boolean get() = masqueCarrier && (transport == "h2" || dialsThrough)
 
     val torWire: String
         get() = when {
@@ -133,9 +141,13 @@ data class TunnelConfig(
             else -> "auto"
         }
 
-    val wiwOuterPeer: String get() = if (usesGool) wiwOuter.trim() else ""
+    val wiwOuterPeer: String get() = if (usesGoolClassic) wiwOuter.trim() else ""
 
-    val wiwInnerPeer: String get() = if (usesGool) wiwInner.trim() else ""
+    val wiwInnerPeer: String get() = if (usesGoolClassic) wiwInner.trim() else ""
+
+    val manualGateway: String get() = if (usesGoolClassic) "" else endpoint.trim()
+
+    val statusLabel: String get() = modeLabel.ifBlank { protocol.uppercase() }
 
     val wiwPinned: Boolean get() = wiwOuterPeer.isNotEmpty() || wiwInnerPeer.isNotEmpty()
 
@@ -193,6 +205,8 @@ data class TunnelConfig(
         const val CORE_TOR = "tor"
         const val CORE_TOR_CHAIN = "tor-chain"
         const val CORE_TOR_REVERSE = "tor-reverse"
+        const val PROTOCOL_GOOL_CLASSIC = "gool-classic"
+        private val NEEDS_UDP = setOf("wg", "wireguard", PROTOCOL_GOOL_CLASSIC)
 
         const val TUN_MTU = 8500
         const val TUN_MTU_MIN = 1280
@@ -216,11 +230,13 @@ data class TunnelConfig(
                 psiphonMode = str("psiphonMode", "auto"),
                 psiphonCdnIps = str("psiphonCdnIps"),
                 psiphonCdnSni = str("psiphonCdnSni"),
+                psiphonCdnSets = str("psiphonCdnSets"),
                 psiphonConduitPeers = str("psiphonConduitPeers", "auto"),
                 psiphonRejectCensoredPeers = bool("psiphonRejectCensoredPeers", true),
                 torRelays = str("torRelays", "auto"),
                 exitLoc = str("exitLoc"),
                 protocol = str("protocol", "masque"),
+                modeLabel = str("modeLabel"),
                 transport = str("transport", "h3"),
                 scanMode = str("scanMode", "balanced"),
                 obfuscation = str("obfuscation", "balanced"),

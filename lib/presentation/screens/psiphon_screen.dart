@@ -169,6 +169,30 @@ class PsiphonScreen extends ConsumerWidget {
                           ),
                         ),
                       ),
+                      SettingsRow(
+                        title: l10n.psiphonCdnSets,
+                        subtitle: l10n.psiphonCdnSetsDesc,
+                        value: cdnSetsSummary(l10n, settings),
+                        onTap: () => showMultiChoiceSheet<String>(
+                          context: context,
+                          title: l10n.psiphonCdnSets,
+                          message: l10n.psiphonCdnSetsDesc,
+                          selected: settings.psiphonCdnSets,
+                          options: psiphonCdnSetNames
+                              .map(
+                                (name) => PickerOption<String>(
+                                  value: name,
+                                  title: name,
+                                ),
+                              )
+                              .toList(),
+                          cancelLabel: l10n.cancel,
+                          saveLabel: l10n.save,
+                          onSaved: (value) => controller.update(
+                            (s) => s.copyWith(psiphonCdnSets: value),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 if (settings.psiphonUsesConduit)
@@ -223,6 +247,14 @@ class PsiphonScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+String cdnSetsSummary(L10n l10n, TunnelSettings settings) {
+  final sets = settings.psiphonCdnSetList;
+  if (sets.isNotEmpty) return describeList(sets.join(' '));
+  return settings.psiphonCdnIps.trim().isEmpty
+      ? l10n.psiphonCdnSetsAll
+      : l10n.psiphonCdnSetsNone;
 }
 
 String describeList(String raw) {

@@ -92,14 +92,26 @@ void main() {
     });
 
     test('the chain still carries the aether protocol flags', () {
-      final args = TunnelSettings(
+      final classic = TunnelSettings(
         core: CoreEngine.chain,
-        protocol: CoreProtocol.gool,
+        protocol: CoreProtocol.goolClassic,
         wiwOuter: '162.159.192.1:2408',
       ).toCoreArguments();
 
-      expect(args, contains('--gool'));
-      expect(args, containsAllInOrder(['--wiw-outer', '162.159.192.1:2408']));
+      expect(classic, contains('--gool-classic'));
+      expect(
+        classic,
+        containsAllInOrder(['--wiw-outer', '162.159.192.1:2408']),
+      );
+
+      final gool = TunnelSettings(
+        core: CoreEngine.chain,
+        protocol: CoreProtocol.gool,
+        goolPeer: '162.159.192.1:2408',
+      ).toCoreArguments();
+
+      expect(gool, contains('--gool'));
+      expect(gool, containsAllInOrder(['--gool-peer', '162.159.192.1:2408']));
     });
   });
 

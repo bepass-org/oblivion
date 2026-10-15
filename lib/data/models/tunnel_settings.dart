@@ -54,6 +54,18 @@ enum ConduitPeers {
       values.firstWhere((e) => e.wire == value, orElse: () => auto);
 }
 
+const psiphonCdnSetNames = <String>[
+  'cloudflare',
+  'fastly',
+  'cloudfront',
+  'psiphon-akamai',
+  'psiphon-bunny',
+  'vercel',
+  'github',
+  'curated-fronting',
+  'legacy-android-overrides',
+];
+
 const psiphonCountries = <String>[
   'AT',
   'AU',
@@ -105,6 +117,7 @@ enum CoreProtocol {
   masque('masque'),
   wireguard('wg'),
   gool('gool'),
+  goolClassic('gool-classic'),
   mim('mim');
 
   const CoreProtocol(this.wire);
@@ -247,6 +260,7 @@ class TunnelSettings {
     this.psiphonMode = PsiphonMode.auto,
     this.psiphonCdnIps = '',
     this.psiphonCdnSni = '',
+    this.psiphonCdnSets = const <String>{},
     this.psiphonConduitPeers = ConduitPeers.auto,
     this.psiphonRejectCensoredPeers = true,
     this.torRelays = TorRelays.auto,
@@ -266,7 +280,14 @@ class TunnelSettings {
     this.h2Endpoint = '',
     this.wiwOuter = '',
     this.wiwInner = '',
+    this.goolPeer = '',
+    this.masqueSni = '',
+    this.echDns = '',
+    this.echDomain = '',
     this.tlsGroups = '',
+    this.tlsCiphers = '',
+    this.grease = true,
+    this.apiAddress = '',
     this.socksPort = 1819,
     this.allowLan = false,
     this.routingMode = RoutingMode.fullTunnel,
@@ -278,7 +299,7 @@ class TunnelSettings {
     this.dnsPrimary = '1.1.1.1',
     this.dnsSecondary = '1.0.0.1',
     this.fragment = false,
-    this.fragmentSize = '16-32',
+    this.fragmentSize = '8-16',
     this.fragmentDelay = '2-10',
     this.quickReconnect = true,
     this.fastFirstConnect = true,
@@ -302,6 +323,7 @@ class TunnelSettings {
   final PsiphonMode psiphonMode;
   final String psiphonCdnIps;
   final String psiphonCdnSni;
+  final Set<String> psiphonCdnSets;
   final ConduitPeers psiphonConduitPeers;
   final bool psiphonRejectCensoredPeers;
 
@@ -324,7 +346,14 @@ class TunnelSettings {
   final String h2Endpoint;
   final String wiwOuter;
   final String wiwInner;
+  final String goolPeer;
+  final String masqueSni;
+  final String echDns;
+  final String echDomain;
   final String tlsGroups;
+  final String tlsCiphers;
+  final bool grease;
+  final String apiAddress;
 
   final int socksPort;
   final bool allowLan;
@@ -408,15 +437,16 @@ class TunnelSettings {
 
   bool get psiphonUsesConduit => psiphonMode == PsiphonMode.conduit;
 
+  static bool needsUdpToWarp(CoreProtocol value) =>
+      value == CoreProtocol.wireguard || value == CoreProtocol.goolClassic;
+
   CoreProtocol get effectiveProtocol =>
-      dialsThrough &&
-          (protocol == CoreProtocol.wireguard || protocol == CoreProtocol.gool)
-      ? CoreProtocol.masque
-      : protocol;
+      dialsThrough && needsUdpToWarp(protocol) ? CoreProtocol.masque : protocol;
 
   bool get isMasque =>
       effectiveProtocol == CoreProtocol.masque ||
-      effectiveProtocol == CoreProtocol.mim;
+      effectiveProtocol == CoreProtocol.mim ||
+      effectiveProtocol == CoreProtocol.gool;
 
   bool get usesMim => effectiveProtocol == CoreProtocol.mim;
 
@@ -424,7 +454,8 @@ class TunnelSettings {
     final String carrier = switch (effectiveProtocol) {
       CoreProtocol.masque => usesHttp2 ? 'MASQUE H2' : 'MASQUE H3',
       CoreProtocol.mim => usesHttp2 ? 'MIM H2' : 'MIM H3',
-      CoreProtocol.gool => 'GOOL',
+      CoreProtocol.gool => usesHttp2 ? 'GOOL H2' : 'GOOL H3',
+      CoreProtocol.goolClassic => 'GOOL CLASSIC',
       CoreProtocol.wireguard => 'WARP',
     };
 
@@ -461,9 +492,36 @@ class TunnelSettings {
 
   bool get usesWireGuard =>
       effectiveProtocol == CoreProtocol.wireguard ||
-      effectiveProtocol == CoreProtocol.gool;
+      effectiveProtocol == CoreProtocol.goolClassic;
 
   bool get usesGool => effectiveProtocol == CoreProtocol.gool;
+
+  bool get usesGoolClassic => effectiveProtocol == CoreProtocol.goolClassic;
+
+  String get goolPeerValue => goolPeer.trim();
+
+  static const String defaultMasqueSni = 'www.cloudflare.com';
+
+  static const String warpMasqueSni = 'consumer-masque.cloudflareclient.com';
+
+  static const List<String> masqueSniPresets = <String>[
+    defaultMasqueSni,
+    warpMasqueSni,
+  ];
+
+  String get masqueServerName {
+    final chosen = masqueSni.trim();
+    return chosen.isEmpty ? defaultMasqueSni : chosen;
+  }
+
+  bool get masqueSniCustom => !masqueSniPresets.contains(masqueServerName);
+
+  bool get usesEch => echMode != EchMode.off;
+
+  List<String> get psiphonCdnSetList => <String>[
+    for (final name in psiphonCdnSetNames)
+      if (psiphonCdnSets.contains(name)) name,
+  ];
 
   String get wiwOuterPeer => wiwOuter.trim();
 
@@ -525,6 +583,133 @@ class TunnelSettings {
     return true;
   }
 
+  static final RegExp _domainLabel = RegExp(r'^[A-Za-z0-9_-]{1,63}$');
+
+  static final RegExp _cipherList = RegExp(r'^[A-Za-z0-9_+!:,.=@ -]+$');
+
+  static String _stripTrailingDot(String value) =>
+      value.endsWith('.') ? value.substring(0, value.length - 1) : value;
+
+  static String _stripBrackets(String value) =>
+      value.length > 1 && value.startsWith('[') && value.endsWith(']')
+      ? value.substring(1, value.length - 1)
+      : value;
+
+  static bool _isIpAddress(String value) =>
+      InternetAddress.tryParse(value) != null;
+
+  static int? _digitsPort(String text) {
+    if (text.isEmpty ||
+        text.length > 5 ||
+        !text.codeUnits.every((unit) => unit >= 0x30 && unit <= 0x39)) {
+      return null;
+    }
+    final port = int.parse(text);
+    return port >= 1 && port <= 65535 ? port : null;
+  }
+
+  static bool isDomainName(String value) {
+    final name = _stripTrailingDot(value);
+    if (name.isEmpty || name.length > 253) return false;
+    return name.split('.').every(_domainLabel.hasMatch);
+  }
+
+  static bool isServerName(String value) {
+    final name = _stripTrailingDot(value.trim());
+    if (name.isEmpty || name.endsWith('.') || _isIpAddress(name)) return false;
+    return isDomainName(name);
+  }
+
+  static bool _isHostAddress(String value) =>
+      _isIpAddress(_stripBrackets(value)) || isDomainName(value);
+
+  static bool isApiAddress(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return false;
+    if (_isHostAddress(trimmed)) return true;
+
+    final separator = trimmed.lastIndexOf(':');
+    if (separator <= 0) return false;
+    final host = trimmed.substring(0, separator);
+    final port = trimmed.substring(separator + 1);
+    if (host.contains(':') && !host.startsWith('[')) return false;
+    final digits = port.startsWith('+') ? port.substring(1) : port;
+    if (_digitsPort(digits) == null) return false;
+    return _isHostAddress(host);
+  }
+
+  static bool _isSocketAddress(String text) {
+    if (_isIpAddress(text)) return true;
+
+    if (text.startsWith('[') && text.endsWith(']')) {
+      return InternetAddress.tryParse(_stripBrackets(text))?.type ==
+          InternetAddressType.IPv6;
+    }
+
+    final separator = text.lastIndexOf(':');
+    if (separator <= 0) return false;
+    final host = text.substring(0, separator);
+    if (_digitsPort(text.substring(separator + 1)) == null) return false;
+
+    if (host.startsWith('[') && host.endsWith(']')) {
+      return InternetAddress.tryParse(_stripBrackets(host))?.type ==
+          InternetAddressType.IPv6;
+    }
+    return InternetAddress.tryParse(host)?.type == InternetAddressType.IPv4;
+  }
+
+  static bool _isDohEndpoint(String value) {
+    final pieces = value.split('@');
+    final url = pieces.first.trim();
+    final host = url.substring('https://'.length).split(RegExp('[/?#]')).first;
+    if (host.isEmpty) return false;
+
+    final named = <String>{};
+    for (final piece in pieces.skip(1)) {
+      final split = piece.indexOf('=');
+      if (split < 0) return false;
+      final name = piece.substring(0, split).trim().toLowerCase();
+      final setting = piece.substring(split + 1).trim();
+      if (!named.add(name)) return false;
+
+      switch (name) {
+        case 'address':
+          if (!_isHostAddress(setting)) return false;
+        case 'sni':
+          if (_isIpAddress(_stripBrackets(setting)) || !isDomainName(setting)) {
+            return false;
+          }
+        default:
+          return false;
+      }
+    }
+    return true;
+  }
+
+  static bool isEchResolver(String value) {
+    final trimmed = value.trim();
+    final lower = trimmed.toLowerCase();
+
+    if (lower.startsWith('https://')) return _isDohEndpoint(trimmed);
+    if (!lower.startsWith('udp://') && !lower.startsWith('tcp://')) {
+      return false;
+    }
+
+    var rest = trimmed.substring('udp://'.length);
+    while (rest.endsWith('/')) {
+      rest = rest.substring(0, rest.length - 1);
+    }
+    return rest.isNotEmpty && _isSocketAddress(rest);
+  }
+
+  static bool isCipherList(String value) {
+    final trimmed = value.trim();
+    if (!_cipherList.hasMatch(trimmed)) return false;
+    return trimmed
+        .split(RegExp('[:, ]+'))
+        .any((entry) => entry.trim().isNotEmpty);
+  }
+
   String get noizeProfile => obfuscation.wire;
 
   String get bindAddress => '${allowLan ? '0.0.0.0' : '127.0.0.1'}:$socksPort';
@@ -565,6 +750,7 @@ class TunnelSettings {
     PsiphonMode? psiphonMode,
     String? psiphonCdnIps,
     String? psiphonCdnSni,
+    Set<String>? psiphonCdnSets,
     ConduitPeers? psiphonConduitPeers,
     bool? psiphonRejectCensoredPeers,
     TorRelays? torRelays,
@@ -584,7 +770,14 @@ class TunnelSettings {
     String? h2Endpoint,
     String? wiwOuter,
     String? wiwInner,
+    String? goolPeer,
+    String? masqueSni,
+    String? echDns,
+    String? echDomain,
     String? tlsGroups,
+    String? tlsCiphers,
+    bool? grease,
+    String? apiAddress,
     int? socksPort,
     bool? allowLan,
     RoutingMode? routingMode,
@@ -620,6 +813,7 @@ class TunnelSettings {
       psiphonMode: psiphonMode ?? this.psiphonMode,
       psiphonCdnIps: psiphonCdnIps ?? this.psiphonCdnIps,
       psiphonCdnSni: psiphonCdnSni ?? this.psiphonCdnSni,
+      psiphonCdnSets: psiphonCdnSets ?? this.psiphonCdnSets,
       psiphonConduitPeers: psiphonConduitPeers ?? this.psiphonConduitPeers,
       psiphonRejectCensoredPeers:
           psiphonRejectCensoredPeers ?? this.psiphonRejectCensoredPeers,
@@ -640,7 +834,14 @@ class TunnelSettings {
       h2Endpoint: h2Endpoint ?? this.h2Endpoint,
       wiwOuter: wiwOuter ?? this.wiwOuter,
       wiwInner: wiwInner ?? this.wiwInner,
+      goolPeer: goolPeer ?? this.goolPeer,
+      masqueSni: masqueSni ?? this.masqueSni,
+      echDns: echDns ?? this.echDns,
+      echDomain: echDomain ?? this.echDomain,
       tlsGroups: tlsGroups ?? this.tlsGroups,
+      tlsCiphers: tlsCiphers ?? this.tlsCiphers,
+      grease: grease ?? this.grease,
+      apiAddress: apiAddress ?? this.apiAddress,
       socksPort: socksPort ?? this.socksPort,
       allowLan: allowLan ?? this.allowLan,
       routingMode: routingMode ?? this.routingMode,
@@ -678,11 +879,13 @@ class TunnelSettings {
     'psiphonMode': psiphonMode.wire,
     'psiphonCdnIps': psiphonCdnIps.trim(),
     'psiphonCdnSni': psiphonCdnSni.trim(),
+    'psiphonCdnSets': psiphonCdnSetList.join(','),
     'psiphonConduitPeers': psiphonConduitPeers.wire,
     'psiphonRejectCensoredPeers': psiphonRejectCensoredPeers,
     'torRelays': torRelays.wire,
     'exitLoc': exitLoc.trim(),
     'protocol': protocol.wire,
+    'modeLabel': modeLabel,
     'transport': transport.wire,
     'scanMode': scanMode.wire,
     'obfuscation': obfuscation.wire,
@@ -694,8 +897,8 @@ class TunnelSettings {
     'endpoint': endpoint.trim(),
     'wgEndpoint': wgEndpoint.trim(),
     'h2Endpoint': h2Endpoint.trim(),
-    'wiwOuter': usesGool ? wiwOuterPeer : '',
-    'wiwInner': usesGool ? wiwInnerPeer : '',
+    'wiwOuter': usesGoolClassic ? wiwOuterPeer : '',
+    'wiwInner': usesGoolClassic ? wiwInnerPeer : '',
     'tlsGroups': tlsGroups.trim(),
     'socksPort': socksPort,
     'bindAddress': bindAddress,
@@ -769,6 +972,8 @@ class TunnelSettings {
         args.add('--wg');
       case CoreProtocol.gool:
         args.add('--gool');
+      case CoreProtocol.goolClassic:
+        args.add('--gool-classic');
       case CoreProtocol.mim:
         args.add('--mim');
     }
@@ -778,30 +983,41 @@ class TunnelSettings {
       if (h2Endpoint.trim().isNotEmpty) {
         args.addAll(<String>['--h2-peer', h2Endpoint.trim()]);
       }
-      if (fragment) {
-        args.add('--fragment');
-        if (fragmentSize.trim().isNotEmpty) {
-          args.addAll(<String>['--fragment-size', fragmentSize.trim()]);
-        }
-        if (fragmentDelay.trim().isNotEmpty) {
-          args.addAll(<String>['--fragment-delay', fragmentDelay.trim()]);
-        }
+    }
+
+    if (fragment) {
+      args.add('--fragment');
+      if (fragmentSize.trim().isNotEmpty) {
+        args.addAll(<String>['--fragment-size', fragmentSize.trim()]);
+      }
+      if (fragmentDelay.trim().isNotEmpty) {
+        args.addAll(<String>['--fragment-delay', fragmentDelay.trim()]);
       }
     }
 
-    if (isMasque && echMode != EchMode.off) {
+    if (isMasque) {
+      args.addAll(<String>['--masque-sni', masqueServerName]);
+    }
+
+    if (usesEch) {
       args.addAll(<String>['--ech', echMode.wire]);
+      if (echDns.trim().isNotEmpty) {
+        args.addAll(<String>['--ech-dns', echDns.trim()]);
+      }
+      if (echDomain.trim().isNotEmpty) {
+        args.addAll(<String>['--ech-domain', echDomain.trim()]);
+      }
     }
 
     if (usesWireGuard) {
       args.addAll(<String>['--keepalive', '$wgKeepalive']);
       if (!wgProfileRetry) args.add('--no-profile-retry');
-      if (!usesGool && wgEndpoint.trim().isNotEmpty) {
+      if (!usesGoolClassic && wgEndpoint.trim().isNotEmpty) {
         args.addAll(<String>['--wg-peer', wgEndpoint.trim()]);
       }
     }
 
-    if (usesGool) {
+    if (usesGoolClassic) {
       if (wiwOuterPeer.isNotEmpty) {
         args.addAll(<String>['--wiw-outer', wiwOuterPeer]);
       }
@@ -809,8 +1025,13 @@ class TunnelSettings {
         args.addAll(<String>['--wiw-inner', wiwInnerPeer]);
       }
       if (!wiwPinned) args.add('--wiw-scan');
-    } else if (manualGateway.isNotEmpty) {
-      args.addAll(<String>['--peer', manualGateway]);
+    } else {
+      if (manualGateway.isNotEmpty) {
+        args.addAll(<String>['--peer', manualGateway]);
+      }
+      if (usesGool && goolPeerValue.isNotEmpty) {
+        args.addAll(<String>['--gool-peer', goolPeerValue]);
+      }
     }
     if (overrideDns) {
       final resolvers = <String>[
@@ -823,6 +1044,13 @@ class TunnelSettings {
     }
     if (tlsGroups.trim().isNotEmpty) {
       args.addAll(<String>['--tls-groups', tlsGroups.trim()]);
+    }
+    if (tlsCiphers.trim().isNotEmpty) {
+      args.addAll(<String>['--tls-ciphers', tlsCiphers.trim()]);
+    }
+    if (!grease) args.add('--disable-grease');
+    if (apiAddress.trim().isNotEmpty) {
+      args.addAll(<String>['--api-address', apiAddress.trim()]);
     }
     if (perfProfile != PerfProfile.auto) {
       args.addAll(<String>['--perf', perfProfile.wire]);

@@ -14,6 +14,10 @@ Windows and Linux from one codebase.
 ## Features
 
 - **Two transports**: MASQUE over QUIC/HTTP-3 or HTTP/2, and classic WireGuard.
+- **Gool**: WireGuard carried inside MASQUE and dialled from inside WARP, so the
+  tunnel comes out in another country. The older WARP-in-WARP stays as Classic Gool.
+- **TLS camouflage**: pick the server name the MASQUE handshake shows, hide it with
+  ECH, send the ClientHello in pieces, and shape the TLS fingerprint.
 - **Zero Trust**: connect as a managed device on your organization's Cloudflare
   account, signing in with an emailed code, a service token, or a token you hold.
 - **Traffic rules**: block a destination outright, or send it straight out and

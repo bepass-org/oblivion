@@ -873,11 +873,7 @@ impl Supervisor {
                     }
                 }
 
-                let gateway = if settings.endpoint.trim().is_empty() {
-                    None
-                } else {
-                    Some(settings.endpoint.trim().to_string())
-                };
+                let gateway = settings.manual_gateway();
 
                 if settings.tunnel_mode() {
                     if let Err(error) = self.raise_device(&settings) {
@@ -1159,7 +1155,7 @@ impl Supervisor {
                 .lock()
                 .unwrap()
                 .as_ref()
-                .map(|settings| settings.endpoint.clone())
+                .and_then(TunnelSettings::manual_gateway)
         })?;
 
         // Remove regex escapes that psiphon adds (e.g., "1\.2\.3\.4" -> "1.2.3.4")

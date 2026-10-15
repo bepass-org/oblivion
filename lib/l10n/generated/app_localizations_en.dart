@@ -276,7 +276,14 @@ class L10nEn extends L10n {
   String get protocolGool => 'Gool';
 
   @override
-  String get protocolGoolDesc => 'WARP inside WARP, slower but harder to block';
+  String get protocolGoolDesc =>
+      'WireGuard inside MASQUE, for an exit outside your own country';
+
+  @override
+  String get protocolGoolClassic => 'Classic Gool';
+
+  @override
+  String get protocolGoolClassicDesc => 'WARP inside WARP, two WireGuard hops';
 
   @override
   String get transport => 'Connection type';
@@ -427,7 +434,7 @@ class L10nEn extends L10n {
 
   @override
   String get fragmentDesc =>
-      'Breaks the start of the connection into pieces so filtering cannot recognise it';
+      'Sends the TLS hello in pieces so filtering cannot read the server name: on the WARP API calls whatever the protocol, and on MASQUE over HTTP/2';
 
   @override
   String get logLevel => 'Log level';
@@ -618,7 +625,7 @@ class L10nEn extends L10n {
   String get h2EndpointDesc => 'The server used in HTTP/2 mode';
 
   @override
-  String get wiwSection => 'WARP-in-WARP hops';
+  String get wiwSection => 'Classic Gool hops';
 
   @override
   String get wiwSectionDesc =>
@@ -658,14 +665,21 @@ class L10nEn extends L10n {
 
   @override
   String get endpointIgnoredOnGool =>
-      'Not used by WARP-in-WARP; name the two hops instead.';
+      'Not used by Classic Gool; name the two hops instead.';
 
   @override
-  String get ech => 'Hide the site name';
+  String get goolPeer => 'Gool WireGuard server';
+
+  @override
+  String get goolPeerDesc =>
+      'The WireGuard endpoint Gool dials inside the tunnel. Leave empty to use the one its registration names, on port 2408';
+
+  @override
+  String get ech => 'Hide the server name (ECH)';
 
   @override
   String get echDesc =>
-      'Keeps the name of the site you open hidden from the network';
+      'Encrypts the server name of the MASQUE handshake and of the WARP API calls. If no ECH key can be found, nothing connects rather than show the name';
 
   @override
   String get fragmentSize => 'Fragment size';
@@ -674,13 +688,87 @@ class L10nEn extends L10n {
   String get fragmentDelay => 'Fragment delay';
 
   @override
-  String get rangeHint => 'A single number or a range such as 16-32';
+  String get rangeHint => 'A single number or a range such as 8-16';
 
   @override
   String get tlsGroups => 'TLS key groups';
 
   @override
   String get tlsGroupsDesc => 'Key share groups offered during the handshake';
+
+  @override
+  String get masqueSni => 'MASQUE server name (SNI)';
+
+  @override
+  String get masqueSniDesc =>
+      'The name the MASQUE handshake shows your network. The one you pick is sent as it is on every connection';
+
+  @override
+  String get masqueSniDefaultDesc =>
+      'The default. Looks like a visit to Cloudflare\'s own site';
+
+  @override
+  String get masqueSniWarpDesc =>
+      'What the official WARP app sends. Some networks block it';
+
+  @override
+  String get masqueSniCustom => 'A name of your own';
+
+  @override
+  String get masqueSniCustomDesc =>
+      'Write any domain name; it is sent exactly as written';
+
+  @override
+  String get serverNameRefusal =>
+      'Enter a domain name such as www.cloudflare.com, not an IP address';
+
+  @override
+  String get echDns => 'ECH key resolver';
+
+  @override
+  String get echDnsDesc =>
+      'Where the ECH key is looked up: udp://ip, tcp://ip or a DNS-over-HTTPS https:// address, which may end in @address= and @sni=. Leave empty for udp://1.1.1.1';
+
+  @override
+  String get echDnsRefusal => 'Write udp://ip, tcp://ip or an https:// address';
+
+  @override
+  String get echDomain => 'ECH key domain';
+
+  @override
+  String get echDomainDesc =>
+      'The domain whose ECH key is used. Leave empty for cloudflare-ech.com';
+
+  @override
+  String get domainRefusal => 'Enter a domain name';
+
+  @override
+  String get tlsCiphers => 'TLS 1.2 ciphers';
+
+  @override
+  String get tlsCiphersDesc =>
+      'Cipher suites offered after the TLS 1.3 ones, names separated by colons. Leave empty for Chrome\'s list. HTTP/3 offers TLS 1.3 alone';
+
+  @override
+  String get tlsCiphersRefusal => 'Write cipher names separated by colons';
+
+  @override
+  String get grease => 'Send GREASE';
+
+  @override
+  String get greaseDesc =>
+      'Adds the random GREASE values Chrome sends, so the handshake looks like a browser. Turn it off only if a network drops it';
+
+  @override
+  String get apiAddress => 'WARP API address';
+
+  @override
+  String get apiAddressDesc =>
+      'Where registration and key calls go: an IP address or a domain, with a port when it is not 443. The name api.cloudflareclient.com stays in the handshake. Leave empty to reach it directly';
+
+  @override
+  String get apiAddressRefusal =>
+      'Enter an IP address or a domain, with an optional port such as 188.114.97.6:443';
 
   @override
   String get dataCheck => 'Check data really flows';
@@ -894,11 +982,11 @@ class L10nEn extends L10n {
       'Set Protocol to WireGuard. Mind the scanner: on Balanced the search takes a while, so give it time before you decide it failed. If you want a result quickly, set Scan mode to Turbo.';
 
   @override
-  String get devNoteGoolTitle => 'Gool usually works well';
+  String get devNoteGoolTitle => 'Gool gives a foreign address';
 
   @override
   String get devNoteGoolBody =>
-      'From Iran, Gool almost always comes out on a German address and gives no trouble. Once in a while it lands back on an Iranian address. Disconnect and connect again a couple of times and it clears up.';
+      'Gool now carries WireGuard inside MASQUE. The WireGuard hop is dialled from inside WARP, so it comes out on a foreign address instead of an Iranian one. It follows the connection type you pick, so on a restricted line use it over HTTP/2. The older WARP inside WARP is still in the list as Classic Gool.';
 
   @override
   String get devNoteDismiss => 'Got it';
@@ -959,10 +1047,6 @@ class L10nEn extends L10n {
 
   @override
   String get trayStageActive => 'Connected';
-
-  @override
-  String get fragmentNeedsHttp2 =>
-      'Switches the transport to HTTP/2, the only one that carries a TLS ClientHello';
 
   @override
   String get transportUdp => 'UDP';
@@ -1227,7 +1311,7 @@ class L10nEn extends L10n {
 
   @override
   String protocolThroughCarrier(String engine) {
-    return 'Through $engine only MASQUE over HTTP/2 reaches WARP. Your own choice comes back with any other core';
+    return 'Through $engine WARP is reached over HTTP/2, so WireGuard and Classic Gool cannot run. Your own choice comes back with any other core';
   }
 
   @override
@@ -1290,6 +1374,19 @@ class L10nEn extends L10n {
   @override
   String get psiphonCdnSniDesc =>
       'Domain names to present in TLS, one per line';
+
+  @override
+  String get psiphonCdnSets => 'Built-in edge lists';
+
+  @override
+  String get psiphonCdnSetsDesc =>
+      'Which of Psiphon\'s own CDN lists the fronting scan tries, after your own edge addresses. With none picked it tries every list, or only your addresses when you gave some';
+
+  @override
+  String get psiphonCdnSetsAll => 'All';
+
+  @override
+  String get psiphonCdnSetsNone => 'Your addresses only';
 
   @override
   String get psiphonConduitPeers => 'Peers';

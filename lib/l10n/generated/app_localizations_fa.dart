@@ -275,7 +275,13 @@ class L10nFa extends L10n {
 
   @override
   String get protocolGoolDesc =>
-      'وارپ داخل وارپ، کندتر ولی سخت‌تر مسدود می‌شود';
+      'وایرگارد داخل مسک، برای خروجی بیرون از کشور خودتان';
+
+  @override
+  String get protocolGoolClassic => 'Gool کلاسیک';
+
+  @override
+  String get protocolGoolClassicDesc => 'وارپ داخل وارپ، با دو هاپ وایرگارد';
 
   @override
   String get transport => 'روش اتصال';
@@ -427,7 +433,7 @@ class L10nFa extends L10n {
 
   @override
   String get fragmentDesc =>
-      'شروع اتصال را تکه‌تکه می‌فرستد تا فیلترینگ نتواند آن را بشناسد';
+      'سلام TLS را تکه‌تکه می‌فرستد تا فیلترینگ نتواند نام سرور را بخواند: در درخواست‌های API وارپ با هر پروتکلی، و در مسک روی HTTP/2';
 
   @override
   String get logLevel => 'سطح گزارش';
@@ -616,7 +622,7 @@ class L10nFa extends L10n {
   String get h2EndpointDesc => 'سروری که در حالت HTTP/2 استفاده می‌شود';
 
   @override
-  String get wiwSection => 'مسیرهای WARP در WARP';
+  String get wiwSection => 'مسیرهای Gool کلاسیک';
 
   @override
   String get wiwSectionDesc =>
@@ -656,14 +662,21 @@ class L10nFa extends L10n {
 
   @override
   String get endpointIgnoredOnGool =>
-      'در WARP در WARP استفاده نمی‌شود؛ به‌جایش دو مسیر را نام ببرید.';
+      'در Gool کلاسیک استفاده نمی‌شود؛ به‌جایش دو مسیر را نام ببرید.';
 
   @override
-  String get ech => 'پنهان‌سازی نام سایت';
+  String get goolPeer => 'سرور وایرگارد Gool';
+
+  @override
+  String get goolPeerDesc =>
+      'سرور وایرگاردی که Gool داخل تونل به آن وصل می‌شود. خالی بگذارید تا همان سروری که در ثبت‌نامش آمده با پورت ۲۴۰۸ استفاده شود';
+
+  @override
+  String get ech => 'پنهان‌سازی نام سرور (ECH)';
 
   @override
   String get echDesc =>
-      'نام سایتی که به آن وصل می‌شوید را از دید شبکه پنهان می‌کند';
+      'نام سرور را در دست‌دهی مسک و درخواست‌های API وارپ رمز می‌کند. اگر کلید ECH پیدا نشود، به‌جای نشان دادن نام، اتصال برقرار نمی‌شود';
 
   @override
   String get fragmentSize => 'اندازه قطعه';
@@ -672,13 +685,88 @@ class L10nFa extends L10n {
   String get fragmentDelay => 'تأخیر قطعه';
 
   @override
-  String get rangeHint => 'یک عدد یا یک بازه مثل ۱۶-۳۲';
+  String get rangeHint => 'یک عدد یا یک بازه مثل ۸-۱۶';
 
   @override
   String get tlsGroups => 'گروه‌های کلید TLS';
 
   @override
   String get tlsGroupsDesc => 'گروه‌های کلیدی که در هندشیک پیشنهاد می‌شود';
+
+  @override
+  String get masqueSni => 'نام سرور مسک (SNI)';
+
+  @override
+  String get masqueSniDesc =>
+      'نامی که دست‌دهی مسک به شبکه نشان می‌دهد. همان نامی که انتخاب کنید در هر اتصال عیناً فرستاده می‌شود';
+
+  @override
+  String get masqueSniDefaultDesc =>
+      'پیش‌فرض. شبیه باز کردن سایت خود کلادفلر است';
+
+  @override
+  String get masqueSniWarpDesc =>
+      'همان نامی که برنامهٔ رسمی وارپ می‌فرستد. بعضی شبکه‌ها آن را می‌بندند';
+
+  @override
+  String get masqueSniCustom => 'نام دلخواه';
+
+  @override
+  String get masqueSniCustomDesc =>
+      'هر نام دامنه‌ای بنویسید؛ دقیقاً همان‌طور که نوشته‌اید فرستاده می‌شود';
+
+  @override
+  String get serverNameRefusal =>
+      'یک نام دامنه مثل www.cloudflare.com بنویسید، نه نشانی IP';
+
+  @override
+  String get echDns => 'سرور DNS کلید ECH';
+
+  @override
+  String get echDnsDesc =>
+      'جایی که کلید ECH از آن پرسیده می‌شود: udp://ip، tcp://ip یا یک نشانی DNS-over-HTTPS با https:// که می‌تواند با @address= و @sni= تمام شود. خالی یعنی udp://1.1.1.1';
+
+  @override
+  String get echDnsRefusal =>
+      'به شکل udp://ip، tcp://ip یا یک نشانی https:// بنویسید';
+
+  @override
+  String get echDomain => 'دامنهٔ کلید ECH';
+
+  @override
+  String get echDomainDesc =>
+      'دامنه‌ای که کلید ECH آن به کار می‌رود. خالی یعنی cloudflare-ech.com';
+
+  @override
+  String get domainRefusal => 'یک نام دامنه بنویسید';
+
+  @override
+  String get tlsCiphers => 'رمزهای TLS 1.2';
+
+  @override
+  String get tlsCiphersDesc =>
+      'مجموعه‌رمزهایی که بعد از رمزهای TLS 1.3 پیشنهاد می‌شوند، با دونقطه جدا شده. خالی یعنی فهرست کروم. HTTP/3 فقط TLS 1.3 دارد';
+
+  @override
+  String get tlsCiphersRefusal => 'نام رمزها را با دونقطه جدا کنید';
+
+  @override
+  String get grease => 'ارسال GREASE';
+
+  @override
+  String get greaseDesc =>
+      'مقدارهای تصادفی GREASE را مثل کروم می‌فرستد تا دست‌دهی شبیه مرورگر باشد. فقط اگر شبکه آن را رد می‌کند خاموشش کنید';
+
+  @override
+  String get apiAddress => 'نشانی API وارپ';
+
+  @override
+  String get apiAddressDesc =>
+      'جایی که درخواست‌های ثبت‌نام و کلید به آن می‌روند: یک نشانی IP یا دامنه، و اگر پورت ۴۴۳ نیست همراه پورت. نام api.cloudflareclient.com در دست‌دهی می‌ماند. خالی بگذارید تا مستقیم وصل شود';
+
+  @override
+  String get apiAddressRefusal =>
+      'یک نشانی IP یا دامنه بنویسید، با پورت دلخواه مثل 188.114.97.6:443';
 
   @override
   String get dataCheck => 'بررسی عبور داده';
@@ -892,11 +980,11 @@ class L10nFa extends L10n {
       'پروتکل را روی WireGuard بگذارید. حواستان به اسکنر باشد: در حالت متعادل جست‌وجو طول می‌کشد، پس کمی صبر کنید و زود نتیجه نگیرید. اگر نتیجه را سریع می‌خواهید، حالت اسکن را روی توربو بگذارید.';
 
   @override
-  String get devNoteGoolTitle => 'Gool معمولاً خوب جواب می‌دهد';
+  String get devNoteGoolTitle => 'Gool با نشانی خارج از کشور';
 
   @override
   String get devNoteGoolBody =>
-      'از ایران، Gool تقریباً همیشه روی نشانی آلمان می‌نشیند و مشکلی پیش نمی‌آورد. گاهی دوباره روی نشانی ایران می‌افتد؛ چند بار قطع و وصل کنید، درست می‌شود.';
+      'Gool حالا وایرگارد را داخل مسک می‌برد. هاپ وایرگارد از داخل وارپ زده می‌شود، پس به‌جای نشانی ایران روی نشانی خارجی بیرون می‌آید. Gool همان نوع اتصالی را که انتخاب کنید به کار می‌برد؛ روی خط محدود آن را با HTTP/2 بزنید. وارپ داخل وارپ قدیمی هم با نام Gool کلاسیک در فهرست مانده است.';
 
   @override
   String get devNoteDismiss => 'متوجه شدم';
@@ -957,9 +1045,6 @@ class L10nFa extends L10n {
 
   @override
   String get trayStageActive => 'متصل';
-
-  @override
-  String get fragmentNeedsHttp2 => 'فقط در حالت HTTP/2 کار می‌کند';
 
   @override
   String get transportUdp => 'UDP';
@@ -1228,7 +1313,7 @@ class L10nFa extends L10n {
 
   @override
   String protocolThroughCarrier(String engine) {
-    return 'از داخل $engine فقط MASQUE روی HTTP/2 به وارپ می‌رسد. انتخاب خودتان با هر هستهٔ دیگری برمی‌گردد';
+    return 'از داخل $engine وارپ فقط روی HTTP/2 گرفته می‌شود، پس وایرگارد و Gool کلاسیک اجرا نمی‌شوند. انتخاب خودتان با هر هستهٔ دیگری برمی‌گردد';
   }
 
   @override
@@ -1291,6 +1376,19 @@ class L10nFa extends L10n {
   @override
   String get psiphonCdnSniDesc =>
       'نام دامنه‌هایی که در TLS نشان داده شوند، هر خط یکی';
+
+  @override
+  String get psiphonCdnSets => 'فهرست‌های لبهٔ داخلی';
+
+  @override
+  String get psiphonCdnSetsDesc =>
+      'کدام‌یک از فهرست‌های CDN خود سایفون در اسکن fronting امتحان شود، بعد از آدرس‌های لبهٔ خودتان. اگر هیچ‌کدام انتخاب نشود همهٔ فهرست‌ها امتحان می‌شوند، یا اگر آدرس داده‌اید فقط آدرس‌های شما';
+
+  @override
+  String get psiphonCdnSetsAll => 'همه';
+
+  @override
+  String get psiphonCdnSetsNone => 'فقط آدرس‌های شما';
 
   @override
   String get psiphonConduitPeers => 'همتاها';
