@@ -387,6 +387,8 @@ class TunnelSettings {
 
   bool get dialsThrough => psiphonReverse || torReverse;
 
+  bool get exitIsWarp => usesAether && !carriesInside;
+
   int get _chainPortShift => socksPort + 11 <= 65535 ? 10 : -10;
 
   int get aetherSocksPort =>

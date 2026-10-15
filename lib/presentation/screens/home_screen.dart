@@ -64,7 +64,12 @@ class HomeScreen extends ConsumerWidget {
 
     final status = ref.watch(tunnelProvider);
     final settings = ref.watch(tunnelSettingsProvider);
+    final session = ref.watch(sessionSettingsProvider) ?? settings;
     final geo = ref.watch(geoProvider);
+    final showMode =
+        status.stage.isActive ||
+        status.stage == TunnelStage.connecting ||
+        status.stage == TunnelStage.validating;
 
     ref.listen<LoginCodeRequest?>(loginCodeProvider, (previous, next) {
       if (next != null) showLoginCodeDialog(context);
@@ -144,6 +149,14 @@ class HomeScreen extends ConsumerWidget {
                               : palette.labelSecondary,
                         ),
                       ),
+                      if (showMode)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: ModeBadge(
+                            mode: session.modeLabel,
+                            live: status.stage.isActive,
+                          ),
+                        ),
                       if (failure != null)
                         Padding(
                           padding: const EdgeInsets.fromLTRB(24, 6, 24, 0),
@@ -159,7 +172,7 @@ class HomeScreen extends ConsumerWidget {
                         child: ConnectionDetail(
                           status: status,
                           geo: geo,
-                          mode: settings.modeLabel,
+                          warpExit: session.exitIsWarp,
                         ),
                       ),
                       if (degraded)
@@ -201,12 +214,12 @@ class ConnectionDetail extends StatelessWidget {
     super.key,
     required this.status,
     required this.geo,
-    required this.mode,
+    this.warpExit = true,
   });
 
   final TunnelStatus status;
   final GeoSnapshot geo;
-  final String mode;
+  final bool warpExit;
 
   @override
   Widget build(BuildContext context) {
@@ -259,37 +272,31 @@ class ConnectionDetail extends StatelessWidget {
                 style: AppText.rowTitle(palette.label),
               ),
             ),
-            const SizedBox(width: 8),
-            _WarpBadge(status: exit.warp),
-          ],
-        ),
-        const SizedBox(height: 3),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            _ModeBadge(mode: mode),
-            if (details.isNotEmpty) ...<Widget>[
-              if (mode.isNotEmpty) const SizedBox(width: 6),
-              Flexible(
-                child: Text(
-                  details,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppText.caption(palette.labelSecondary),
-                ),
-              ),
+            if (warpExit) ...<Widget>[
+              const SizedBox(width: 8),
+              _WarpBadge(status: exit.warp),
             ],
           ],
         ),
+        if (details.isNotEmpty) ...<Widget>[
+          const SizedBox(height: 3),
+          Text(
+            details,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppText.caption(palette.labelSecondary),
+          ),
+        ],
       ],
     );
   }
 }
 
-class _ModeBadge extends StatelessWidget {
-  const _ModeBadge({required this.mode});
+class ModeBadge extends StatelessWidget {
+  const ModeBadge({super.key, required this.mode, this.live = true});
 
   final String mode;
+  final bool live;
 
   @override
   Widget build(BuildContext context) {
@@ -297,18 +304,24 @@ class _ModeBadge extends StatelessWidget {
 
     if (mode.isEmpty) return const SizedBox.shrink();
 
+    final tone = live ? palette.primary : palette.labelSecondary;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: palette.labelSecondary.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(5),
+        color: tone.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(7),
       ),
       child: Text(
         mode,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         textDirection: TextDirection.ltr,
-        style: AppText.caption(
-          palette.labelSecondary,
-        ).copyWith(fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.3),
+        style: AppText.caption(tone).copyWith(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.4,
+        ),
       ),
     );
   }

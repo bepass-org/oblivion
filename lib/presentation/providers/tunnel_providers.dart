@@ -37,6 +37,8 @@ final tunnelSettingsProvider =
       return TunnelSettingsController(ref.watch(settingsStoreProvider));
     });
 
+final sessionSettingsProvider = StateProvider<TunnelSettings?>((ref) => null);
+
 class GeoSnapshot {
   const GeoSnapshot({
     this.origin,
@@ -174,6 +176,9 @@ class TunnelController extends StateNotifier<TunnelStatus> {
     if (status.stage.isIdle) {
       _stopTicker();
       _ref.read(geoProvider.notifier).clearExit();
+      if (previous.stage.isActive || previous.stage.isBusy) {
+        _ref.read(sessionSettingsProvider.notifier).state = null;
+      }
     }
   }
 
@@ -202,6 +207,7 @@ class TunnelController extends StateNotifier<TunnelStatus> {
         if (!granted) return false;
       }
 
+      _ref.read(sessionSettingsProvider.notifier).state = settings;
       state = state.copyWith(
         stage: TunnelStage.connecting,
         clearMessage: true,
